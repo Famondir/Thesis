@@ -3,3 +3,4 @@ Geschaeftsberichte/
 R/*.html
 R/libs/
 R/*_files/
+.ipynb_checkpoints
