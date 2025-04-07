@@ -4,3 +4,6 @@ R/*.html
 R/libs/
 R/*_files/
 .ipynb_checkpoints
+.Rproj.user
+tmp/
+R/_book/
