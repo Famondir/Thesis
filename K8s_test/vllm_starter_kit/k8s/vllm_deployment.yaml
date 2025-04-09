@@ -14,13 +14,13 @@ spec:
     spec:
       containers:
       - name: vllm-deployment
-        image: vllm/vllm-openai:v0.6.2  # Use the official vLLM Docker image
+        image: vllm/vllm-openai:latest  # Use the official vLLM Docker image
         ports:
         - containerPort: 8000  # vLLM exposes the API on port 8000
         command: ["python3", "-m", "vllm.entrypoints.api_server"]
         args:
           - --model
-          - "inceptionai/jais-adapted-7b"  # Specify the model name, e.g., "gpt2"
+          - "Qwen/Qwen2.5-0.5B-Instruct"  # Specify the model name, e.g., "gpt2"
           - --host
           - 0.0.0.0
           - --port
@@ -41,18 +41,18 @@ spec:
         env:
           - name: LANG
             value: 'C.UTF-8'
-          - name: TRANSFORMERS_CACHE
+          - name: HF_HOME
             value: "/pvc/hub_cache"
           - name: OMP_NUM_THREADS
             value: "1"
           - name: HUGGING_FACE_HUB_TOKEN
             valueFrom:
               secretKeyRef:
-                name: hf-auth-token
+                name: hf-token-secret
                 key: token
       nodeSelector:
         #kubernetes.io/hostname: cl-worker27
-        gpu: h100
+        gpu: a100
       imagePullSecrets:
       - name: private-registry-auth
       volumes:

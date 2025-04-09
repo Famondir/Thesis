@@ -7,3 +7,4 @@ R/*_files/
 .Rproj.user
 tmp/
 R/_book/
+K8s_test/vllm_starter_kit/k8s/secret.yaml
