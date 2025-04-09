@@ -1,3 +1,12 @@
 # Introduction
 
-Hi.
+## Datenverfügbarkeit
+
+Das Gesetz zur Förderung der elektronischen Verwaltung (EGovG) wurde erlassen, "um die Verwaltung effektiver, bürgerfreundlicher und effizienter zu gestalten." [@bmi_referat_o2_minikommentar_2013]
+
+[§ 12 EGovG](https://www.gesetze-im-internet.de/egovg/__12.html)
+
+## Unstrukturierte Daten
+
+### Portable Document Format
+

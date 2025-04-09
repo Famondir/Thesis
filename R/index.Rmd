@@ -8,6 +8,10 @@ output:
   bookdown::pdf_book:
     keep_tex: yes
 documentclass: book
+bibliography: ["DS 4tkimoDni+99
+h: Extracting financial data from annual reports.bib"]
+biblio-style: apalike
+link-citations: yes
 ---
 
 ```{r setup, include=FALSE}
