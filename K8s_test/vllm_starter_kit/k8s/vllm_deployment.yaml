@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-deployment
+  template:
+    metadata:
+      labels:
+        app: vllm-deployment
+    spec:
+      containers:
+      - name: vllm-deployment
+        image: vllm/vllm-openai:v0.6.2  # Use the official vLLM Docker image
+        ports:
+        - containerPort: 8000  # vLLM exposes the API on port 8000
+        command: ["python3", "-m", "vllm.entrypoints.api_server"]
+        args:
+          - --model
+          - "inceptionai/jais-adapted-7b"  # Specify the model name, e.g., "gpt2"
+          - --host
+          - 0.0.0.0
+          - --port
+          - "8000"
+          - --tensor-parallel-size
+          - "1"
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+        resources:
+          requests:
+            cpu: "1"
+            memory: "8Gi"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "64Gi"
+            nvidia.com/gpu: "1"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: TRANSFORMERS_CACHE
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-auth-token
+                key: token
+      nodeSelector:
+        #kubernetes.io/hostname: cl-worker27
+        gpu: h100
+      imagePullSecrets:
+      - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+            
