@@ -1,2 +1,7 @@
 # Literature review
 
+### TableFormer
+
+SynthTabNet <-- has it:
+- nested / hierarchical tables, where rows add up to another row?
+- identifying units and unit cols/rows

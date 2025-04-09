@@ -82,7 +82,7 @@ def print_analysis_result(result):
                     f"...Cell[{cell.row_index}][{cell.column_index}] has text '{cell.content}'"
                 )
 
-print_analysis_result(result)
+# print_analysis_result(result)
 
 # %% Present result as Markdown
 

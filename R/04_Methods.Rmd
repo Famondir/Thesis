@@ -1,2 +1,16 @@
 # Methods
 
+## Baselines
+
+### Simple pipeline
+
+- extract text (if document can't be passed directly)
+- query LLM directly
+
+### Sophisticated approaches
+
+- with pipelines
+- Nougat
+- maker
+- Azure
+- docling
