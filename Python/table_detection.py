@@ -128,6 +128,69 @@ class TableExtractor_PdfPlumber(TableExtractor):
                         ignore_index=True,
                     )
 
+class TableExtractor_PypdfTableExtraction(TableExtractor):
+    import pypdf_table_extraction
+
+    def detect_tables(self, page = "all"):
+        """
+        Parses the PDF file page by page, detects tables, and stores the results in a DataFrame.
+        """
+        tables = self.pypdf_table_extraction.read_pdf(self.pdf_path)
+        return tables
+
+    def extract_tables(self):
+        """
+        Extracts tables from the detected tables on the page.
+        """
+        
+
+        tabs = self.detect_tables()
+        for table in tabs:
+            # Process each table and extract its content
+            page_number = table.parsing_report['page']
+            table_content = table.df.to_string(index=False, header=False)
+            self.tables_df = pd.concat(
+                [
+                    self.tables_df,
+                    pd.DataFrame(
+                        {"Page Number": [page_number], "Table Content": [table_content]}
+                    ),
+                ],
+                ignore_index=True,
+            )
+
+class TableExtractor_TabulaPy(TableExtractor):
+    import tabula
+    import pdfplumber
+
+    def detect_tables(self, page = "all"):
+        """
+        Parses the PDF file page by page, detects tables, and stores the results in a DataFrame.
+        """
+        tables = self.tabula.read_pdf(self.pdf_path, pages=page)
+        return tables
+
+    def extract_tables(self):
+        """
+        Extracts tables from the detected tables on the page.
+        """
+        with self.pdfplumber.open(self.pdf_path) as pdf:
+            for page_number, page in enumerate(pdf.pages, start=1):
+                tabs = self.detect_tables(page_number)
+
+                for table in tabs:
+                    # Process each table and extract its content
+                    table_content = table
+                    self.tables_df = pd.concat(
+                        [
+                            self.tables_df,
+                            pd.DataFrame(
+                                {"Page Number": [page_number], "Table Content": [table_content]}
+                            ),
+                        ],
+                        ignore_index=True,
+                    )
+
 def benchmark(class_name, pdf_path):
     """
     Benchmark the table extraction process.
@@ -150,6 +213,12 @@ if __name__ == "__main__":
 
     benchmark(TableExtractor_PyMuPDF4llm, easy_table)
     benchmark(TableExtractor_PyMuPDF4llm, real_table)
-    """
+    
     benchmark(TableExtractor_PdfPlumber, easy_table)
     benchmark(TableExtractor_PdfPlumber, real_table)
+    
+    benchmark(TableExtractor_PypdfTableExtraction, easy_table)
+    benchmark(TableExtractor_PypdfTableExtraction, real_table)
+    """
+    benchmark(TableExtractor_TabulaPy, easy_table)
+    benchmark(TableExtractor_TabulaPy, real_table)
