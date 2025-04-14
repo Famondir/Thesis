@@ -4,12 +4,11 @@ author: "Simon Schäfer"
 date: "`r Sys.Date()`"
 site: "bookdown::bookdown_site"
 output:
-  bookdown::gitbook: default
   bookdown::pdf_book:
     keep_tex: yes
+  bookdown::gitbook: default
 documentclass: book
-bibliography: ["DS 4tkimoDni+99
-h: Extracting financial data from annual reports.bib"]
+bibliography: ["DS 4th: Extracting financial data from annual reports.bib"]
 biblio-style: apalike
 link-citations: yes
 ---
