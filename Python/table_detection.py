@@ -5,6 +5,7 @@ from pprint import pprint
 import re
 
 MARKDOWN_TABLE_REGEX = r'(?:\|(?:[^\r\n|]*\|)+\r?\n(?:\|[-:]+)+\|(?:\r?\n\|(?:[^\r\n|]*\|)+)+)'
+HTML_TABLE_REGEX = r'<table.*?>(([\s*].*(\s*))+)?<\/table>'
 
 class TableExtractor(ABC):
     def __init__(self, pdf_path):
@@ -206,63 +207,119 @@ class TableExtractor_TabulaPy(TableExtractor):
 class TableExtractor_Azure(TableExtractor):
     from azure.core.credentials import AzureKeyCredential
     from azure.ai.documentintelligence import DocumentIntelligenceClient
+    
+    def __init__(self, pdf_path):
+        self.pdf_path = pdf_path
+        self.tables_df = pd.DataFrame(columns=["Page Number", "Table Content"])
+
+        # Set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
+        self.endpoint = os.getenv("DOC_ANALYZER_ENDPOINT")
+        self.key = os.getenv("DOC_ANALYZER_API_KEY")
+
+        # Initialize the Document Intelligence client
+        self.document_intelligence_client = self.DocumentIntelligenceClient(
+            endpoint=self.endpoint, credential = self.AzureKeyCredential(self.key)
+        )
 
     def detect_tables(self, page):
         """
         Placeholder for Azure Form Recognizer table detection on a single page.
         """
-        # This method can be implemented if specific page-level detection is needed.
-        pass
+        # Start the analysis process for the current page
+        poller = self.document_intelligence_client.begin_analyze_document(
+            model_id="prebuilt-layout", body=page,
+            output_content_format="markdown"
+        )
+        result = poller.result()
+        tables = re.findall(HTML_TABLE_REGEX, result.content)
+        return tables
 
     def extract_tables(self):
         """
         Extracts tables from each page of the PDF using Azure Form Recognizer.
         """
-        # Set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
-        endpoint = os.getenv("DOC_ANALYZER_ENDPOINT")
-        key = os.getenv("DOC_ANALYZER_API_KEY")
-
-        # Initialize the Document Intelligence client
-        document_intelligence_client = self.DocumentIntelligenceClient(
-            endpoint=endpoint, credential = self.AzureKeyCredential(key)
-        )
 
         # Open the PDF file in binary mode
         with open(self.pdf_path, "rb") as pdf_file:
             # Iterate through each page of the PDF
-            for page_number in range(1, get_page_count() + 1):
+            for page_number in range(1, get_page_count(self.pdf_path) + 1):
                 # Extract the specific page as a binary stream
                 page_stream = extract_page_as_stream(pdf_file, page_number)
 
-                # Start the analysis process for the current page
-                poller = document_intelligence_client.begin_analyze_document(
-                    model_id="prebuilt-layout", body=page_stream,
-                    output_content_format="markdown"
-                )
-                result = poller.result()
+                tabs = self.detect_tables(page_stream)
 
                 # Process the tables from the result
-                for table in result.tables:
-                    table_content = format_table_as_markdown(table)
+                for table in tabs:
                     self.tables_df = pd.concat(
                         [
                             self.tables_df,
                             pd.DataFrame(
-                                {"Page Number": [page_number], "Table Content": [table_content]}
+                                {"Page Number": [page_number], "Table Content": [table]}
                             ),
                         ],
                         ignore_index=True,
                     )
 
+class TableExtractor_Docling(TableExtractor):
+    from docling.datamodel.base_models import DocumentStream
+    from docling.datamodel.base_models import InputFormat
+    from docling.document_converter import DocumentConverter, PdfFormatOption
+    from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
 
-def format_table_as_markdown(table):
-    """
-    Formats the table content as Markdown.
-    """
-    rows = []
-    for cell in table.cells:
-        rows.append(cell.content)
-    return "\n".join(rows)
+    def __init__(self, pdf_path, mode = 'FAST'):
+        self.pdf_path = pdf_path
+        self.tables_df = pd.DataFrame(columns=["Page Number", "Table Content"])
+
+        self.pipeline_options = self.PdfPipelineOptions(do_table_structure=True)
+        if mode == 'FAST':
+            self.pipeline_options.table_structure_options.mode = self.TableFormerMode.FAST
+        elif mode == 'ACCURATE':
+            self.pipeline_options.table_structure_options.mode = self.TableFormerMode.ACCURATE
+
+
+    def detect_tables(self, page):
+        """
+        Placeholder for Azure Form Recognizer table detection on a single page.
+        """
+
+        buf = page # BytesIO(your_binary_stream)
+        source = self.DocumentStream(name=self.pdf_path.split("/")[-1], stream=buf)
+
+        converter = self.DocumentConverter(
+            format_options={
+                self.InputFormat.PDF: self.PdfFormatOption(pipeline_options=self.pipeline_options)
+            }
+        )
+
+        result = converter.convert(source)
+        return [table.export_to_dataframe() for table in result.document.tables]
+
+    def extract_tables(self):
+        """
+        Extracts tables from each page of the PDF using Azure Form Recognizer.
+        """
+        
+        # Open the PDF file in binary mode
+        with open(self.pdf_path, "rb") as pdf_file:
+            # Iterate through each page of the PDF
+            for page_number in range(1, get_page_count(self.pdf_path) + 1):
+                # Extract the specific page as a binary stream
+                page_stream = extract_page_as_stream(pdf_file, page_number)
+
+                tabs = self.detect_tables(page_stream)
+
+                # Process the tables from the result
+                for table in tabs:
+                    self.tables_df = pd.concat(
+                        [
+                            self.tables_df,
+                            pd.DataFrame(
+                                {"Page Number": [page_number], "Table Content": [table]}
+                            ),
+                        ],
+                        ignore_index=True,
+                    )
+
 
 def get_page_count(pdf_path):
     """
@@ -323,7 +380,9 @@ if __name__ == "__main__":
     tabs = benchmark(TableExtractor_TabulaPy, real_table)
     print(tabs.loc[0, "Table Content"])
     print(tabs.loc[1, "Table Content"])
-    """
+    
     benchmark(TableExtractor_Azure, easy_table)
     benchmark(TableExtractor_Azure, real_table)
-    
+    """
+    # benchmark(TableExtractor_Docling, easy_table)
+    benchmark(TableExtractor_Docling, real_table)
