@@ -9,7 +9,7 @@ temp_pdf_path = "tmp/pdf_split/page.pdf"
 from pypdf import PdfWriter, PdfReader
 
 writer = PdfWriter()
-writer.append("Geschaeftsberichte/degewo AG/240618-degewo-konzernlagerbericht-konzernabschluss-2023.pdf", (7, 8)) # extracts page 8
+writer.append("Geschaeftsberichte/degewo AG/240618-degewo-konzernlagerbericht-konzernabschluss-2023.pdf", (7, 9)) # extracts page 8 and 9
 writer.write(temp_pdf_path)
 writer.close()
 
@@ -97,8 +97,15 @@ print(result.content)
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.output import text_from_rendered
+from marker.config.parser import ConfigParser
+
+config = {
+           "paginate_output": True
+        }
+config_parser = ConfigParser(config)
 
 converter = PdfConverter(
+    config=config_parser.generate_config_dict(),
     artifact_dict=create_model_dict(),
 )
 rendered = converter(temp_pdf_path)

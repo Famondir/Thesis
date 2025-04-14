@@ -320,6 +320,44 @@ class TableExtractor_Docling(TableExtractor):
                         ignore_index=True,
                     )
 
+from marker.converters.table import TableConverter
+from marker.models import create_model_dict
+from marker.output import text_from_rendered
+from marker.config.parser import ConfigParser
+
+class TableExtractor_Marker(TableExtractor):
+
+    def detect_tables(self, page):
+        tables = re.findall(MARKDOWN_TABLE_REGEX, page)
+        return tables
+
+    def extract_tables(self):
+        config = {
+                "paginate_output": True
+                }
+        config_parser = ConfigParser(config)
+
+        converter = TableConverter(
+            config=config_parser.generate_config_dict(),
+            artifact_dict=create_model_dict(),
+        )
+        rendered = converter(self.pdf_path)
+        text, _, images = text_from_rendered(rendered)
+        pages = re.split(r'\{\d+\}-*\n+', text)
+        for page_number, page in enumerate(pages[1:], start=1):
+            tabs = self.detect_tables(page)
+
+            # Process the tables from the result
+            for table in tabs:
+                self.tables_df = pd.concat(
+                    [
+                        self.tables_df,
+                        pd.DataFrame(
+                            {"Page Number": [page_number], "Table Content": [table]}
+                        ),
+                    ],
+                    ignore_index=True,
+                )
 
 def get_page_count(pdf_path):
     """
@@ -383,6 +421,9 @@ if __name__ == "__main__":
     
     benchmark(TableExtractor_Azure, easy_table)
     benchmark(TableExtractor_Azure, real_table)
-    """
-    # benchmark(TableExtractor_Docling, easy_table)
+    
+    benchmark(TableExtractor_Docling, easy_table)
     benchmark(TableExtractor_Docling, real_table)
+    """
+    # benchmark(TableExtractor_Marker, easy_table)
+    benchmark(TableExtractor_Marker, real_table)
