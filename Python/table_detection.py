@@ -424,6 +424,7 @@ if __name__ == "__main__":
     
     benchmark(TableExtractor_Docling, easy_table)
     benchmark(TableExtractor_Docling, real_table)
-    """
-    # benchmark(TableExtractor_Marker, easy_table)
+    
+    benchmark(TableExtractor_Marker, easy_table)
     benchmark(TableExtractor_Marker, real_table)
+    """

@@ -20,7 +20,7 @@ spec:
         command: ["python3", "-m", "vllm.entrypoints.api_server"]
         args:
           - --model
-          - "Qwen/Qwen2.5-0.5B-Instruct"  # Specify the model name, e.g., "gpt2"
+          - "Qwen/Qwen2.5-7B"  # Specify the model name, e.g., "gpt2"
           - --host
           - 0.0.0.0
           - --port
