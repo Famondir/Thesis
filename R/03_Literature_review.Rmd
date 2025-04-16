@@ -1,5 +1,15 @@
 # Literature review
 
+## Document Extrtaction Process
+
+### Document Layout Analysis
+
+Object detection
+
+### 
+
+## Tools
+
 ### TableFormer
 
 SynthTabNet <-- has it:
