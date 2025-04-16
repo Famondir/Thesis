@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm-deployment
+  name: vllm-deployment-openai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vllm-deployment
+      app: vllm-deployment-openai
   template:
     metadata:
       labels:
-        app: vllm-deployment
+        app: vllm-deployment-openai
     spec:
       containers:
-      - name: vllm-deployment
+      - name: vllm-deployment-openai
         image: vllm/vllm-openai:latest  # Use the official vLLM Docker image
         ports:
         - containerPort: 8000  # vLLM exposes the API on port 8000
-        # command: ["/bin/sh", "-c"]
-        # args: [
-        #   "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1"
-        # ]
+        command: ["/bin/sh", "-c"]
+        args: [
+          "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1"
+        ]
         # args: [
         #   "vllm serve Qwen/Qwen2.5-7B --trust-remote-code --enable-chunked-prefill --max_num_batched_tokens 1024 --port 8000 --host 0.0.0.0"
         # ]
-        command: ["python3", "-m", "vllm.entrypoints.api_server"]
-        args:
-          - --model
-          - "Qwen/Qwen2.5-7B"  # Specify the model name, e.g., "gpt2"
-          - --host
-          - 0.0.0.0
-          - --port
-          - "8000"
-          - --tensor-parallel-size
-          - "1"
+        # command: ["python3", "-m", "vllm.entrypoints.api_server"]
+        # args:
+        #   - --model
+        #   - "Qwen/Qwen2.5-7B"  # Specify the model name, e.g., "gpt2"
+        #   - --host
+        #   - 0.0.0.0
+        #   - --port
+        #   - "8000"
+        #   - --tensor-parallel-size
+        #   - "1"
         volumeMounts:
           - name: vllm-pvc
             mountPath: /pvc
