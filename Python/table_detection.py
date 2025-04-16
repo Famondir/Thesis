@@ -398,13 +398,13 @@ def benchmark(class_name, pdf_path):
 
 # Example usage:
 if __name__ == "__main__":
-    easy_table = "benchmark_tables/easy_table_german_finance.pdf"
+    easy_table = "benchmark_tables/easy_table_german_finance_v2.pdf"
     real_table = "tmp/pdf_split/page.pdf"
 
     """
     benchmark(TableExtractor_PyMuPDF, easy_table)
     benchmark(TableExtractor_PyMuPDF, real_table)
-
+    
     benchmark(TableExtractor_PyMuPDF4llm, easy_table)
     benchmark(TableExtractor_PyMuPDF4llm, real_table)
     
