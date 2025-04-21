@@ -395,7 +395,6 @@ def benchmark(class_name, pdf_path):
     print('\n')
     return tables
 
-
 # Example usage:
 if __name__ == "__main__":
     easy_table = "benchmark_tables/easy_table_german_finance_v2.pdf"

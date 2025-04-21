@@ -36,3 +36,7 @@ or the **Build** menu entry in RStudio. Otherwise one gets empty `.html` files (
 There are some new nice Python packages for this task and Azure also performs pretty well. The old packages without LLM support are really outperformed especially with respect to tables.
 
 There have been some dependency issues after installing `torch` just with the Python packages like `maker-pdf` and `docling`. Reinstalling it manually with `pip` and checking for the CPU version for the local virtual machine solved the issues. Especially for `sympy` some packages need version 1.13.1 and not the newer version 1.13.3.
+
+## GLIBCXX not found fpr xgrammar
+
+[Solution](https://github.com/deepspeedai/DeepSpeed/issues/2886)
