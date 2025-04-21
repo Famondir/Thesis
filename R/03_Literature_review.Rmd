@@ -4,7 +4,23 @@
 
 ### Document Layout Analysis
 
+An important step in the process of extracting information from documents is to recognize the layout of a document [@zhong_publaynet_2019].
+
+Getting the order of texts correct
+align captions to tables and figure
+identify headings, tables and figures
+
+One of the most popular datasets used for training and benchmarking is PubLayNet (see [PubLayNet on paperswithcode.com](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central [@zhong_publaynet_2019, p. 1]. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. <-- is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?
+
+Manual annotated datasets often were limited to several hundred pages. Deep learning methods need a much larger training dataset. Previously optical character recognition (OCR) methods were used.
+
+Identify potentially interesting pages with text / regex search. Check if there is a table present on this page.
+
 Object detection
+
+#### Vision Grid Transformer
+
+
 
 ### 
 

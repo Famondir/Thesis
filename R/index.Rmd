@@ -9,8 +9,9 @@ output:
   bookdown::gitbook: default
 documentclass: book
 bibliography: ["DS 4th: Extracting financial data from annual reports.bib"]
-biblio-style: apalike
+biblio-style: apa
 link-citations: yes
+csl: apa-single-spaced.csl
 ---
 
 ```{r setup, include=FALSE}
