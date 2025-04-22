@@ -131,14 +131,14 @@ class TableExtractor_PdfPlumber(TableExtractor):
                         ignore_index=True,
                     )
 
-class TableExtractor_PypdfTableExtraction(TableExtractor):
-    import pypdf_table_extraction
+class TableExtractor_Camelot(TableExtractor):
+    import camelot
 
     def detect_tables(self, page):
         """
         Parses the PDF file page by page, detects tables, and stores the results in a DataFrame.
         """
-        tables = self.pypdf_table_extraction.read_pdf(page)
+        tables = self.camelot.read_pdf(page)
         return tables
 
     def extract_tables(self):
@@ -400,18 +400,18 @@ if __name__ == "__main__":
     easy_table = "benchmark_tables/easy_table_german_finance_v2.pdf"
     real_table = "tmp/pdf_split/page.pdf"
 
-    """
+    
     benchmark(TableExtractor_PyMuPDF, easy_table)
     benchmark(TableExtractor_PyMuPDF, real_table)
-    
+    """
     benchmark(TableExtractor_PyMuPDF4llm, easy_table)
     benchmark(TableExtractor_PyMuPDF4llm, real_table)
     
     benchmark(TableExtractor_PdfPlumber, easy_table)
     benchmark(TableExtractor_PdfPlumber, real_table)
     
-    benchmark(TableExtractor_PypdfTableExtraction, easy_table)
-    benchmark(TableExtractor_PypdfTableExtraction, real_table)
+    benchmark(TableExtractor_Camelot, easy_table)
+    benchmark(TableExtractor_Camelot, real_table)
     
     benchmark(TableExtractor_TabulaPy, easy_table)
     tabs = benchmark(TableExtractor_TabulaPy, real_table)
