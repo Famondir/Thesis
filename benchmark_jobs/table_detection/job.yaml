@@ -1,0 +1,19 @@
+ apiVersion: v1
+ kind: Job
+ metadata:
+    name: python-alpine-test-job
+    namespace: s92818
+ spec:
+    containers:
+    - name: python-alpine-test-job
+      image: registry.datexis.com/s92818/python-alpine-test-job
+      volumeMounts:
+        - name: vllm-pvc
+          mountPath: /pvc
+    imagePullSecrets:
+    - name: private-registry-auth
+    volumes:
+      - name: vllm-pvc
+        persistentVolumeClaim:
+          claimName: vllm-pvc
+    restartPolicy: Never
