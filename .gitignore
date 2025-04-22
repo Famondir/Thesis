@@ -9,3 +9,5 @@ tmp/
 R/_book/
 K8s_test/vllm_starter_kit/k8s/secret.yaml
 .~lock.*
+benchmark_results/
+Python/bilanz_search_results.csv

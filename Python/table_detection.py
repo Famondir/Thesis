@@ -393,12 +393,13 @@ def benchmark(class_name, pdf_path):
     tables = extractor.get_tables()
     print(tables)
     print('\n')
+    tables.to_csv(f"benchmark_results/table_detection/{class_name.__name__}_on_{pdf_path.split("/")[-1]}.csv", index=False)
     return tables
 
 # Example usage:
 if __name__ == "__main__":
     easy_table = "benchmark_tables/easy_table_german_finance_v2.pdf"
-    real_table = "tmp/pdf_split/page.pdf"
+    real_table = "benchmark_tables/realistic_tables_german_finance.pdf"
 
     
     benchmark(TableExtractor_PyMuPDF, easy_table)

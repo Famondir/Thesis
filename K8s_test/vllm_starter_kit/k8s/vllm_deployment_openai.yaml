@@ -24,7 +24,7 @@ spec:
         # args: [
         #   "vllm serve Qwen/Qwen2.5-7B --trust-remote-code --enable-chunked-prefill --max_num_batched_tokens 1024 --port 8000 --host 0.0.0.0"
         # ]
-        # command: ["python3", "-m", "vllm.entrypoints.api_server"]
+        # command: ["python3", "-m", "vllm.entrypoints.api_server"] # mal ausprobieren statt command
         # args:
         #   - --model
         #   - "Qwen/Qwen2.5-7B"  # Specify the model name, e.g., "gpt2"
