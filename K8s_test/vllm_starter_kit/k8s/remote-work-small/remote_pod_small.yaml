@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remote-work-small
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remote-work-small
+  template:
+    metadata:
+      labels:
+        app: remote-work-small
+    spec:
+      containers:
+      - name: remote-work-small
+        image: registry.datexis.com/s92818/remote-work-small:latest
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: vllm-pvc
+          mountPath: /pvc
+        - name: ssh-key
+          mountPath: /root/ssh-key
+        ports:
+          - containerPort: 22
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "cat /root/ssh-key/id_ed25519.pub >> /root/.ssh/authorized_keys"]
+        resources:
+          requests:
+              cpu: "4"
+              memory: "8Gi"
+              nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
+            memory: 64Gi
+            cpu: "32"
+      nodeSelector:
+        gpu: a100
+      imagePullSecrets:
+      - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+        - name: ssh-key
+          secret:
+            secretName: my-ssh-public-key
+            defaultMode: 256
