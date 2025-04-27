@@ -22,7 +22,14 @@ RUN echo "extensions-dir: /root/.vscode-server/extensions/" >> /root/.config/cod
 RUN code-server --install-extension ms-python.python \
     && code-server --install-extension ms-toolsai.jupyter
 
-# RUN pip install pandas
+### Install Python packages
+# RUN apt-get install -y python3-pip python3.12-venv
+
+# ENV VIRTUAL_ENV=~/venv
+# RUN python3 -m venv $VIRTUAL_ENV
+# ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# RUN pip install pandas vllm
 
 ### install docker client
 

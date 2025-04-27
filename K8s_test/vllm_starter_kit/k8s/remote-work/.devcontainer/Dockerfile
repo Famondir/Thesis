@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:24.01-py3
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
 ENV TERM=xterm
 
@@ -22,7 +22,10 @@ RUN echo "extensions-dir: /root/.vscode-server/extensions/" >> /root/.config/cod
 RUN code-server --install-extension ms-python.python \
     && code-server --install-extension ms-toolsai.jupyter
 
-# RUN pip install pandas
+### Install Python packages
+RUN python -m pip install --upgrade pip
+# RUN pip install vllm
+RUN pip install pandas
 
 ### install docker client
 

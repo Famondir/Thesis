@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: remote-work
-        image: registry.datexis.com/s92818/remote-work:latest
+        image: registry.datexis.com/s92818/remote-work:vscode
         securityContext:
           runAsUser: 0
         volumeMounts:
