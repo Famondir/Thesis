@@ -1,0 +1,20 @@
+{
+    "name": "Python Dev Container",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-toolsai.jupyter"
+			],
+			// Add settings for specific tools to use inside the container.
+			"settings": {
+				"python.languageServer": "Pylance",
+				"python.analysis.typeCheckingMode": "basic"
+			}
+		}
+	}
+  }

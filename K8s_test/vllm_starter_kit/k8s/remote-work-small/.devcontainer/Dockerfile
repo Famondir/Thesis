@@ -1,18 +1,28 @@
-FROM nvcr.io/nvidia/pytorch:24.01-py3
+FROM ubuntu:24.04
 
 ENV TERM=xterm
 
 RUN apt-get update
 
-RUN apt-get install nano -y
+RUN apt-get install -y nano curl git
 
 RUN apt-get -yq install openssh-server; \
   mkdir -p /var/run/sshd; \
   mkdir /root/.ssh && chmod 700 /root/.ssh; \
   touch /root/.ssh/authorized_keys
 
-# RUN pip install pandas
+### Install code-server
+RUN curl -fsSL https://code-server.dev/install.sh | sh
 
+RUN mkdir -p /root/.vscode-server/extensions/
+RUN code-server & sleep 5 && pkill code-server || true
+RUN echo "extensions-dir: /root/.vscode-server/extensions/" >> /root/.config/code-server/config.yaml
+
+### Preinstall extensions
+RUN code-server --install-extension ms-python.python \
+    && code-server --install-extension ms-toolsai.jupyter
+
+# RUN pip install pandas
 
 ### install docker client
 
