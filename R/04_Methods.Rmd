@@ -1,5 +1,36 @@
 # Methods
 
+## Page identification
+
+```{r count_benchmark_documents, echo=FALSE, message=FALSE}
+# Load necessary library
+library(dplyr)
+
+# Read the CSV file
+data <- read.csv("../Python/table_page_truth.csv")
+
+# Get the unique count of document paths in the "filepath" column
+num_documents <- data %>%
+    distinct(filepath) %>%
+    nrow()
+
+# Extract the middle part of the file paths and count distinct companies
+num_companies <- data %>%
+    mutate(company = sub("\\.\\./.*/(.*?)/.*", "\\1", filepath)) %>%
+    distinct(company) %>%
+    nrow()
+```
+
+The first task to solve for a fully autonomous solution is to identify the pages where the tables of interest are located. For benchmarking `r num_documents` annual reports from `r num_companies` companies have been used.
+
+As baselines a simple regex approach as well as a fully sophisticated visual LLM approach  have been used.
+
+### Baselines
+
+#### Regex based
+
+#### VLLM based
+
 ## Baselines
 
 ### Simple pipeline
