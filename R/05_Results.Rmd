@@ -9,7 +9,8 @@ json_files <- list.files("../benchmark_results/page_identification/", pattern = 
 
 # Initialize an empty dataframe to store results
 results_df <- data.frame(
-  file_name = character(),
+  package = character(),
+  method = character(),
   precision = numeric(),
   recall = numeric(),
   F1 = numeric(),
@@ -27,6 +28,10 @@ for (file in json_files) {
   wrong_df <- as.data.frame(fromJSON(json_data$wrong))
   missing_df <- as.data.frame(fromJSON(json_data$missing))
   
+  filename <- basename(file)
+  package <- strsplit(filename, "_")[[1]][1]
+  method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
+  
   num_correct <- nrow(correct_df)
   num_wrong <- nrow(wrong_df)
   num_missing <- nrow(missing_df)
@@ -38,7 +43,8 @@ for (file in json_files) {
   # Append the values to the results dataframe
   results_df <- results_df %>%
     add_row(
-      file_name = basename(file),
+      package = package,
+      method = method,
       precision = precision,
       recall = recall,
       F1 = F1,
