@@ -8,7 +8,7 @@ library(dplyr)
 library(tidyr)
 
 # Read the CSV file
-data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages.csv")
+data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
 
 # Get the unique count of document paths in the "filepath" column
 num_documents <- data %>%
@@ -112,6 +112,15 @@ As baselines a simple regex approach as well as a fully sophisticated visual LLM
 #### Regex based
 
 results potentially dependend on package used for text extraction [@auer_docling_2024, p. 2 f.]
+
+* PyMuPDF
+* pypdf
+* docling-parse
+* pypdfium
+* pdfminer.six
+
+pdfminer informs that some pdfs should not be extracted based on their authors will (meta data field)
+
 results dependend on regex pattern
 
 start with pypdf backend and simple regex

@@ -3,6 +3,27 @@
 ```{r, echo=FALSE}
 library(jsonlite)
 library(dplyr)
+library(tidyr)
+
+data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
+pdf_files <- data$filepath %>% unique()
+
+# Initialize a counter for the total page count
+total_pages <- 0
+
+# Loop through each PDF file to count pages
+for (pdf_file in pdf_files) {
+  # Use the pdftools package to count pages
+  total_pages <- total_pages + pdftools::pdf_info(pdf_file)$pages
+}
+
+# Split the "type" column by '&' and explode it into multiple rows
+data_unnested <- data %>%
+  mutate(type = strsplit(as.character(type), "&")) %>%
+  unnest(type)
+
+num_tables <- data_unnested %>% 
+  nrow()
 
 # Get a list of all .json files in the folder
 json_files <- list.files("../benchmark_results/page_identification/", pattern = "\\.json$", full.names = TRUE)
@@ -11,6 +32,7 @@ json_files <- list.files("../benchmark_results/page_identification/", pattern = 
 results_df <- data.frame(
   package = character(),
   method = character(),
+  # acc = numeric(),
   precision = numeric(),
   recall = numeric(),
   F1 = numeric(),
@@ -24,20 +46,24 @@ for (file in json_files) {
   json_data <- fromJSON(file)
   
   # Extract the required values
-  correct_df <- as.data.frame(fromJSON(json_data$correct))
-  wrong_df <- as.data.frame(fromJSON(json_data$wrong))
-  missing_df <- as.data.frame(fromJSON(json_data$missing))
+  correct_df <- as.data.frame(fromJSON(json_data$correct)) # %>% filter(type == 'Aktiva')
+  wrong_df <- as.data.frame(fromJSON(json_data$wrong)) # %>% filter(type == 'Aktiva')
+  missing_df <- as.data.frame(fromJSON(json_data$missing)) # %>% filter(type == 'Aktiva')
+  print(missing_df)
   
   filename <- basename(file)
   package <- strsplit(filename, "_")[[1]][1]
   method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
   
-  num_correct <- nrow(correct_df)
-  num_wrong <- nrow(wrong_df)
+  num_true_pos <- num_correct <- nrow(correct_df)
+  num_false_pos <- num_wrong <- nrow(wrong_df)
+  num_false_neg <- num_tables-num_correct
+  num_true_neg <- 3*total_pages-num_true_pos-num_false_pos-num_false_neg
   num_missing <- nrow(missing_df)
   runtime <- round(json_data$runtime, 2)
-  precision = round(num_correct/(num_correct+num_wrong),2)
-  recall = round(num_correct/(num_correct+num_missing),2)
+  acc = round((num_true_pos+num_true_neg)/(3*total_pages),2)
+  precision = round(num_true_pos/(num_true_pos+num_false_pos),2)
+  recall = round(num_true_pos/(num_true_pos+num_false_neg),2)
   F1 = round(2*precision*recall/(precision+recall),2)
   
   # Append the values to the results dataframe
@@ -45,13 +71,17 @@ for (file in json_files) {
     add_row(
       package = package,
       method = method,
+      # acc = acc,
       precision = precision,
       recall = recall,
       F1 = F1,
       runtime_in_s = runtime
     )
 }
+
 ```
+
+`r total_pages` `r num_correct` `r num_wrong`
 
 ## Page identification
 
