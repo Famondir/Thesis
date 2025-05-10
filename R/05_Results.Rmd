@@ -1,2 +1,58 @@
 # Results
 
+```{r, echo=FALSE}
+library(jsonlite)
+library(dplyr)
+
+# Get a list of all .json files in the folder
+json_files <- list.files("../benchmark_results/page_identification/", pattern = "\\.json$", full.names = TRUE)
+
+# Initialize an empty dataframe to store results
+results_df <- data.frame(
+  file_name = character(),
+  precision = numeric(),
+  recall = numeric(),
+  F1 = numeric(),
+  runtime_in_s = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through each .json file
+for (file in json_files) {
+  # Read the JSON file
+  json_data <- fromJSON(file)
+  
+  # Extract the required values
+  correct_df <- as.data.frame(fromJSON(json_data$correct))
+  wrong_df <- as.data.frame(fromJSON(json_data$wrong))
+  missing_df <- as.data.frame(fromJSON(json_data$missing))
+  
+  num_correct <- nrow(correct_df)
+  num_wrong <- nrow(wrong_df)
+  num_missing <- nrow(missing_df)
+  runtime <- round(json_data$runtime, 2)
+  precision = round(num_correct/(num_correct+num_wrong),2)
+  recall = round(num_correct/(num_correct+num_missing),2)
+  F1 = round(2*precision*recall/(precision+recall),2)
+  
+  # Append the values to the results dataframe
+  results_df <- results_df %>%
+    add_row(
+      file_name = basename(file),
+      precision = precision,
+      recall = recall,
+      F1 = F1,
+      runtime_in_s = runtime
+    )
+}
+```
+
+## Page identification
+
+### Baselines
+
+#### Regex based
+
+```{r display_results_df, echo=FALSE}
+knitr::kable(results_df)
+```

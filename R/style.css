@@ -1,0 +1,9 @@
+.pre-detail p {
+  margin-bottom: 0 !important;
+  font-style: italic;
+  color: gray;
+}
+
+.pre-detail + details {
+  margin-bottom: 1rem;
+}

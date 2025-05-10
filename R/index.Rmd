@@ -7,6 +7,7 @@ output:
   bookdown::pdf_book:
     keep_tex: yes
   bookdown::gitbook: default
+css: "style.css"
 documentclass: book
 bibliography: ["DS 4th: Extracting financial data from annual reports.bib"]
 biblio-style: apa

@@ -5,29 +5,121 @@
 ```{r count_benchmark_documents, echo=FALSE, message=FALSE}
 # Load necessary library
 library(dplyr)
+library(tidyr)
 
 # Read the CSV file
-data <- read.csv("../Python/table_page_truth.csv")
+data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages.csv")
 
 # Get the unique count of document paths in the "filepath" column
 num_documents <- data %>%
-    distinct(filepath) %>%
-    nrow()
+  distinct(filepath) %>%
+  nrow()
 
 # Extract the middle part of the file paths and count distinct companies
 num_companies <- data %>%
-    mutate(company = sub("\\.\\./.*/(.*?)/.*", "\\1", filepath)) %>%
-    distinct(company) %>%
-    nrow()
+  mutate(company = sub("\\.\\./.*/(.*?)/.*", "\\1", filepath)) %>%
+  distinct(company) %>%
+  nrow()
+
+num_pages <- data %>%
+  nrow()
+
+# Split the "type" column by '&' and explode it into multiple rows
+data_unnested <- data %>%
+  mutate(type = strsplit(as.character(type), "&")) %>%
+  unnest(type)
+
+num_tables <- data_unnested %>% 
+  nrow()
+
+num_two_tables_on_one_page <- data %>% 
+  filter(type == 'Aktiva&Passiva') %>% 
+  nrow()
+
+# Count rows where the next row is identical in all columns except "page",
+# and the "page" of the second row is equal to "page + 1" of the first row
+consecutive_pages <- data %>%
+  arrange(filepath, page) %>%
+  group_by(filepath) %>%
+  mutate(next_page = lead(page), next_type = lead(type)) %>%
+  filter(
+    next_page == page + 1 &
+      next_type == type
+  )
+
+num_consecutive_pages <- consecutive_pages %>%
+  nrow()
+
+num_multiple_tables_per_document <- data %>%
+  anti_join(consecutive_pages, by = c("filepath", "page", "type")) %>% 
+  arrange(filepath, page) %>%
+  group_by(filepath, type) %>% 
+  summarise(count = n()) %>% 
+  filter(count > 1) %>%
+  group_by(filepath) %>% 
+  summarise(count = n()) %>% 
+  nrow()
+
+multiple_tables_per_type_and_document <- data_unnested %>%
+  anti_join(consecutive_pages, by = c("filepath", "page", "type")) %>% 
+  arrange(filepath, page) %>%
+  group_by(filepath, type) %>% 
+  summarise(count = n()) %>% 
+  filter(count > 1) %>% 
+  group_by(type) %>% 
+  summarise(count = n())
 ```
 
-The first task to solve for a fully autonomous solution is to identify the pages where the tables of interest are located. For benchmarking `r num_documents` annual reports from `r num_companies` companies have been used.
+The first task to solve, for a fully autonomous solution, is to identify the pages where the tables of interest are located. For benchmarking `r num_documents` annual reports from `r num_companies` companies have been used. For this benchmark we limit the tables of interest to those that show **Aktiva**, **Passiva** and **Gewinn- und Verlustrechnung**.
+
+```{r, eval = knitr::is_html_output(), echo=FALSE, results='asis', class.chunk='pre-detail'}
+cat("<p>You can have a look at the ground truth data unfolding the following details element.</p>")
+```
+
+```{r ground_truth_tables_of_interest, eval = knitr::is_html_output(), echo=FALSE, class.chunk='hideme'}
+DT::datatable(data)
+```
+
+```{js, echo=FALSE, eval = knitr::is_html_output()}
+(function() {
+  var codes = document.querySelectorAll('.hideme');
+  var code, i, d, s, p;
+  for (i = 0; i < codes.length; i++) {
+    code = codes[i];
+    p = code.parentNode;
+    d = document.createElement('details');
+    s = document.createElement('summary');
+    s.innerText = 'Details';
+    // <details><summary>Details</summary></details>
+    d.appendChild(s);
+    // move the code into <details>
+    p.replaceChild(d, code);
+    d.appendChild(code);
+  }
+})();
+```
+
+In those documents there are `r num_pages` pages of interest holding `r num_tables` relevant tables. On `r num_two_tables_on_one_page` pages there have been two tables (**Aktiva** and **Passiva**) on a single page. `r num_consecutive_pages` tables are spread over two pages. In `r num_multiple_tables_per_document` documents there have been multiple tables per type of interest, distributed among the three types of tables as following:
+
+```{r display_multiple_tables_per_type_and_document, echo=FALSE}
+knitr::kable(multiple_tables_per_type_and_document)
+```
 
 As baselines a simple regex approach as well as a fully sophisticated visual LLM approach  have been used.
 
 ### Baselines
 
 #### Regex based
+
+results potentially dependend on package used for text extraction [@auer_docling_2024, p. 2 f.]
+results dependend on regex pattern
+
+start with pypdf backend and simple regex
+developed more sophisticated regex based on missed pages
+
+took wrong identified pages as base for a table detection benchmark and n-shot base for llm classification (contrasts)
+
+some tables can't be found without previous ocr; some pages hold image of table and machine readable text
 
 #### VLLM based
 
