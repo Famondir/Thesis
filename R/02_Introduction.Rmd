@@ -1,5 +1,15 @@
 # Introduction
 
+This master thesis is motivated by a use case from practical work at the Berlin court of audit (Rechnungshof von Berlin; RHvB). The auditors often are faced with the problem that they need information that is provided as natural language or in tables inside of unstructured documents, i.e. in PDF files. The goal of this thesis is benchmarking methods for automated information extraction from specific tables from PDF files.
+
+Ideally, the data extraction pipeline is able to autonomously
+* identify the pages with the tables of interest.
+* identify the tables of interest on these pages.
+* extract the information as provided into a structured table (e.g. a csv file or HTML code).
+* transform the data into a given schema, stripping all aggregated values.
+
+It should extract the values without errors. It would be nice if the energy consumption is as low as possible.
+
 ## Datenverfügbarkeit
 
 Das Gesetz zur Förderung der elektronischen Verwaltung (EGovG) wurde erlassen, "um die Verwaltung effektiver, bürgerfreundlicher und effizienter zu gestalten." [@bmi_referat_o2_minikommentar_2013]
