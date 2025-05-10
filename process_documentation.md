@@ -40,3 +40,9 @@ There have been some dependency issues after installing `torch` just with the Py
 ## GLIBCXX not found fpr xgrammar
 
 [Solution](https://github.com/deepspeedai/DeepSpeed/issues/2886)
+
+## Bechmark generation
+
+1. Table detection on small (synthetic) set
+2. Regex page identification
+3. Table detection on big dataset
