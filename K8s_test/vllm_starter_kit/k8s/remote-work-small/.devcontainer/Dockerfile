@@ -1,4 +1,5 @@
 FROM ubuntu:24.04
+# FROM vllm/vllm-openai:v0.8.3
 
 ENV TERM=xterm
 
