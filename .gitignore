@@ -13,3 +13,4 @@ benchmark_results/
 Python/bilanz_search_results.csv
 *.pdf
 models/YOLO/
+R/.RData

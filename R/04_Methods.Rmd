@@ -4,8 +4,7 @@
 
 ```{r count_benchmark_documents, echo=FALSE, message=FALSE}
 # Load necessary library
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 
 # Read the CSV file
 data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")

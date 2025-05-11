@@ -1,9 +1,8 @@
 # Results
 
-```{r, echo=FALSE}
+```{r page-identification-data-loading, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 library(jsonlite)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 
 data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
 pdf_files <- data$filepath %>% unique()
@@ -80,7 +79,52 @@ for (file in json_files) {
 
 ```
 
-`r total_pages` `r num_correct` `r num_wrong`
+```{r table-detection-data-loading, echo=FALSE}
+# Get a list of all .json files in the folder
+json_files_table_detection <- list.files("../benchmark_results/table_detection/", pattern = "\\.json$", full.names = TRUE)
+
+meta_list <- list()
+
+# Loop through each .json file
+for (file in json_files_table_detection) {
+  # Read the JSON file
+  json_data <- fromJSON(file)
+  
+  # Extract the threshold and metrics from the "metrics" key
+  metrics <- as.data.frame(fromJSON(json_data$metrics))
+  
+  lst <- list(
+    metrics = metrics,
+    model = basename(file),
+    runtime = json_data$runtime
+  )
+  meta_list[[length(meta_list) + 1]] <- lst
+}
+
+# Plot the metrics over threshold
+library(ggplot2)
+
+metric_plots <- list()
+
+for (result in meta_list) {
+  table_detection_plot <- ggplot(result$metrics, aes(x = threshold)) +
+    geom_line(aes(y = precision, color = "Precision")) +
+    geom_line(aes(y = recall, color = "Recall")) +
+    geom_line(aes(y = recall_target, color = "Recall for tables of interest")) +
+    geom_line(aes(y = F1, color = "F1")) +
+    labs(
+      title = str_replace(result$model, ".json", ""),
+      subtitle = paste("Runtime:", round(result$runtime,0) , "s"),
+      x = "Threshold",
+      y = "Metric Value",
+      color = "Metric"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
+  metric_plots[[length(metric_plots) + 1]] <- table_detection_plot
+}
+```
 
 ## Page identification
 
@@ -89,5 +133,13 @@ for (file in json_files) {
 #### Regex based
 
 ```{r display_results_df, echo=FALSE}
-knitr::kable(results_df)
+knitr::kable(results_df %>% arrange(desc(method)))
+```
+
+## Table detection
+
+```{r metric_plots, echo=FALSE, warning=FALSE}
+for (plot in metric_plots) {
+  print(plot)
+}
 ```
