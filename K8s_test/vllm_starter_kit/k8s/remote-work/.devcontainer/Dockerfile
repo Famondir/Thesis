@@ -1,4 +1,5 @@
-FROM nvcr.io/nvidia/pytorch:25.03-py3
+# FROM nvcr.io/nvidia/pytorch:25.03-py3
+FROM nvcr.io/nvidia/pytorch:24.04-py3
 
 ENV TERM=xterm
 
@@ -25,7 +26,11 @@ RUN code-server --install-extension ms-python.python \
 ### Install Python packages
 RUN python -m pip install --upgrade pip
 # RUN pip install vllm
+RUN pip install https://vllm-wheels.s3.us-west-2.amazonaws.com/nightly/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl
 RUN pip install pandas
+RUN pip install transformers
+RUN pip install hf-xet
+RUN pip install ipywidgets
 
 ### install docker client
 

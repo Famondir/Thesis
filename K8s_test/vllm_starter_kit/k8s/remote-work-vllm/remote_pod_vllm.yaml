@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: remote-work
+  name: remote-work-vllm
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: remote-work
+      app: remote-work-vllm
   template:
     metadata:
       labels:
-        app: remote-work
+        app: remote-work-vllm
     spec:
       containers:
-      - name: remote-work
-        image: registry.datexis.com/s92818/remote-work
+      - name: remote-work-vllm
+        image: registry.datexis.com/s92818/remote-work-vllm:latest
         securityContext:
           runAsUser: 0
         volumeMounts:
@@ -23,19 +23,24 @@ spec:
         - name: ssh-key
           mountPath: /root/ssh-key
         ports:
-          - containerPort: 22
+        # - containerPort: 8000  # vLLM exposes the API on port 8000
+        - containerPort: 22
+        # command: ["/bin/sh", "-c"]
+        # args: [
+        #   "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1"
+        # ]
         lifecycle:
           postStart:
             exec:
               command: ["/bin/sh", "-c", "cat /root/ssh-key/id_ed25519.pub >> /root/.ssh/authorized_keys"]
         resources:
           requests:
-              cpu: "8"
-              memory: "32Gi"
+              cpu: "4"
+              memory: "8Gi"
               nvidia.com/gpu: "1"
           limits:
             nvidia.com/gpu: "1"
-            memory: 128Gi
+            memory: 64Gi
             cpu: "32"
       nodeSelector:
         gpu: a100

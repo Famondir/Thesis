@@ -1,5 +1,5 @@
-FROM ubuntu:24.04
-# FROM vllm/vllm-openai:v0.8.3
+# FROM ubuntu:24.04
+FROM vllm/vllm-openai:latest
 
 ENV TERM=xterm
 
@@ -23,34 +23,7 @@ RUN echo "extensions-dir: /root/.vscode-server/extensions/" >> /root/.config/cod
 RUN code-server --install-extension ms-python.python \
     && code-server --install-extension ms-toolsai.jupyter
 
-### Install Python packages
-RUN apt-get install -y python3-pip python3.12-venv
-
-ENV VIRTUAL_ENV=/root/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
 RUN pip install pandas ipykernel ipywidgets
-RUN pip install https://vllm-wheels.s3.us-west-2.amazonaws.com/nightly/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl
-
-### install docker client
-
-# RUN apt-get install \
-#     apt-transport-https \
-#     ca-certificates \
-#     curl \
-#     gnupg-agent \
-#     software-properties-common
-
-# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-# RUN add-apt-repository \
-#    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-#    $(lsb_release -cs) \
-#    stable"
-
-# RUN apt update
-# RUN apt install -y docker-ce docker-ce-cli containerd.io
 
 
 COPY bin/* /usr/local/bin/
