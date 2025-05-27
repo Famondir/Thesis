@@ -124,6 +124,65 @@ for (result in meta_list) {
   
   metric_plots[[length(metric_plots) + 1]] <- table_detection_plot
 }
+
+json_files_table_detection_llm <- list.files("../benchmark_results/table_detection/llm/", pattern = "\\.json$", full.names = TRUE)
+
+meta_list_llm <- list()
+
+# Loop through each .json file
+for (file in json_files_table_detection_llm) {
+  # Read the JSON file
+  json_data <- fromJSON(file)
+  
+  # Extract the threshold and metrics from the "metrics" key
+  metrics <- as.data.frame(json_data$metrics)
+  
+  lst <- list(
+    metrics = metrics,
+    model = basename(file),
+    runtime = json_data$runtime
+  )
+  meta_list_llm[[length(meta_list_llm) + 1]] <- lst
+}
+
+results_df_llm <- data.frame(
+  llm = character(),
+  parameters = character(),
+  method = character(),
+  loop = numeric(),
+  # acc = numeric(),
+  # precision = numeric(),
+  # recall = numeric(),
+  F1_Aktiva = numeric(),
+  runtime_in_s = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for (result in meta_list_llm) {
+  
+  name_split = result$model %>% str_split("__")
+  name_split = name_split[[1]]
+  
+  llm = name_split[1]
+  parameters = str_extract(llm, "\\d*\\.?\\d+B")
+  method = name_split[length(name_split)-1]
+  loop = name_split[length(name_split)] %>% str_remove(".json") %>% str_remove("loop_") %>% as.integer()
+  F1_Aktiva = result$metrics$Aktiva.f1_score
+  runtime = result$runtime
+  
+  results_df_llm <- results_df_llm %>%
+    add_row(
+      llm = llm,
+      parameters = parameters,
+      method = method,
+      loop = loop,
+      # acc = acc,
+      # precision = precision,
+      # recall = recall,
+      F1_Aktiva = round(F1_Aktiva, 2),
+      runtime_in_s = round(runtime, 2)
+    )
+}
 ```
 
 ## Page identification
@@ -142,4 +201,9 @@ knitr::kable(results_df %>% arrange(desc(method)))
 for (plot in metric_plots) {
   print(plot)
 }
+```
+
+```{r display_results_df_llm, echo=FALSE}
+knitr::kable(results_df_llm # %>% arrange(desc(F1_Aktiva))
+             )
 ```

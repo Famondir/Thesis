@@ -22,3 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Abstract {-}
 
 Content of this thesis is a benchmark on information extraction from PDFs. The focus are annual reports of German companies. Special characteristics of the task are handling units and hierarchies in tables with financial data to prepare the data for import into a relational database. In addition, web-based application is provided for manual post-processing of faulty extracted data.
+
+## Notes
+
+* Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
