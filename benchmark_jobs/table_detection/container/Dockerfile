@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.13-alpine
-WORKDIR /app
-COPY ./scripts/ .
+# WORKDIR /pvc/thesis_benchmarks
+# COPY ./scripts/ .
 # RUN pip install -r requirements.txt
-CMD ["python3", "table_detection.py", "hello world"]
+# CMD ["python3", "table_detection.py", "hello world2"]
