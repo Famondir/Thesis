@@ -1,5 +1,5 @@
-# FROM nvcr.io/nvidia/pytorch:25.03-py3
-FROM nvcr.io/nvidia/pytorch:24.04-py3
+FROM nvcr.io/nvidia/pytorch:25.03-py3
+# FROM nvcr.io/nvidia/pytorch:24.04-py3
 
 ENV TERM=xterm
 
@@ -26,34 +26,24 @@ RUN code-server --install-extension ms-python.python \
 ### Install Python packages
 RUN python -m pip install --upgrade pip
 # RUN pip install vllm
-RUN pip install https://vllm-wheels.s3.us-west-2.amazonaws.com/nightly/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl
-RUN pip install pandas
-RUN pip install transformers
-RUN pip install hf-xet
-RUN pip install ipywidgets
+# RUN pip install https://vllm-wheels.s3.us-west-2.amazonaws.com/nightly/vllm-1.0.0.dev-cp38-abi3-manylinux1_x86_64.whl
+RUN pip install pandas transformers hf-xet ipywidgets xgrammar
+RUN pip install accelerate
+RUN pip install pypdfium2
+RUN pip install sentence_transformers
+RUN pip install chromadb
 
-### install docker client
+# configuring git
+RUN git config --global user.email "s92818@bht-berlin.de"
+RUN git config --global user.name "Simon Schaefer"
 
-# RUN apt-get install \
-#     apt-transport-https \
-#     ca-certificates \
-#     curl \
-#     gnupg-agent \
-#     software-properties-common
-
-# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-# RUN add-apt-repository \
-#    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-#    $(lsb_release -cs) \
-#    stable"
-
-# RUN apt update
-# RUN apt install -y docker-ce docker-ce-cli containerd.io
-
-
+# Setting up ssh
 COPY bin/* /usr/local/bin/
 COPY sshd_config /etc/ssh/sshd_config
+
+RUN echo "export LANG='C.UTF-8'" >> /root/.profile \
+    && echo "export HF_HOME='/pvc/hub_cache'" >> /root/.profile \
+    && echo "export OMP_NUM_THREADS='1'" >> /root/.profile
 
 EXPOSE 22
 

@@ -27,16 +27,35 @@ spec:
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/sh", "-c", "cat /root/ssh-key/id_ed25519.pub >> /root/.ssh/authorized_keys"]
+              command: [
+                "/bin/sh", "-c", 
+                "cat /root/ssh-key/id_ed25519.pub >> /root/.ssh/authorized_keys && \
+                echo \"export LANG='$LANG'\" >> /root/.profile && \
+                echo \"export HF_HOME='$HF_HOME'\" >> /root/.profile && \
+                echo \"export OMP_NUM_THREADS='$OMP_NUM_THREADS'\" >> /root/.profile && \
+                if [ -n \"$HUGGING_FACE_HUB_TOKEN\" ]; then echo \"export HUGGING_FACE_HUB_TOKEN='$HUGGING_FACE_HUB_TOKEN'\" >> /root/.profile; fi"
+                ]
         resources:
           requests:
-              cpu: "8"
+              cpu: "4"
               memory: "32Gi"
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "4"
           limits:
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "4"
             memory: 128Gi
             cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
       nodeSelector:
         gpu: a100
       imagePullSecrets:
