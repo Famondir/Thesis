@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import pdfkit
 
 aktiva_structure_hgb = {
     'Anlagevermögen': {
@@ -48,6 +49,17 @@ aktiva_structure_hgb = {
     'Aktiver Unterschiedsbetrag aus der Vermögensverrechnung': dict()
 }
 
+unit_list = {
+    'EUR': 1, 
+    '€': 1, 
+    'Tsd. EUR': 1000, 
+    'Mio. EUR': 1000000, 
+    'TEUR': 1000, 
+    'T€': 1000, 
+    'Tsd. €': 1000, 
+    'Mio. €': 1000000
+}
+
 def generate_random_value():
     return random.random() * 10_000_000  # Random value between 0 and 10,000,000
 
@@ -80,18 +92,70 @@ def thin_table(df):
     df_thinned = df.dropna(subset=[year, previous_year]).reset_index(drop=True)
     return df_thinned
 
-def generate_html_table(rows):
+def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', previous_year = '31.12.2022'):
+    header = [first_cell]
+    if n_columns == 3:
+        header.append(f'{year}')
+        header.append(f'{previous_year}')
+    elif n_columns == 4:
+        header.append(f'{year}')
+        header.append(f'{year}')
+        header.append(f'{previous_year}')
+    elif n_columns == 5:
+        header.append(f'{year}')
+        header.append(f'{year}')
+        header.append(f'{previous_year}')
+        header.append(f'{previous_year}')
+    return header
+
+def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False):
     html_rows = []
+    if not unit_in_first_cell:
+        rows.insert(0, [''] + [unit] * (n_columns - 1))
+
     for row in rows:
         if pd.notna(row[1]) and pd.notna(row[2]):
             html_row = '<tr>' + ''.join(
-                f'<td>{cell:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
+                f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
                 else f'<td>{cell}</td>' for cell in row
             ) + '</tr>'
             html_rows.append(html_row)
-    
+
+    first_cell = ('Aktiva (in ' + unit + ')') if unit_in_first_cell else 'Aktiva'
+    html_rows.insert(0, '<tr>' + ''.join(f'<th>{cell}</th>' for cell in generate_header(len(rows[0]), first_cell=first_cell, year='31.12.2023', previous_year='31.12.2022')) + '</tr>')
+
     html_table = '<table>\n' + '\n'.join(html_rows) + '\n</table>'
     return html_table
+
+def generate_html_page(html_table):
+    html_page = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Aktiva Table</title>
+        <style>
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+            }}
+            th, td {{
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
+        </style>
+    </head>
+    <body>
+        {html_table}
+    </body>
+    </html>
+    """
+    return html_page
 
 def generate_row_list(df):
     rows = []
@@ -129,6 +193,29 @@ def generate_row_list(df):
         
     return rows
 
+def add_sum_rows(df):
+    df_aggregated = df.groupby(['E1', 'E2']).agg(
+        {year: 'sum', previous_year: 'sum'}
+    ).reset_index()
+    df_aggregated['count'] = df.groupby(['E1', 'E2']).size().values
+    # Insert 'E3' column after 'E2'
+    insert_at = df_aggregated.columns.get_loc('E2') + 1
+    df_aggregated.insert(insert_at, 'E3', 'SUMME')
+    print(df_aggregated)
+    for row in df_aggregated.itertuples():
+        if row.count > 1:
+            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
+            
+            # Find the last index where E1 and E2 match
+            mask = (df['E1'] == row.E1) & (df['E2'] == row.E2)
+            last_idx = df[mask].index.max()
+            # Split df and insert new_row after last_idx
+            df_top = df.iloc[:last_idx + 1]
+            df_bottom = df.iloc[last_idx + 1:]
+            df = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+    print(df)
+    return df
+
 if __name__ == "__main__":
     year = 2023
     previous_year = year - 1
@@ -136,4 +223,8 @@ if __name__ == "__main__":
     df = generate_table(column_names)
 
     df_thinned = thin_table(df)
-    print(generate_html_table(generate_row_list(df_thinned)))
+    df_with_sums = add_sum_rows(df_thinned)
+
+    html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums)))
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
+    pdfkit.from_string(html_page, './benchmark_truth/synthetic_tables/aktiva_table.pdf', configuration=config)
