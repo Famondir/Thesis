@@ -60,6 +60,12 @@ unit_list = {
     'Mio. €': 1000000
 }
 
+enumerators = [
+    ['A.', 'B.', 'C.', 'D.', 'E.'],
+    ['I.', 'II.', 'III.', 'IV.', 'V.'],
+    ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.']
+]
+
 def generate_random_value():
     return random.random() * 10_000_000  # Random value between 0 and 10,000,000
 
@@ -117,7 +123,7 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
         if pd.notna(row[1]) and pd.notna(row[2]):
             html_row = '<tr>' + ''.join(
                 f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
-                else f'<td>{cell}</td>' for cell in row
+                else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row
             ) + '</tr>'
             html_rows.append(html_row)
 
@@ -157,9 +163,43 @@ def generate_html_page(html_table):
     """
     return html_page
 
-def generate_row_list(df):
+def generate_row_list(df, add_enumeration=True):
     rows = []
+    enum = [0] * 3
+    cols = [col for col in df.columns if col not in ['E1', 'E2', 'E3']]
 
+    for key in df['E1'].unique():
+        enum[0] += 1
+        enum[1] = 0
+        enum[2] = 0
+        df_temp = df[df['E1'] == key]
+        title = (enumerators[0][enum[0]-1] + ' ' + key) if add_enumeration else key
+
+        if df_temp.shape[0] == 1:            
+            rows.append([title] + df_temp[cols].iloc[0].tolist())
+        else:
+            rows.append([title] + [''] * (len(df.columns) - 3))
+
+            for sub_key in df_temp['E2'].unique():
+                df_sub_temp = df_temp[df_temp['E2'] == sub_key]
+                enum[1] += 1
+                enum[2] = 0
+                title = (enumerators[1][enum[1]-1] + ' ' + sub_key) if add_enumeration else sub_key
+
+                if df_sub_temp.shape[0] == 1:
+                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist())
+                else:
+                    rows.append([title] + [''] * (len(df.columns) - 3))
+
+                    for item in df_sub_temp['E3'].unique():
+                        df_item_temp = df_sub_temp[df_sub_temp['E3'] == item]
+                        enum[2] += 1
+                        title = (enumerators[2][enum[2]-1] + ' ' + item) if add_enumeration else item
+
+                        if df_item_temp.shape[0] == 1:
+                            rows.append([title] + df_item_temp[cols].iloc[0].tolist())
+
+    """
     for key, value in aktiva_structure_hgb.items():
         if isinstance(value, dict):
             if key in df['E1'].values:
@@ -190,10 +230,13 @@ def generate_row_list(df):
                                         rows.append(df.loc[(df['E1'] == key) & (df['E2'] == sub_key) & (df['E3'] == item), cols].iloc[0].tolist())
         else:
             raise ValueError(f"Expected a dictionary for {key}, but got {type(value)}")
-        
+         """
+    # print(rows)
     return rows
 
 def add_sum_rows(df):
+    df_with_sums = df.copy()
+
     df_aggregated = df.groupby(['E1', 'E2']).agg(
         {year: 'sum', previous_year: 'sum'}
     ).reset_index()
@@ -201,20 +244,44 @@ def add_sum_rows(df):
     # Insert 'E3' column after 'E2'
     insert_at = df_aggregated.columns.get_loc('E2') + 1
     df_aggregated.insert(insert_at, 'E3', 'SUMME')
-    print(df_aggregated)
+    
     for row in df_aggregated.itertuples():
         if row.count > 1:
             new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
-            
+
             # Find the last index where E1 and E2 match
-            mask = (df['E1'] == row.E1) & (df['E2'] == row.E2)
-            last_idx = df[mask].index.max()
+            mask = (df_with_sums['E1'] == row.E1) & (df_with_sums['E2'] == row.E2)
+            last_idx = df_with_sums[mask].index.max()
             # Split df and insert new_row after last_idx
-            df_top = df.iloc[:last_idx + 1]
-            df_bottom = df.iloc[last_idx + 1:]
-            df = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
-    print(df)
-    return df
+            df_top = df_with_sums.iloc[:last_idx + 1]
+            df_bottom = df_with_sums.iloc[last_idx + 1:]
+            df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+
+    df_aggregated = df.groupby(['E1']).agg(
+        {year: 'sum', previous_year: 'sum'}
+    ).reset_index()
+    df_aggregated['count'] = df.groupby(['E1']).size().values
+    # Insert 'E2' and 'E3' column after 'E1'
+    insert_at = df_aggregated.columns.get_loc('E1') + 1
+    df_aggregated.insert(insert_at, 'E2', 'SUMME')
+    df_aggregated.insert(insert_at + 1, 'E3', 'SUMME')
+
+    for row in df_aggregated.itertuples():
+        if row.count > 1:
+            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
+
+            # Find the last index where E1 matches
+            mask = (df_with_sums['E1'] == row.E1)
+            last_idx = df_with_sums[mask].index.max()
+            # Split df and insert new_row after last_idx
+            df_top = df_with_sums.iloc[:last_idx + 1]
+            df_bottom = df_with_sums.iloc[last_idx + 1:]
+            df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+
+    # Add a final row for the total
+    total_row = pd.DataFrame([['SUMME', 'SUMME', 'SUMME', df[year].sum(), df[previous_year].sum()]], columns=df.columns)
+    df_with_sums = pd.concat([df_with_sums, total_row], ignore_index=True)
+    return df_with_sums
 
 if __name__ == "__main__":
     year = 2023
