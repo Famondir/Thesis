@@ -61,8 +61,8 @@ unit_list = {
 }
 
 enumerators = [
-    ['A.', 'B.', 'C.', 'D.', 'E.'],
-    ['I.', 'II.', 'III.', 'IV.', 'V.'],
+    ['A.', 'B.', 'C.', 'D.', 'E.', 'F.'],
+    ['I.', 'II.', 'III.', 'IV.', 'V.', 'VI.'],
     ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.']
 ]
 
@@ -98,39 +98,78 @@ def thin_table(df):
     df_thinned = df.dropna(subset=[year, previous_year]).reset_index(drop=True)
     return df_thinned
 
-def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', previous_year = '31.12.2022'):
+def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', previous_year = '31.12.2022', span=False):
     header = [first_cell]
     if n_columns == 3:
         header.append(f'{year}')
         header.append(f'{previous_year}')
     elif n_columns == 4:
         header.append(f'{year}')
-        header.append(f'{year}')
+        if not span:
+            header.append(f'{year}')
         header.append(f'{previous_year}')
     elif n_columns == 5:
         header.append(f'{year}')
-        header.append(f'{year}')
+        if not span:
+            header.append(f'{year}')
         header.append(f'{previous_year}')
-        header.append(f'{previous_year}')
-    return header
+        if not span:
+            header.append(f'{previous_year}')
 
-def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False):
+    header_html = '<tr>' + ''.join(f'<th>{cell}</th>' for cell in header) + '</tr>'
+    if span and n_columns in [4, 5]:
+        parts = header_html.split('</th><th>')
+        if n_columns == 4:
+            parts[1] = f'</th><th colspan="2">{parts[1]}</th><th>'
+        elif n_columns == 5:
+            parts[1] = f'</th><th colspan="2">{parts[1]}</th>'
+            parts[2] = f'<th colspan="2">{parts[2]}</th>'
+        header_html = ''.join(parts)
+    return header_html
+
+def generate_html_table(rows, unit='TEUR', n_columns=5, unit_in_first_cell=False, span=True):
+    if len(rows) == 0:
+        return '<table><tr><th>No data available</th></tr></table>'
+    
     html_rows = []
     if not unit_in_first_cell:
         rows.insert(0, [''] + [unit] * (n_columns - 1))
 
-    for row in rows:
-        if pd.notna(row[1]) and pd.notna(row[2]):
-            html_row = '<tr>' + ''.join(
-                f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
-                else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row
-            ) + '</tr>'
+    for idx, row in enumerate(rows):
+        html_row = '<tr>' + ''.join(
+            f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
+            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row
+        ) + '</tr>'
+
+        if idx == 0 and not unit_in_first_cell:
             html_rows.append(html_row)
+            continue
+
+        match n_columns:
+            case 3:
+                pass
+            case 4:
+                parts = html_row.split('</td><td>')
+                if any('SUMME' in str(cell) for cell in row):
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+            case 5:
+                parts = html_row.split('</td><td>')
+                if any('SUMME' in str(cell) for cell in row):
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+            case _:
+                raise ValueError(f"Unsupported number of columns: {n_columns}")
+            
+        html_rows.append(html_row)
 
     first_cell = ('Aktiva (in ' + unit + ')') if unit_in_first_cell else 'Aktiva'
-    html_rows.insert(0, '<tr>' + ''.join(f'<th>{cell}</th>' for cell in generate_header(len(rows[0]), first_cell=first_cell, year='31.12.2023', previous_year='31.12.2022')) + '</tr>')
+    html_rows.insert(0, generate_header(n_columns=n_columns, first_cell=first_cell, year=year, previous_year=previous_year, span=span))
 
     html_table = '<table>\n' + '\n'.join(html_rows) + '\n</table>'
+    # print(html_table)  # Debugging output
     return html_table
 
 def generate_html_page(html_table):
@@ -163,6 +202,9 @@ def generate_html_page(html_table):
     """
     return html_page
 
+def check_na_or_given_string(value, string):
+    return pd.isna(value) or (value == string)
+
 def generate_row_list(df, add_enumeration=True):
     rows = []
     enum = [0] * 3
@@ -175,8 +217,9 @@ def generate_row_list(df, add_enumeration=True):
         df_temp = df[df['E1'] == key]
         title = (enumerators[0][enum[0]-1] + ' ' + key) if add_enumeration else key
 
-        if df_temp.shape[0] == 1:            
+        if df_temp.shape[0] == 1 and check_na_or_given_string(df_temp['E2'].iloc[0], 'SUMME') and check_na_or_given_string(df_temp['E3'].iloc[0], 'SUMME'):
             rows.append([title] + df_temp[cols].iloc[0].tolist())
+
         else:
             rows.append([title] + [''] * (len(df.columns) - 3))
 
@@ -186,7 +229,7 @@ def generate_row_list(df, add_enumeration=True):
                 enum[2] = 0
                 title = (enumerators[1][enum[1]-1] + ' ' + sub_key) if add_enumeration else sub_key
 
-                if df_sub_temp.shape[0] == 1:
+                if df_sub_temp.shape[0] == 1 and check_na_or_given_string(df_sub_temp['E3'].iloc[0], 'SUMME'):
                     rows.append([title] + df_sub_temp[cols].iloc[0].tolist())
                 else:
                     rows.append([title] + [''] * (len(df.columns) - 3))
@@ -198,40 +241,7 @@ def generate_row_list(df, add_enumeration=True):
 
                         if df_item_temp.shape[0] == 1:
                             rows.append([title] + df_item_temp[cols].iloc[0].tolist())
-
-    """
-    for key, value in aktiva_structure_hgb.items():
-        if isinstance(value, dict):
-            if key in df['E1'].values:
-                if len(value) == 0:
-                    cols = [col for col in df.columns if col not in ['E2', 'E3']]
-                    rows.append(df.loc[df['E1'] == key, cols].iloc[0].tolist())
-                else:
-                    rows.append([key] + [''] * (len(df.columns) - 3))
-
-                    for sub_key, sub_value in value.items():
-                        if (
-                            key in df['E1'].values and 
-                            sub_key in df[df['E1'] == key]['E2'].values
-                        ):
-                            if len(sub_value) == 0:
-                                cols = [col for col in df.columns if col not in ['E1', 'E3']]
-                                rows.append(df.loc[(df['E1'] == key) & (df['E2'] == sub_key), cols].iloc[0].tolist())
-                            else:
-                                rows.append([sub_key] + [''] * (len(df.columns) - 3))
-
-                                for item in sub_value:
-                                    if (
-                                        key in df['E1'].values and
-                                        sub_key in df[df['E1'] == key]['E2'].values and
-                                        item in df[(df['E1'] == key) & (df['E2'] == sub_key)]['E3'].values
-                                    ):
-                                        cols = [col for col in df.columns if col not in ['E1', 'E2']]
-                                        rows.append(df.loc[(df['E1'] == key) & (df['E2'] == sub_key) & (df['E3'] == item), cols].iloc[0].tolist())
-        else:
-            raise ValueError(f"Expected a dictionary for {key}, but got {type(value)}")
-         """
-    # print(rows)
+    # print(rows)  # Debugging output
     return rows
 
 def add_sum_rows(df):
@@ -281,15 +291,17 @@ def add_sum_rows(df):
     # Add a final row for the total
     total_row = pd.DataFrame([['SUMME', 'SUMME', 'SUMME', df[year].sum(), df[previous_year].sum()]], columns=df.columns)
     df_with_sums = pd.concat([df_with_sums, total_row], ignore_index=True)
+    print(df_with_sums)  # Debugging output
     return df_with_sums
 
 if __name__ == "__main__":
-    year = 2023
-    previous_year = year - 1
+    year = '31.12.2023'
+    previous_year = '31.12.2022'
     column_names = ['E1', 'E2', 'E3', year, previous_year]
     df = generate_table(column_names)
 
     df_thinned = thin_table(df)
+    print(df_thinned)
     df_with_sums = add_sum_rows(df_thinned)
 
     html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums)))
