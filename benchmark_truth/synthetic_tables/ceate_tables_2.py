@@ -2,6 +2,9 @@ import pandas as pd
 import random
 import pdfkit
 
+seed = 42  # For reproducibility
+random.seed(seed)
+
 aktiva_structure_hgb = {
     'Anlagevermögen': {
         'Immaterielle Vermögensgegenstände': [
@@ -91,6 +94,7 @@ def generate_table(column_names):
 def thin_table(df):
     n_rows = df.shape[0]
     random_indices = random.sample(range(n_rows), random.randint(1, n_rows)-1)
+    random_indices = [] # debugging line to disable thinning
     for idx in random_indices:
         df.at[idx, year] = pd.NA
         df.at[idx, previous_year] = pd.NA
@@ -127,7 +131,7 @@ def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', p
         header_html = ''.join(parts)
     return header_html
 
-def generate_html_table(rows, unit='TEUR', n_columns=5, unit_in_first_cell=False, span=True):
+def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False, span=True):
     if len(rows) == 0:
         return '<table><tr><th>No data available</th></tr></table>'
     
@@ -138,7 +142,7 @@ def generate_html_table(rows, unit='TEUR', n_columns=5, unit_in_first_cell=False
     for idx, row in enumerate(rows):
         html_row = '<tr>' + ''.join(
             f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
-            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row
+            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row[0:3]
         ) + '</tr>'
 
         if idx == 0 and not unit_in_first_cell:
@@ -150,13 +154,13 @@ def generate_html_table(rows, unit='TEUR', n_columns=5, unit_in_first_cell=False
                 pass
             case 4:
                 parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row):
+                if any('SUMME' in str(cell) for cell in row) or (len(row)>3 and row[3] == 'single entry'):
                     html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
                 else:
                     html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
             case 5:
                 parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row):
+                if any('SUMME' in str(cell) for cell in row) or (len(row)>3 and row[3] == 'single entry'):
                     html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
                 else:
                     html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
@@ -218,7 +222,7 @@ def generate_row_list(df, add_enumeration=True):
         title = (enumerators[0][enum[0]-1] + ' ' + key) if add_enumeration else key
 
         if df_temp.shape[0] == 1 and check_na_or_given_string(df_temp['E2'].iloc[0], 'SUMME') and check_na_or_given_string(df_temp['E3'].iloc[0], 'SUMME'):
-            rows.append([title] + df_temp[cols].iloc[0].tolist())
+            rows.append([title] + df_temp[cols].iloc[0].tolist() + ['single entry'])
 
         else:
             rows.append([title] + [''] * (len(df.columns) - 3))
@@ -230,7 +234,7 @@ def generate_row_list(df, add_enumeration=True):
                 title = (enumerators[1][enum[1]-1] + ' ' + sub_key) if add_enumeration else sub_key
 
                 if df_sub_temp.shape[0] == 1 and check_na_or_given_string(df_sub_temp['E3'].iloc[0], 'SUMME'):
-                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist())
+                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist() + ['single entry'])
                 else:
                     rows.append([title] + [''] * (len(df.columns) - 3))
 
@@ -241,7 +245,7 @@ def generate_row_list(df, add_enumeration=True):
 
                         if df_item_temp.shape[0] == 1:
                             rows.append([title] + df_item_temp[cols].iloc[0].tolist())
-    # print(rows)  # Debugging output
+    print(rows)  # Debugging output
     return rows
 
 def add_sum_rows(df):
@@ -256,7 +260,7 @@ def add_sum_rows(df):
     df_aggregated.insert(insert_at, 'E3', 'SUMME')
     
     for row in df_aggregated.itertuples():
-        if row.count > 1:
+        if (row.count > 1):
             new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
 
             # Find the last index where E1 and E2 match
@@ -266,7 +270,7 @@ def add_sum_rows(df):
             df_top = df_with_sums.iloc[:last_idx + 1]
             df_bottom = df_with_sums.iloc[last_idx + 1:]
             df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
-
+        
     df_aggregated = df.groupby(['E1']).agg(
         {year: 'sum', previous_year: 'sum'}
     ).reset_index()
@@ -277,7 +281,7 @@ def add_sum_rows(df):
     df_aggregated.insert(insert_at + 1, 'E3', 'SUMME')
 
     for row in df_aggregated.itertuples():
-        if row.count > 1:
+        if (row.count > 1):
             new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
 
             # Find the last index where E1 matches
@@ -304,6 +308,6 @@ if __name__ == "__main__":
     print(df_thinned)
     df_with_sums = add_sum_rows(df_thinned)
 
-    html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums)))
+    html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums), n_columns=5))
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
     pdfkit.from_string(html_page, './benchmark_truth/synthetic_tables/aktiva_table.pdf', configuration=config)
