@@ -157,13 +157,13 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
                 pass
             case 4:
                 parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row) or (len(row)>3 and row[3] == 'single entry'):
+                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
                     html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
                 else:
                     html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
             case 5:
                 parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row) or (len(row)>3 and row[3] == 'single entry'):
+                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
                     html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
                 else:
                     html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
@@ -225,7 +225,7 @@ def generate_row_list(df, add_enumeration=True):
         title = (enumerators[0][enum[0]-1] + ' ' + key) if add_enumeration else key
 
         if df_temp.shape[0] == 1 and check_na_or_given_string(df_temp['E2'].iloc[0], 'SUMME') and check_na_or_given_string(df_temp['E3'].iloc[0], 'SUMME'):
-            rows.append([title] + df_temp[cols].iloc[0].tolist() + ['single entry'])
+            rows.append([title] + df_temp[cols].iloc[0].tolist())
 
         else:
             rows.append([title] + [''] * (len(df.columns) - 3))
@@ -237,7 +237,7 @@ def generate_row_list(df, add_enumeration=True):
                 title = (enumerators[1][enum[1]-1] + ' ' + sub_key) if add_enumeration else sub_key
 
                 if df_sub_temp.shape[0] == 1 and check_na_or_given_string(df_sub_temp['E3'].iloc[0], 'SUMME'):
-                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist() + ['single entry'])
+                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist())
                 else:
                     rows.append([title] + [''] * (len(df.columns) - 3))
 
@@ -248,7 +248,7 @@ def generate_row_list(df, add_enumeration=True):
 
                         # if df_item_temp.shape[0] == 1:
                         if df_sub_temp.shape[0] == 1:
-                            rows.append([title] + df_item_temp[cols].iloc[0].tolist() + ['single entry'])
+                            rows.append([title] + df_item_temp[cols].iloc[0].tolist())
                         else:
                             rows.append([title] + df_item_temp[cols].iloc[0].tolist())
     print(rows)  # Debugging output
@@ -256,8 +256,10 @@ def generate_row_list(df, add_enumeration=True):
 
 def add_sum_rows(df):
     df_with_sums = df.copy()
-    df_with_sums = df_with_sums.groupby(['E1', 'E2']).apply(lambda x: x.assign(count_lvl2=x.shape[0])).reset_index(drop=True)
-    df_with_sums = df_with_sums.groupby(['E1']).apply(lambda x: x.assign(count_lvl1=x.shape[0])).reset_index(drop=True)
+    df_with_sums['E1_E2'] = df_with_sums['E1'].astype(str) + '+' + df_with_sums['E2'].astype(str)
+    df_with_sums['count_lvl2'] = df_with_sums.groupby('E1_E2')['E1_E2'].transform('count')
+    df_with_sums = df_with_sums.drop(columns=['E1_E2'])
+    df_with_sums['count_lvl1'] = df_with_sums.groupby('E1')['E1'].transform('count')
 
     df_aggregated = df.groupby(['E1', 'E2']).agg(
         {year: 'sum', previous_year: 'sum'}
@@ -269,7 +271,7 @@ def add_sum_rows(df):
     
     for row in df_aggregated.itertuples():
         if (row.count_lvl2 > 1):
-            new_row = pd.DataFrame([row[1:] + (pd.NA,)], columns=df_with_sums.columns)
+            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
 
             # Find the last index where E1 and E2 match
             mask = (df_with_sums['E1'] == row.E1) & (df_with_sums['E2'] == row.E2)
@@ -282,14 +284,14 @@ def add_sum_rows(df):
     df_aggregated = df.groupby(['E1']).agg(
         {year: 'sum', previous_year: 'sum'}
     ).reset_index()
-    df_aggregated['count'] = df.groupby(['E1']).size().values
+    df_aggregated['count_lvl1'] = df.groupby(['E1']).size().values
     # Insert 'E2' and 'E3' column after 'E1'
     insert_at = df_aggregated.columns.get_loc('E1') + 1
     df_aggregated.insert(insert_at, 'E2', 'SUMME')
     df_aggregated.insert(insert_at + 1, 'E3', 'SUMME')
 
     for row in df_aggregated.itertuples():
-        if (row.count > 1):
+        if (row.count_lvl1 > 1):
             new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
 
             # Find the last index where E1 matches
@@ -313,7 +315,7 @@ if __name__ == "__main__":
     df = generate_table(column_names)
 
     df_thinned = thin_table(df)
-    # print(df_thinned)
+    print(df_thinned)
     df_with_sums = add_sum_rows(df_thinned)
 
     html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums), n_columns=4))
