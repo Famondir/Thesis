@@ -2,7 +2,7 @@ import pandas as pd
 import random
 import pdfkit
 
-seed = 42  # For reproducibility
+seed = 41  # For reproducibility
 random.seed(seed)
 
 aktiva_structure_hgb = {
@@ -94,7 +94,7 @@ def generate_table(column_names):
 def thin_table(df):
     n_rows = df.shape[0]
     random_indices = random.sample(range(n_rows), random.randint(1, n_rows)-1)
-    random_indices = [] # debugging line to disable thinning
+    # random_indices = [] # debugging line to disable thinning
     for idx in random_indices:
         df.at[idx, year] = pd.NA
         df.at[idx, previous_year] = pd.NA
@@ -135,14 +135,17 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
     if len(rows) == 0:
         return '<table><tr><th>No data available</th></tr></table>'
     
+    rows_cut = [row[0:3] for row in rows]
+    
     html_rows = []
     if not unit_in_first_cell:
+        rows_cut.insert(0, [''] + [unit] * (n_columns - 1))
         rows.insert(0, [''] + [unit] * (n_columns - 1))
 
-    for idx, row in enumerate(rows):
+    for idx, (row_cut, row) in enumerate(zip(rows_cut, rows)):
         html_row = '<tr>' + ''.join(
             f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
-            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row[0:3]
+            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row_cut
         ) + '</tr>'
 
         if idx == 0 and not unit_in_first_cell:
@@ -243,7 +246,10 @@ def generate_row_list(df, add_enumeration=True):
                         enum[2] += 1
                         title = (enumerators[2][enum[2]-1] + ' ' + item) if add_enumeration else item
 
-                        if df_item_temp.shape[0] == 1:
+                        # if df_item_temp.shape[0] == 1:
+                        if df_sub_temp.shape[0] == 1:
+                            rows.append([title] + df_item_temp[cols].iloc[0].tolist() + ['single entry'])
+                        else:
                             rows.append([title] + df_item_temp[cols].iloc[0].tolist())
     print(rows)  # Debugging output
     return rows
@@ -308,6 +314,6 @@ if __name__ == "__main__":
     print(df_thinned)
     df_with_sums = add_sum_rows(df_thinned)
 
-    html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums), n_columns=5))
+    html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums), n_columns=4))
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
     pdfkit.from_string(html_page, './benchmark_truth/synthetic_tables/aktiva_table.pdf', configuration=config)
