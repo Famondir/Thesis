@@ -256,18 +256,20 @@ def generate_row_list(df, add_enumeration=True):
 
 def add_sum_rows(df):
     df_with_sums = df.copy()
+    df_with_sums = df_with_sums.groupby(['E1', 'E2']).apply(lambda x: x.assign(count_lvl2=x.shape[0])).reset_index(drop=True)
+    df_with_sums = df_with_sums.groupby(['E1']).apply(lambda x: x.assign(count_lvl1=x.shape[0])).reset_index(drop=True)
 
     df_aggregated = df.groupby(['E1', 'E2']).agg(
         {year: 'sum', previous_year: 'sum'}
     ).reset_index()
-    df_aggregated['count'] = df.groupby(['E1', 'E2']).size().values
+    df_aggregated['count_lvl2'] = df.groupby(['E1', 'E2']).size().values
     # Insert 'E3' column after 'E2'
     insert_at = df_aggregated.columns.get_loc('E2') + 1
     df_aggregated.insert(insert_at, 'E3', 'SUMME')
     
     for row in df_aggregated.itertuples():
-        if (row.count > 1):
-            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
+        if (row.count_lvl2 > 1):
+            new_row = pd.DataFrame([row[1:] + (pd.NA,)], columns=df_with_sums.columns)
 
             # Find the last index where E1 and E2 match
             mask = (df_with_sums['E1'] == row.E1) & (df_with_sums['E2'] == row.E2)
@@ -311,7 +313,7 @@ if __name__ == "__main__":
     df = generate_table(column_names)
 
     df_thinned = thin_table(df)
-    print(df_thinned)
+    # print(df_thinned)
     df_with_sums = add_sum_rows(df_thinned)
 
     html_page = generate_html_page(generate_html_table(generate_row_list(df_with_sums), n_columns=4))
