@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: llama-3-2-3b-job
+    # namespace: s92818
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: llama-3-2-3b-job
+    spec:
+      containers:
+      - name: llama-3-2-3b-job
+        image: registry.datexis.com/s92818/remote-work
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/page_detection_benchmark_llm.py --model_name meta-llama/Llama-3.2-3B-Instruct"
+        ]
+        resources:
+          requests:
+              cpu: "4"
+              memory: "32Gi"
+              nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
+            memory: 256Gi
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+      nodeSelector:
+        # kubernetes.io/hostname: cl-worker29
+        gpu: a100
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+      restartPolicy: Never
