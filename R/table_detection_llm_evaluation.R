@@ -6,8 +6,9 @@ json_files_table_detection_llm <- list.files(
   pattern = "\\.json$",
   full.names = TRUE
 ) %>%
-  # .[!grepl("_test_", .)] %>% 
-  .[grepl("_binary_", .)]
+  .[!grepl("_test_", .)] %>% 
+  # .[grepl("_binary_", .)] 
+  .[grepl("_five_classes_", .)]
 
 meta_list_llm <- list()
 
@@ -67,18 +68,57 @@ for (result in meta_list_llm) {
     )
 }
 
+results_df_llm$llm %>% unique()
+
+results_df_llm <- results_df_llm %>% 
+  mutate(llm = factor(llm, levels = c(
+    "google_gemma-3-4b-it",
+    "google_gemma-3-27b-it",
+    "microsoft_phi-4",
+    "meta-llama_Llama-3.3-70B-Instruct",
+    "meta-llama_Llama-3.2-3B-Instruct",
+    "meta-llama_Llama-3.1-8B-Instruct",
+    "meta-llama_Llama-3.1-70B-Instruct",
+    "mistralai_Mistral-7B-Instruct-v0.3",
+    "Qwen_Qwen2.5-0.5B-Instruct",
+    "Qwen_Qwen2.5-1.5B-Instruct",
+    "Qwen_Qwen2.5-1.5B-Instruct_alt_prompts",
+    "Qwen_Qwen2.5-3B-Instruct",
+    "Qwen_Qwen2.5-7B-Instruct",
+    "Qwen_Qwen2.5-7B-Instruct_alt_prompts",
+    "Qwen_Qwen2.5-14B-Instruct",
+    "Qwen_Qwen2.5-32B-Instruct",
+    "Qwen_Qwen2.5-72B-Instruct",
+    "Qwen_Qwen3-8B"
+  ))) %>% 
+  filter(!str_detect(llm, "_alt_"))
+
+selected_columns <- names(results_df_llm)[c(5:ncol(results_df_llm)-1)]
+
 results_df_llm %>%
   group_by(llm, parameters, method) %>% 
-  summarise(across(Aktiva.true_positive:runtime_in_s, list(median = ~median(.x, na.rm = TRUE), MAD = ~mad(.x, na.rm = TRUE))))
+  summarise(across(all_of(selected_columns), list(median = ~median(.x, na.rm = TRUE), MAD = ~mad(.x, na.rm = TRUE))))
+
+results_df_llm %>% 
+  pivot_longer(cols = contains("recall"), values_to = "value", names_to = "metric") %>% 
+  ggplot() +
+  geom_boxplot(aes(x=llm, y=value)) +
+  facet_grid(metric~method) +
+  ylim(c(0,1)) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
 
 results_df_llm %>% 
   pivot_longer(cols = contains("precision"), values_to = "value", names_to = "metric") %>% 
   ggplot() +
   geom_boxplot(aes(x=llm, y=value)) +
-  facet_grid(method~metric)
+  facet_grid(metric~method) +
+  ylim(c(0,1)) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
 
 results_df_llm %>% 
   pivot_longer(cols = contains("F1"), values_to = "value", names_to = "metric") %>% 
   ggplot() +
   geom_boxplot(aes(x=llm, y=value)) +
-  facet_grid(method~metric)
+  facet_grid(metric~method) +
+  ylim(c(0,1)) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
