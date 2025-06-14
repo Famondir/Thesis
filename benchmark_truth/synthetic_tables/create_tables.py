@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 import pdfkit
+from pprint import pprint
 
 aktiva_structure_hgb = {
     'Anlagevermögen': {
@@ -75,14 +76,14 @@ def generate_table(column_names):
     for key, value in aktiva_structure_hgb.items():
         if isinstance(value, dict):
             if len(value) == 0:
-                df = pd.concat([df, pd.DataFrame([[key, pd.NA, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
+                df = pd.concat([df, pd.DataFrame([[key, pd.NA, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names).astype(df.dtypes)], ignore_index=True)
             else:
                 for sub_key, sub_value in value.items():
                     if len(sub_value) == 0:
-                        df = pd.concat([df, pd.DataFrame([[key, sub_key, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
+                        df = pd.concat([df, pd.DataFrame([[key, sub_key, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names).astype(df.dtypes)], ignore_index=True)
                     else:
                         for item in sub_value:
-                            df = pd.concat([df, pd.DataFrame([[key, sub_key, item, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
+                            df = pd.concat([df, pd.DataFrame([[key, sub_key, item, generate_random_value(), generate_random_value()]], columns=column_names).astype(df.dtypes)], ignore_index=True)
         else:
             raise ValueError(f"Expected a dictionary for {key}, but got {type(value)}")
         
@@ -95,7 +96,7 @@ def thin_table(df):
         df.at[idx, year] = pd.NA
         df.at[idx, previous_year] = pd.NA
 
-    df_thinned = df.dropna(subset=[year, previous_year]).reset_index(drop=True)
+    df_thinned = df.copy().dropna(subset=[year, previous_year]).reset_index(drop=True)
     return df_thinned
 
 def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', previous_year = '31.12.2022', span=False):
@@ -301,15 +302,45 @@ def add_sum_rows(df):
     df_with_sums = pd.concat([df_with_sums, total_row], ignore_index=True)
     return df_with_sums
 
-def create_pdf(column_names, n_columns=4, thin=False):
+def generate_json(rows):
+    json_data = []
+    for row in rows:
+        json_row = {
+            'type': row[0],
+            'year': row[1],
+            'previous_year': row[2]
+        }
+        json_data.append(json_row)
+    return json_data
+
+def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, unit_in_first_cell=False, unit='TEUR', add_enumeration=True):
     df = generate_table(column_names)
     df_thinned = thin_table(df) if thin else df
     df_with_sums = add_sum_rows(df_thinned)
-    row_list = generate_row_list(df_with_sums)
-    html_table = generate_html_table(row_list, n_columns=n_columns, unit_in_first_cell=True)
+    row_list = generate_row_list(df_with_sums, add_enumeration=add_enumeration)
+    pprint(generate_json(generate_row_list(df_with_sums, add_enumeration=False)))  # For debugging purposes
+    html_table = generate_html_table(row_list, n_columns=n_columns, unit_in_first_cell=unit_in_first_cell, span=span, unit=unit)
     html_page = generate_html_page(html_table)
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
-    pdfkit.from_string(html_page, './benchmark_truth/synthetic_tables/aktiva_table.pdf', configuration=config)
+    options = {
+        'page-size': 'A4',
+        # 'orientation': 'Landscape',
+        'margin-top': '5mm',
+        'margin-bottom': '5mm',
+        'margin-left': '5mm',
+        'margin-right': '5mm',
+        'zoom': '0.6',  # Shrink content to fit
+        'disable-smart-shrinking': '',
+        'no-outline': None,
+        'dpi': 300
+    }
+    pdfkit.from_string(
+        html_page,
+        output_path+'.pdf',
+        configuration=config,
+        options=options
+    )
+    df.to_csv(output_path+'.csv', index=False)
 
 if __name__ == "__main__":
     seed = 41  # For reproducibility
@@ -318,5 +349,52 @@ if __name__ == "__main__":
     year = '31.12.2023'
     previous_year = '31.12.2022'
     column_names = ['E1', 'E2', 'E3', year, previous_year]
-    create_pdf(column_names, n_columns=5, thin=False)
-    
+
+    test_run = True
+    if test_run:
+        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=True, span=False, unit_in_first_cell=False, unit='TEUR')
+    else:
+        count = 0
+        
+        for n_columns in [3, 4, 5]:
+            for span in [True, False]:
+                for thin in [True, False]:
+                    for unit_in_first_cell in [True, False]:
+                        for add_enumeration in [True, False]:
+                            for unit in unit_list.keys():
+                                for i in range(0, 2):
+                                    count += 1
+                                    base_year = random.randint(2000, 2023)
+                                    year = f'31.12.{base_year}'
+                                    previous_year = f'31.12.{base_year - 1}'
+                                    column_names = ['E1', 'E2', 'E3', year, previous_year]
+
+                                    create_pdf(
+                                        f'./benchmark_truth/synthetic_tables/separate_files/aktiva_table_{n_columns}_columns_span_{span}_thin_{thin}_year_as_date_unit_in_first_cell_{unit_in_first_cell}_{unit}_enumeration_{add_enumeration}_{i}', 
+                                        column_names, 
+                                        n_columns=n_columns, 
+                                        thin=thin, span=span, 
+                                        unit_in_first_cell=unit_in_first_cell, 
+                                        unit=unit,
+                                        add_enumeration=add_enumeration
+                                        )  
+
+                                year = 'Geschäftsjahr'
+                                previous_year = 'Vorjahr'
+                                column_names = ['E1', 'E2', 'E3', year, previous_year]
+
+                                for i in range(0, 1):
+                                    count += 1
+                                    create_pdf(
+                                        f'./benchmark_truth/synthetic_tables/separate_files/aktiva_table_{n_columns}_columns_span_{span}_thin_{thin}_year_as_text_unit_in_first_cell_{unit_in_first_cell}_{unit}_enumeration_{add_enumeration}_{i}', 
+                                        column_names, 
+                                        n_columns=n_columns, 
+                                        thin=thin, 
+                                        span=span, 
+                                        unit_in_first_cell=unit_in_first_cell, 
+                                        unit=unit,
+                                        add_enumeration=add_enumeration
+                                    )
+
+                                print(f"Generated {count} PDF files.", end='\r')
+        print(f"\nTotal generated PDF files: {count}")
