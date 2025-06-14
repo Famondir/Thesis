@@ -1,12 +1,10 @@
-import random
 import pandas as pd
+import random
+import pdfkit
 
 aktiva_structure_hgb = {
     'Anlagevermögen': {
         'Immaterielle Vermögensgegenstände': [
-            # 'Entwicklungskosten', 
-            # 'Lizenzen', 
-            # 'Patente',
             'Selbst geschaffene gewerbliche Schutzrechte und ähnliche Rechte und Werte',
             'Geschäfts- oder Firmenwert',
             'geleistete Anzahlungen',
@@ -19,8 +17,6 @@ aktiva_structure_hgb = {
             'geleistete Anzahlungen und Anlagen im Bau'
         ],
         'Finanzanlagen': [
-            # 'Beteiligungen',
-            # 'Wertpapiere',
             'Sonstige Finanzanlagen',
             'Anteile an verbundenen Unternehmen',
             'Ausleihungen an verbundene Unternehmen',
@@ -65,133 +61,262 @@ unit_list = {
 }
 
 enumerators = [
-    ['A.', 'B.', 'C.', 'D.', 'E.'],
-    ['I.', 'II.', 'III.', 'IV.', 'V.'],
+    ['A.', 'B.', 'C.', 'D.', 'E.', 'F.'],
+    ['I.', 'II.', 'III.', 'IV.', 'V.', 'VI.'],
     ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.']
 ]
 
-def create_aktiva():
-    n_columns = random.randint(3, 5)
-    n_columns = 3  # For simplicity, we fix the number of columns to 3
+def generate_random_value():
+    return random.random() * 10_000_000  # Random value between 0 and 10,000,000
 
-    year = random.randint(2000, 2024)
-    numeric_previous_year = random.choice([True, False])
-    previous_year = year - 1 if numeric_previous_year else 'Vorjahr'
-    
-    unit = random.choice(list(unit_list.keys()))
-    unit_in_first_cell = random.choice([True, False])
+def generate_table(column_names):
+    df = pd.DataFrame(columns=column_names)
 
-    add_enumeration = [random.choice([True, False]) for _ in range(3)]
-    add_enumeration = [True for _ in range(3)]  # For simplicity, we fix enumeration to True for all depths
-    enum = [0] * 3  # Initialize enumeration counters for each depth
-
-    rows = []
-    first_cell = ('Aktiva (in ' + unit + ')') if unit_in_first_cell else 'Aktiva'
-
-    add_header(n_columns, rows, first_cell, year, previous_year)
-
-    if not unit_in_first_cell:
-        rows.append([''] + [unit] * (n_columns - 1))
-
-    for key in aktiva_structure_hgb.keys():
-        add_rows(n_columns, rows, key, entries=aktiva_structure_hgb[key], unit=unit, add_enumeration=add_enumeration, enum=enum, enum_depth=0)
-
-        """     if len(aktiva_structure_hgb[key_1]) == 0:
-            
-                rows.append(
-                    [title, round(random.random()*10_000_000/unit_list[unit], 2), round(random.random()*10_000_000/unit_list[unit], 2)]
-                )
+    for key, value in aktiva_structure_hgb.items():
+        if isinstance(value, dict):
+            if len(value) == 0:
+                df = pd.concat([df, pd.DataFrame([[key, pd.NA, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
             else:
-                rows.append([title, '', ''])
-                for key_2 in aktiva_structure_hgb[key_1].keys():
-                    enum_3 = 0
-                    sub_title = ((enumerators['2'][enum_2] + ' ') if add_enumeration_2 else '') + key_2
-
-                    if len(aktiva_structure_hgb[key_1][key_2]) == 0:
-                        if random.choice([True, False]):
-                            rows.append(
-                                [sub_title, round(random.random()*10_000_000/unit_list[unit], 2), round(random.random()*10_000_000/unit_list[unit], 2)]
-                            )
-                            enum_2 += 1
-                        else:
-                            rows.append(
-                                [sub_title, pd.NA, pd.NA]
-                            )
+                for sub_key, sub_value in value.items():
+                    if len(sub_value) == 0:
+                        df = pd.concat([df, pd.DataFrame([[key, sub_key, pd.NA, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
                     else:
-                        rows.append([sub_title, '', ''])
-                        for key_3 in aktiva_structure_hgb[key_1][key_2]:
-                            title = ((enumerators['3'][enum_3] + ' ') if add_enumeration_3 else '') + key_3
-                            if random.choice([True, False]):
-                                rows.append(
-                                    [title, round(random.random()*10_000_000/unit_list[unit], 2), round(random.random()*10_000_000/unit_list[unit], 2)]
-                                )
-                                enum_3 += 1
-                            else:
-                                rows.append(
-                                    [title, pd.NA, pd.NA]
-                                ) """
-
-    html_table = generate_html_table(rows)
-    print(html_table)
-
-    data_table = pd.DataFrame(rows[1:], columns=rows[0])
-    print(data_table)
-
-def add_rows(n_columns, rows, key, entries, unit, add_enumeration, enum, enum_depth=0):
-    title = ((enumerators[enum_depth][enum[enum_depth]]+ ' ') if add_enumeration[enum_depth] else '') + key
-    include_key = random.choice([True, False])  # Randomly decide whether to include the key
-    if enum_depth < 2:
-        enum[enum_depth+1] = 0
-        
-    if include_key:
-        if n_columns == 3:
-            if len(entries) > 0:
-                rows.append([title, '', ''])
-
-                if isinstance(entries, dict):
-                    for key, entry in entries.items():
-                        add_rows(n_columns, rows, key, entry, unit, add_enumeration, enum, enum_depth + 1)
-                elif isinstance(entries, list):
-                    for entry in entries:
-                        add_rows(n_columns, rows, entry, [], unit, add_enumeration, enum, enum_depth + 1)
-            else:
-                rows.append([title, round(random.random()*10_000_000/unit_list[unit], 2), round(random.random()*10_000_000/unit_list[unit], 2)])
+                        for item in sub_value:
+                            df = pd.concat([df, pd.DataFrame([[key, sub_key, item, generate_random_value(), generate_random_value()]], columns=column_names)], ignore_index=True)
         else:
-            raise NotImplementedError("Only 3 columns are currently supported in this implementation.")
+            raise ValueError(f"Expected a dictionary for {key}, but got {type(value)}")
+        
+    return df
 
-        enum[enum_depth] += 1
-    else:
-        rows.append([title] + [pd.NA] * (n_columns - 1))
+def thin_table(df):
+    n_rows = df.shape[0]
+    random_indices = random.sample(range(n_rows), random.randint(1, n_rows)-1)
+    for idx in random_indices:
+        df.at[idx, year] = pd.NA
+        df.at[idx, previous_year] = pd.NA
 
-# year can be colspan for mutliple columns
-def add_header(n_columns = 3, rows = [], first_cell = 'Aktiva', year = 2023, previous_year = 'Vorjahr'):
+    df_thinned = df.dropna(subset=[year, previous_year]).reset_index(drop=True)
+    return df_thinned
+
+def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', previous_year = '31.12.2022', span=False):
     header = [first_cell]
     if n_columns == 3:
         header.append(f'{year}')
         header.append(f'{previous_year}')
     elif n_columns == 4:
         header.append(f'{year}')
-        header.append(f'{year}')
+        if not span:
+            header.append(f'{year}')
         header.append(f'{previous_year}')
     elif n_columns == 5:
         header.append(f'{year}')
-        header.append(f'{year}')
+        if not span:
+            header.append(f'{year}')
         header.append(f'{previous_year}')
-        header.append(f'{previous_year}')
-    rows.append(header)
+        if not span:
+            header.append(f'{previous_year}')
 
-def generate_html_table(rows):
+    header_html = '<tr>' + ''.join(f'<th>{cell}</th>' for cell in header) + '</tr>'
+    if span and n_columns in [4, 5]:
+        parts = header_html.split('</th><th>')
+        if n_columns == 4:
+            parts[1] = f'</th><th colspan="2">{parts[1]}</th><th>'
+        elif n_columns == 5:
+            parts[1] = f'</th><th colspan="2">{parts[1]}</th>'
+            parts[2] = f'<th colspan="2">{parts[2]}</th>'
+        header_html = ''.join(parts)
+    return header_html
+
+def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False, span=True):
+    if len(rows) == 0:
+        return '<table><tr><th>No data available</th></tr></table>'
+    
+    rows_cut = [row[0:3] for row in rows]
+    
     html_rows = []
-    for row in rows:
-        if pd.notna(row[1]) and pd.notna(row[2]):
-            html_row = '<tr>' + ''.join(
-                f'<td>{cell:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
-                else f'<td>{cell}</td>' for cell in row
-            ) + '</tr>'
+    if not unit_in_first_cell:
+        rows_cut.insert(0, [''] + [unit] * (n_columns - 1))
+        rows.insert(0, [''] + [unit] * (n_columns - 1))
+
+    for idx, (row_cut, row) in enumerate(zip(rows_cut, rows)):
+        html_row = '<tr>' + ''.join(
+            f'<td>{cell/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') + '</td>' if isinstance(cell, (int, float)) and pd.notna(cell)
+            else f'<td>{'' if 'SUMME' in cell else cell}</td>' for cell in row_cut
+        ) + '</tr>'
+
+        if idx == 0 and not unit_in_first_cell:
             html_rows.append(html_row)
+            continue
+
+        match n_columns:
+            case 3:
+                pass
+            case 4:
+                parts = html_row.split('</td><td>')
+                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+            case 5:
+                parts = html_row.split('</td><td>')
+                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+            case _:
+                raise ValueError(f"Unsupported number of columns: {n_columns}")
+            
+        html_rows.append(html_row)
+
+    first_cell = ('Aktiva (in ' + unit + ')') if unit_in_first_cell else 'Aktiva'
+    html_rows.insert(0, generate_header(n_columns=n_columns, first_cell=first_cell, year=year, previous_year=previous_year, span=span))
 
     html_table = '<table>\n' + '\n'.join(html_rows) + '\n</table>'
     return html_table
 
-if __name__ == '__main__':
-    create_aktiva()
+def generate_html_page(html_table):
+    html_page = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Aktiva Table</title>
+        <style>
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+            }}
+            th, td {{
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
+        </style>
+    </head>
+    <body>
+        {html_table}
+    </body>
+    </html>
+    """
+    return html_page
+
+def check_na_or_given_string(value, string):
+    return pd.isna(value) or (value == string)
+
+def generate_row_list(df, add_enumeration=True):
+    rows = []
+    enum = [0] * 3
+    cols = [col for col in df.columns if col not in ['E1', 'E2', 'E3']]
+
+    for key in df['E1'].unique():
+        enum[0] += 1
+        enum[1] = 0
+        enum[2] = 0
+        df_temp = df[df['E1'] == key]
+        title = (enumerators[0][enum[0]-1] + ' ' + key) if add_enumeration else key
+
+        if df_temp.shape[0] == 1 and check_na_or_given_string(df_temp['E2'].iloc[0], 'SUMME') and check_na_or_given_string(df_temp['E3'].iloc[0], 'SUMME'):
+            rows.append([title] + df_temp[cols].iloc[0].tolist())
+
+        else:
+            rows.append([title] + [''] * (len(df.columns) - 3))
+
+            for sub_key in df_temp['E2'].unique():
+                df_sub_temp = df_temp[df_temp['E2'] == sub_key]
+                enum[1] += 1
+                enum[2] = 0
+                title = (enumerators[1][enum[1]-1] + ' ' + sub_key) if add_enumeration else sub_key
+
+                if df_sub_temp.shape[0] == 1 and check_na_or_given_string(df_sub_temp['E3'].iloc[0], 'SUMME'):
+                    rows.append([title] + df_sub_temp[cols].iloc[0].tolist())
+                else:
+                    rows.append([title] + [''] * (len(df.columns) - 3))
+
+                    for item in df_sub_temp['E3'].unique():
+                        df_item_temp = df_sub_temp[df_sub_temp['E3'] == item]
+                        enum[2] += 1
+                        title = (enumerators[2][enum[2]-1] + ' ' + item) if add_enumeration else item
+
+                        # if df_item_temp.shape[0] == 1:
+                        if df_sub_temp.shape[0] == 1:
+                            rows.append([title] + df_item_temp[cols].iloc[0].tolist())
+                        else:
+                            rows.append([title] + df_item_temp[cols].iloc[0].tolist())
+    return rows
+
+def add_sum_rows(df):
+    df_with_sums = df.copy()
+    df_with_sums['E1_E2'] = df_with_sums['E1'].astype(str) + '+' + df_with_sums['E2'].astype(str)
+    df_with_sums['count_lvl2'] = df_with_sums.groupby('E1_E2')['E1_E2'].transform('count')
+    df_with_sums = df_with_sums.drop(columns=['E1_E2'])
+    df_with_sums['count_lvl1'] = df_with_sums.groupby('E1')['E1'].transform('count')
+
+    df_aggregated = df.groupby(['E1', 'E2']).agg(
+        {year: 'sum', previous_year: 'sum'}
+    ).reset_index()
+    df_aggregated['count_lvl2'] = df.groupby(['E1', 'E2']).size().values
+    # Insert 'E3' column after 'E2'
+    insert_at = df_aggregated.columns.get_loc('E2') + 1
+    df_aggregated.insert(insert_at, 'E3', 'SUMME')
+    
+    for row in df_aggregated.itertuples():
+        if (row.count_lvl2 > 1):
+            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
+
+            # Find the last index where E1 and E2 match
+            mask = (df_with_sums['E1'] == row.E1) & (df_with_sums['E2'] == row.E2)
+            last_idx = df_with_sums[mask].index.max()
+            # Split df and insert new_row after last_idx
+            df_top = df_with_sums.iloc[:last_idx + 1]
+            df_bottom = df_with_sums.iloc[last_idx + 1:]
+            df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+        
+    df_aggregated = df.groupby(['E1']).agg(
+        {year: 'sum', previous_year: 'sum'}
+    ).reset_index()
+    df_aggregated['count_lvl1'] = df.groupby(['E1']).size().values
+    # Insert 'E2' and 'E3' column after 'E1'
+    insert_at = df_aggregated.columns.get_loc('E1') + 1
+    df_aggregated.insert(insert_at, 'E2', 'SUMME')
+    df_aggregated.insert(insert_at + 1, 'E3', 'SUMME')
+
+    for row in df_aggregated.itertuples():
+        if (row.count_lvl1 > 1):
+            new_row = pd.DataFrame([row[1:-1]], columns=df.columns)
+
+            # Find the last index where E1 matches
+            mask = (df_with_sums['E1'] == row.E1)
+            last_idx = df_with_sums[mask].index.max()
+            # Split df and insert new_row after last_idx
+            df_top = df_with_sums.iloc[:last_idx + 1]
+            df_bottom = df_with_sums.iloc[last_idx + 1:]
+            df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+
+    # Add a final row for the total
+    total_row = pd.DataFrame([['SUMME', 'SUMME', 'SUMME', df[year].sum(), df[previous_year].sum()]], columns=df.columns)
+    df_with_sums = pd.concat([df_with_sums, total_row], ignore_index=True)
+    return df_with_sums
+
+def create_pdf(column_names, n_columns=4, thin=False):
+    df = generate_table(column_names)
+    df_thinned = thin_table(df) if thin else df
+    df_with_sums = add_sum_rows(df_thinned)
+    row_list = generate_row_list(df_with_sums)
+    html_table = generate_html_table(row_list, n_columns=n_columns, unit_in_first_cell=True)
+    html_page = generate_html_page(html_table)
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
+    pdfkit.from_string(html_page, './benchmark_truth/synthetic_tables/aktiva_table.pdf', configuration=config)
+
+if __name__ == "__main__":
+    seed = 41  # For reproducibility
+    random.seed(seed)
+
+    year = '31.12.2023'
+    previous_year = '31.12.2022'
+    column_names = ['E1', 'E2', 'E3', year, previous_year]
+    create_pdf(column_names, n_columns=5, thin=False)
+    
