@@ -39,10 +39,10 @@ spec:
           requests:
               cpu: "4"
               memory: "32Gi"
-              nvidia.com/gpu: "4"
+              nvidia.com/gpu: "1"
           limits:
-            nvidia.com/gpu: "4"
-            memory: 128Gi
+            nvidia.com/gpu: "1"
+            memory: 256Gi
             cpu: "32"
         env:
           - name: LANG
