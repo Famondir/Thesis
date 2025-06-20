@@ -1,6 +1,23 @@
 library(jsonlite)
 library(tidyverse)
 
+# Rename files ending with __no_think.json to -no-think in the model name and remove the suffix
+files_to_rename <- list.files(
+  "../benchmark_results/table_detection/llm/",
+  pattern = "__no_think\\.json$",
+  full.names = TRUE
+)
+
+for (old_path in files_to_rename) {
+  # Extract filename
+  old_name <- basename(old_path)
+  # Replace "__no_think.json" with ".json" and insert "-no-think" after the model name
+  new_name <- sub("([0-9]+B)__", "\\1-no-think__", sub("__no_think\\.json$", ".json", old_name))
+  # print(new_name)
+  new_path <- file.path(dirname(old_path), new_name)
+  file.rename(old_path, new_path)
+}
+
 json_files_table_detection_llm <- list.files(
   "../benchmark_results/table_detection/llm/",
   pattern = "\\.json$",
@@ -14,6 +31,7 @@ meta_list_llm <- list()
 
 # Loop through each .json file
 for (file in json_files_table_detection_llm) {
+  # print(file)
   # Read the JSON file
   json_data <- fromJSON(file)
   
@@ -72,14 +90,6 @@ results_df_llm$llm %>% unique()
 
 results_df_llm <- results_df_llm %>% 
   mutate(llm = factor(llm, levels = c(
-    "google_gemma-3-4b-it",
-    "google_gemma-3-27b-it",
-    "microsoft_phi-4",
-    "meta-llama_Llama-3.3-70B-Instruct",
-    "meta-llama_Llama-3.2-3B-Instruct",
-    "meta-llama_Llama-3.1-8B-Instruct",
-    "meta-llama_Llama-3.1-70B-Instruct",
-    "mistralai_Mistral-7B-Instruct-v0.3",
     "Qwen_Qwen2.5-0.5B-Instruct",
     "Qwen_Qwen2.5-1.5B-Instruct",
     "Qwen_Qwen2.5-1.5B-Instruct_alt_prompts",
@@ -89,8 +99,26 @@ results_df_llm <- results_df_llm %>%
     "Qwen_Qwen2.5-14B-Instruct",
     "Qwen_Qwen2.5-32B-Instruct",
     "Qwen_Qwen2.5-72B-Instruct",
-    "Qwen_Qwen3-8B"
-  ))) %>% 
+    "Qwen_Qwen3-8B",
+    "Qwen_Qwen3-8B-no-think",
+    "Qwen_Qwen3-32B",
+    "Qwen_Qwen3-32B-no-think"
+  ))) %>%
+  # mutate(llm = factor(llm, levels = c(
+  #   "deepseek-ai_DeepSeek-R1-Distill-Qwen-32B",
+  #   "google_gemma-3-4b-it",
+  #   "google_gemma-3-27b-it",
+  #   "microsoft_phi-4",
+  #   "meta-llama_Llama-4-Scout-17B-16E",
+  #   "meta-llama_Llama-3.3-70B-Instruct",
+  #   "meta-llama_Llama-3.2-3B-Instruct",
+  #   "meta-llama_Llama-3.1-8B-Instruct",
+  #   "meta-llama_Llama-3.1-70B-Instruct",
+  #   "mistralai_Mistral-7B-Instruct-v0.3",
+  #   "tiiuae_Falcon3-10B-Instruct",
+  #   "Qwen_Qwen2.5-7B-Instruct",
+  #   "Qwen_Qwen2.5-72B-Instruct"
+  # ))) %>%
   filter(!str_detect(llm, "_alt_"))
 
 selected_columns <- names(results_df_llm)[c(5:ncol(results_df_llm)-1)]
@@ -98,6 +126,14 @@ selected_columns <- names(results_df_llm)[c(5:ncol(results_df_llm)-1)]
 results_df_llm %>%
   group_by(llm, parameters, method) %>% 
   summarise(across(all_of(selected_columns), list(median = ~median(.x, na.rm = TRUE), MAD = ~mad(.x, na.rm = TRUE))))
+
+results_df_llm %>% 
+  pivot_longer(cols = contains("F1"), values_to = "value", names_to = "metric") %>% 
+  ggplot() +
+  geom_boxplot(aes(x=llm, y=value)) +
+  facet_grid(metric~method) +
+  ylim(c(0,1)) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
 
 results_df_llm %>% 
   pivot_longer(cols = contains("recall"), values_to = "value", names_to = "metric") %>% 
@@ -109,14 +145,6 @@ results_df_llm %>%
 
 results_df_llm %>% 
   pivot_longer(cols = contains("precision"), values_to = "value", names_to = "metric") %>% 
-  ggplot() +
-  geom_boxplot(aes(x=llm, y=value)) +
-  facet_grid(metric~method) +
-  ylim(c(0,1)) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
-
-results_df_llm %>% 
-  pivot_longer(cols = contains("F1"), values_to = "value", names_to = "metric") %>% 
   ggplot() +
   geom_boxplot(aes(x=llm, y=value)) +
   facet_grid(metric~method) +
