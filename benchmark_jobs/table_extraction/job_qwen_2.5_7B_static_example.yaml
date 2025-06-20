@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: qwen-7b-table-extraction-job
+    # namespace: s92818
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: qwen-7b-table-extraction-job
+    spec:
+      containers:
+      - name: qwen-7b-table-extraction-job
+        image: registry.datexis.com/s92818/remote-work
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/table_extraction_benchmark.py --model_name Qwen/Qwen2.5-7B-Instruct --verbose"
+        ]
+        resources:
+          requests:
+              cpu: "4"
+              memory: "32Gi"
+              nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
+            memory: 128Gi
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+      nodeSelector:
+        kubernetes.io/hostname: cl-worker29
+        gpu: a100
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+      restartPolicy: Never
