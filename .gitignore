@@ -17,3 +17,4 @@ R/.RData
 benchmark_truth/synthetic_tables/separate_files/
 manual_download/*/*.csv
 manual_download/Berliner Werstätten für Menschen mit Behinderung/Endgultiger Bericht JAP 2022 BWB.uos
+Python/chroma_db/*
