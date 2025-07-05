@@ -89,36 +89,36 @@ for (result in meta_list_llm) {
 results_df_llm$llm %>% unique()
 
 results_df_llm <- results_df_llm %>% 
-  mutate(llm = factor(llm, levels = c(
-    "Qwen_Qwen2.5-0.5B-Instruct",
-    "Qwen_Qwen2.5-1.5B-Instruct",
-    "Qwen_Qwen2.5-1.5B-Instruct_alt_prompts",
-    "Qwen_Qwen2.5-3B-Instruct",
-    "Qwen_Qwen2.5-7B-Instruct",
-    "Qwen_Qwen2.5-7B-Instruct_alt_prompts",
-    "Qwen_Qwen2.5-14B-Instruct",
-    "Qwen_Qwen2.5-32B-Instruct",
-    "Qwen_Qwen2.5-72B-Instruct",
-    "Qwen_Qwen3-8B",
-    "Qwen_Qwen3-8B-no-think",
-    "Qwen_Qwen3-32B",
-    "Qwen_Qwen3-32B-no-think"
-  ))) %>%
   # mutate(llm = factor(llm, levels = c(
-  #   "deepseek-ai_DeepSeek-R1-Distill-Qwen-32B",
-  #   "google_gemma-3-4b-it",
-  #   "google_gemma-3-27b-it",
-  #   "microsoft_phi-4",
-  #   "meta-llama_Llama-4-Scout-17B-16E",
-  #   "meta-llama_Llama-3.3-70B-Instruct",
-  #   "meta-llama_Llama-3.2-3B-Instruct",
-  #   "meta-llama_Llama-3.1-8B-Instruct",
-  #   "meta-llama_Llama-3.1-70B-Instruct",
-  #   "mistralai_Mistral-7B-Instruct-v0.3",
-  #   "tiiuae_Falcon3-10B-Instruct",
+  #   "Qwen_Qwen2.5-0.5B-Instruct",
+  #   "Qwen_Qwen2.5-1.5B-Instruct",
+  #   "Qwen_Qwen2.5-1.5B-Instruct_alt_prompts",
+  #   "Qwen_Qwen2.5-3B-Instruct",
   #   "Qwen_Qwen2.5-7B-Instruct",
-  #   "Qwen_Qwen2.5-72B-Instruct"
+  #   "Qwen_Qwen2.5-7B-Instruct_alt_prompts",
+  #   "Qwen_Qwen2.5-14B-Instruct",
+  #   "Qwen_Qwen2.5-32B-Instruct",
+  #   "Qwen_Qwen2.5-72B-Instruct",
+  #   "Qwen_Qwen3-8B",
+  #   "Qwen_Qwen3-8B-no-think",
+  #   "Qwen_Qwen3-32B",
+  #   "Qwen_Qwen3-32B-no-think"
   # ))) %>%
+  mutate(llm = factor(llm, levels = c(
+    "deepseek-ai_DeepSeek-R1-Distill-Qwen-32B",
+    "google_gemma-3-4b-it",
+    "google_gemma-3-27b-it",
+    "microsoft_phi-4",
+    "meta-llama_Llama-4-Scout-17B-16E",
+    "meta-llama_Llama-3.3-70B-Instruct",
+    "meta-llama_Llama-3.2-3B-Instruct",
+    "meta-llama_Llama-3.1-8B-Instruct",
+    "meta-llama_Llama-3.1-70B-Instruct",
+    "mistralai_Mistral-7B-Instruct-v0.3",
+    "tiiuae_Falcon3-10B-Instruct",
+    "Qwen_Qwen2.5-7B-Instruct",
+    "Qwen_Qwen2.5-72B-Instruct"
+  ))) %>%
   filter(!str_detect(llm, "_alt_"))
 
 selected_columns <- names(results_df_llm)[c(5:ncol(results_df_llm)-1)]

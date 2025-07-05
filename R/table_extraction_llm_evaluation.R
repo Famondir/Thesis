@@ -19,14 +19,19 @@ for (file in json_files_table_extraction_llm) {
   # Read the JSON file and replace NaN with NULL in the file content
   file_content <- readLines(file, warn = FALSE)
   file_content <- gsub("\\bNaN\\b", "null", file_content)
+  file_content <- gsub("\\bInfinity\\b", "null", file_content)
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
+  model_name <- (basename(file) %>% str_split("__"))[[1]][1] %>% str_replace("_vllm", "")
+  # if (grepl("_queued\\.json$", basename(file))) {
+  #   model_name <- paste0(model_name, "_queued")
+  # }
   results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(model = (basename(file) %>% str_split("__"))[[1]][1], .before = 1)
+    mutate(model = model_name, .before = 1)
   meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
 
-results_long <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
+df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
   filter(grammar_error != TRUE || is.na(grammar_error)) %>%
   unnest_wider(`NA`, names_sep = "_") %>%
   unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
@@ -41,35 +46,35 @@ results_long <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
   )
 
-results_long %>% select(c(model, percentage_correct_numeric, percentage_correct_total)) %>% 
+df %>% select(c(model, percentage_correct_numeric, percentage_correct_total)) %>% 
   pivot_longer(cols = -model) %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = value)) +
   facet_wrap(~name, ncol = 1) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% select(c(model, NA_precision, NA_recall, NA_F1)) %>% 
+df %>% select(c(model, NA_precision, NA_recall, NA_F1)) %>% 
   pivot_longer(cols = -model) %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = value)) +
   facet_wrap(~name, ncol = 1) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% ggplot() +
+df %>% ggplot() +
   geom_boxplot(aes(x = model, y = deep_distance)) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% ggplot() +
+df %>% ggplot() +
   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1500))
 
-results_long %>% ggplot() +
+df %>% ggplot() +
   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1))
 
-results_long %>% ggplot() +
+df %>% ggplot() +
   geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) # also between number and null?
 
@@ -91,18 +96,25 @@ for (file in json_files_table_extraction_llm) {
   # Read the JSON file and replace NaN with NULL in the file content
   file_content <- readLines(file, warn = FALSE)
   file_content <- gsub("\\bNaN\\b", "null", file_content)
+  file_content <- gsub("\\bInfinity\\b", "null", file_content)
+  # Remove incomplete last JSON entry and close the list if file ends early
+  if (!grepl("\\]$", file_content[length(file_content)])) {
+    # Find the last complete JSON object (ends with "},")
+    last_complete <- max(grep('\\.pdf', file_content))
+    file_content <- c(file_content[1:last_complete], "}]")
+  }
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
   results <-  json_data %>% as_tibble() %>% rowwise() %>%  
     mutate(
       model = (basename(file) %>% str_split("__"))[[1]][1], 
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)\\.json"))[2]),
+      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
       .before = 1
       )
   meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
 
-results_long <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
+df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
   filter(grammar_error != TRUE || is.na(grammar_error)) %>%
   unnest_wider(`NA`, names_sep = "_") %>%
   unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
@@ -117,40 +129,61 @@ results_long <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
   )
 
-results_long %>% select(c(model, loop, percentage_correct_numeric, percentage_correct_total)) %>% 
-  pivot_longer(cols = -c(model, loop)) %>% 
+df <- df %>% rowwise() %>% mutate(
+  n_columns = str_match(filepath, "(.)_columns")[2],
+  span = if_else("True" == str_match(filepath, "span_(False|True)")[2], TRUE, FALSE),
+  thin = if_else("True" == str_match(filepath, "thin_(False|True)")[2], TRUE, FALSE),
+  year_as = str_match(filepath, "year_as_(.*)_unit")[2],
+  unit_in_first_cell = if_else("True" == str_match(filepath, "unit_in_first_cell_(False|True)")[2], TRUE, FALSE),
+  unit_str = str_match(filepath, "unit_in_first_cell_(False|True)_(.*)_enumeration")[3],
+  enumeration = if_else("True" == str_match(filepath, "enumeration_(False|True)")[2], TRUE, FALSE),
+  number_of_table = str_match(filepath, "enumeration_(False|True)_(.*)(_queued)?\\.pdf")[3]
+) %>% mutate(
+  n_columns = ordered(n_columns, c("3", "4", "5"))
+) # %>% filter(number_of_table %in% c("0", "1"))
+
+##### plotting #####
+
+df %>% select(c(model, percentage_correct_numeric, percentage_correct_total)) %>% 
+  pivot_longer(cols = -c(model)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = value, fill = factor(loop))) +
-  labs(fill = "loop") +
+  geom_boxplot(aes(x = model, y = value)) +
   facet_wrap(~name, ncol = 1) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% select(c(model, loop, NA_precision, NA_recall, NA_F1)) %>% 
-  pivot_longer(cols = -c(model, loop)) %>% 
+df %>% select(c(model, NA_precision, NA_recall, NA_F1)) %>% 
+  pivot_longer(cols = -c(model)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = value, fill = factor(loop))) +
-  labs(fill = "loop") +
+  geom_boxplot(aes(x = model, y = value)) +
   facet_wrap(~name, ncol = 1) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = deep_distance, fill = factor(loop))) +
-  labs(fill = "loop") +
+df %>% ggplot() +
+  geom_boxplot(aes(x = model, y = deep_distance)) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-results_long %>% ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = relative_numeric_difference_mean, fill = factor(loop))) +
-  labs(fill = "loop") +
+df %>% ggplot() +
+  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1500))
 
-results_long %>% ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = relative_numeric_difference_mean, fill = factor(loop))) +
-  labs(fill = "loop") +
+df %>% ggplot() +
+  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1))
 
-results_long %>% ggplot() +
-  geom_boxplot(aes(x = str_c(model, loop), y = levenstein_distance_mean, fill = factor(loop))) +
-  labs(fill = "loop") +
+df %>% ggplot() +
+  geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) # also between number and null?
+
+##### regression #####
+
+lm_1 <- lm(
+  data = df,
+  formula = percentage_correct_total ~ n_columns + span + thin + year_as + unit_str + unit_in_first_cell + enumeration + number_of_table + model
+  )
+
+summary(lm_1)
+
+# df %>% filter(grammar_error == TRUE)
+# df %>% group_by(filepath) %>% summarise(n = n()) %>% 
