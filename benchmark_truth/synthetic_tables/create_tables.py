@@ -21,6 +21,7 @@ aktiva_structure_hgb = {
             'Sonstige Finanzanlagen',
             'Anteile an verbundenen Unternehmen',
             'Ausleihungen an verbundene Unternehmen',
+            'Beteiligungen',
             'Ausleihungen an Unternehmen, mit denen ein Beteiligungsverhältnis besteht',
             'Wertpapiere des Anlagevermögens',
             'Sonstige Ausleihungen'
