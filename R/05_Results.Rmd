@@ -114,7 +114,7 @@ for (result in meta_list) {
     geom_line(aes(y = F1, color = "F1")) +
     labs(
       title = str_replace(result$model, ".json", ""),
-      subtitle = paste("Runtime:", round(result$runtime,0) , "s"),
+      subtitle = paste("Runtime:", round(result$runtime, 0) , "s"),
       x = "Threshold",
       y = "Metric Value",
       color = "Metric"
@@ -179,7 +179,7 @@ for (result in meta_list_llm) {
       # acc = acc,
       # precision = precision,
       # recall = recall,
-      F1_Aktiva = round(F1_Aktiva, 2),
+      F1_Aktiva = F1_Aktiva, #round(F1_Aktiva, 2),
       runtime_in_s = round(runtime, 2)
     )
 }

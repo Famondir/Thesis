@@ -1,4 +1,36 @@
-# Literature review
+# Literature review (less than 10 p)
+
+(5 to 10 lines)
+
+* overview of subchapters
+* relevance for reader (Gutachter)
+* link to previous chapter
+* relevant basic tasks
+
+## Basic terms
+
+## Technological topic (related work)
+
+* most important papers
+* connection of papers (timeline)
+* what used, what not?
+* extending existing paper?
+
+## optinal more topics like previous
+
+## Summary (0.5 p)
+
+* lessons learned
+* link to goal thesis
+* link to next chapter
+
+## To place in chapters above
+
+## Table extraction tasks
+
+### Difficulties
+
+* Beispielbilder
 
 ## Document Extrtaction Process
 

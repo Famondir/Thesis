@@ -1,11 +1,17 @@
 ---
-title: "Extracting tables from financial reports"
+title: "Extraction of tabular data from annual reports with LLMs"
 author: "Simon Schäfer"
-date: "`r Sys.Date()`"
+date: "September 1, 2025"
 site: "bookdown::bookdown_site"
 output:
-  bookdown::pdf_book:
-    keep_tex: yes
+  # bookdown::pdf_book:
+  bookdown::pdf_document2:
+    toc: false
+    # keep_tex: yes
+    includes:
+      in_header:
+        - bhtThesis.sty
+        - preamble.tex
   bookdown::gitbook: default
 css: "style.css"
 documentclass: book
@@ -19,10 +25,32 @@ csl: apa-single-spaced.csl
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Abstract {-}
+\pagenumbering{gobble}
+\pagestyle{empty}
 
-Content of this thesis is a benchmark on information extraction from PDFs. The focus are annual reports of German companies. Special characteristics of the task are handling units and hierarchies in tables with financial data to prepare the data for import into a relational database. In addition, web-based application is provided for manual post-processing of faulty extracted data.
+# {.unlisted .unnumbered}
 
-## Notes
+## Abstract {.unlisted .unnumbered}
+
+Content of this thesis is a benchmark on information extraction from PDFs. The focus are annual reports of German companies. Special characteristic of the task is handling hierarchies in tables with financial data to prepare the data for import into a relational database.
+
+The benchmark is composed of three sub tasks and the performance of different open source large language models is tested with different prompting approaches and compared to alternative methods.
+
+## Zusammenfassung {.unlisted .unnumbered}
+
+Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Dateien. Dabei wird sich auf das Auslesen der Bilanzen und Gewinn- und Verlustrechnungen aus Jahresabschlüssen deutscher Unternehmen beschränkt. Ein besonderer Aspekt der Aufgabe ist die Berücksichtigung der Hierarchie innerhalb der Tabellen, um die Werte einem festen Schema zuzuordnen und so den Import in eine relationale Datenbank vorzubereiten.
+
+## Notes {.unlisted .unnumbered}
 
 * Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
+
+\pagestyle{fancy}
+
+\cleardoublepage
+\pagenumbering{roman}
+\setcounter{page}{1}
+\tableofcontents
+
+\cleardoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}

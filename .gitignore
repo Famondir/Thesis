@@ -19,3 +19,4 @@ manual_download/*/*.csv
 manual_download/Berliner Werstätten für Menschen mit Behinderung/Endgultiger Bericht JAP 2022 BWB.uos
 Python/chroma_db/*
 benchmark_truth/real_tables/*.xlsx
+R/_*

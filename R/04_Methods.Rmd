@@ -1,3 +1,9 @@
+# Implementation 8max 5p)
+
+## Speedup with vLLM and batching
+
+## Setup (Dockerfile and PV)
+
 # Methods
 
 ## Page identification
@@ -129,9 +135,27 @@ took wrong identified pages as base for a table detection benchmark and n-shot b
 
 some tables can't be found without previous ocr; some pages hold image of table and machine readable text
 
-#### VLLM based
+##### LLM based
 
-## Baselines
+##### VLLM based
+
+was not implemented
+
+## Table detection
+
+### LLM
+
+* table: yes/no
+* akiva: yes/no
+* multiclass
+
+### Vision Model
+
+Yolo
+
+## Information extraction
+
+### Baselines
 
 ### Simple pipeline
 
