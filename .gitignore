@@ -1,12 +1,11 @@
 Literatur/
 Geschaeftsberichte/
-R/*.html
+R/*/*.html
 R/libs/
 R/*_files/
 .ipynb_checkpoints
 .Rproj.user
 tmp/
-R/_book/
 K8s_test/vllm_starter_kit/k8s/secret.yaml
 .~lock.*
 benchmark_results/
@@ -19,4 +18,12 @@ manual_download/*/*.csv
 manual_download/Berliner Werstätten für Menschen mit Behinderung/Endgultiger Bericht JAP 2022 BWB.uos
 Python/chroma_db/*
 benchmark_truth/real_tables/*.xlsx
-R/_*
+!R/_book/thesis.pdf
+R/_book/libs/
+*.cb
+*.cb2
+R/_book/_main_files/
+R/*.log
+R/_book/*.tex
+R/_book/*.json
+R/_book/*.css

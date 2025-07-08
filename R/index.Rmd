@@ -7,7 +7,6 @@ output:
   # bookdown::pdf_book:
   bookdown::pdf_document2:
     toc: false
-    # keep_tex: yes
     includes:
       in_header:
         - bhtThesis.sty
