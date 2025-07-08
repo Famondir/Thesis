@@ -32,6 +32,10 @@ RUN pip install accelerate
 RUN pip install pypdfium2
 RUN pip install sentence_transformers
 RUN pip install chromadb
+RUN pip install deepdiff
+RUN pip install outlines
+RUN pip install datasets
+RUN pip install nltk
 
 # configuring git
 RUN git config --global user.email "s92818@bht-berlin.de"
