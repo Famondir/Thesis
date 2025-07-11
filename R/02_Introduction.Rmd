@@ -10,7 +10,15 @@
 * why now: digital sovereignity, AI act; people want NLP AI products, frameworks get easier
 * is the problem easier solvable then years ago? why?
 
+missing law to access digital data and no law to choose the format of the data
+[extensible Business Reporting Language](https://de.xbrl.org/) as a standard
+changing from HGB to IFSR
+
 ## Objectives
+
+The sixth division at RHvB is auditing the companies Berlin is a stakeholder of. Basic information they have to process are the balance sheets and profit and loss accounting. Those information is provided via their annual reports in form of PDF files. The provided annual reports often differ from the publicly available ones in matter of information granularity and design and are treated as non public information. Automate the extraction of those information would be a good starting point for AI assisted information retrieval from PDFs for the RHvB overall.
+
+It is important to get numeric values totally accurate; numeric values are difficult to handle for langauge models
 
 * special part of big problem? central question
 * two sentences: why this problem? new problem or just a part in the big task? hard to solve of straight forward? research or application? what was not done and why?

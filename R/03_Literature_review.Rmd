@@ -16,6 +16,12 @@
 * what used, what not?
 * extending existing paper?
 
+### Extraction of numeric values
+
+99.5 % or 96 % accuracy for extracting financial data [@li_extracting_2023]
+
+Too many hallucinated values when it was NA instead [@grandini_metrics_2020]
+
 ## optinal more topics like previous
 
 ## Summary (0.5 p)
