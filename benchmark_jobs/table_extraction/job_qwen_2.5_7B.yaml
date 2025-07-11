@@ -1,25 +1,24 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: qwen-7b-table-extraction-job
-    # namespace: s92818
+    name: qwen-7b-synth-table-extraction-vllm-batched-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: qwen-7b-table-extraction-job
+        app: qwen-7b-synth-table-extraction-vllm-batched-job
     spec:
       containers:
-      - name: qwen-7b-table-extraction-job
-        image: registry.datexis.com/s92818/remote-work
+      - name: qwen-7b-synth-table-extraction-vllm-batched-job
+        image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/table_extraction_benchmark.py --model_name Qwen/Qwen2.5-7B-Instruct --verbose"
+          "python3 -u /pvc/thesis_benchmarks/table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-7B-Instruct --n_loops 5 --batched"
         ]
         resources:
           requests:
-              cpu: "4"
+              cpu: "2"
               memory: "32Gi"
               nvidia.com/gpu: "1"
           limits:
@@ -42,7 +41,7 @@ spec:
           - name: vllm-pvc
             mountPath: /pvc
       nodeSelector:
-        kubernetes.io/hostname: cl-worker29
+        # kubernetes.io/hostname: cl-worker29
         gpu: a100
       imagePullSecrets:
         - name: private-registry-auth
