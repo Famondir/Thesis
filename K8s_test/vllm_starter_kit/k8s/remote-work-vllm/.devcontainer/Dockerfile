@@ -34,6 +34,8 @@ RUN pip install outlines
 RUN pip install datasets
 RUN pip install nltk
 RUN pip install openpyxl
+RUN pip install tabulate
+RUN pip install matplotlib
 
 # configuring git
 RUN git config --global user.email "s92818@bht-berlin.de"
