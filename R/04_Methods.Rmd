@@ -110,7 +110,7 @@ In those documents there are `r num_pages` pages of interest holding `r num_tabl
 knitr::kable(multiple_tables_per_type_and_document)
 ```
 
-As baselines a simple regex approach as well as a fully sophisticated visual LLM approach  have been used.
+As a baseline a simple regex approach was used.
 
 ### Baselines
 
@@ -137,11 +137,19 @@ some tables can't be found without previous ocr; some pages hold image of table 
 
 ##### LLM based
 
+#### Term frequency based ####
+
 ##### VLLM based
 
 was not implemented
 
 ## Table detection
+
+Can be used to narrow down set of possible pages
+
+Can be used to focus only on the table content (measure if correct area was identified would be necessary)
+
+Vision model as baseline
 
 ### LLM
 
@@ -153,9 +161,17 @@ was not implemented
 
 Yolo
 
+### Docling and Co
+
+##### VLLM based
+
+was not implemented
+
 ## Information extraction
 
 ### Baselines
+
+simple regex?
 
 ### Simple pipeline
 
@@ -163,6 +179,8 @@ Yolo
 - query LLM directly
 
 ### Sophisticated approaches
+
+not implemented
 
 - with pipelines
 - Nougat

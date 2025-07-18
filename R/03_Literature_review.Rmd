@@ -18,7 +18,7 @@
 
 ### Extraction of numeric values
 
-99.5 % or 96 % accuracy for extracting financial data [@li_extracting_2023]
+99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@li_extracting_2023] In the untabulated test,  GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had  the lowest accuracy rate at 69%. (ebd.)
 
 Too many hallucinated values when it was NA instead [@grandini_metrics_2020]
 

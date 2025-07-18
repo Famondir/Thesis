@@ -1,0 +1,119 @@
+library(jsonlite)
+library(tidyverse)
+
+#### Real ####
+
+json_files_table_extraction_llm <- list.files(
+  "../benchmark_results/table_extraction/llm/synth_tables",
+  pattern = "\\.json$",
+  full.names = TRUE
+) %>%
+  .[!grepl("_test_", .)]
+
+json_files_table_extraction_llm_markdown <- list.files(
+  "../benchmark_results/table_extraction/llm/synth_tables_markdown",
+  pattern = "\\.json$",
+  full.names = TRUE
+) %>%
+  .[!grepl("_test_", .)]
+
+json_files_table_extraction_llm <- c(json_files_table_extraction_llm, json_files_table_extraction_llm_markdown)
+
+meta_list_llm <- list()
+
+# Loop through each .json file
+for (file in json_files_table_extraction_llm) {
+  # print(file)
+  # Read the JSON file
+  # Read the JSON file and replace NaN with NULL in the file content
+  file_content <- readLines(file, warn = FALSE)
+  file_content <- gsub("\\bNaN\\b", "null", file_content)
+  file_content <- gsub("\\bInfinity\\b", "null", file_content)
+  # Remove incomplete last JSON entry and close the list if file ends early
+  if (!grepl("\\]$", file_content[length(file_content)])) {
+    # Find the last complete JSON object (ends with "},")
+    last_complete <- max(grep('\\.pdf', file_content))
+    file_content <- c(file_content[1:last_complete], "}]")
+  }
+  json_data <- fromJSON(paste(file_content, collapse = "\n"))
+  
+  name_split = (basename(file) %>% str_split("__"))[[1]]
+  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
+  # print(name_split)
+  
+  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
+    mutate(
+      model = name_split[1], 
+      method = name_split[method_index],
+      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+      markdown = str_detect(file, "synth_tables_markdown"),
+      .before = 1
+    )
+  meta_list_llm[[length(meta_list_llm) + 1]] <- results
+}
+
+df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
+  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
+  unnest_wider(`NA`, names_sep = "_") %>%
+  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
+  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
+  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
+  mutate(
+    NA_total_truth = NA_true_positive + NA_false_negative,
+    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
+    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
+    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
+    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
+    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
+  )
+
+df <- df %>% rowwise() %>% mutate(
+  n_columns = str_match(filepath, "(.)_columns")[2],
+  span = if_else("True" == str_match(filepath, "span_(False|True)")[2], TRUE, FALSE),
+  thin = if_else("True" == str_match(filepath, "thin_(False|True)")[2], TRUE, FALSE),
+  year_as = str_match(filepath, "year_as_(.*)_unit")[2],
+  unit_in_first_cell = if_else("True" == str_match(filepath, "unit_in_first_cell_(False|True)")[2], TRUE, FALSE),
+  unit_str = str_match(filepath, "unit_in_first_cell_(False|True)_(.*)_enumeration")[3],
+  enumeration = if_else("True" == str_match(filepath, "enumeration_(False|True)")[2], TRUE, FALSE),
+  number_of_table = str_match(filepath, "enumeration_(False|True)_(.*)(_queued)?\\.pdf")[3]
+) %>% mutate(model_md = str_c(model, if_else(markdown, "_markdown", ""))) %>% mutate(
+  n_columns = ordered(n_columns, c("3", "4", "5"))
+) # %>% filter(number_of_table %in% c("0", "1"))
+
+##### plotting #####
+
+df %>% select(c(model_md, method, percentage_correct_numeric, percentage_correct_total)) %>% 
+  pivot_longer(cols = -c(model_md, method)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model_md, y = value)) +
+  facet_grid(method~name) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
+
+df %>% select(c(model_md, method, NA_precision, NA_recall, NA_F1)) %>% 
+  pivot_longer(cols = -c(model_md, method)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model_md, y = value)) +
+  facet_grid(method~name) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
+
+df %>% ggplot() +
+  geom_boxplot(aes(x = model_md, y = deep_distance)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_grid(method~1)
+
+df %>% ggplot() +
+  geom_boxplot(aes(x = model_md, y = relative_numeric_difference_mean)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  coord_cartesian(ylim = c(0, 1500)) +
+  facet_grid(method~1)
+
+df %>% ggplot() +
+  geom_boxplot(aes(x = model_md, y = relative_numeric_difference_mean)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  coord_cartesian(ylim = c(0, 1)) +
+  facet_grid(method~1)
+
+df %>% ggplot() +
+  geom_boxplot(aes(x = model_md, y = levenstein_distance_mean)) +
+  scale_x_discrete(guide = guide_axis(angle = 30))  + # also between number and null?
+  facet_grid(method~1)
