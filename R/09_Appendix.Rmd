@@ -1,3 +1,230 @@
-# (APPENDIX) Appendix {-}
+\setcounter{chapter}{0}
+\renewcommand{\thechapter}{\Alph{chapter}}
 
-# Web UI
+# Appendix
+
+## Local machine {#local-machine}
+
+One can find the specifications of the local machine used to run the less computationally demanding tasks below. It is a lightweight laptop device. Its performance cores support hyperthreading and have a clock range between 2.1 and 4.7 GHz. However, due to the flat design, there is little active cooling. Thus, thermal throttling starts rather quickly. It is therefore a reasonable assumption that most locally benchmarked tasks are running at 2.1 GHz. Despite this handicap, it has a sufficiently large RAM of 32 GB and 3 GB of NVMe disk space.
+
+### System Details Report {-}
+
+#### Report details {-}
+- **Date generated:**                              2025-07-19 13:56:16
+
+#### Hardware Information: {-}
+- **Hardware Model:**                              LG Electronics 17ZB90Q-G.AD79G
+- **Memory:**                                      32.0 GiB
+- **Processor:**                                   12th Gen Intel® Core™ i7-1260P × 16
+- **Graphics:**                                    Intel® Graphics (ADL GT2)
+- **Disk Capacity:**                               3.0 TB
+
+#### Software Information: {-}
+- **Firmware Version:**                            A2ZG0150 X64
+- **OS Name:**                                     Ubuntu 24.04.2 LTS
+- **OS Build:**                                    (null)
+- **OS Type:**                                     64-bit
+- **GNOME Version:**                               46
+- **Windowing System:**                            Wayland
+- **Kernel Version:**                              Linux 6.11.0-29-generic
+
+## Benchmarks
+
+### Text extraction {#text-extraction-benchmark}
+
+```{r text-extraction, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+data_text_extraction <- read.csv("../benchmark_results/text_extraction_benchmark_results.csv") %>% 
+  arrange(runtime) %>% 
+  rename("library" = "pdfbackend", "runtime in s" = "runtime")
+
+# Find the lowest value in the "runtime in s" column and make it bold
+data_text_extraction <- data_text_extraction %>%
+  mutate(
+    `runtime in s` = round(`runtime in s`, 0), # Ensure the column is numeric
+    `runtime in s` = ifelse(
+      `runtime in s` == min(`runtime in s`, na.rm = TRUE),
+      paste0("**", `runtime in s`, "**"),
+      `runtime in s`
+    )
+  )
+```
+
+A basic requirement for all succeeding tasks is, that the text gets extracted from the PDF files. As written in doclings technical report [@auer_docling_2024] the available open source libraries differ in their speed and restrictiveness of licensing. Since there are no benchmark results this report multiple libraries have been tested here.
+
+The benchmark ran on the local machine described in section \@ref(local-machine). There have been `r total_pages` pages to extract the text from.
+
+```{r display-data-text-extraction, echo=FALSE, results="asis"}
+render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different libraries", ref = "display-data-text-extraction")
+```
+
+The result of docling-parse is not formated as markdown yet but also just plain text.
+
+For implementation in a system where the text has to get extracted live or frequently the speed of the library might be paramount. But in special cases it can be important to invest more computational power into text extraction if this assures extraction according a more complicated document layout. E.g. some of the tables have been parsed by pdfium in such a manner that first all row descriptors have been extracted (first row) and thereafter all numeric columns (rowwise) ADD REFERENCE / EXAMPLE.
+
+### Table detection {#table-detection-benchmark}
+
+```{r table-detection-data-loading, echo=FALSE}
+# Get a list of all .json files in the folder
+json_files_table_detection <- list.files("../benchmark_results/table_detection/", pattern = "\\.json$", full.names = TRUE)
+
+meta_list <- list()
+
+# Loop through each .json file
+for (file in json_files_table_detection) {
+  # Read the JSON file
+  json_data <- fromJSON(file)
+  
+  # Extract the threshold and metrics from the "metrics" key
+  metrics <- as.data.frame(fromJSON(json_data$metrics))
+  
+  lst <- list(
+    metrics = metrics,
+    model = basename(file),
+    runtime = json_data$runtime
+  )
+  meta_list[[length(meta_list) + 1]] <- lst
+}
+
+# Plot the metrics over threshold
+library(ggplot2)
+
+metric_plots <- list()
+
+for (result in meta_list) {
+  table_detection_plot <- ggplot(result$metrics, aes(x = threshold)) +
+    geom_line(aes(y = precision, color = "Precision")) +
+    geom_line(aes(y = recall, color = "Recall")) +
+    geom_line(aes(y = recall_target, color = "Recall for tables of interest")) +
+    geom_line(aes(y = F1, color = "F1")) +
+    labs(
+      title = str_replace(result$model, ".json", ""),
+      subtitle = paste("Runtime:", round(result$runtime, 0) , "s"),
+      x = "Threshold",
+      y = "Metric Value",
+      color = "Metric"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
+  metric_plots[[length(metric_plots) + 1]] <- table_detection_plot
+}
+
+json_files_table_detection_llm <- list.files("../benchmark_results/table_detection/llm/", pattern = "\\.json$", full.names = TRUE)
+
+meta_list_llm <- list()
+
+# Loop through each .json file
+for (file in json_files_table_detection_llm) {
+  # Read the JSON file
+  json_data <- fromJSON(file)
+  
+  # Extract the threshold and metrics from the "metrics" key
+  metrics <- as.data.frame(json_data$metrics)
+  
+  lst <- list(
+    metrics = metrics,
+    model = basename(file),
+    runtime = json_data$runtime
+  )
+  meta_list_llm[[length(meta_list_llm) + 1]] <- lst
+}
+
+results_df_llm <- data.frame(
+  llm = character(),
+  parameters = character(),
+  method = character(),
+  loop = numeric(),
+  # acc = numeric(),
+  # precision = numeric(),
+  # recall = numeric(),
+  F1_Aktiva = numeric(),
+  runtime_in_s = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for (result in meta_list_llm) {
+  
+  name_split = result$model %>% str_split("__")
+  name_split = name_split[[1]]
+  
+  llm = name_split[1]
+  parameters = str_extract(llm, "\\d*\\.?\\d+B")
+  method = name_split[length(name_split)-1]
+  loop = name_split[length(name_split)] %>% str_remove(".json") %>% str_remove("loop_") %>% as.integer()
+  F1_Aktiva = result$metrics$Aktiva.f1_score
+  runtime = result$runtime
+  
+  results_df_llm <- results_df_llm %>%
+    add_row(
+      llm = llm,
+      parameters = parameters,
+      method = method,
+      loop = loop,
+      # acc = acc,
+      # precision = precision,
+      # recall = recall,
+      F1_Aktiva = F1_Aktiva, #round(F1_Aktiva, 2),
+      runtime_in_s = round(runtime, 2)
+    )
+}
+```
+
+* yolo benchmark and table transformer
+* skip classification with llm
+
+
+not so important anymore
+
+```{r metric_plots, echo=FALSE, warning=FALSE}
+for (plot in metric_plots) {
+  print(plot)
+}
+```
+
+```{r display_results_df_llm, echo=FALSE}
+knitr::kable(results_df_llm # %>% arrange(desc(F1_Aktiva))
+             )
+```
+
+### Large language model process speed
+
+In April 2025 there have been issues with running vllm within the Python framework. Thus the first experiments have been conducted using the transformers library. When the problems of building a working vllm based docker image for the experiments it was measured how long the same task takes with the transformers and the vllm library and how the batched processing competes versus a loop approach. The model family used was Qwen 2.5 Instruct. The task was to extract the assets table for ten real example pages.
+
+Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with vllm library run are around four to five times faster. Processing the messages in a batched mode again is six to seven times faster.
+
+The change of the experimental setup from transformers loop-based to vllm batched mode made is possible run the benchmark on whole PDF documents giving a sound estimate of the false positive rate in the page identification task (see section \@ref(llm-page-identification)). Previous experiments have only been using a subset of pages that have been selected with the baseline regex approach (see section \@ref(regex-page-identification)). One can find the former results in section \@ref(llm-table-detection).
+
+```{r llm-spped-mini-benchmark-table, echo=FALSE}
+data_llm_speed <- data.frame(
+  # model = c("Qwen 2.5 Instruct"),
+  parameters = c(0.5, 3, 7),
+  transformers = c(330, 628, 940),
+  vllm = c(65, 130, 217),
+  vllm_batched = c(NA, 20, 30)
+) %>% setNames(c("Model parameters (in B)", "Transformers", "vLLM", "vLLM batched"))
+
+knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for processing ten asset tables using different libraries and approaches")
+```
+
+### Table identification with LLMs {#llm-table-detection}
+
+## Regular expressions {#regex-page-identification}
+
+```{python simple-regex-page-identification, eval=FALSE}
+simple_regex_patterns = {
+    "Aktiva": [
+        r"aktiva",
+        r"((20\d{2}).*(20\d{2}))"
+    ],
+    "Passiva": [
+        r"passiva",
+        r"((20\d{2}).*(20\d{2}))"
+    ],
+    "GuV": [
+        r"gewinn",
+        r"verlust",
+        r"rechnung",
+        r"((20\d{2}).*(20\d{2}))"
+    ]
+}
+```

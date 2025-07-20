@@ -14,6 +14,14 @@ missing law to access digital data and no law to choose the format of the data
 [extensible Business Reporting Language](https://de.xbrl.org/) as a standard
 changing from HGB to IFSR
 
+```{r beteiligungsunternehmen, echo=FALSE, out.width="100%", fig.cap="Companies Berlin has holds share at"}
+knitr::include_graphics("images/beteiligungsunternehmen.png")
+```
+
+[![Click me](images/beteiligungsunternehmen.png)](images/beteiligungsunternehmen.png)
+
+<a href="images/beteiligungsunternehmen.png"target="_blank"><img src="images/beteiligungsunternehmen.png"></a>
+
 ## Objectives
 
 The sixth division at RHvB is auditing the companies Berlin is a stakeholder of. Basic information they have to process are the balance sheets and profit and loss accounting. Those information is provided via their annual reports in form of PDF files. The provided annual reports often differ from the publicly available ones in matter of information granularity and design and are treated as non public information. Automate the extraction of those information would be a good starting point for AI assisted information retrieval from PDFs for the RHvB overall.
@@ -32,7 +40,7 @@ It is important to get numeric values totally accurate; numeric values are diffi
 
 ## Thesis Outline (0.5 p)
 
-## To place in chapters above
+## To place in chapters abovehttp://127.0.0.1:29003/rmd_output/4/images/beteiligungsunternehmen.png
 
 This master thesis is motivated by a use case from practical work at the Berlin court of audit (Rechnungshof von Berlin; RHvB). The auditors often are faced with the problem that they need information that is provided as natural language or in tables inside of unstructured documents, i.e. in PDF files. The goal of this thesis is benchmarking methods for automated information extraction from specific tables from PDF files.
 

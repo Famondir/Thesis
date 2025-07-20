@@ -188,7 +188,7 @@ for (file in json_files_page_identification_llm) {
       n_examples = str_match(method, "\\d+")[[1]],
       out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
       method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+      loop = as.numeric((basename(file) %>% str_replace('__no_think', '') %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
       classifier_type = str_split(name_split[2], '_')[[1]][2],
       classification_type = classification_type,
       runtime = json_data$runtime,
@@ -198,13 +198,53 @@ for (file in json_files_page_identification_llm) {
   meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
 
-df_binary <- meta_list_llm %>% bind_rows()
+df_binary <- meta_list_llm %>% bind_rows() %>% mutate(
+  n_examples = as.integer(n_examples)
+)
 }
 
 df_binary %>% filter(loop > 0) %>% pull(model) %>% unique()
 
-df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
-  ggplot(aes(x = runtime, y = f1_score)) +
+##### Nomalizing runtime #####
+
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+  mutate(
+    model_name = model_name %>% str_replace("/", "_")
+  ) %>% filter(str_detect(filename, "binary"))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
+norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+  add_column(n_examples = list(c(5,7), c(5), c(7,9), c(11,13))) %>% unnest(n_examples)
+
+df_binary_few_examples <- df_binary %>% filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  left_join(norm_factors_few_examples, by = c("model" = "model_name")) %>% mutate(
+    norm_runtime = runtime*normalization_factor
+  )
+df_binary_many_examples <- df_binary %>% filter(n_examples > 3) %>% 
+  left_join(norm_factors_many_examples, by = c("model" = "model_name", "n_examples" = "n_examples")) %>% mutate(
+    norm_runtime = runtime*normalization_factor
+  )
+
+df_binary <- bind_rows(
+  df_binary_few_examples,
+  df_binary_many_examples
+)
+
+##### Plotting #####
+
+# df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
+#   ggplot(aes(x = runtime, y = f1_score)) +
+#   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+#   scale_shape(na.value = 15, guide = "legend") +
+#   geom_text(aes(label = n_examples)) +
+#   facet_grid(model~classification_type) +
+#   theme(legend.position = "bottom") +
+#   guides(
+#     color = guide_legend(ncol = 1, title.position = "top"),
+#     shape = guide_legend(ncol = 1, title.position = "top")
+#   )
+
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
@@ -215,8 +255,10 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410") %>%
     shape = guide_legend(ncol = 1, title.position = "top")
   )
 
-df_binary %>% filter(classification_type == "Aktiva") %>% 
-  ggplot(aes(x = runtime, y = f1_score)) +
+df_binary %>% filter(classification_type == "GuV") %>% 
+  filter(loop == 0) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
@@ -299,14 +341,42 @@ for (file in json_files_page_identification_llm) {
 df_multi <- meta_list_llm %>% bind_rows()
 }
 
+df_multi %>% filter(loop > 0) %>% pull(model) %>% unique()
+
+##### Nomalizing runtime #####
+
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+  mutate(
+    model_name = model_name %>% str_replace("/", "_")
+  ) %>% filter(str_detect(filename, "multi"))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
+norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+  add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
+
+df_multi_few_examples <- df_multi %>% filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  left_join(norm_factors_few_examples, by = c("model" = "model_name")) %>% mutate(
+    norm_runtime = runtime*normalization_factor
+  )
+df_multi_many_examples <- df_multi %>% filter(n_examples > 3) %>% 
+  left_join(norm_factors_many_examples, by = c("model" = "model_name", "n_examples" = "n_examples")) %>% mutate(
+    norm_runtime = runtime*normalization_factor
+  )
+
+df_multi <- bind_rows(
+  df_multi_few_examples,
+  df_multi_many_examples
+)
+
+##### Plotting #####
+
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
 
 df_selected %>% filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
-  ggplot(aes(x = runtime, y = f1_score)) +
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
-  facet_grid(model~classification_type) +
+  facet_grid(model~metric_type) +
   theme(legend.position = "bottom") +
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
@@ -314,11 +384,11 @@ df_selected %>% filter(model == "mistralai_Ministral-8B-Instruct-2410") %>%
   )
 
 df_selected %>%
-  ggplot(aes(x = runtime, y = f1_score)) +
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
-  facet_grid(classification_type~model) +
+  facet_grid(metric_type~model) +
   theme(legend.position = "bottom") +
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),

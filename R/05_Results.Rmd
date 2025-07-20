@@ -1,209 +1,176 @@
 # Results
 
 ```{r page-identification-data-loading, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-library(jsonlite)
-library(tidyverse)
+# data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
+# 
+# # pdf_files <- data$filepath %>% unique()
+# # 
+# # # Initialize a counter for the total page count
+# # total_pages <- 0
+# # 
+# # # Loop through each PDF file to count pages
+# # for (pdf_file in pdf_files) {
+# #   # Use the pdftools package to count pages
+# #   total_pages <- total_pages + pdftools::pdf_info(pdf_file)$pages
+# # }
+# 
+# # Split the "type" column by '&' and explode it into multiple rows
+# data_unnested <- data %>%
+#   mutate(type = strsplit(as.character(type), "&")) %>%
+#   unnest(type)
+# 
+# num_tables <- data_unnested %>% 
+#   nrow()
+# 
+# # Get a list of all .json files in the folder
+# json_files <- list.files("../benchmark_results/page_identification/", pattern = "\\.json$", full.names = TRUE)
+# 
+# # Initialize an empty dataframe to store results
+# results_df <- data.frame(
+#   package = character(),
+#   method = character(),
+#   # acc = numeric(),
+#   precision = numeric(),
+#   recall = numeric(),
+#   F1 = numeric(),
+#   runtime_in_s = numeric(),
+#   stringsAsFactors = FALSE
+# )
+# 
+# # Loop through each .json file
+# for (file in json_files) {
+#   # Read the JSON file
+#   json_data <- fromJSON(file)
+#   
+#   # Extract the required values
+#   correct_df <- as.data.frame(fromJSON(json_data$correct)) # %>% filter(type == 'Aktiva')
+#   wrong_df <- as.data.frame(fromJSON(json_data$wrong)) # %>% filter(type == 'Aktiva')
+#   missing_df <- as.data.frame(fromJSON(json_data$missing)) # %>% filter(type == 'Aktiva')
+#   
+#   filename <- basename(file)
+#   package <- strsplit(filename, "_")[[1]][1]
+#   method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
+#   
+#   num_true_pos <- num_correct <- nrow(correct_df)
+#   num_false_pos <- num_wrong <- nrow(wrong_df)
+#   num_false_neg <- num_tables-num_correct
+#   num_true_neg <- 3*total_pages-num_true_pos-num_false_pos-num_false_neg
+#   num_missing <- nrow(missing_df)
+#   runtime <- round(json_data$runtime, 2)
+#   acc = round((num_true_pos+num_true_neg)/(3*total_pages),2)
+#   precision = round(num_true_pos/(num_true_pos+num_false_pos),2)
+#   recall = round(num_true_pos/(num_true_pos+num_false_neg),2)
+#   F1 = round(2*precision*recall/(precision+recall),2)
+#   
+#   # Append the values to the results dataframe
+#   results_df <- results_df %>%
+#     add_row(
+#       package = package,
+#       method = method,
+#       # acc = acc,
+#       precision = precision,
+#       recall = recall,
+#       F1 = F1#,
+#       # runtime_in_s = runtime
+#     )
+# }
+# 
+# results_df <- results_df %>%
+#   group_by(method) %>%
+#   summarise(
+#     precision_mean = mean(precision, na.rm = TRUE),
+#     precision_sd = sd(precision, na.rm = TRUE),
+#     recall_mean = mean(recall, na.rm = TRUE),
+#     recall_sd = sd(recall, na.rm = TRUE),
+#     F1_mean = mean(F1, na.rm = TRUE),
+#     F1_sd = sd(F1, na.rm = TRUE)
+#   ) %>%
+#   pivot_longer(
+#     cols = c(precision_mean, precision_sd, recall_mean, recall_sd, F1_mean, F1_sd),
+#     names_to = c("metric", "stat"),
+#     names_pattern = "(.*)_(mean|sd)"
+#   ) %>%
+#   pivot_wider(
+#     names_from = metric,
+#     values_from = value
+#   ) %>% 
+#   mutate_if(is.numeric, ~round(., 3))
 
-data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
-pdf_files <- data$filepath %>% unique()
-
-# Initialize a counter for the total page count
-total_pages <- 0
-
-# Loop through each PDF file to count pages
-for (pdf_file in pdf_files) {
-  # Use the pdftools package to count pages
-  total_pages <- total_pages + pdftools::pdf_info(pdf_file)$pages
-}
-
-# Split the "type" column by '&' and explode it into multiple rows
-data_unnested <- data %>%
-  mutate(type = strsplit(as.character(type), "&")) %>%
-  unnest(type)
-
-num_tables <- data_unnested %>% 
-  nrow()
-
-# Get a list of all .json files in the folder
-json_files <- list.files("../benchmark_results/page_identification/", pattern = "\\.json$", full.names = TRUE)
-
-# Initialize an empty dataframe to store results
-results_df <- data.frame(
-  package = character(),
-  method = character(),
-  # acc = numeric(),
-  precision = numeric(),
-  recall = numeric(),
-  F1 = numeric(),
-  runtime_in_s = numeric(),
-  stringsAsFactors = FALSE
-)
-
-# Loop through each .json file
-for (file in json_files) {
-  # Read the JSON file
-  json_data <- fromJSON(file)
-  
-  # Extract the required values
-  correct_df <- as.data.frame(fromJSON(json_data$correct)) # %>% filter(type == 'Aktiva')
-  wrong_df <- as.data.frame(fromJSON(json_data$wrong)) # %>% filter(type == 'Aktiva')
-  missing_df <- as.data.frame(fromJSON(json_data$missing)) # %>% filter(type == 'Aktiva')
-  
-  filename <- basename(file)
-  package <- strsplit(filename, "_")[[1]][1]
-  method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
-  
-  num_true_pos <- num_correct <- nrow(correct_df)
-  num_false_pos <- num_wrong <- nrow(wrong_df)
-  num_false_neg <- num_tables-num_correct
-  num_true_neg <- 3*total_pages-num_true_pos-num_false_pos-num_false_neg
-  num_missing <- nrow(missing_df)
-  runtime <- round(json_data$runtime, 2)
-  acc = round((num_true_pos+num_true_neg)/(3*total_pages),2)
-  precision = round(num_true_pos/(num_true_pos+num_false_pos),2)
-  recall = round(num_true_pos/(num_true_pos+num_false_neg),2)
-  F1 = round(2*precision*recall/(precision+recall),2)
-  
-  # Append the values to the results dataframe
-  results_df <- results_df %>%
-    add_row(
-      package = package,
-      method = method,
-      # acc = acc,
-      precision = precision,
-      recall = recall,
-      F1 = F1,
-      runtime_in_s = runtime
-    )
-}
-
-```
-
-```{r table-detection-data-loading, echo=FALSE}
-# Get a list of all .json files in the folder
-json_files_table_detection <- list.files("../benchmark_results/table_detection/", pattern = "\\.json$", full.names = TRUE)
-
-meta_list <- list()
-
-# Loop through each .json file
-for (file in json_files_table_detection) {
-  # Read the JSON file
-  json_data <- fromJSON(file)
-  
-  # Extract the threshold and metrics from the "metrics" key
-  metrics <- as.data.frame(fromJSON(json_data$metrics))
-  
-  lst <- list(
-    metrics = metrics,
-    model = basename(file),
-    runtime = json_data$runtime
-  )
-  meta_list[[length(meta_list) + 1]] <- lst
-}
-
-# Plot the metrics over threshold
-library(ggplot2)
-
-metric_plots <- list()
-
-for (result in meta_list) {
-  table_detection_plot <- ggplot(result$metrics, aes(x = threshold)) +
-    geom_line(aes(y = precision, color = "Precision")) +
-    geom_line(aes(y = recall, color = "Recall")) +
-    geom_line(aes(y = recall_target, color = "Recall for tables of interest")) +
-    geom_line(aes(y = F1, color = "F1")) +
-    labs(
-      title = str_replace(result$model, ".json", ""),
-      subtitle = paste("Runtime:", round(result$runtime, 0) , "s"),
-      x = "Threshold",
-      y = "Metric Value",
-      color = "Metric"
-    ) +
-    theme_minimal() +
-    theme(legend.position = "bottom")
-  
-  metric_plots[[length(metric_plots) + 1]] <- table_detection_plot
-}
-
-json_files_table_detection_llm <- list.files("../benchmark_results/table_detection/llm/", pattern = "\\.json$", full.names = TRUE)
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_detection_llm) {
-  # Read the JSON file
-  json_data <- fromJSON(file)
-  
-  # Extract the threshold and metrics from the "metrics" key
-  metrics <- as.data.frame(json_data$metrics)
-  
-  lst <- list(
-    metrics = metrics,
-    model = basename(file),
-    runtime = json_data$runtime
-  )
-  meta_list_llm[[length(meta_list_llm) + 1]] <- lst
-}
-
-results_df_llm <- data.frame(
-  llm = character(),
-  parameters = character(),
-  method = character(),
-  loop = numeric(),
-  # acc = numeric(),
-  # precision = numeric(),
-  # recall = numeric(),
-  F1_Aktiva = numeric(),
-  runtime_in_s = numeric(),
-  stringsAsFactors = FALSE
-)
-
-for (result in meta_list_llm) {
-  
-  name_split = result$model %>% str_split("__")
-  name_split = name_split[[1]]
-  
-  llm = name_split[1]
-  parameters = str_extract(llm, "\\d*\\.?\\d+B")
-  method = name_split[length(name_split)-1]
-  loop = name_split[length(name_split)] %>% str_remove(".json") %>% str_remove("loop_") %>% as.integer()
-  F1_Aktiva = result$metrics$Aktiva.f1_score
-  runtime = result$runtime
-  
-  results_df_llm <- results_df_llm %>%
-    add_row(
-      llm = llm,
-      parameters = parameters,
-      method = method,
-      loop = loop,
-      # acc = acc,
-      # precision = precision,
-      # recall = recall,
-      F1_Aktiva = F1_Aktiva, #round(F1_Aktiva, 2),
-      runtime_in_s = round(runtime, 2)
-    )
-}
+source("page_identification_regex.R")
 ```
 
 ## Page identification
 
-### Baselines
+As described in \@ref(text-extraction-benchmark) open source libraries have been used to extract the text from the annual reports.
 
-#### Regex based
+### Baseline: Regex {#regex-page-identification}
 
-```{r display_results_df, echo=FALSE}
-knitr::kable(results_df %>% arrange(desc(method)))
-```
+Building a sound regular expression often is an iterative process. In a first approach a very simple one was implemented. 
 
-## Table detection
+The regular expressions can be found in the appendix (see \@ref(regex-page-identification)).
 
-```{r metric_plots, echo=FALSE, warning=FALSE}
-for (plot in metric_plots) {
-  print(plot)
+```{python, eval=FALSE, echo = knitr::is_html_output()}
+simple_regex_patterns = {
+    "Aktiva": [
+        r"aktiva",
+        r"((20\d{2}).*(20\d{2}))"
+    ],
+    "Passiva": [
+        r"passiva",
+        r"((20\d{2}).*(20\d{2}))"
+    ],
+    "GuV": [
+        r"gewinn",
+        r"verlust",
+        r"rechnung",
+        r"((20\d{2}).*(20\d{2}))"
+    ]
 }
 ```
 
-```{r display_results_df_llm, echo=FALSE}
-knitr::kable(results_df_llm # %>% arrange(desc(F1_Aktiva))
-             )
+```{r display-results-df, echo=FALSE, results="asis"}
+metric_summaries["Aktiva"][[1]] %>%
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", ., "**"),
+      .
+    )
+  ) %>% arrange(desc(method)) %>% 
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Aktiva'", ref="display-results-df")
 ```
+
+\@ref(tab:display-results-df)
+
+### Advanced techniques
+
+#### Table of Contents understanding
+
+* top 1
+* top k
+
+* toc analysis
+* cleaned measures
+
+#### Classification with LLMs {#llm-page-identification}
+
+##### Binary classification
+
+* f1
+* multiple models
+* best model detail (different methods / settings)
+
+##### Multi classification
+
+* f1
+* multiple models
+* best model detail (different methods / settings)
+
+### Comparison
+
+#### F1
+
+#### Energy usage and runtime
+
+## Table extraction

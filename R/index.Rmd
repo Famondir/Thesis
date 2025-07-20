@@ -11,7 +11,8 @@ output:
       in_header:
         - bhtThesis.sty
         - preamble.tex
-  bookdown::gitbook: default
+  bookdown::gitbook:
+    code_folding: hide
 css: "style.css"
 documentclass: book
 bibliography: ["DS 4th: Extracting financial data from annual reports.bib"]
@@ -22,6 +23,20 @@ csl: apa-single-spaced.csl
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(kableExtra.latex.load_packages = FALSE)
+# knitr::opts_chunk$set(fig.pos = "H", out.extra = "")
+
+library(jsonlite)
+library(tidyverse)
+library(reticulate)
+
+library(knitr)
+library(kableExtra)
+library(DT) # For interactive HTML tables
+```
+
+```{r load_layout_functions, include=FALSE}
+source("layout_functions.R")
 ```
 
 \pagenumbering{gobble}
@@ -34,6 +49,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Content of this thesis is a benchmark on information extraction from PDFs. The focus are annual reports of German companies. Special characteristic of the task is handling hierarchies in tables with financial data to prepare the data for import into a relational database.
 
 The benchmark is composed of three sub tasks and the performance of different open source large language models is tested with different prompting approaches and compared to alternative methods.
+
+This can be seen as a reimplementation study of "Extracting Financial Data from Unstructured Sources: Leveraging Large Language Models" - a paper published by @li_extracting_2023. The key differences are the application on German documents using open source large language models.
 
 ## Zusammenfassung {.unlisted .unnumbered}
 

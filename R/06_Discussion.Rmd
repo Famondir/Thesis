@@ -1,2 +1,5 @@
 # Discussion
 
+## Not covered
+
+* OCR

@@ -1,16 +1,26 @@
-# Implementation 8max 5p)
-
-## Speedup with vLLM and batching
-
-## Setup (Dockerfile and PV)
-
 # Methods
+
+## Data
+
+* companies Beteiligungsbericht
+* number found Jahresberichte
+* number used Jahresberichte first rows
+* number used Jahresberichte Aktiva Tabellen
 
 ## Page identification
 
 ```{r count_benchmark_documents, echo=FALSE, message=FALSE}
-# Load necessary library
-library(tidyverse)
+# Initialize a counter for the total page count
+total_pages <- 0
+
+# Get the list of PDF files in the specified directory
+pdf_files <- list.files(path = "../Geschaeftsberichte", pattern = "\\.pdf$", full.names = TRUE, recursive = TRUE)
+
+# Loop through each PDF file to count pages
+for (pdf_file in pdf_files) {
+  # Use the pdftools package to count pages
+  total_pages <- total_pages + pdftools::pdf_info(pdf_file)$pages
+}
 
 # Read the CSV file
 data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
