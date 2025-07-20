@@ -338,7 +338,9 @@ for (file in json_files_page_identification_llm) {
   meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
 
-df_multi <- meta_list_llm %>% bind_rows()
+df_multi <- meta_list_llm %>% bind_rows() %>% mutate(
+  n_examples = as.integer(n_examples)
+)
 }
 
 df_multi %>% filter(loop > 0) %>% pull(model) %>% unique()
@@ -371,7 +373,11 @@ df_multi <- bind_rows(
 
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
 
-df_selected %>% filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
+df_selected %>% filter(model %in% c(
+  "mistralai_Ministral-8B-Instruct-2410", 
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct",
+  "mistralai_Mistral-Large-Instruct-2411"
+  )) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
