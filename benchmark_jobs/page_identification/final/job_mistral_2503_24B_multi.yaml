@@ -1,20 +1,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: mistral-2503-24b-binary-job-final-few-examples
+    name: mistral-2503-24b-multi-job-final-few-examples
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: mistral-2503-24b-binary-job-final-few-examples
+        app: mistral-2503-24b-multi-job-final-few-examples
     spec:
       containers:
-      - name: mistral-2503-24b-binary-job-final-few-examples
+      - name: mistral-2503-24b-multi-job-final-few-examples
         image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier binary --model_name mistralai/Mistral-Small-3.1-24B-Instruct-2503 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --model_name mistralai/Mistral-Small-3.1-24B-Instruct-2503 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
         ]
         resources:
           requests:
