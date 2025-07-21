@@ -19,7 +19,8 @@ spec:
         - containerPort: 8000  # vLLM exposes the API on port 8000
         command: ["/bin/sh", "-c"]
         args: [
-          "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
+          # "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
+          "vllm serve mistralai/Mistral-Small-3.1-24B-Instruct-2503 --tokenizer_mode mistral --config_format mistral --load_format mistral --tool-call-parser mistral --enable-auto-tool-choice --limit_mm_per_prompt 'image=10' --tensor-parallel-size 4  --port 8000 --host 0.0.0.0 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
         ]
         # args: [
         #   "vllm serve Qwen/Qwen2.5-7B --trust-remote-code --enable-chunked-prefill --max_num_batched_tokens 1024 --port 8000 --host 0.0.0.0"
@@ -34,17 +35,15 @@ spec:
         #   - "8000"
         #   - --tensor-parallel-size
         #   - "1"
-        volumeMounts:
-          - name: vllm-pvc
-            mountPath: /pvc
         resources:
           requests:
-            cpu: "1"
-            memory: "8Gi"
-            nvidia.com/gpu: "1"
+              cpu: "2"
+              memory: "64Gi"
+              nvidia.com/gpu: "4"
           limits:
-            memory: "64Gi"
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "4"
+            memory: 128Gi
+            cpu: "32"
         env:
           - name: LANG
             value: 'C.UTF-8'
@@ -57,13 +56,22 @@ spec:
               secretKeyRef:
                 name: hf-token-secret
                 key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
       nodeSelector:
-        #kubernetes.io/hostname: cl-worker27
+        # kubernetes.io/hostname: cl-worker29
         gpu: a100
       imagePullSecrets:
-      - name: private-registry-auth
+        - name: private-registry-auth
       volumes:
         - name: vllm-pvc
           persistentVolumeClaim:
             claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
             

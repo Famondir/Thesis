@@ -36,6 +36,8 @@ RUN pip install nltk
 RUN pip install openpyxl
 RUN pip install tabulate
 RUN pip install matplotlib
+# for kimi k2
+# RUN pip install blobfile
 
 # configuring git
 RUN git config --global user.email "s92818@bht-berlin.de"
