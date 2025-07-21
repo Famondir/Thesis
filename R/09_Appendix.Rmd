@@ -175,15 +175,22 @@ for (result in meta_list_llm) {
 
 not so important anymore
 
-```{r metric_plots, echo=FALSE, warning=FALSE}
+```{r metric-plots, echo=FALSE, warning=FALSE}
 for (plot in metric_plots) {
   print(plot)
 }
 ```
 
-```{r display_results_df_llm, echo=FALSE}
-knitr::kable(results_df_llm # %>% arrange(desc(F1_Aktiva))
-             )
+```{r display-results-df-llm, echo=FALSE, eval=knitr::is_html_output(), results='asis'}
+results_df_llm %>% 
+  mutate(
+    F1_Aktiva = round(F1_Aktiva, 2),
+  ) %>% 
+  render_table(
+    alignment = "lllrr",
+    caption = "Results of the table detection benchmark with LLMs",
+    ref = "display-results-df-llm"
+  )
 ```
 
 ### Large language model process speed
@@ -208,9 +215,11 @@ knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for processi
 
 ### Table identification with LLMs {#llm-table-detection}
 
-## Regular expressions {#regex-page-identification}
+## Regular expressions {#regex-page-identification-code}
 
-```{python simple-regex-page-identification, eval=FALSE}
+Here one can find the three regular expressions used for the benchmarks presented in section \@ref(regex-page-identification).
+
+```{python simple-regex-page-identification, eval=FALSE, class.source = 'fold-show'}
 simple_regex_patterns = {
     "Aktiva": [
         r"aktiva",
@@ -225,6 +234,50 @@ simple_regex_patterns = {
         r"verlust",
         r"rechnung",
         r"((20\d{2}).*(20\d{2}))"
+    ]
+}
+```
+
+```{python exhaustive-restricted-regex-page-identification, eval=FALSE, class.source = 'fold-show'}
+regex_patterns_5 = {
+    "Aktiva": [
+        r"a\s*k\s*t\s*i\s*v\s*a|a\s*k\s*t\s*i\s*v\s*s\s*e\s*i\s*t\s*e|anlageverm.{1,2}gen",
+        r"((20\d{2}).*(20\d{2}))|((20\d{2}).*vorjahr)|vorjahr",
+        r"Umlaufverm.{1,2}gen|Anlageverm.{1,2}gen|Rechnungsabgrenzungsposten|Forderungen",
+        r"\s([a-zA-Z]|[0-9]{1,2}|[iI]+)[\.\)]\s"
+    ],
+    "Passiva": [
+        r"p\s*a\s*s\s*s\s*i\s*v\s*a|p\s*a\s*s\s*s\s*i\s*v\s*s\s*e\s*i\s*t\s*e|eigenkapital",
+        r"((20\d{2}).*(20\d{2}))|((20\d{2}).*vorjahr)|vorjahr",
+        r"Eigenkapital|R.{1,2}ckstellungen|Verbindlichkeiten|Rechnungsabgrenzungsposten",
+        r"\s([a-zA-Z]|[0-9]{1,2}|[iI]+)[\.\)]\s"
+    ],
+    "GuV": [
+        r"gewinn|guv",
+        r"verlust|guv",
+        r"rechnung|guv",
+        r"((20\d{2}).*(20\d{2}))|vorjahr"
+        r"Umsatzerl.{1,2}se|Materialaufwand|Personalaufwand|Abschreibungen|Jahres.{1,2}berschuss|Jahresfehlbetrag|Steuern|Vertriebskosten|Verwaltungskosten|Aufwendungen|Ertr.{1,2}ge",
+        r"\s([a-zA-Z]|[0-9]{1,2}|[iI]+)[\.\)]\s"
+    ]
+}
+```
+
+```{python exhaustive-regex-page-identification, eval=FALSE, class.source = 'fold-show'}
+regex_patterns_3 = {
+    "Aktiva": [
+        r"a\s*k\s*t\s*i\s*v\s*a|a\s*k\s*t\s*i\s*v\s*s\s*e\s*i\s*t\s*e|anlageverm.{1,2}gen",
+        r"((20\d{2}).*(20\d{2}))|((20\d{2}).*vorjahr)|vorjahr"
+    ],
+    "Passiva": [
+        r"p\s*a\s*s\s*s\s*i\s*v\s*a|p\s*a\s*s\s*s\s*i\s*v\s*s\s*e\s*i\s*t\s*e|eigenkapital",
+        r"((20\d{2}).*(20\d{2}))|((20\d{2}).*vorjahr)|vorjahr"
+    ],
+    "GuV": [
+        r"gewinn|guv",
+        r"verlust|guv",
+        r"rechnung|guv",
+        r"((20\d{2}).*(20\d{2}))|vorjahr"
     ]
 }
 ```

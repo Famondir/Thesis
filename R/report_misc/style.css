@@ -1,3 +1,5 @@
+/*--- Folding ---*/
+
 .pre-detail p {
   margin-bottom: 0 !important;
   font-style: italic;
@@ -6,4 +8,26 @@
 
 .pre-detail + details {
   margin-bottom: 1rem;
+}
+
+/*--- LOGO ---*/
+
+.toc-logo {
+  /* width: 200px !important; */
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.toc-logo img {
+  max-width: 100%;
+  /* margin-bottom: 10px; */
+}
+
+.toc-logo a {
+  padding: 0 !important;
+}
+
+.summary > li:first-child {
+  height: auto !important; 
 }

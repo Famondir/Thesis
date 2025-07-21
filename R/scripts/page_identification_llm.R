@@ -377,6 +377,7 @@ df_selected %>%
   filter(model %in% c(
     "mistralai_Ministral-8B-Instruct-2410", 
     "mistralai_Mistral-Large-Instruct-2411",
+    "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
     "meta-llama_Llama-4-Scout-17B-16E-Instruct",
     "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8"
   )) %>% 

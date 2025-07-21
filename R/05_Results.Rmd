@@ -1,39 +1,26 @@
 # Results
 
-```{r page-identification-data-loading, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-source("scripts/page_identification_regex.R")
-```
-
 ## Page identification
 
 As described in \@ref(text-extraction-benchmark) open source libraries have been used to extract the text from the annual reports.
 
 ### Baseline: Regex {#regex-page-identification}
 
+```{r page-identification-regex-data-loading, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE, cache.extra = tools::md5sum('scripts/page_identification_regex.R')}
+source("scripts/page_identification_regex.R")
+```
+
 Building a sound regular expression often is an iterative process. In a first approach a very simple one was implemented. 
+
+Comparing the differences in the metrics based on the different text extraction libraries it can be said that the extracted text is very similar but not identical. Since the resukts are not depending on the used text extraction library the *exhaustive regex restricted* has only been run with the fast text extraction library *pdfium*. The results of the regex based page identification are presented in the following tables.
+
+* look into details where they differ and if it is because of a line break or whitespace ?
+
+Due to the imbalanced distribution of the classes the accuracy is not a good metric to compare the performance of the different methods. The number of pages of interest is much smaller than the number of irrelevant pages. Therefore, precision, recall and F1 score are presented as well.
 
 The regular expressions can be found in the appendix (see \@ref(regex-page-identification)).
 
-```{python, eval=FALSE, echo = knitr::is_html_output()}
-simple_regex_patterns = {
-    "Aktiva": [
-        r"aktiva",
-        r"((20\d{2}).*(20\d{2}))"
-    ],
-    "Passiva": [
-        r"passiva",
-        r"((20\d{2}).*(20\d{2}))"
-    ],
-    "GuV": [
-        r"gewinn",
-        r"verlust",
-        r"rechnung",
-        r"((20\d{2}).*(20\d{2}))"
-    ]
-}
-```
-
-```{r display-results-df, echo=FALSE, results="asis"}
+```{r display-metrics-regex-page-identification-aktiva, echo=FALSE, results="asis"}
 metric_summaries["Aktiva"][[1]] %>%
   mutate_if(
     is.numeric, 
@@ -43,10 +30,51 @@ metric_summaries["Aktiva"][[1]] %>%
       .
     )
   ) %>% arrange(desc(method)) %>% 
-  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Aktiva'", ref="display-results-df")
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Aktiva'", ref="display-metrics-regex-page-identification-aktiva")
 ```
 
-\@ref(tab:display-results-df)
+```{r display-metrics-regex-page-identification-passiva, echo=FALSE, results="asis"}
+metric_summaries["Passiva"][[1]] %>%
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", ., "**"),
+      .
+    )
+  ) %>% arrange(desc(method)) %>% 
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Passiva'", ref="display-metrics-regex-page-identification-passiva")
+```
+
+```{r display-metrics-regex-page-identification-guv, echo=FALSE, results="asis"}
+metric_summaries["GuV"][[1]] %>%
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", ., "**"),
+      .
+    )
+  ) %>% arrange(desc(method)) %>% 
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Gewinn- und Verlustrechnung'", ref="display-metrics-regex-page-identification-guv")
+```
+
+```{r display-metrics-plot-regex-page-identification, echo=FALSE, figwidth=8, fig.height=6, out.width="100%"}
+metrics %>% bind_rows() %>%
+  pivot_longer(
+    cols = -c(package, method, classification_type),
+    names_to = "metric",
+    values_to = "value"
+  ) %>%
+  filter(metric %in% c("acc", "precision", "recall", "F1")) %>%
+  ggplot() +
+  geom_jitter(aes(x = method, y = value, color = package), alpha = 0.5, width = 0.2, height = 0) +
+  facet_grid(metric~classification_type) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  theme(
+    legend.position = "bottom"
+  )
+```
 
 ### Advanced techniques
 

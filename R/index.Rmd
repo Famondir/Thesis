@@ -12,7 +12,11 @@ output:
         - report_misc/bhtThesis.sty
         - report_misc/preamble.tex
   bookdown::gitbook:
-    code_folding: hide
+    code_folding: show
+    config:
+      toc:
+        before: |
+          <li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
 css: "report_misc/style.css"
 documentclass: book
 bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
@@ -59,6 +63,7 @@ Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Da
 ## Notes {.unlisted .unnumbered}
 
 * Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
+* Google gemma war mit alter Klassifikation erfolgreich (anderer Prompt, mehr Seiten)
 
 \pagestyle{fancy}
 
