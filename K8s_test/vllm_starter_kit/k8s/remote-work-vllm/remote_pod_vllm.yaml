@@ -64,7 +64,7 @@ spec:
                 name: hf-token-secret
                 key: token
       nodeSelector:
-        gpu: a100
+        gpu: h200
       imagePullSecrets:
       - name: private-registry-auth
       volumes:
