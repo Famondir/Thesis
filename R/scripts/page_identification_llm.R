@@ -155,55 +155,55 @@ recalc_mectrics_multiclass <- function(df) {
 
 #### Real binary ####
 {
-json_files_page_identification_llm <- list.files(
-  "../benchmark_results/page_identification/final/llm/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)] %>%
-  .[grepl("_binary_", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_page_identification_llm) {
-  # print(file)
-
-  file_content <- readLines(file, warn = FALSE)
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
+  json_files_page_identification_llm <- list.files(
+    "../benchmark_results/page_identification/final/llm/",
+    pattern = "\\.json$",
+    full.names = TRUE
+  ) %>%
+    .[!grepl("_test_", .)] %>%
+    .[grepl("_binary_", .)]
   
-  name_split = (basename(file) %>% str_replace('__no_think', '') %>% str_split("__"))[[1]]
-  method_index = which(str_starts(name_split, "loop"))-1
+  meta_list_llm <- list()
   
-  # print(name_split)
+  # Loop through each .json file
+  for (file in json_files_page_identification_llm) {
+    # print(file)
+    
+    file_content <- readLines(file, warn = FALSE)
+    json_data <- fromJSON(paste(file_content, collapse = "\n"))
+    
+    name_split = (basename(file) %>% str_replace('__no_think', '') %>% str_split("__"))[[1]]
+    method_index = which(str_starts(name_split, "loop"))-1
+    
+    # print(name_split)
+    
+    predictions <- fromJSON(json_data$results)
+    classification_type <- str_split(name_split[2], '_')[[1]][3]
+    
+    results <- recalc_mectrics(predictions, classification_type) %>% 
+      as_tibble() %>% rowwise() %>%
+      mutate(
+        model = str_replace(name_split[1], "_vllm", ""),
+        method = name_split[method_index],
+        n_examples = str_match(method, "\\d+")[[1]],
+        out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
+        method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
+        loop = as.numeric((basename(file) %>% str_replace('__no_think', '') %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+        classifier_type = str_split(name_split[2], '_')[[1]][2],
+        classification_type = classification_type,
+        runtime = json_data$runtime,
+        # predictions = list(predictions),
+        .before = 1
+      )
+    meta_list_llm[[length(meta_list_llm) + 1]] <- results
+  }
   
-  predictions <- fromJSON(json_data$results)
-  classification_type <- str_split(name_split[2], '_')[[1]][3]
-  
-  results <- recalc_mectrics(predictions, classification_type) %>% 
-    as_tibble() %>% rowwise() %>%
-    mutate(
-      model = str_replace(name_split[1], "_vllm", ""),
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_replace('__no_think', '') %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      classifier_type = str_split(name_split[2], '_')[[1]][2],
-      classification_type = classification_type,
-      runtime = json_data$runtime,
-      # predictions = list(predictions),
-      .before = 1
-    )
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
+  df_binary <- meta_list_llm %>% bind_rows() %>% mutate(
+    n_examples = as.integer(n_examples)
+  )
 }
 
-df_binary <- meta_list_llm %>% bind_rows() %>% mutate(
-  n_examples = as.integer(n_examples)
-)
-}
-
-df_binary %>% filter(loop > 0) %>% pull(model) %>% unique()
+# df_binary %>% filter(loop > 0) %>% pull(model) %>% unique()
 
 ##### Nomalizing runtime #####
 
@@ -255,7 +255,7 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) 
     shape = guide_legend(ncol = 1, title.position = "top")
   )
 
-df_binary %>% filter(classification_type == "GuV") %>% 
+df_binary %>% filter(classification_type == "Aktiva") %>% 
   filter(loop == 0) %>% 
   filter(n_examples <= 3 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
@@ -295,55 +295,55 @@ legend("bottomright", legend = paste("AUC =", round(auc_val, 3)))
 #### Real multiclass ####
 
 {
-json_files_page_identification_llm <- list.files(
-  "../benchmark_results/page_identification/final/llm/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)] %>%
-  .[grepl("_four_", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_page_identification_llm) {
-  # print(file)
+  json_files_page_identification_llm <- list.files(
+    "../benchmark_results/page_identification/final/llm/",
+    pattern = "\\.json$",
+    full.names = TRUE
+  ) %>%
+    .[!grepl("_test_", .)] %>%
+    .[grepl("_four_", .)]
   
-  file_content <- readLines(file, warn = FALSE)
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
+  meta_list_llm <- list()
   
-  name_split = (basename(file) %>% str_replace('__no_think', '') %>% str_split("__"))[[1]]
-  method_index = which(str_starts(name_split, "loop"))-1
+  # Loop through each .json file
+  for (file in json_files_page_identification_llm) {
+    # print(file)
+    
+    file_content <- readLines(file, warn = FALSE)
+    json_data <- fromJSON(paste(file_content, collapse = "\n"))
+    
+    name_split = (basename(file) %>% str_replace('__no_think', '') %>% str_split("__"))[[1]]
+    method_index = which(str_starts(name_split, "loop"))-1
+    
+    # print(name_split)
+    
+    predictions <- fromJSON(json_data$results)
+    # classification_type <- str_split(name_split[2], '_')[[1]][3]
+    
+    results <- recalc_mectrics_multiclass(predictions) %>% as_tibble() %>% 
+      as_tibble() %>% rowwise() %>%
+      mutate(
+        model = str_replace(name_split[1], "_vllm", ""),
+        method = name_split[method_index],
+        n_examples = str_match(method, "\\d+")[[1]],
+        out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
+        method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
+        loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+        classifier_type = paste(str_split(name_split[2], '_')[[1]][c(2,3)], collapse = "_"),
+        classification_type = NA,
+        runtime = json_data$runtime,
+        # predictions = list(predictions),
+        .before = 1
+      )
+    meta_list_llm[[length(meta_list_llm) + 1]] <- results
+  }
   
-  # print(name_split)
-  
-  predictions <- fromJSON(json_data$results)
-  # classification_type <- str_split(name_split[2], '_')[[1]][3]
-  
-  results <- recalc_mectrics_multiclass(predictions) %>% as_tibble() %>% 
-    as_tibble() %>% rowwise() %>%
-    mutate(
-      model = str_replace(name_split[1], "_vllm", ""),
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      classifier_type = paste(str_split(name_split[2], '_')[[1]][c(2,3)], collapse = "_"),
-      classification_type = NA,
-      runtime = json_data$runtime,
-      # predictions = list(predictions),
-      .before = 1
-    )
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
+  df_multi <- meta_list_llm %>% bind_rows() %>% mutate(
+    n_examples = as.integer(n_examples)
+  )
 }
 
-df_multi <- meta_list_llm %>% bind_rows() %>% mutate(
-  n_examples = as.integer(n_examples)
-)
-}
-
-df_multi %>% filter(loop > 0) %>% pull(model) %>% unique()
+# df_multi %>% filter(loop > 0) %>% pull(model) %>% unique()
 
 ##### Nomalizing runtime #####
 
@@ -373,10 +373,12 @@ df_multi <- bind_rows(
 
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
 
-df_selected %>% filter(model %in% c(
-  "mistralai_Ministral-8B-Instruct-2410", 
-  "meta-llama_Llama-4-Scout-17B-16E-Instruct",
-  "mistralai_Mistral-Large-Instruct-2411"
+df_selected %>% 
+  filter(model %in% c(
+    "mistralai_Ministral-8B-Instruct-2410", 
+    "mistralai_Mistral-Large-Instruct-2411",
+    "meta-llama_Llama-4-Scout-17B-16E-Instruct",
+    "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8"
   )) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
@@ -387,7 +389,8 @@ df_selected %>% filter(model %in% c(
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
-  )
+  ) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
 
 df_selected %>%
   ggplot(aes(x = norm_runtime, y = f1_score)) +
@@ -399,7 +402,8 @@ df_selected %>%
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
-  )
+  ) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
 
 df_temp <- (df_selected %>% arrange(desc(f1_score)))[1,"predictions"][[1]][[1]] %>% as_tibble()
 

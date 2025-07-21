@@ -9,16 +9,16 @@ output:
     toc: false
     includes:
       in_header:
-        - bhtThesis.sty
-        - preamble.tex
+        - report_misc/bhtThesis.sty
+        - report_misc/preamble.tex
   bookdown::gitbook:
     code_folding: hide
-css: "style.css"
+css: "report_misc/style.css"
 documentclass: book
-bibliography: ["DS 4th: Extracting financial data from annual reports.bib"]
+bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
 biblio-style: apa
 link-citations: yes
-csl: apa-single-spaced.csl
+csl: report_misc/apa-single-spaced.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -36,7 +36,7 @@ library(DT) # For interactive HTML tables
 ```
 
 ```{r load_layout_functions, include=FALSE}
-source("layout_functions.R")
+source("report_misc/layout_functions.R")
 ```
 
 \pagenumbering{gobble}
