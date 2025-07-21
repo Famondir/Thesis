@@ -13,6 +13,7 @@ output:
         - report_misc/preamble.tex
   bookdown::gitbook:
     code_folding: show
+    toc_depth: 4
     config:
       toc:
         before: |
@@ -64,6 +65,8 @@ Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Da
 
 * Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
 * Google gemma war mit alter Klassifikation erfolgreich (anderer Prompt, mehr Seiten)
+
+implementation nach methods
 
 \pagestyle{fancy}
 

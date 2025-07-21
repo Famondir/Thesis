@@ -28,3 +28,4 @@ R/_book/*.tex
 R/_book/*.json
 R/_book/*.css
 R/_main_cache/
+R/data_storage/

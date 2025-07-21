@@ -20,6 +20,8 @@ Due to the imbalanced distribution of the classes the accuracy is not a good met
 
 The regular expressions can be found in the appendix (see \@ref(regex-page-identification)).
 
+General bad precision. Increasing recall degrades precision even further. number of pages positive identified total; used as subset for table identification task
+
 ```{r display-metrics-regex-page-identification-aktiva, echo=FALSE, results="asis"}
 metric_summaries["Aktiva"][[1]] %>%
   mutate_if(
@@ -80,19 +82,78 @@ metrics %>% bind_rows() %>%
 
 #### Table of Contents understanding
 
-* top 1
-* top k
-
 * toc analysis
 * cleaned measures
 
 #### Classification with LLMs {#llm-page-identification}
 
+```{r page-identification-llm-data-loading, echo=FALSE}
+temp_list <- readRDS("data_storage/page_identification_llm.rds")
+df_binary <- temp_list$df_binary
+df_multi <- temp_list$df_multi
+```
+
+```{r}
+binary_task <- list()
+binary_task$n_models <- df_binary$model %>% unique() %>% length()
+binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
+binary_task$n_method_families <- df_binary$method_family %>% unique() %>% length()
+```
+
+structured outputs forcing to answer with a *yes* or *no* for binary task or with *Aktiva*, *Passiva*, *GuV* or *other* for multi classification task
+
 ##### Binary classification
+
+`r  binary_task$n_models` models from `r binary_task$n_model_families` haven been benchmarked among `r binary_task$n_method_families` methods
+
+Most models have have been used till up to 3 examples for the context
+
+Some models only ran for the *Aktiva* classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.
+
+The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section \@ref(#llm-table-detection).
+
+```{r display-metrics-llm-page-identification-binary, echo=FALSE, results="asis"}
+df_binary %>% 
+  filter(is.finite(f1_score), loop == 0) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>%
+  group_by(model_family, classification_type) %>% 
+  filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
+  # mutate(
+  #   n = n()
+  # ) %>% filter(n > 1)
+  arrange(desc(f1_score)) %>% # head(10) %>% 
+  select(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) %>%
+  mutate(
+    f1_score = round(f1_score, 2),
+    norm_runtime = round(norm_runtime, 0),
+  ) %>% rename(
+    "runtime in s" = norm_runtime,
+  ) %>% 
+  render_table()
+```
 
 * f1
 * multiple models
 * best model detail (different methods / settings)
+
+The experiments for best performing model, Ministral-8B-Instruct-2410, have been extended by methods with even more examples in the context.
+
+```{r}
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 1) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  facet_grid(model~classification_type) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  )
+```
+
+Some models have run for multiple times to check if the results are stable
+Earlier examples with supset have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.
 
 ##### Multi classification
 
@@ -100,7 +161,14 @@ metrics %>% bind_rows() %>%
 * multiple models
 * best model detail (different methods / settings)
 
+#### Term frequency based classifier
+
+* top 1
+* top k
+
 ### Comparison
+
+Multiclassification more effective than three times single classification
 
 #### F1
 

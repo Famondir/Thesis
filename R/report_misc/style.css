@@ -1,3 +1,14 @@
+.book .book-body .page-wrapper .page-inner {
+  max-width: 1200px;
+  width: calc(100% - 200px);
+}
+
+@media (max-width: 1240px) {
+  .book .book-body .page-wrapper .page-inner {
+    max-width: 100%;
+    width: 100%;
+  }
+}
 /*--- Folding ---*/
 
 .pre-detail p {

@@ -28,9 +28,9 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL) {
       col_defs <- lapply(seq_along(dt_align), function(i) {
         list(targets = i - 1, className = paste0('dt-', dt_align[i]))
       })
-      datatable(df, escape = FALSE, options = list(pageLength = 10, columnDefs = col_defs))
+      datatable(df, escape = FALSE, options = list(pageLength = 10, columnDefs = col_defs, scrollX = TRUE))
     } else {
-      datatable(df, escape = FALSE, options = list(pageLength = 10))
+      datatable(df, escape = FALSE, options = list(pageLength = 10, scrollX = TRUE))
     }
   } else if (knitr::is_latex_output()) {
     kbl(

@@ -281,3 +281,7 @@ regex_patterns_3 = {
     ]
 }
 ```
+
+## Extraction framework flow chart
+
+![Framework of](images/extraction_framework_flow_chart.png){width=100%}
