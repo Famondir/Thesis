@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5 Results | Extraction of tabular data from annual reports with LLMs</title>
+  <meta name="description" content="5 Results | Extraction of tabular data from annual reports with LLMs" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5 Results | Extraction of tabular data from annual reports with LLMs" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5 Results | Extraction of tabular data from annual reports with LLMs" />
+  
+  
+  
+
+<meta name="author" content="Simon Schäfer" />
+
+
+<meta name="date" content="2025-09-01" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="methods.html"/>
+<link rel="next" href="discussion.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/codefolding-lua-1.1/codefolding-lua.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="report_misc/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#motivation"><i class="fa fa-check"></i><b>1.1</b> Motivation</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#objectives"><i class="fa fa-check"></i><b>1.2</b> Objectives</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#methodology-1-p"><i class="fa fa-check"></i><b>1.3</b> Methodology (1 p)</a></li>
+<li class="chapter" data-level="1.4" data-path="introduction.html"><a href="introduction.html#thesis-outline-0.5-p"><i class="fa fa-check"></i><b>1.4</b> Thesis Outline (0.5 p)</a></li>
+<li class="chapter" data-level="1.5" data-path="introduction.html"><a href="introduction.html#to-place-in-chapters-abovehttp127.0.0.129003rmd_output4imagesbeteiligungsunternehmen.png"><i class="fa fa-check"></i><b>1.5</b> To place in chapters abovehttp://127.0.0.1:29003/rmd_output/4/images/beteiligungsunternehmen.png</a></li>
+<li class="chapter" data-level="1.6" data-path="introduction.html"><a href="introduction.html#rhvb"><i class="fa fa-check"></i><b>1.6</b> RHvB</a></li>
+<li class="chapter" data-level="1.7" data-path="05_Results.html"><a href="#datenverf%C3%BCgbarkeit"><i class="fa fa-check"></i><b>1.7</b> Datenverfügbarkeit</a></li>
+<li class="chapter" data-level="1.8" data-path="introduction.html"><a href="introduction.html#unstrukturierte-daten"><i class="fa fa-check"></i><b>1.8</b> Unstrukturierte Daten</a>
+<ul>
+<li class="chapter" data-level="1.8.1" data-path="introduction.html"><a href="introduction.html#portable-document-format"><i class="fa fa-check"></i><b>1.8.1</b> Portable Document Format</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html"><i class="fa fa-check"></i><b>2</b> Literature review (less than 10 p)</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#basic-terms"><i class="fa fa-check"></i><b>2.1</b> Basic terms</a></li>
+<li class="chapter" data-level="2.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#technological-topic-related-work"><i class="fa fa-check"></i><b>2.2</b> Technological topic (related work)</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#extraction-of-numeric-values"><i class="fa fa-check"></i><b>2.2.1</b> Extraction of numeric values</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#optinal-more-topics-like-previous"><i class="fa fa-check"></i><b>2.3</b> optinal more topics like previous</a></li>
+<li class="chapter" data-level="2.4" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#summary-0.5-p"><i class="fa fa-check"></i><b>2.4</b> Summary (0.5 p)</a></li>
+<li class="chapter" data-level="2.5" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#to-place-in-chapters-above"><i class="fa fa-check"></i><b>2.5</b> To place in chapters above</a></li>
+<li class="chapter" data-level="2.6" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#table-extraction-tasks"><i class="fa fa-check"></i><b>2.6</b> Table extraction tasks</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#difficulties"><i class="fa fa-check"></i><b>2.6.1</b> Difficulties</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-extrtaction-process"><i class="fa fa-check"></i><b>2.7</b> Document Extrtaction Process</a>
+<ul>
+<li class="chapter" data-level="2.7.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-layout-analysis"><i class="fa fa-check"></i><b>2.7.1</b> Document Layout Analysis</a>
+<ul>
+<li class="chapter" data-level="2.7.1.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#vision-grid-transformer"><i class="fa fa-check"></i><b>2.7.1.1</b> Vision Grid Transformer</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#section-1"><i class="fa fa-check"></i><b>2.7.2</b> </a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tools"><i class="fa fa-check"></i><b>2.8</b> Tools</a>
+<ul>
+<li class="chapter" data-level="2.8.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tableformer"><i class="fa fa-check"></i><b>2.8.1</b> TableFormer</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="implementation-max-5p.html"><a href="implementation-max-5p.html"><i class="fa fa-check"></i><b>3</b> Implementation (max 5p)</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="implementation-max-5p.html"><a href="implementation-max-5p.html#speedup-with-vllm-and-batching"><i class="fa fa-check"></i><b>3.1</b> Speedup with vLLM and batching</a></li>
+<li class="chapter" data-level="3.2" data-path="implementation-max-5p.html"><a href="implementation-max-5p.html#setup-dockerfile-and-pv"><i class="fa fa-check"></i><b>3.2</b> Setup (Dockerfile and PV)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>4</b> Methods</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="methods.html"><a href="methods.html#data"><i class="fa fa-check"></i><b>4.1</b> Data</a></li>
+<li class="chapter" data-level="4.2" data-path="methods.html"><a href="methods.html#page-identification"><i class="fa fa-check"></i><b>4.2</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="methods.html"><a href="methods.html#baselines"><i class="fa fa-check"></i><b>4.2.1</b> Baselines</a>
+<ul>
+<li class="chapter" data-level="4.2.1.1" data-path="methods.html"><a href="methods.html#regex-based"><i class="fa fa-check"></i><b>4.2.1.1</b> Regex based</a></li>
+<li class="chapter" data-level="4.2.1.2" data-path="methods.html"><a href="methods.html#term-frequency-based"><i class="fa fa-check"></i><b>4.2.1.2</b> Term frequency based</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="methods.html"><a href="methods.html#table-detection"><i class="fa fa-check"></i><b>4.3</b> Table detection</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="methods.html"><a href="methods.html#llm"><i class="fa fa-check"></i><b>4.3.1</b> LLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="methods.html"><a href="methods.html#vision-model"><i class="fa fa-check"></i><b>4.3.2</b> Vision Model</a></li>
+<li class="chapter" data-level="4.3.3" data-path="methods.html"><a href="methods.html#docling-and-co"><i class="fa fa-check"></i><b>4.3.3</b> Docling and Co</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="methods.html"><a href="methods.html#information-extraction"><i class="fa fa-check"></i><b>4.4</b> Information extraction</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="methods.html"><a href="methods.html#baselines-1"><i class="fa fa-check"></i><b>4.4.1</b> Baselines</a></li>
+<li class="chapter" data-level="4.4.2" data-path="methods.html"><a href="methods.html#simple-pipeline"><i class="fa fa-check"></i><b>4.4.2</b> Simple pipeline</a></li>
+<li class="chapter" data-level="4.4.3" data-path="methods.html"><a href="methods.html#sophisticated-approaches"><i class="fa fa-check"></i><b>4.4.3</b> Sophisticated approaches</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#page-identification-1"><i class="fa fa-check"></i><b>5.1</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="results.html"><a href="results.html#regex-page-identification"><i class="fa fa-check"></i><b>5.1.1</b> Baseline: Regex</a></li>
+<li class="chapter" data-level="5.1.2" data-path="results.html"><a href="results.html#advanced-techniques"><i class="fa fa-check"></i><b>5.1.2</b> Advanced techniques</a>
+<ul>
+<li class="chapter" data-level="5.1.2.1" data-path="results.html"><a href="results.html#table-of-contents-understanding"><i class="fa fa-check"></i><b>5.1.2.1</b> Table of Contents understanding</a></li>
+<li class="chapter" data-level="5.1.2.2" data-path="results.html"><a href="results.html#llm-page-identification"><i class="fa fa-check"></i><b>5.1.2.2</b> Classification with LLMs</a></li>
+<li class="chapter" data-level="5.1.2.3" data-path="results.html"><a href="results.html#term-frequency-based-classifier"><i class="fa fa-check"></i><b>5.1.2.3</b> Term frequency based classifier</a></li>
+</ul></li>
+<li class="chapter" data-level="5.1.3" data-path="results.html"><a href="results.html#comparison"><i class="fa fa-check"></i><b>5.1.3</b> Comparison</a>
+<ul>
+<li class="chapter" data-level="5.1.3.1" data-path="results.html"><a href="results.html#f1"><i class="fa fa-check"></i><b>5.1.3.1</b> F1</a></li>
+<li class="chapter" data-level="5.1.3.2" data-path="results.html"><a href="results.html#energy-usage-and-runtime"><i class="fa fa-check"></i><b>5.1.3.2</b> Energy usage and runtime</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#table-extraction"><i class="fa fa-check"></i><b>5.2</b> Table extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.1</b> Not covered</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#local-machine"><i class="fa fa-check"></i><b>8.1</b> Local machine</a>
+<ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#system-details-report"><i class="fa fa-check"></i>System Details Report</a>
+<ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#report-details"><i class="fa fa-check"></i>Report details</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#hardware-information"><i class="fa fa-check"></i>Hardware Information:</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#software-information"><i class="fa fa-check"></i>Software Information:</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="appendix.html"><a href="appendix.html#benchmarks"><i class="fa fa-check"></i><b>8.2</b> Benchmarks</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="appendix.html"><a href="appendix.html#text-extraction-benchmark"><i class="fa fa-check"></i><b>8.2.1</b> Text extraction</a></li>
+<li class="chapter" data-level="8.2.2" data-path="appendix.html"><a href="appendix.html#table-detection-benchmark"><i class="fa fa-check"></i><b>8.2.2</b> Table detection</a></li>
+<li class="chapter" data-level="8.2.3" data-path="appendix.html"><a href="appendix.html#large-language-model-process-speed"><i class="fa fa-check"></i><b>8.2.3</b> Large language model process speed</a></li>
+<li class="chapter" data-level="8.2.4" data-path="appendix.html"><a href="appendix.html#llm-table-detection"><i class="fa fa-check"></i><b>8.2.4</b> Table identification with LLMs</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="appendix.html"><a href="appendix.html#regex-page-identification-code"><i class="fa fa-check"></i><b>8.3</b> Regular expressions</a></li>
+<li class="chapter" data-level="8.4" data-path="appendix.html"><a href="appendix.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>8.4</b> Extraction framework flow chart</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Extraction of tabular data from annual reports with LLMs</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="results" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">5</span> Results<a href="results.html#results" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="page-identification-1" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Page identification<a href="results.html#page-identification-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As described in <a href="appendix.html#text-extraction-benchmark">8.2.1</a> open source libraries have been used to extract the text from the annual reports.</p>
+<div id="regex-page-identification" class="section level3 hasAnchor" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> Baseline: Regex<a href="results.html#regex-page-identification" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Building a sound regular expression often is an iterative process. In a first approach a very simple one was implemented.</p>
+<p>Comparing the differences in the metrics based on the different text extraction libraries it can be said that the extracted text is very similar but not identical. Since the resukts are not depending on the used text extraction library the <em>exhaustive regex restricted</em> has only been run with the fast text extraction library <em>pdfium</em>. The results of the regex based page identification are presented in the following tables.</p>
+<ul>
+<li>look into details where they differ and if it is because of a line break or whitespace ?</li>
+</ul>
+<p>Due to the imbalanced distribution of the classes the accuracy is not a good metric to compare the performance of the different methods. The number of pages of interest is much smaller than the number of irrelevant pages. Therefore, precision, recall and F1 score are presented as well.</p>
+<p>The regular expressions can be found in the appendix (see <a href="results.html#regex-page-identification">5.1.1</a>).</p>
+<p>General bad precision. Increasing recall degrades precision even further. number of pages positive identified total; used as subset for table identification task</p>
+<table>
+<caption>
+<span id="tab:display-metrics-regex-page-identification-aktiva">Table 5.1: </span>Comparing page identification metrics for different regular expressions for classification task ‘Aktiva’
+</caption>
+</table>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bf853e0362e227d0041e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bf853e0362e227d0041e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["simple regex","simple regex","exhaustive regex restricted","exhaustive regex restricted","exhaustive regex","exhaustive regex"],["mean","sd","mean","sd","mean","sd"],["<b>0.267<\/b>","0.005","0.19",null,"0.13","0"],["0.778","0.01","0.98",null,"<b>0.993<\/b>","0.01"],["<b>0.397<\/b>","0.005","0.32",null,"0.23","0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>method<\/th>\n      <th>stat<\/th>\n      <th>precision<\/th>\n      <th>recall<\/th>\n      <th>F1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-right"},{"targets":4,"className":"dt-right"},{"targets":5,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"method","targets":1},{"name":"stat","targets":2},{"name":"precision","targets":3},{"name":"recall","targets":4},{"name":"F1","targets":5}],"scrollX":true,"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<table>
+<caption>
+<span id="tab:display-metrics-regex-page-identification-passiva">Table 5.2: </span>Comparing page identification metrics for different regular expressions for classification task ‘Passiva’
+</caption>
+</table>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-87178faa3749ba080567" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-87178faa3749ba080567">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["simple regex","simple regex","exhaustive regex restricted","exhaustive regex restricted","exhaustive regex","exhaustive regex"],["mean","sd","mean","sd","mean","sd"],["<b>0.385<\/b>","0.005","0.19",null,"0.127","0.005"],["0.78","0.009","0.98",null,"<b>0.993<\/b>","0.01"],["<b>0.515<\/b>","0.005","0.32",null,"0.223","0.01"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>method<\/th>\n      <th>stat<\/th>\n      <th>precision<\/th>\n      <th>recall<\/th>\n      <th>F1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-right"},{"targets":4,"className":"dt-right"},{"targets":5,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"method","targets":1},{"name":"stat","targets":2},{"name":"precision","targets":3},{"name":"recall","targets":4},{"name":"F1","targets":5}],"scrollX":true,"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<table>
+<caption>
+<span id="tab:display-metrics-regex-page-identification-guv">Table 5.3: </span>Comparing page identification metrics for different regular expressions for classification task ‘Gewinn- und Verlustrechnung’
+</caption>
+</table>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2fa0cafda8a23db631e3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2fa0cafda8a23db631e3">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["simple regex","simple regex","exhaustive regex restricted","exhaustive regex restricted","exhaustive regex","exhaustive regex"],["mean","sd","mean","sd","mean","sd"],["0.173","0.008","<b>0.21<\/b>",null,"0.172","0.004"],["0.752","0.004","<b>0.83<\/b>",null,"0.815","0.01"],["0.283","0.008","<b>0.34<\/b>",null,"0.282","0.004"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>method<\/th>\n      <th>stat<\/th>\n      <th>precision<\/th>\n      <th>recall<\/th>\n      <th>F1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-right"},{"targets":4,"className":"dt-right"},{"targets":5,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"method","targets":1},{"name":"stat","targets":2},{"name":"precision","targets":3},{"name":"recall","targets":4},{"name":"F1","targets":5}],"scrollX":true,"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p><img src="_main_files/figure-html/display-metrics-plot-regex-page-identification-1.png" width="100%" /></p>
+</div>
+<div id="advanced-techniques" class="section level3 hasAnchor" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> Advanced techniques<a href="results.html#advanced-techniques" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="table-of-contents-understanding" class="section level4 hasAnchor" number="5.1.2.1">
+<h4><span class="header-section-number">5.1.2.1</span> Table of Contents understanding<a href="results.html#table-of-contents-understanding" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<pre><code>## Joining with `by = join_by(filepath)`</code></pre>
+<ul>
+<li>calculate and add Qwen, Gemini or LLama results?</li>
+</ul>
+<div id="text-based" class="section level5 hasAnchor" number="5.1.2.1.1">
+<h5><span class="header-section-number">5.1.2.1.1</span> Text based<a href="results.html#text-based" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p><span class="citation">Li et al. (<a href="#ref-li_extracting_2023">2023</a>)</span> used the table of contents to identify the pages of interest. In their approach the table of contents is extracted from the text. Based on their observation, that the TOC that “ACFRs typically spans no more than the initial 165 lines of the converted document” (p. 20), they use the first 200 lines of text.</p>
+<p>My expectation was to find the TOC within the first five pages. Often we find way less than 200 lines of text on the five first pages (see Figure <a href="results.html#fig:page-identification-toc-histogram">5.1</a>). Some files are not machine readable without OCR and thus show zero lines in the first five pages as well.</p>
+<div class="figure"><span style="display:block;" id="fig:page-identification-toc-histogram"></span>
+<img src="_main_files/figure-html/page-identification-toc-histogram-1.png" alt="Histogram of the number of lines in the first 5 pages of the annual reports" width="80%" />
+<p class="caption">
+Figure 5.1: Histogram of the number of lines in the first 5 pages of the annual reports
+</p>
+</div>
+<div id="first-five-pages" class="section level6 hasAnchor" number="5.1.2.1.1.1">
+<h6><span class="header-section-number">5.1.2.1.1.1</span> First five pages<a href="results.html#first-five-pages" class="anchor-section" aria-label="Anchor link to header"></a></h6>
+<p>A request to Mistral results in 64 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
+</div>
+<div id="first-200-lines" class="section level6 hasAnchor" number="5.1.2.1.1.2">
+<h6><span class="header-section-number">5.1.2.1.1.2</span> First 200 lines<a href="results.html#first-200-lines" class="anchor-section" aria-label="Anchor link to header"></a></h6>
+<p>A request to Mistral results in 70 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
+</div>
+<div id="machine-readable-toc-based" class="section level6 hasAnchor" number="5.1.2.1.1.3">
+<h6><span class="header-section-number">5.1.2.1.1.3</span> Machine readable TOC based<a href="results.html#machine-readable-toc-based" class="anchor-section" aria-label="Anchor link to header"></a></h6>
+<p>To limit the text and hopefully increase the quality of the input data one can work with the TOC representation embedded within the PDF files. From 80 annual reports 43 files do have a machine readable separate table of contents and 37 do not have one.</p>
+<p>One can see that correct predictions for the page range are more probable when the TOC has a medium number of entries. It is possible to drop PDFs with less than 9 without loosing a single correct prediction. This means that for PDFs with TOC with less then 9 entieres the LLM was not able to make a correct prediction. This is not surprising since neither <em>Bilanz</em> nor <em>Gewinn- und Verlustrechnung</em> are mentioned there.</p>
+<p>Almost no influence if TOC is passed formated as markdown or json. With the json formated TOC it found two more correct page ranges (single test run). It was testes because the relation <em>page_number</em> heading and value might have been clearer in json for a linear working LLM.</p>
+<p><img src="_main_files/figure-html/page-identification-toc-mr-degration-1.png" width="672" /></p>
+</div>
+</div>
+<div id="comparison-of-the-different-approaches" class="section level5 hasAnchor" number="5.1.2.1.2">
+<h5><span class="header-section-number">5.1.2.1.2</span> Comparison of the different approaches<a href="results.html#comparison-of-the-different-approaches" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<ul>
+<li>toc analysis</li>
+<li>cleaned measures</li>
+</ul>
+<div class="figure"><span style="display:block;" id="fig:page-identification-toc-analysis"></span>
+<img src="_main_files/figure-html/page-identification-toc-analysis-1.png" alt="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges" width="100%" />
+<p class="caption">
+Figure 5.2: Comparing number of fount TOC and amount of correct and incorrect predicted page ranges
+</p>
+</div>
+<pre><code>## Warning: Removed 151 rows containing non-finite outside the scale range
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 151 rows containing missing values or values outside
+## the scale range (`geom_point()`).</code></pre>
+<p><img src="_main_files/figure-html/page-identification-toc-range_logprobs-1.png" width="672" /></p>
+</div>
+</div>
+<div id="llm-page-identification" class="section level4 hasAnchor" number="5.1.2.2">
+<h4><span class="header-section-number">5.1.2.2</span> Classification with LLMs<a href="results.html#llm-page-identification" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="results.html#cb4-1" tabindex="-1"></a>binary_task <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb4-2"><a href="results.html#cb4-2" tabindex="-1"></a>binary_task<span class="sc">$</span>n_models <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb4-3"><a href="results.html#cb4-3" tabindex="-1"></a>binary_task<span class="sc">$</span>n_model_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb4-4"><a href="results.html#cb4-4" tabindex="-1"></a>binary_task<span class="sc">$</span>n_method_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>method_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span></code></pre></div>
+</details>
+<p>structured outputs forcing to answer with a <em>yes</em> or <em>no</em> for binary task or with <em>Aktiva</em>, <em>Passiva</em>, <em>GuV</em> or <em>other</em> for multi classification task</p>
+<div id="binary-classification" class="section level5 hasAnchor" number="5.1.2.2.1">
+<h5><span class="header-section-number">5.1.2.2.1</span> Binary classification<a href="results.html#binary-classification" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>20 models from 4 haven been benchmarked among 5 methods</p>
+<p>Most models have have been used till up to 3 examples for the context</p>
+<p>[Probably gonna drop because models will have rerun in some hours] Some models only ran for the <em>Aktiva</em> classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.</p>
+<p>The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section @ref(#llm-table-detection).</p>
+<pre><code>## `mutate_all()` ignored the following grouping variables:
+## • Columns `model_family`, `classification_type`
+## ℹ Use `mutate_at(df, vars(-group_cols()), myoperation)` to
+##   silence the message.</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-93da5f42dd67a5e6639e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-93da5f42dd67a5e6639e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12"],["mistralai","meta-llama","mistralai","mistralai","Qwen","meta-llama","Qwen","meta-llama","Qwen","google","google","google"],["mistralai_Ministral-8B-Instruct-2410","meta-llama_Llama-4-Scout-17B-16E-Instruct","mistralai_Ministral-8B-Instruct-2410","mistralai_Ministral-8B-Instruct-2410","Qwen_Qwen2.5-32B-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","google_gemma-3n-E4B-it","google_gemma-3n-E4B-it","google_gemma-3-12b-it"],["GuV","GuV","Passiva","Aktiva","GuV","Passiva","Aktiva","Aktiva","Passiva","GuV","Passiva","Aktiva"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","zero_shot","top_n_rag_examples"],["3","3","3","3","1","3","1","3","1","1",null,"1"],["0.93","0.92","0.92","0.92","0.87","0.85","0.84","0.83","0.79","0.23","0.21","0.18"],["917","4062","858","878","1985","3037","1806","3052","1967","126","40","261"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>classification_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"classification_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li>f1</li>
+<li>multiple models</li>
+<li>best model detail (different methods / settings)</li>
+</ul>
+<p>The experiments for best performing model, Ministral-8B-Instruct-2410, have been extended by methods with even more examples in the context.</p>
+<details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="results.html#cb6-1" tabindex="-1"></a>df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(model <span class="sc">==</span> <span class="st">&quot;mistralai_Ministral-8B-Instruct-2410&quot;</span>, loop <span class="sc">&lt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="results.html#cb6-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> norm_runtime, <span class="at">y =</span> f1_score)) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="results.html#cb6-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> method_family, <span class="at">shape =</span> out_of_company), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="results.html#cb6-4" tabindex="-1"></a>  <span class="fu">scale_shape</span>(<span class="at">na.value =</span> <span class="dv">15</span>, <span class="at">guide =</span> <span class="st">&quot;legend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="results.html#cb6-5" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> n_examples)) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="results.html#cb6-6" tabindex="-1"></a>  <span class="fu">facet_grid</span>(model<span class="sc">~</span>classification_type) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="results.html#cb6-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="results.html#cb6-8" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb6-9"><a href="results.html#cb6-9" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb6-10"><a href="results.html#cb6-10" tabindex="-1"></a>    <span class="at">shape =</span> <span class="fu">guide_legend</span>(<span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>)</span>
+<span id="cb6-11"><a href="results.html#cb6-11" tabindex="-1"></a>  )</span></code></pre></div>
+</details>
+<pre><code>## Warning: Removed 6 rows containing missing values or values outside the
+## scale range (`geom_text()`).</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Some models have run for multiple times to check if the results are stable
+Earlier examples with supset have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.</p>
+</div>
+<div id="multi-classification" class="section level5 hasAnchor" number="5.1.2.2.2">
+<h5><span class="header-section-number">5.1.2.2.2</span> Multi classification<a href="results.html#multi-classification" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<ul>
+<li>f1</li>
+<li>multiple models</li>
+<li>best model detail (different methods / settings)</li>
+</ul>
+</div>
+</div>
+<div id="term-frequency-based-classifier" class="section level4 hasAnchor" number="5.1.2.3">
+<h4><span class="header-section-number">5.1.2.3</span> Term frequency based classifier<a href="results.html#term-frequency-based-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>top 1</li>
+<li>top k</li>
+</ul>
+</div>
+</div>
+<div id="comparison" class="section level3 hasAnchor" number="5.1.3">
+<h3><span class="header-section-number">5.1.3</span> Comparison<a href="results.html#comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Multiclassification more effective than three times single classification</p>
+<div id="f1" class="section level4 hasAnchor" number="5.1.3.1">
+<h4><span class="header-section-number">5.1.3.1</span> F1<a href="results.html#f1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+</div>
+<div id="energy-usage-and-runtime" class="section level4 hasAnchor" number="5.1.3.2">
+<h4><span class="header-section-number">5.1.3.2</span> Energy usage and runtime<a href="results.html#energy-usage-and-runtime" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+</div>
+</div>
+</div>
+<div id="table-extraction" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Table extraction<a href="results.html#table-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-li_extracting_2023" class="csl-entry">
+Li, H., Gao, H. (Harry)., Wu, C., &amp; Vasarhelyi, M. A. (2023). <em>Extracting <span>Financial</span> <span>Data</span> from <span>Unstructured</span> <span>Sources</span>: <span>Leveraging</span> <span>Large</span> <span>Language</span> <span>Models</span></em> [{SSRN} {Scholarly} {Paper}]. Social Science Research Network. <a href="https://doi.org/10.2139/ssrn.4567607">https://doi.org/10.2139/ssrn.4567607</a>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="discussion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

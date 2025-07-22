@@ -9,6 +9,15 @@
     width: 100%;
   }
 }
+
+.figure {
+  text-align:center;
+}
+
+h5 span.header-section-number, h6 span.header-section-number {
+  display: none;
+}
+
 /*--- Folding ---*/
 
 .pre-detail p {
