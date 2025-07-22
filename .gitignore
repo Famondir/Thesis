@@ -1,6 +1,6 @@
 Literatur/
 Geschaeftsberichte/
-R/*/*.html
+!R/*/*.html
 R/libs/
 R/*_files/
 .ipynb_checkpoints
@@ -19,13 +19,13 @@ manual_download/Berliner Werstätten für Menschen mit Behinderung/Endgultiger B
 Python/chroma_db/*
 benchmark_truth/real_tables/*.xlsx
 !R/_book/thesis.pdf
-R/_book/libs/
+!R/_book/libs/
 *.cb
 *.cb2
-R/_book/_main_files/
+!R/_book/_main_files/
 R/*.log
 R/_book/*.tex
 R/_book/*.json
-R/_book/*.css
+!R/_book/*.css
 R/_main_cache/
 R/data_storage/

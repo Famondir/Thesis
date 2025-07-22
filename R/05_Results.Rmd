@@ -82,8 +82,87 @@ metrics %>% bind_rows() %>%
 
 #### Table of Contents understanding
 
+```{r page-identification-toc-data-loading, echo=FALSE}
+source("scripts/page_identification_toc_data_loading.R")
+```
+
+* calculate and add Qwen, Gemini or LLama results?
+
+##### Text based
+
+@li_extracting_2023 used the table of contents to identify the pages of interest. In their approach the table of contents is extracted from the text. Based on their observation, that the TOC that "ACFRs typically spans no more than the initial 165 lines of the converted document" (p. 20), they use the first 200 lines of text.
+
+My expectation was to find the TOC within the first five pages. Often we find way less than 200 lines of text on the five first pages (see Figure \@ref(fig:page-identification-toc-histogram)). Some files are not machine readable without OCR and thus show zero lines in the first five pages as well.
+
+```{r page-identification-toc-histogram, echo=FALSE, fig.width=8, fig.height=3, out.width="80%", fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
+tibble(num_lines = num_lines) %>% ggplot() +
+  geom_histogram(aes(x = num_lines), bins = 20) +
+  labs(x = "Number of lines in the first 5 pages", y = "Count")
+```
+
+###### First five pages
+
+A request to Mistral results in `r n_found_toc_5_pages` strings that should represent a table of contents among the first five pages [strings not checked in detail].
+
+###### First 200 lines
+
+A request to Mistral results in `r n_found_toc_200_lines` strings that should represent a table of contents among the first five pages [strings not checked in detail].
+
+
+
+###### Machine readable TOC based
+
+To limit the text and hopefully increase the quality of the input data one can work with the TOC representation embedded within the PDF files. From `r n_toc+n_no_toc` annual reports `r n_toc` files do have a machine readable separate table of contents and `r n_no_toc` do not have one.
+
+One can see that correct predictions for the page range are more probable when the TOC has a medium number of entries. It is possible to drop PDFs with less than `r min_n_entries_max_correct` without loosing a single correct prediction. This means that for PDFs with TOC with less then `r min_n_entries_max_correct` entieres the LLM was not able to make a correct prediction. This is not surprising since neither *Bilanz* nor *Gewinn- und Verlustrechnung* are mentioned there.
+
+Almost no influence if TOC is passed formated as markdown or json. With the json formated TOC it found two more correct page ranges (single test run). It was testes because the relation *page_number* heading and value might have been clearer in json for a linear working LLM.
+
+```{r page-identification-toc-mr-degration, echo=FALSE, results="asis"}
+df_toc_benchmark_mr_degration %>% ggplot() +
+  geom_col(aes(x = n_entries, y = value, fill = correct)) +
+  geom_line(aes(x = as.numeric(n_entries), y = 100*perc_correct, group = 1)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  facet_wrap(~type, ncol = 1)
+```
+
+##### Comparison of the different approaches
+
 * toc analysis
 * cleaned measures
+
+```{r page-identification-toc-analysis, echo=FALSE, results="asis", out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range)) +
+  geom_text(
+    data = df_toc_benchmark %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1) # +
+  # theme(
+  #   legend.position = "bottom"
+  # )
+```
+
+```{r page-identification-toc-range_logprobs, echo=FALSE, results="asis"}
+df_toc_benchmark %>% 
+  rowwise() %>% 
+  mutate(
+    min_confidence = min(confidence_start_page, confidence_end_page),
+    range = abs(end_page - start_page) + 1,
+  ) %>% group_by(filepath, benchmark_type) %>%
+  distance_confidence_plot() +
+  facet_wrap(~benchmark_type, ncol = 1)
+```
 
 #### Classification with LLMs {#llm-page-identification}
 
@@ -108,7 +187,7 @@ structured outputs forcing to answer with a *yes* or *no* for binary task or wit
 
 Most models have have been used till up to 3 examples for the context
 
-Some models only ran for the *Aktiva* classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.
+[Probably gonna drop because models will have rerun in some hours] Some models only ran for the *Aktiva* classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.
 
 The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section \@ref(#llm-table-detection).
 

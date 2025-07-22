@@ -9,12 +9,17 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL) {
     })
   }
   
+  latex_sub <- "([%&_#{}-])"
+  
   # Escape special characters in the caption for LaTeX
   if (!is.null(caption) && knitr::is_latex_output()) {
-    caption <- gsub("([%&_#{}])", "\\\\\\1", caption) # Escape LaTeX special characters
+    caption <- gsub(latex_sub, "\\\\\\1", caption) # Escape LaTeX special characters
   }
 
-  # df <- df %>% mutate_all(~gsub("([%&_#{}-])", "\\\\\\1", .))
+  df <- df %>% mutate_all(~gsub(latex_sub, "\\\\\\1", .)) %>% setNames(
+    gsub(latex_sub, "\\\\\\1", colnames(.))
+  ) # Escape LaTeX special characters in column names
+  
 
   if (knitr::is_html_output()) {
     # Set caption

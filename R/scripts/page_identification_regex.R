@@ -22,7 +22,7 @@ num_tables <- data_unnested %>%
   nrow()
 
 # Get a list of all .json files in the folder
-json_files <- list.files("../benchmark_results/page_identification/", pattern = "\\.json$", full.names = TRUE)
+json_files <- list.files("../benchmark_results/page_identification/", pattern = "regex\\.json$", full.names = TRUE)
 
 calc_metrics <- function(classification_type) {
   # Initialize an empty dataframe to store results
@@ -47,7 +47,6 @@ calc_metrics <- function(classification_type) {
   for (file in json_files) {
     # browser()
     
-    # Read the JSON file
     json_data <- fromJSON(file)
     
     # Extract the required values
