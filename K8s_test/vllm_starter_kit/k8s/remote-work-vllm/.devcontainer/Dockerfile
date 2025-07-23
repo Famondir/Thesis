@@ -22,6 +22,8 @@ RUN echo "extensions-dir: /root/.vscode-server/extensions/" >> /root/.config/cod
 ### Preinstall extensions
 RUN code-server --install-extension ms-python.python \
     && code-server --install-extension ms-toolsai.jupyter
+# RUN code-server --install-extension ms-toolsai.datawrangler 
+# does not work :(
 
 RUN pip install pandas ipykernel ipywidgets
 RUN pip install transformers hf-xet xgrammar
