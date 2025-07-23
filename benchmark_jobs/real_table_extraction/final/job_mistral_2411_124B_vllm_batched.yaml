@@ -1,28 +1,28 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: qwen-7b-real-table-extraction-final-job
+    name: mistral-2411-124b-real-table-extraction-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: qwen-7b-real-table-extraction-vllm-batched-job
+        app: mistral-2411-124b-table-extraction-vllm-batched-jobreal-job
     spec:
       containers:
-      - name: qwen-7b-real-table-extraction-vllm-batched-job
+      - name: mistral-2411-124b-table-extraction-vllm-batched-jobreal--job
         image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-7B-Instruct --n_loops 1 --batched"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name mistralai/Mistral-Large-Instruct-2411 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 4"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "4"
           limits:
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "4"
             memory: 128Gi
             cpu: "32"
         env:
@@ -40,13 +40,19 @@ spec:
         volumeMounts:
           - name: vllm-pvc
             mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: a100
+        gpu: b200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
         - name: vllm-pvc
           persistentVolumeClaim:
             claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
       restartPolicy: Never

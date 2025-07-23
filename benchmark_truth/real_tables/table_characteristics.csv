@@ -1,0 +1,41 @@
+company,filename,T_in_year,T_in_previous_year,sum_same_line,spacer,n_columns,vorjahr,passiva_same_page,header_span,enumeration,vis_seperated_cols,vis_seperated_rows,sum_in_header,year_missing,geschaeftsjahr
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2016_BBB.pdf,0,0,0," ",3,1,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2017_BBB.pdf,0,0,0," ",3,1,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2018_BBB.pdf,0,0,0," ",3,2,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2019_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2020_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2021_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2022_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2023_BBB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
+Berliner Bäder Betriebe,2018_Geschaeftsbericht_BBB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
+Berliner Stadtgüter,BSG-Geschaeftsbericht-2021-druck.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
+Berliner Wasserbetriebe,2020_geschaeftsbericht-berliner-wasserbetriebe.pdf,0,0,0,".",3,0,0,0,1,1,1,0,0
+Berliner Werstätten für Menschen mit Behinderung,Endgultiger Bericht JAP 2022 BWB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
+Berlinovo,berlinovo_gb2018_s.pdf,0,0,0,".",2,0,0,0,1,1,1,0,0,0
+Berlinwasser Holding,2022-geschaeftsbericht-bwh.pdf,0,1,0,".",3,0,0,0,1,1,1,0,0,0
+BGZ GmbH,20221021-BA-BGZ-JAP-2021.pdf,0,1,0,".",2,0,1,0,1,0,1,1,0,0
+Campus Berlin-Buch,CBB_2021_Pruefungsbericht_digitale_Ausfertigung.pdf,0,0,0,".",2,0,1,0,1,1,0,0,1,0
+DEGES,GB_2024.pdf,0,0,0,".",2,1,1,0,1,0,0,0,0,0
+degewo AG,2018_degewo_Konzernlagebericht_und_Konzernabschluss_fuer_das_Geschaeftsjahr.pdf,1,1,0,".",3,1,0,0,1,1,0,0,0,0
+Deutsche Klassenlotterie,geschaftsbericht_2021.pdf,0,1,1,".",4,0,1,1,1,1,0,0,0,0
+DZHW,2023.pdf,0,0,0,".",2,0,1,0,1,0,1,0,0,0
+Flughafen Berlin-Brandenburg GmbH,2019-geschaeftsbericht.pdf,0,0,0,".",2,0,0,0,1,0,1,0,0,0
+Friedrichstadt Palast,2021-Friedrichstadt-Palast_Jahresbericht.pdf,0,0,0,".",4,0,1,1,1,0,0,0,0,0
+GESOBAU AG,GESOBAU_Geschaeftsbericht_2018.pdf,1,1,0,".",2,0,0,0,1,1,1,0,0,0
+Gewobag,Gewobag-Jahresbericht-2021-HGB.pdf,0,0,0,".",3,1,0,1,1,1,1,0,0,0
+Grün Berlin GmbH,Bilanz_2020.pdf,0,1,0,".",3,0,0,1,1,0,0,0,0,0
+Helmholtz-Zentrum Berlin GmbH,jahresabschluss-2023.pdf,0,0,0,".",2,0,0,0,1,0,0,0,0,0
+HOWOGE,HOWOGE_HGB_Konzernabschluss_2023.pdf,0,0,0,".",2,0,0,0,1,0,0,0,0,0
+ITDZ,jahresbericht-2022.pdf,0,0,0,".",3,1,0,1,1,0,0,0,0,0
+Kinder- und Jugendfreizeitzentrum Wuhlheide gGmbH,Geschaeftsbericht_2023.pdf,0,0,1,".",3,1,1,0,1,0,0,0,0,1
+Landesanstalt Schienenfahrzeuge Berlin,LSFB-JA-2023-signiert_komplett_c.pdf,0,0,0,".",2,0,0,0,1,0,0,0,0,0
+MEAB GmbH,Bilanz-2020-MEAB.pdf,0,1,0,".",3,0,0,1,1,0,0,0,0,0
+Partner für Deutschland,2023_PD_Bilanz.pdf,0,0,0,".",3,0,1,1,1,0,0,0,0,0
+Rundfunk Berlin-Brandenburg,Testat Ebner Stolz rbb JA 2021.pdf,0,0,1,".",4,0,1,1,1,0,0,0,0,0
+Stadt und Land GmbH,stadtundland_gb18.pdf,0,0,0,".",2,0,0,0,1,1,1,0,0,0
+Tempelhof Projekt GmbH,TP_Geschaeftsbericht_2020.pdf,0,0,0,".",2,0,0,0,1,1,1,0,0,0
+Vivantes,P180391_Vivantes_GB_Web_190411.pdf,0,0,1,".",4,0,1,1,1,1,1,0,0,0
+WBM GmbH,WBM_GB2020_web_bf.pdf,1,1,0,".",2,1,0,0,1,1,1,0,0,0
+Wissenschaftszentrum gGmbH,digitales Testat_WZB_JAP 2022.pdf,0,0,0,".",2,0,0,0,1,0,0,0,0,0
+WISTA-Management GmbH,2020_WISTA_Bilanz.pdf,0,0,0,".",2,0,1,0,1,1,0,0,0,0
+Zoologischer Garten Berlin AG,ZOO-TIERPARK-Jahresbericht2024.pdf,0,0,0,".",2,0,0,0,0,0,0,0,0,0

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: qwen-7b-real-table-extraction-final-job
+    name: qwen-0-5b-real-table-extraction-vllm-batched-job
 spec:
   backoffLimit: 0
   template:
@@ -14,7 +14,7 @@ spec:
         image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-7B-Instruct --n_loops 1 --batched"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-0.5B-Instruct --n_loops 1 --batched"
         ]
         resources:
           requests:
