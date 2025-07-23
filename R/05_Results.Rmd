@@ -86,7 +86,11 @@ metrics %>% bind_rows() %>%
 source("scripts/page_identification_toc_data_loading.R")
 ```
 
-* calculate and add Qwen, Gemini or LLama results?
+An optional step for larger documents in @li_extracting_2023 framework is to identify the pages of interest based on the table of contents (TOC). This would be more efficent than processing the whole document with an LLM. The TOC in a PDF can be given explicit and machine readable or it can be presented in form of text on any page. Of course it can be missing completely as well.
+
+* For a lot of short annual reports one can find the tables of interest within the first eight pages as well.
+
+* calculate and add Qwen, Gemini or LLama results? <-- No time!
 
 ##### Text based
 
@@ -131,9 +135,11 @@ df_toc_benchmark_mr_degration %>% ggplot() +
 * toc analysis
 * cleaned measures
 
+The LLM performed best on the machine readable TOC. It resulted in highest ratio of correct page ranges as well as in highest absolute numbers even though there were least available TOC.
+
 ```{r page-identification-toc-analysis, echo=FALSE, results="asis", out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
 df_toc_benchmark %>% ggplot() +
-  geom_bar(aes(x = type, fill = in_range)) +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
   geom_text(
     data = df_toc_benchmark %>% filter(in_range == TRUE),
     aes(x = type, label = paste0(round(perc_correct, 2), "")),
@@ -153,15 +159,96 @@ df_toc_benchmark %>% ggplot() +
   # )
 ```
 
-```{r page-identification-toc-range_logprobs, echo=FALSE, results="asis"}
-df_toc_benchmark %>% 
-  rowwise() %>% 
+Values can be higher than 80, the total number of PDF files, since there can be multiple tables of interested for the same type in a single document or a table of interest can span two pages. Since the prompt for the LLM was not elaborated enough to cover cases, where there are multiple tables of interest for a single type that are not placed on concurrent pages, one could argue to drop those files from the analysis. This does not change the results significantly, since there are only few files with more than one table of interest per type.
+
+```{r page-identification-toc-analysis-cleaned, echo=FALSE, results="asis"}
+df_toc_benchmark_cleaned <- df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
+  mutate(count = n()) %>% filter(count <= 4) %>% group_by(type, benchmark_type) %>% 
   mutate(
-    min_confidence = min(confidence_start_page, confidence_end_page),
-    range = abs(end_page - start_page) + 1,
-  ) %>% group_by(filepath, benchmark_type) %>%
+    perc_correct = sum(in_range)/n(),
+  )
+
+ df_toc_benchmark_cleaned %>% 
+  ggplot() +
+  geom_bar(aes(x = type, fill = in_range)) +
+  geom_text(
+    data = df_toc_benchmark_cleaned %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1)
+```
+
+Besides a single group that was predicted far off for the machine readable TOC approach the LLM reported higher confidence for the correct page ranges and got the ranges less far off. But it did not predict the smallest ranges.
+
+```{r}
+mean_ranges %>%
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == min(., na.rm = TRUE),
+      paste0("**", ., "**"),
+      .
+    )
+  ) %>% arrange(`mean range`) %>%
+  render_table()
+```
+
+```{r page-identification-toc-range_logprobs, echo=FALSE, results="asis", out.width="100%"}
+df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
   distance_confidence_plot() +
-  facet_wrap(~benchmark_type, ncol = 1)
+  facet_wrap(~benchmark_type, nrow = 1) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+In general the LLM performed worst to identify the correct page range for *Passiva*. The median distance is one page bigger than for *Aktiva* and *Gewinn- und Verlustrechnung*. This makes sense for *Aktiva* because the *Passiva* is often on the next page but the predicted page range for *Aktiva* and *Passiva* are often identical. Furthermore the predicted page range for *Aktiva* is often only a single page wide. Thus the *Passiva* on the next page is not inside the predicted page range.
+
+This problem was solved by explicitly mentioning that assets and liabilities are both part of the balance sheets for the five pages and 200 lines approach but not for the machine readable TOC one.
+
+```{r page-identification-toc-analysis-balanced, echo=FALSE, results="asis", out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+balanced_df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
+  geom_text(
+    data = balanced_df_toc_benchmark %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1) # +
+  # theme(
+  #   legend.position = "bottom"
+  # )
+```
+
+A pragmatic way would be to use the machine readable TOC approachs prediction for the *Aktiva* page range and add one to the end page to get the *Passiva* page range. Beside the problem to predict a correct page range for *Passiva* the machine readable TOC approach was very effective and is also pretty efficient if one counts in the effort the LLM driven TOC extraction takes.
+
+```{r page-identification-toc-gpu-time-comparison, echo=FALSE, results="asis"}
+gpu_time_per_document_page_range %>% mutate_if(
+  is.numeric, 
+  ~ifelse(
+    . == min(., na.rm = TRUE),
+    paste0("**", ., "**"),
+    .
+  )
+) %>% 
+  render_table(alignment="lrr", caption="Comparing GPU time for page range prediction and table of contents extraction", ref="page-identification-toc-gpu-time-comparison")
 ```
 
 #### Classification with LLMs {#llm-page-identification}
@@ -182,6 +269,8 @@ binary_task$n_method_families <- df_binary$method_family %>% unique() %>% length
 structured outputs forcing to answer with a *yes* or *no* for binary task or with *Aktiva*, *Passiva*, *GuV* or *other* for multi classification task
 
 ##### Binary classification
+
+Could be more efficient to predict "is any of interest" and then which type, because dataset is highly imbalanced.
 
 `r  binary_task$n_models` models from `r binary_task$n_model_families` haven been benchmarked among `r binary_task$n_method_families` methods
 
