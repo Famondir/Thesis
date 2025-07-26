@@ -9,6 +9,7 @@ spec:
       labels:
         app: mistral-2411-124b-table-extraction-vllm-batched-jobreal-job
     spec:
+      priorityClassName: unimportant
       containers:
       - name: mistral-2411-124b-table-extraction-vllm-batched-jobreal--job
         image: registry.datexis.com/s92818/remote-work-vllm:latest

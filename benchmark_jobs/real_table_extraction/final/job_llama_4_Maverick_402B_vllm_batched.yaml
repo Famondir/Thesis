@@ -1,29 +1,30 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: qwen-72b-real-table-extraction-final-job
+    name: llama4-maverick-402b--real-table-extraction-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: qwen-72b-real-table-extraction-vllm-batched-job
+        app: llama4-maverick-402b-real-table-extraction-final-job
     spec:
+      priorityClassName: unimportant
       containers:
-      - name: qwen-72b-real-table-extraction-vllm-batched-job
-        image: registry.datexis.com/s92818/remote-work-vllm:latest
+      - name: llama4-maverick-402b-real-table-extraction-final-job
+        image: registry.datexis.com/s92818/remote-work-vllm-latest-working
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-72B-Instruct --n_loops 1 --batched --tensor_parallel_size 4"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --batched --model_name meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 --n_loops 1 --tensor_parallel_size 8"
         ]
         resources:
           requests:
               cpu: "2"
-              memory: "32Gi"
-              nvidia.com/gpu: "4"
+              memory: "256Gi"
+              nvidia.com/gpu: "8"
           limits:
-            nvidia.com/gpu: "4"
-            memory: 128Gi
+            nvidia.com/gpu: "8"
+            memory: "1024Gi"
             cpu: "32"
         env:
           - name: LANG
@@ -44,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: h200
+        gpu: b200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:

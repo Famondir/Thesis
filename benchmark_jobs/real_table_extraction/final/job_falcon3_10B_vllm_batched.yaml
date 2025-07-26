@@ -1,29 +1,30 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: qwen-72b-real-table-extraction-final-job
+    name: falcon3-10b-real-table-extraction-final-job
+    # namespace: s92818
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: qwen-72b-real-table-extraction-vllm-batched-job
+        app: falcon3-10b-real-table-extraction-final-job
     spec:
       containers:
-      - name: qwen-72b-real-table-extraction-vllm-batched-job
+      - name: falcon3-10b-real-table-extraction-final-job
         image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen2.5-72B-Instruct --n_loops 1 --batched --tensor_parallel_size 4"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name tiiuae/Falcon3-10B-Instruct --n_loops 1 --batched --tensor_parallel_size 2"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "4"
+              nvidia.com/gpu: "2"
           limits:
-            nvidia.com/gpu: "4"
-            memory: 128Gi
+            nvidia.com/gpu: "2"
+            memory: 256Gi
             cpu: "32"
         env:
           - name: LANG
@@ -44,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: h200
+        gpu: a100
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
