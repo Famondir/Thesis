@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: gemma3-27b-job-final
+    # namespace: s92818
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: gemma3-27b-job
+    spec:
+      priorityClassName: unimportant
+      containers:
+      - name: gemma3-27b-job
+        image: registry.datexis.com/s92818/remote-work-vllm-latest-working
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/page_detection_benchmark_llm.py --classifier five_classes --model_name google/gemma-3-27b-it --n_loops 1 --combine_system_prompts --verbose "
+        ]
+        resources:
+          requests:
+              cpu: "2"
+              memory: "32Gi"
+              nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"
+            memory: 256Gi
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+      nodeSelector:
+        # kubernetes.io/hostname: cl-worker29
+        gpu: h200
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+      restartPolicy: Never
