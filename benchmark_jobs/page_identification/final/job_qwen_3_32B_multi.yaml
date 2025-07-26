@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: qwen3-32b-multi-job-final-few-examples
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: qwen3-32b-multi-job-final-few-examples
+    spec:
+      containers:
+      - name: qwen3-32b-multi-job-final-few-examples
+        image: registry.datexis.com/s92818/remote-work-vllm:latest
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --model_name Qwen/Qwen3-32B --no_think --n_loops 1 --batched --tensor_parallel_size 4"
+        ]
+        resources:
+          requests:
+              cpu: "2"
+              memory: "32Gi"
+              nvidia.com/gpu: "4"
+          limits:
+            nvidia.com/gpu: "4"
+            memory: 128Gi
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
+      nodeSelector:
+        # kubernetes.io/hostname: cl-worker29
+        gpu: h200
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+      restartPolicy: Never
