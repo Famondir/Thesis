@@ -1,0 +1,280 @@
+basemode: notable and othertable
+
+0      notable        notable   True
+1      notable        notable   True
+2      notable        notable   True
+3      notable        notable   True
+4      notable        notable   True
+5      notable        notable   True
+6          GuV            GuV   True
+7          GuV            GuV   True
+8          GuV            GuV   True
+9          GuV            GuV   True
+10         GuV            GuV   True
+11         GuV            GuV   True
+12      Aktiva         Aktiva   True
+13      Aktiva         Aktiva   True
+14      Aktiva         Aktiva   True
+15      Aktiva         Aktiva   True
+16      Aktiva         Aktiva   True
+17      Aktiva         Aktiva   True
+18  othertable     othertable   True
+19  othertable     othertable   True
+20  othertable     othertable   True
+21  othertable     othertable   True
+22  othertable     othertable   True
+23  othertable     othertable   True
+24     Passiva        Passiva   True
+25     Passiva         Aktiva  False
+26     Passiva        Passiva   True
+27     Passiva        Passiva   True
+28     Passiva        Passiva   True
+29     Passiva         Aktiva  False
+
+other only
+
+0     other        Passiva  False
+1     other        Passiva  False
+2     other        Passiva  False
+3     other            GuV  False
+4     other            GuV  False
+5     other        Passiva  False
+6     other          other   True
+7       GuV            GuV   True
+8       GuV            GuV   True
+9       GuV            GuV   True
+10      GuV            GuV   True
+11      GuV            GuV   True
+12      GuV            GuV   True
+13      GuV            GuV   True
+14   Aktiva         Aktiva   True
+15   Aktiva         Aktiva   True
+16   Aktiva         Aktiva   True
+17   Aktiva         Aktiva   True
+18   Aktiva         Aktiva   True
+19   Aktiva         Aktiva   True
+20   Aktiva         Aktiva   True
+21  Passiva        Passiva   True
+22  Passiva        Passiva   True
+23  Passiva        Passiva   True
+24  Passiva        Passiva   True
+25  Passiva        Passiva   True
+26  Passiva        Passiva   True
+27  Passiva        Passiva   True
+
+only notable
+
+0       GuV            GuV   True
+1       GuV            GuV   True
+2       GuV            GuV   True
+3       GuV            GuV   True
+4       GuV            GuV   True
+5       GuV            GuV   True
+6       GuV            GuV   True
+7   Passiva        Passiva   True
+8   Passiva        Passiva   True
+9   Passiva        Passiva   True
+10  Passiva        Passiva   True
+11  Passiva        Passiva   True
+12  Passiva        Passiva   True
+13  Passiva         Aktiva  False
+14    other          other   True
+15    other          other   True
+16    other          other   True
+17    other          other   True
+18    other          other   True
+19    other          other   True
+20    other          other   True
+21   Aktiva         Aktiva   True
+22   Aktiva         Aktiva   True
+23   Aktiva         Aktiva   True
+24   Aktiva         Aktiva   True
+25   Aktiva         Aktiva   True
+26   Aktiva         Aktiva   True
+27   Aktiva         Aktiva   True
+
+other and notable
+
+0   Amt für Statistik Berlin-Brandenburg   Aktiva  [-0.009243229, 0.047924615, -0.0036670011, 0.0...            Akt
+1                             GESOBAU AG   Aktiva  [0.0059818462, 0.05525541, 0.02094565, -0.0024...            Akt
+2         Berlin Energie und Netzholding   Aktiva  [-0.03933116, 0.05800937, 0.013317186, -0.0017...            Akt
+3                              Berlinovo   Aktiva  [-0.039021894, 0.046558164, 0.014700764, 0.034...            Akt
+4                              Berlinovo   Aktiva  [-0.033797115, 0.038996685, 0.0052288007, 0.02...            Akt
+5                              Berlinovo   Aktiva  [-0.022472728, 0.045125592, -0.0012817048, 0.0...            Akt
+6                             GESOBAU AG   Aktiva  [-0.028717259, 0.036114134, -0.0063727694, 0.0...            Akt
+7                                    IBB      GuV  [-0.050965417, 0.02281457, -0.02312065, 0.0284...             Gu
+8                             GESOBAU AG      GuV  [-0.011718079, 0.02871096, -0.046751082, -0.01...             Gu
+9                                    IBB      GuV  [-0.01455943, 0.0058700857, -0.037019353, -0.0...             Gu
+10                                   IBB      GuV  [-0.029685896, 0.0011566319, -0.04737442, 0.01...             Gu
+11                            GESOBAU AG      GuV  [-0.037957158, 0.044736013, -0.021861605, 0.00...             Gu
+12                                   IBB      GuV  [-0.009194677, -0.0031285998, -0.029748885, 0....             Gu
+13               Berliner Bäder Betriebe      GuV  [-0.017998122, 0.015344823, -0.03541232, 0.023...             Gu
+14                             degewo AG    other  [-0.023195097, 0.042737387, -0.051377915, 0.06...            not
+15                             degewo AG    other  [-0.0116558755, 0.024992058, -0.01142604, -0.0...             Gu
+16                            GESOBAU AG    other  [0.02301562, 0.0192095, -0.027104914, -0.00236...            not
+17                             Berlinovo    other  [-0.06043136, -0.009611098, -0.0051361304, 0.0...            not
+18                             Berlinovo    other  [-0.052610807, 0.04539391, 0.002533175, 0.0228...            not
+19                                   IBB    other  [-0.03318062, -0.008758819, -0.004088974, 0.03...            not
+20  Amt für Statistik Berlin-Brandenburg    other  [0.010929144, 0.009925573, -0.023900574, -0.02...            not
+21        Berlin Energie und Netzholding  Passiva  [-0.03933116, 0.05800937, 0.013317186, -0.0017...            Akt
+22                                   IBB  Passiva  [-0.013426067, 0.03834277, -0.0012479284, 0.02...            Akt
+23                             Berlinovo  Passiva  [-0.025739377, 0.0408886, -0.00062560383, 0.00...            Akt
+24  Amt für Statistik Berlin-Brandenburg  Passiva  [-0.010993849, 0.011674206, 0.0045045326, -0.0...           Pass
+25                                   IBB  Passiva  [-0.04337196, 0.020142397, -0.011568248, -0.01...           Pass
+26               Berliner Bäder Betriebe  Passiva  [-0.03811703, 0.015132095, 0.011785304, 0.0086...           Pass
+27                             Berlinovo  Passiva  [-0.024644073, 0.0386839, -0.01554002, -0.0180...           Pass
+
+0    Aktiva         Aktiva   True
+1    Aktiva         Aktiva   True
+2    Aktiva         Aktiva   True
+3    Aktiva         Aktiva   True
+4    Aktiva         Aktiva   True
+5    Aktiva         Aktiva   True
+6    Aktiva         Aktiva   True
+7       GuV            GuV   True
+8       GuV            GuV   True
+9       GuV            GuV   True
+10      GuV            GuV   True
+11      GuV            GuV   True
+12      GuV            GuV   True
+13      GuV            GuV   True
+14    other          other   True
+15    other            GuV  False
+16    other          other   True
+17    other          other   True
+18    other          other   True
+19    other          other   True
+20    other          other   True
+21  Passiva         Aktiva  False
+22  Passiva         Aktiva  False
+23  Passiva         Aktiva  False
+24  Passiva        Passiva   True
+25  Passiva        Passiva   True
+26  Passiva        Passiva   True
+27  Passiva        Passiva   True
+
+other and notable; English task, rules, at the end (2 examples)
+
+0     other          other   True
+1     other          other   True
+2     other          other   True
+3     other            GuV  False
+4     other          other   True
+5     other          other   True
+6     other          other   True
+7       GuV            GuV   True
+8       GuV          other  False
+9       GuV            GuV   True
+10      GuV            GuV   True
+11      GuV            GuV   True
+12      GuV            GuV   True
+13      GuV            GuV   True
+14   Aktiva         Aktiva   True
+15   Aktiva         Aktiva   True
+16   Aktiva         Aktiva   True
+17   Aktiva         Aktiva   True
+18   Aktiva         Aktiva   True
+19   Aktiva         Aktiva   True
+20   Aktiva         Aktiva   True
+21  Passiva         Aktiva  False
+22  Passiva        Passiva   True
+23  Passiva        Passiva   True
+24  Passiva        Passiva   True
+25  Passiva        Passiva   True
+26  Passiva        Passiva   True
+27  Passiva        Passiva   True
+
+other and notable; English task, rules, at the end (1 example) (worked even though no example for other was given!)
+
+0     other          other   True
+1     other          other   True
+2     other          other   True
+3     other            GuV  False
+4     other          other   True
+5     other          other   True
+6     other          other   True
+7    Aktiva         Aktiva   True
+8    Aktiva         Aktiva   True
+9    Aktiva         Aktiva   True
+10   Aktiva         Aktiva   True
+11   Aktiva         Aktiva   True
+12   Aktiva         Aktiva   True
+13   Aktiva         Aktiva   True
+14  Passiva        Passiva   True
+15  Passiva        Passiva   True
+16  Passiva        Passiva   True
+17  Passiva        Passiva   True
+18  Passiva        Passiva   True
+19  Passiva         Aktiva  False
+20  Passiva         Aktiva  False
+21      GuV            GuV   True
+22      GuV            GuV   True
+23      GuV            GuV   True
+24      GuV            GuV   True
+25      GuV            GuV   True
+26      GuV            GuV   True
+27      GuV            GuV   True
+
+vllm: other and notable; English task, rules, at the end (1 example)
+
+0       GuV            GuV          0.363413   True
+1       GuV            GuV          0.460675   True
+2       GuV         Aktiva          0.417614  False
+3       GuV         Aktiva          0.491474  False
+4       GuV         Aktiva          0.345954  False
+5       GuV            GuV          0.477658   True
+6       GuV            GuV          0.315645   True
+7    Aktiva            GuV          0.431197  False
+8    Aktiva            GuV          0.532415  False
+9    Aktiva            GuV          0.703508  False
+10   Aktiva            GuV          0.515191  False
+11   Aktiva         Aktiva          0.399126   True
+12   Aktiva            GuV          0.413716  False
+13   Aktiva            GuV          0.444331  False
+14  Passiva            GuV          0.342810  False
+15  Passiva            GuV          0.326003  False
+16  Passiva            GuV          0.433133  False
+17  Passiva            GuV          0.578470  False
+18  Passiva            GuV          0.375552  False
+19  Passiva            GuV          0.263569  False
+20  Passiva         Aktiva          0.304104  False
+21    other         Aktiva          0.257637  False
+22    other            GuV          0.411032  False
+23    other            GuV          0.502131  False
+24    other            GuV          0.462192  False
+25    other            GuV          0.436848  False
+26    other        Passiva          0.224246  False
+27    other         Aktiva          0.346194  False
+
+even without "telling what to do" bad examples:
+
+0     other            GuV          0.701534  False
+1     other         Aktiva          0.235125  False
+2     other         Aktiva          0.259639  False
+3     other            GuV          0.359570  False
+4     other         Aktiva          0.361681  False
+5     other            GuV          0.320224  False
+6     other            GuV          0.646666  False
+7   Passiva            GuV          0.461232  False
+8   Passiva            GuV          0.302588  False
+9   Passiva            GuV          0.478433  False
+10  Passiva            GuV          0.280512  False
+11  Passiva            GuV          0.327412  False
+12  Passiva            GuV          0.371703  False
+13  Passiva            GuV          0.685390  False
+14   Aktiva            GuV          0.368616  False
+15   Aktiva         Aktiva          0.436946   True
+16   Aktiva            GuV          0.624325  False
+17   Aktiva            GuV          0.576332  False
+18   Aktiva            GuV          0.372386  False
+19   Aktiva            GuV          0.545356  False
+20   Aktiva            GuV          0.738950  False
+21      GuV         Aktiva          0.415217  False
+22      GuV         Aktiva          0.363286  False
+23      GuV            GuV          0.525682   True
+24      GuV            GuV          0.305939   True
+25      GuV         Aktiva          0.308299  False
+26      GuV         Aktiva          0.346993  False
+27      GuV         Aktiva          0.438731  False
+
+prefix_allowed_tokens_fn different then GuidedDecodingParams?

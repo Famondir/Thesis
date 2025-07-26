@@ -1,0 +1,253 @@
+<bos><start_of_turn>user ...
+You are a helpful assistant that can classify texts extracted from PDFs. You can differentiate between those five categories: 'Aktiva', 'GuV', 'notable', 'othertable', and 'Passiva'.
+
+You know this example for a 'Gewinn- und Verlustrechnung' (profit and loss statement) table: 
+
+'''
+Gewinn- und Verlustrechnung 1.1.2006 bis 31.12.2006
+38.304
+32.893
+71.197
+19.632
+TEUR 
+Vorjah
+Aufwendungen 
+1. Zinsaufwendungen
+2. Provisionsaufwendungen
+3.  Allgemeine Verwaltungsaufwendun
+         a)     Personalaufwand
+                 aa) Löhne und Gehälter
+                 ab) Soziale Abgaben und Aufwendung
+für Altersversorgung und für Unterstützung
+darunter: für Altersversorgung TEUR 24.730
+(Vj.: 3.508)
+         b)     andere Verwaltungsaufwendungen
+4.  Abschreibungen und Wertberichtigungen auf immateriel
+ Anlagewerte und Sachanlag
+5. Sonstige betriebliche Aufwendunge
+6. Abschreibungen und Wertberichtigunge
+auf Forderungen und bestimmte Wertpapiere sowie 
+Zuführungen zu Rückstellungen im Kreditgeschä
+7. Abschreibungen und Wertberichtigunge
+auf Beteiligungen, Anteile an verbundenen Unternehme
+und wie Anlagevermögen behandelte Wertpapier
+8. Außerordentliche Aufwendun
+9. Sonstige Steuern, soweit nicht unter Posten 5 ausgewiesen
+10. Jahresüberschuss
+Summe der Aufwendunge
+1.       Jahresüberschuss
+2.       Einstellung in Gewinnrücklagen
+         in andere Gewinnrücklagen (Zweckrücklage)
+3.       Bilanzgewinn
+511.691
+1.175
+90.829
+17.666
+37.536
+10.460
+0
+4.096
+12
+92.579
+766.044
+92.579
+92.579
+0
+525.511
+239
+41.070
+12.095
+53.165
+22.859
+76.024
+17.302
+31.693
+33.026
+1.000
+19.994
+13
+88.900
+793.702
+88.900
+88.900
+0
+Jahresabschluss | Gewinn- und Verlustrechnung
+'''.
+
+You know this example for a 'Aktiva' (assets) table: 
+
+'''
+42
+Bilanz zum 31. Dezember 2015
+Aktivseite in Tsd. Euro 31.12.2015 31.12.2014
+1. Barreserve 15.389 21.176
+a) Kassenbestand
+b) Guthaben bei Zentralnotenbanken 
+ darunter: bei der Deutschen Bundesbank:
+4
+15.385
+15.385
+5
+21.171
+21.171
+3. Forderungen an Kreditinstitute 2.108.781 2.153.215
+a) täglich fällig
+b) andere Forderungen
+243.150
+1.865.631
+284.475
+1.868.740
+4. Forderungen an Kunden 12.417.361 13.483.102
+darunter:
+durch Grundpfandrechte gesichert: 
+Kommunalkredite:
+6.390.835
+4.494.763
+6.847.257
+5.072.415
+5. Schuldverschreibungen und andere festverzinsliche Wertpapiere 4.243.037 4.020.849
+a) Geldmarktpapiere
+ ab) von anderen Emittenten 
+ darunter: beleihbar bei der Deutschen Bundesbank
+b) Anleihen und Schuldverschreibungen
+ ba) von öffentlichen Emittenten
+ darunter: beleihbar bei der Deutschen Bundesbank 
+ bb) von anderen Emittenten
+ darunter: beleihbar bei der Deutschen Bundesbank
+c) eigene Schuldverschreibungen
+ Nennbetrag
+0
+0
+1.099.103
+1.099.103
+3.143.934
+3.062.828
+0
+0
+34.912
+34.912
+1.116.791
+1.116.791
+2.868.192
+2.766.457
+954
+1.000
+6. Aktien und andere nicht festverzinsliche Wertpapiere 3.263 150.000
+7. Beteiligungen 452 2.855
+8. Anteile an verbundenen Unternehmen 107.957 95.457
+9. Treuhandvermögen 190.556 169.024
+darunter: Treuhandkredite 190.556 169.024
+11. Immaterielle Anlagewerte 1.346 1.624
+b) entgeltlich erworbene Konzessionen, gewerbliche Schutzrechte 
+und ähnliche Rechte und Werte sowie Lizenzen an solchen 
+Rechten und Werten 1.346 1.624
+12. Sachanlagen 26.156 26.603
+14. Sonstige Vermögensgegenstände 1.523 1.199
+15. Rechnungsabgrenzungsposten 17.453 22.572
+Summe der Aktiva 19.133.274 20.147.676
+'''.
+
+You know this example for a 'Passiva' (liabilities) table: 
+
+'''
+Konzernbilanz 49
+P A S S I V A 31. 12. 2012 31. 12. 2011
+€ € €
+A. EIGENKAPITAL
+I. Gezeichnetes Kapital 50.000,00 50.000,00
+II. Kapitalrücklage 99.000.000,00 99.000.000,00
+III. Gewinnrücklagen 11.387.797,90 11.387.797,90
+IV. Bilanzgewinn 131.725.121,76 73.195.477,1
+242.162.919,66 183.633.275,05
+B. PASSIVER UNTERSCHIEDSBETRAG AUS DER 
+KAPITALKONSOLIDIERUNG
+29.668.615,51 29.668.615,51
+C. RÜCKSTELLUNGEN
+1.  Rückstellungen für Pensionen und ähnlich
+Verpflichtungen 1.568.965,00 1.535.890,00
+2. Steuerrückstellungen 4.772.634,53 5.193.115,9
+3. Sonstige Rückstellungen 160.006.691,75 209.584.963,
+166.348.291,28 216.313.969,49
+D. VERBINDLICHKEITEN
+1. Erhaltene Anzahlungen 16.402.547,09 11.169.253,
+2. Verbindlichkeiten aus Lieferungen und Leistungen 5.234.394,43 12.163.748,
+3. Verbindlichkeiten gegenüber verbundenen Unternehme14.310.887,64 13.113.908,15
+4. Verbindlichkeiten gegenüber Unternehmen,
+mit denen ein Beteiligungsverhältnis besteh
+18.507.840,24 19.309.686,75
+5. Sonstige Verbindlichkeiten 168.865.390,34 358.866.134,5
+davon aus Steuern: 451.525,91
+(31.12.2011: 381.579,22)
+davon im Rahmen der sozialen Sicherheit: 49.549,3
+(31.12.2011: 656,07)
+223.321.059,74 414.622.731,27
+E. RECHNUNGSABGRENZUNGSPOSTEN 8.950.635,91 9.445.269,70
+670.451.522,10 853.683.861,02
+Haftungsverhältnisse gemäß § 251 HGB 5.450.159.612,87 6.267.985.208
+Treuhandverbindlichkeiten 1.952.170.651,98 1.890.985.960,89
+Kredittreuhandverbindlichkeiten 0,00 17.917.800,00
+'''.
+
+You know this example for a text that does not contain any table or a table that is not a 'Gewinn- und Verlustrechnung' (profit and loss statement), 'Aktiva' (assets) or 'Passiva' (liabilities): 
+
+'''
+M4CreatePDF V7.10
+'''.
+
+[Task]: Decide of what type the given text is. You can differentiate between four types of pages: 'Aktiva', 'GuV', 'Passiva' and 'other'.
+
+
+        [Rules]:
+
+            1) If the text contains a 'Gewinn- und Verlustrechnung' (profit and loss statement) table, answer with 'GuV'.
+
+
+            2) If the text contains an 'Aktiva' (assets) table, answer with 'Aktiva'.
+
+
+            3) If the text contains a 'Passiva' (liabilities) table, answer with 'Passiva'.
+
+
+            4) If the text contains a table that is not an 'Aktiva' (assets), 'Passiva' (liabilities) or 'Gewinn- und Verlustrechnung' (GuV) table, answer with 'othertable'.
+
+
+            5) If the text contains no table, answer 'notable'.
+
+
+        [Text]: Here is the text to classify: 
+
+'''
+22 Amt für Statistik Berlin-Brandenburg | Geschäftsbericht 2014
+Amt für Statistik Berlin-Brandenburg Anstalt des öffentlichen Rechts, Potsdam
+Bilanz zum 31. Dezember 2014
+A K T I V S E I T E 31.12.2014 Vorjahr 
+EUR EUR TEUR 
+A. ANLAGEVERMÖGEN 
+I. Immaterielle Vermögensgegenstände 
+1. Entgeltlich erworbene Konzessionen, gewerbliche 
+Schutzrechte und ähnliche Rechte und Werte 
+sowie Lizenzen an solchen Rechten und Werten 81.480,00 146
+II. Sachanlagen
+1. Grundstücke, grundstücksgleiche Rechte und Bauten 
+einschließlich der Bauten auf fremden Grundstücken 68.386,00 93
+2. Andere Anlagen, Betriebs- und Geschäftsausstattung 140.186,00 174 
+208.572,00 267
+III. Finanzanlagen 
+1. Wertpapiere des Anlagevermögens 2.000.000,00 2.000 
+2.000.000,00 2.000 
+2.290.052,00 2.413
+B. UMLAUFVERMÖGEN 
+I. Forderungen und sonstige Vermögensgegenstände 
+1. Forderungen aus Lieferungen und Leistungen 36.617,86 14 
+2. Sonstige Vermögensgegenstände 297.982,42 267 
+334.600,28 281 
+II. Kassenbestand, Bundesbankguthaben, Guthaben bei 
+Kreditinstituten und Schecks 5.560.638,85 7.783
+5.895.239,13 8.064
+C. RECHNUNGSABGRENZUNGSPOSTEN 216.321,49 213
+8.401.612,62 10.690 
+Bestätigungsvermerk 
+des Abschlussprüfers
+Anhang
+'''<end_of_turn>
+<start_of_turn>model
