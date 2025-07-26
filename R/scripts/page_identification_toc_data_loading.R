@@ -158,6 +158,7 @@ df_toc_benchmark_mr_degration <- toc_data$files_with_toc %>%
     perc_correct = cum_n_correct / (cum_n_correct + cum_n_incorrect),
   ) %>%
   pivot_longer(-c(type, n_entries, perc_correct), names_to = "correct") %>% 
+  ungroup() %>% 
   mutate(
     correct = correct == "cum_n_correct",
     n_entries = ordered(n_entries)
@@ -193,7 +194,7 @@ balanced_df_toc_benchmark <- bind_rows(
     range = abs(end_page - start_page) + 1,
   )
 
-df_toc_benchmark %>% filter(is.na(min_distance))# %>% group_by(benchmark_type, type, in_range) %>% 
+df_toc_benchmark %>% filter(is.na(min_distance)) %>% # group_by(benchmark_type, type, in_range) %>% 
   summarise(n = n())
 
 # df_toc_benchmark %>% ggplot() +

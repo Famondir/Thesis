@@ -36,6 +36,9 @@ for (file in json_files_table_extraction_llm) {
     mutate(
       model = name_split[1], 
       method = name_split[method_index],
+      n_examples = str_match(method, "\\d+")[[1]],
+      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
+      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
       loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
       predictions = list(fromJSON(df_joined) %>% as_tibble())
     ) %>% select(-df_joined)
@@ -87,8 +90,11 @@ extract_wrong_floats <- function(df) {
     filter(mistake_year | mistake_previous_year)
 }
 
-relative_float_diff <- df %>% mutate(wrong_floats = map(predictions, extract_wrong_floats)) %>%
-  select(filepath, wrong_floats) %>% 
+relative_float_diff <- df %>% 
+  mutate(wrong_floats = map(predictions, extract_wrong_floats)) %>%
+  select(filepath, wrong_floats, model, method) %>% 
+  rowwise() %>% mutate(n_wrong_floats = nrow(wrong_floats)) %>% 
+  filter(n_wrong_floats>0) %>% 
   unnest(wrong_floats) %>% 
   mutate(
     ratio_this_year = year_result/year_truth,
@@ -103,8 +109,14 @@ relative_float_diff <- df %>% mutate(wrong_floats = map(predictions, extract_wro
 # relative_float_diff %>% saveRDS("data_storage/relative_float_diff_with_mistakes.rds")
 
 relative_float_diff %>%
+  filter(ratio != 1) %>%
+  mutate(
+    log_ratio = log(ratio, base = 10),
+    log_ratio_is_int = (log(ratio, base = 10) == as.integer(log(ratio, base = 10)))
+  ) %>%
   ggplot() +
-  geom_histogram(aes(x = log(relative_numeric_difference, base = 10)))
+  geom_histogram(aes(x = log_ratio, fill = log_ratio_is_int), binwidth = 1) +
+  facet_grid(paste0(year_type,"\n", model)~method)
 
 # checked (log 10 ratio and differing truth log 10)
 integer_multiplier <- relative_float_diff %>% 
@@ -126,6 +138,33 @@ integer_multiplier <- relative_float_diff %>%
 paths <- dir("../manual_download/", full.names=TRUE, recursive=TRUE)
 n_mistakes_identified <- tibble(change_date = file.info(paths)$ctime) %>% 
   filter(change_date > as.POSIXct("2025-07-23")) %>% nrow()
+
+table_characteristics <- read.csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% 
+  mutate(
+    filepath = paste0("/pvc/benchmark_truth/real_tables/", company, "__", filename)
+    ) %>% as_tibble()
+
+df_characteristics <- df %>% 
+  select(filepath, method, model, percentage_correct_total) %>% 
+  left_join(table_characteristics, by = "filepath")
+
+lm1 <- lm(
+  data = df_characteristics,
+  formula = percentage_correct_total ~ 
+    method +
+    model +
+    n_columns + 
+    T_in_previous_year + 
+    T_in_year + 
+    sum_same_line + 
+    passiva_same_page +
+    spacer +
+    vorjahr +
+    header_span
+)
+summary(lm1)
+
+df_characteristics %>% select(is.numeric) %>% colMeans(na.rm= TRUE)
 
 ##### plotting #####
 

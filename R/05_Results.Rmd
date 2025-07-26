@@ -274,11 +274,9 @@ Could be more efficient to predict "is any of interest" and then which type, bec
 
 `r  binary_task$n_models` models from `r binary_task$n_model_families` haven been benchmarked among `r binary_task$n_method_families` methods
 
-Most models have have been used till up to 3 examples for the context
+Most models have been used up to 3 examples for the context. Microsoft phi 4 and Falcon 3 only ran with one example because their context window is smaller.
 
-[Probably gonna drop because models will have rerun in some hours] Some models only ran for the *Aktiva* classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.
-
-The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section \@ref(#llm-table-detection).
+The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section \@ref(#llm-table-detection). Surprisingly Mistral 2410
 
 ```{r display-metrics-llm-page-identification-binary, echo=FALSE, results="asis"}
 df_binary %>% 
@@ -343,3 +341,5 @@ Multiclassification more effective than three times single classification
 #### Energy usage and runtime
 
 ## Table extraction
+
+* Google models again start underperforming without changes in task (neither data nor prompt?!)

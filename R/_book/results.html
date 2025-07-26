@@ -348,7 +348,10 @@ div.csl-indent {
 <h3><span class="header-section-number">5.1.2</span> Advanced techniques<a href="results.html#advanced-techniques" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="table-of-contents-understanding" class="section level4 hasAnchor" number="5.1.2.1">
 <h4><span class="header-section-number">5.1.2.1</span> Table of Contents understanding<a href="results.html#table-of-contents-understanding" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<pre><code>## Joining with `by = join_by(filepath)`</code></pre>
+<pre><code>## Joining with `by = join_by(filepath)`
+## `summarise()` has grouped output by &#39;type&#39;,
+## &#39;benchmark_type&#39;. You can override using the `.groups`
+## argument.</code></pre>
 <p>An optional step for larger documents in <span class="citation">Li et al. (<a href="#ref-li_extracting_2023">2023</a>)</span> framework is to identify the pages of interest based on the table of contents (TOC). This would be more efficent than processing the whole document with an LLM. The TOC in a PDF can be given explicit and machine readable or it can be presented in form of text on any page. Of course it can be missing completely as well.</p>
 <ul>
 <li><p>For a lot of short annual reports one can find the tables of interest within the first eight pages as well.</p></li>
@@ -366,11 +369,11 @@ Figure 5.1: Histogram of the number of lines in the first 5 pages of the annual 
 </div>
 <div id="first-five-pages" class="section level6 hasAnchor" number="5.1.2.1.1.1">
 <h6><span class="header-section-number">5.1.2.1.1.1</span> First five pages<a href="results.html#first-five-pages" class="anchor-section" aria-label="Anchor link to header"></a></h6>
-<p>A request to Mistral results in 64 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
+<p>A request to Mistral results in 63 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
 </div>
 <div id="first-200-lines" class="section level6 hasAnchor" number="5.1.2.1.1.2">
 <h6><span class="header-section-number">5.1.2.1.1.2</span> First 200 lines<a href="results.html#first-200-lines" class="anchor-section" aria-label="Anchor link to header"></a></h6>
-<p>A request to Mistral results in 70 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
+<p>A request to Mistral results in 68 strings that should represent a table of contents among the first five pages [strings not checked in detail].</p>
 </div>
 <div id="machine-readable-toc-based" class="section level6 hasAnchor" number="5.1.2.1.1.3">
 <h6><span class="header-section-number">5.1.2.1.1.3</span> Machine readable TOC based<a href="results.html#machine-readable-toc-based" class="anchor-section" aria-label="Anchor link to header"></a></h6>
@@ -409,11 +412,11 @@ Figure 5.2: Comparing number of fount TOC and amount of correct and incorrect pr
 <span id="cb2-10"><a href="results.html#cb2-10" tabindex="-1"></a>  <span class="fu">render_table</span>()</span></code></pre></div>
 </details>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-93da5f42dd67a5e6639e" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-93da5f42dd67a5e6639e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["5 pages","machine readable","200 lines"],["<b>2.37<\/b>","2.63","2.77"],["<b>1.79<\/b>","4.03","2.28"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>benchmark\\_type<\/th>\n      <th>mean range<\/th>\n      <th>SD range<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"benchmark\\_type","targets":1},{"name":"mean range","targets":2},{"name":"SD range","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-<pre><code>## Warning: Removed 151 rows containing non-finite outside the scale range
-## (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 151 rows containing missing values or values outside the
-## scale range (`geom_point()`).</code></pre>
+<script type="application/json" data-for="htmlwidget-93da5f42dd67a5e6639e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["5 pages","200 lines","machine readable"],["<b>2.35<\/b>","2.78","2.81"],["<b>1.79<\/b>","2.33","4.35"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>benchmark_type<\/th>\n      <th>mean range<\/th>\n      <th>SD range<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"benchmark_type","targets":1},{"name":"mean range","targets":2},{"name":"SD range","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<pre><code>## Warning: Removed 78 rows containing non-finite outside the scale
+## range (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 78 rows containing missing values or values outside
+## the scale range (`geom_point()`).</code></pre>
 <p><img src="_main_files/figure-html/page-identification-toc-range_logprobs-1.png" width="100%" /></p>
 <p>In general the LLM performed worst to identify the correct page range for <em>Passiva</em>. The median distance is one page bigger than for <em>Aktiva</em> and <em>Gewinn- und Verlustrechnung</em>. This makes sense for <em>Aktiva</em> because the <em>Passiva</em> is often on the next page but the predicted page range for <em>Aktiva</em> and <em>Passiva</em> are often identical. Furthermore the predicted page range for <em>Aktiva</em> is often only a single page wide. Thus the <em>Passiva</em> on the next page is not inside the predicted page range.</p>
 <p>This problem was solved by explicitly mentioning that assets and liabilities are both part of the balance sheets for the five pages and 200 lines approach but not for the machine readable TOC one.</p>
@@ -444,17 +447,16 @@ Figure 5.3: Comparing number of fount TOC and amount of correct and incorrect pr
 <p>structured outputs forcing to answer with a <em>yes</em> or <em>no</em> for binary task or with <em>Aktiva</em>, <em>Passiva</em>, <em>GuV</em> or <em>other</em> for multi classification task</p>
 <div id="binary-classification" class="section level5 hasAnchor" number="5.1.2.2.1">
 <h5><span class="header-section-number">5.1.2.2.1</span> Binary classification<a href="results.html#binary-classification" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>20 models from 4 haven been benchmarked among 5 methods</p>
-<p>Most models have have been used till up to 3 examples for the context</p>
-<p>[Probably gonna drop because models will have rerun in some hours] Some models only ran for the <em>Aktiva</em> classification task and crashed because of a conflict trying to access the vector database. If their scores were not promising they have not been run for the other classification tasks at all.</p>
-<p>The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section @ref(#llm-table-detection).</p>
+<p>Could be more efficient to predict “is any of interest” and then which type, because dataset is highly imbalanced.</p>
+<p>22 models from 4 haven been benchmarked among 5 methods</p>
+<p>Most models have been used up to 3 examples for the context. Microsoft phi 4 and Falcon 3 only ran with one example because their context window is smaller.</p>
+<p>The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section @ref(#llm-table-detection). Surprisingly Mistral 2410</p>
 <pre><code>## `mutate_all()` ignored the following grouping variables:
-## `mutate_all()` ignored the following grouping variables:
 ## • Columns `model_family`, `classification_type`
-## ℹ Use `mutate_at(df, vars(-group_cols()), myoperation)` to silence
-##   the message.</code></pre>
+## ℹ Use `mutate_at(df, vars(-group_cols()), myoperation)` to
+##   silence the message.</code></pre>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-2d3c0bb6e9955ae02eec" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2d3c0bb6e9955ae02eec">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12"],["mistralai","meta-llama","mistralai","mistralai","Qwen","meta-llama","Qwen","meta-llama","Qwen","google","google","google"],["mistralai\\_Ministral\\-8B\\-Instruct\\-2410","meta\\-llama\\_Llama\\-4\\-Scout\\-17B\\-16E\\-Instruct","mistralai\\_Ministral\\-8B\\-Instruct\\-2410","mistralai\\_Ministral\\-8B\\-Instruct\\-2410","Qwen\\_Qwen2.5\\-32B\\-Instruct","meta\\-llama\\_Llama\\-4\\-Scout\\-17B\\-16E\\-Instruct","Qwen\\_Qwen2.5\\-32B\\-Instruct","meta\\-llama\\_Llama\\-4\\-Scout\\-17B\\-16E\\-Instruct","Qwen\\_Qwen2.5\\-32B\\-Instruct","google\\_gemma\\-3n\\-E4B\\-it","google\\_gemma\\-3n\\-E4B\\-it","google\\_gemma\\-3\\-12b\\-it"],["GuV","GuV","Passiva","Aktiva","GuV","Passiva","Aktiva","Aktiva","Passiva","GuV","Passiva","Aktiva"],["n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","n\\_rag\\_examples","top\\_n\\_rag\\_examples","zero\\_shot","top\\_n\\_rag\\_examples"],["3","3","3","3","1","3","1","3","1","1",null,"1"],["0.93","0.92","0.92","0.92","0.87","0.85","0.84","0.83","0.79","0.23","0.21","0.18"],["917","4062","858","878","1985","3037","1806","3052","1967","126","40","261"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model\\_family<\/th>\n      <th>model<\/th>\n      <th>classification\\_type<\/th>\n      <th>method\\_family<\/th>\n      <th>n\\_examples<\/th>\n      <th>f1\\_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model\\_family","targets":1},{"name":"model","targets":2},{"name":"classification\\_type","targets":3},{"name":"method\\_family","targets":4},{"name":"n\\_examples","targets":5},{"name":"f1\\_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2d3c0bb6e9955ae02eec">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12"],["mistralai","meta-llama","mistralai","mistralai","Qwen","meta-llama","Qwen","meta-llama","Qwen","google","google","google"],["mistralai_Ministral-8B-Instruct-2410","meta-llama_Llama-4-Scout-17B-16E-Instruct","mistralai_Ministral-8B-Instruct-2410","mistralai_Ministral-8B-Instruct-2410","Qwen_Qwen2.5-32B-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","google_gemma-3n-E4B-it","google_gemma-3n-E4B-it","google_gemma-3-12b-it"],["GuV","GuV","Passiva","Aktiva","GuV","Passiva","Aktiva","Aktiva","Passiva","GuV","Passiva","Aktiva"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","zero_shot","top_n_rag_examples"],["3","3","3","3","1","3","1","3","1","1",null,"1"],["0.93","0.92","0.92","0.92","0.87","0.85","0.84","0.83","0.79","0.23","0.21","0.18"],["917","4062","858","878","1985","3037","1806","3052","1967","126","40","261"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>classification_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"classification_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li>f1</li>
 <li>multiple models</li>
@@ -474,8 +476,8 @@ Figure 5.3: Comparing number of fount TOC and amount of correct and incorrect pr
 <span id="cb7-10"><a href="results.html#cb7-10" tabindex="-1"></a>    <span class="at">shape =</span> <span class="fu">guide_legend</span>(<span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>)</span>
 <span id="cb7-11"><a href="results.html#cb7-11" tabindex="-1"></a>  )</span></code></pre></div>
 </details>
-<pre><code>## Warning: Removed 6 rows containing missing values or values outside the
-## scale range (`geom_text()`).</code></pre>
+<pre><code>## Warning: Removed 6 rows containing missing values or values outside
+## the scale range (`geom_text()`).</code></pre>
 <p><img src="_main_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Some models have run for multiple times to check if the results are stable
 Earlier examples with supset have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.</p>
@@ -510,6 +512,9 @@ Earlier examples with supset have been run five times indicating stable results.
 </div>
 <div id="table-extraction" class="section level2 hasAnchor" number="5.2">
 <h2><span class="header-section-number">5.2</span> Table extraction<a href="results.html#table-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Google models again start underperforming without changes in task (neither data nor prompt?!)</li>
+</ul>
 
 </div>
 </div>
