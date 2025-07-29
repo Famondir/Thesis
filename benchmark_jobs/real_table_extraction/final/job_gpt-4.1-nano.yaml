@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: gpt-4-1-nano-real-table-extraction-final-job
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: gpt-4-1-nano-real-table-extraction-final-job
+    spec:
+      containers:
+      - name: gpt-4-1-nano-real-table-extraction-final-job
+        image: registry.datexis.com/s92818/remote-work-vllm-latest-working
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_openai.py --model_name gpt-4.1-nano --n_loops 1"
+        ]
+        resources:
+          requests:
+              cpu: "2"
+              memory: "32Gi"
+              nvidia.com/gpu: "0"
+          limits:
+            nvidia.com/gpu: "0"
+            memory: 128Gi
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
+      nodeSelector:
+        # kubernetes.io/hostname: cl-worker29
+        gpu: a100
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+      restartPolicy: Never
