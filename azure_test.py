@@ -3,12 +3,12 @@
 Created on Fri Mar 28 13:59:56 2025
 
 @author: FBerbig
+@editor: SSchafer
 """
 
 #%% Check Azure environment variable
 import os
 print(os.environ)
-
 
 #%% Test azure LLM
 from openai import AzureOpenAI
@@ -25,7 +25,7 @@ client = AzureOpenAI(
 )
 
 response = client.chat.completions.create(
-    model="gpt-4o-mini", # model = "deployment_name".
+    model="gpt-4.1-nano", # model = "deployment_name".
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Does Azure OpenAI support customer managed keys?"},
@@ -60,42 +60,3 @@ response = client.embeddings.create(
 print(response.model_dump_json(indent=2))
 end = time.time()
 print(end - start)
-
-
-#%% Llamaindex: embedding
-from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
-from llama_index.core.schema import TextNode
-
-embed_model = AzureOpenAIEmbedding(
-    model="text-embedding-3-small",
-    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT"),
-    deployment_name = "text-embedding-3-small",
-    api_key = os.getenv("OPENAI_API_KEY"),
-    api_version=os.getenv("OPENAI_API_VERSION"),
-    
-)
-
-nodes = [
-    TextNode(
-        text="Before college the two main things I worked on, "
-        "outside of school, were writing and programming."
-    )
-]
-response = embed_model(nodes=nodes)
-print(response[0].embedding)
-
-
-
-#%% Llamaindex: llm 
-from llama_index.llms.azure_openai import AzureOpenAI
-llm = AzureOpenAI(
-    model="gpt-4o-mini",
-    deployment_name = "gpt-4o-mini",
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("OPENAI_API_KEY"),
-    api_version=os.getenv("OPENAI_API_VERSION"),
-)
-     
-
-response = llm.complete("William Shakespeare is ")
-print(response)
