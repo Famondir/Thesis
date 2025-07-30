@@ -1,7 +1,7 @@
 E1,E2,E3,31.12.2023,31.12.2022
 Anlagevermögen,Immaterielle Vermögensgegenstände,Selbst geschaffene gewerbliche Schutzrechte und ähnliche Rechte und Werte,3810206.899957714,2307191.863104752
-Anlagevermögen,Immaterielle Vermögensgegenstände,Geschäfts- oder Firmenwert,,
-Anlagevermögen,Immaterielle Vermögensgegenstände,geleistete Anzahlungen,,
+Anlagevermögen,Immaterielle Vermögensgegenstände,Geschäfts- oder Firmenwert,1660367.243141352,9138334.34772713
+Anlagevermögen,Immaterielle Vermögensgegenstände,geleistete Anzahlungen,5779390.25285932,6901326.573152672
 Anlagevermögen,Immaterielle Vermögensgegenstände,"entgeltlich erworbene Konzessionen, gewerbliche Schutzrechte und ähnliche Rechte und Werte sowie Lizenzen an solchen Rechten und Werten",5530594.756959842,3835440.6395527287
 Anlagevermögen,Sachanlagen,"Grundstücke, grundstücksgleiche Rechte und Bauten einschließlich der Bauten auf fremden Grundstücken",7316242.066268128,5764279.589751974
 Anlagevermögen,Sachanlagen,Technische Anlagen und Maschinen,7812095.675548225,6615809.7235742165
@@ -21,10 +21,10 @@ Umlaufvermögen,Vorräte,Geleistete Anzahlungen,6198999.213134944,6082066.936626
 Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen aus Lieferungen und Leistungen,1820904.421426124,8877803.22109242
 Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen gegen verbundene Unternehmen,8465273.533567099,3014162.9576275297
 Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,"Forderungen gegen Unternehmen, mit denen ein Beteiligungsverhältnis besteht",1459075.9654873253,6676591.939741346
-Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Sonstige Vermögensgegenstände,,
+Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Sonstige Vermögensgegenstände,4071911.3514946206,6633397.762215478
 Umlaufvermögen,Wertpapiere,Anteile an verbundenen Unternehmen,4932645.474337091,3948244.618654496
 Umlaufvermögen,Wertpapiere,Sonstige Wertpapiere,216647.76547828724,1349492.749412876
-Umlaufvermögen,"Kassenbestand, Bundesbankguthaben, Guthaben bei Kreditinstituten und Schecks",,,
+Umlaufvermögen,"Kassenbestand, Bundesbankguthaben, Guthaben bei Kreditinstituten und Schecks",,4584172.364006405,7282122.478026347
 Rechnungsabgrenzungsposten,,,4256643.99059938,7444416.379909664
 Aktive latente Steuern,,,5397872.479862915,8803525.568116324
 Aktiver Unterschiedsbetrag aus der Vermögensverrechnung,,,6551186.998467808,3218704.922223795

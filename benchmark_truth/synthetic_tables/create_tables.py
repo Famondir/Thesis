@@ -168,51 +168,56 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
             html_rows.append(html_row)
             continue
 
-        if not sum_in_same_row:
-            match n_columns:
-                case 3:
-                    pass
-                case 4:
-                    parts = html_row.split('</td><td>')
-                    if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
-                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
-                    else:
-                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-                case 5:
-                    parts = html_row.split('</td><td>')
-                    if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
-                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-                    else:
-                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
-                case _:
-                    raise ValueError(f"Unsupported number of columns: {n_columns}")
-        else:
-            match n_columns:
-                case 3:
-                    pass
-                case 4:
-                    parts = html_row.split('</td><td>')
-                    if any('SUMME' in str(cell) for cell in row): 
-                        pass
-                    elif any(pd.Series(row[-2:]).eq(1)):
-                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
-                    else:
-                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-                case 5:
-                    parts = html_row.split('</td><td>')
-                    if any('__' in str(cell) for cell in row):
-                        parts = [f'{float(subpart.replace("</td></tr>", "").replace(",", ".").replace("-", "").strip())/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') if '__' in part
-                                 else subpart for part in parts for subpart in part.split('__')]
-                        # parts = [float(part) for idx, part in enumerate(parts) if idx > 0]
-                        html_row = '</td><td>'.join(parts)
-                        if not '</td></tr>' in html_row:
-                            html_row += '</td></tr>'
-                    elif any(pd.Series(row[-2:]).eq(1)):
-                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-                    else:
-                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
-                case _:
-                    raise ValueError(f"Unsupported number of columns: {n_columns}")
+        # if not sum_in_same_row:
+        #     match n_columns:
+        #         case 3:
+        #             pass
+        #         case 4:
+        #             parts = html_row.split('</td><td>')
+        #             if any('SUMME' in str(cell) for cell in row):
+        #                 html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+        #             else:
+        #                 html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+        #         case 5:
+        #             parts = html_row.split('</td><td>')
+        #             if any('SUMME' in str(cell) for cell in row):
+        #                 html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+        #             else:
+        #                 html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+        #         case _:
+        #             raise ValueError(f"Unsupported number of columns: {n_columns}")
+        # else:
+        match n_columns:
+            case 3:
+                pass
+            case 4:
+                parts = html_row.split('</td><td>')
+                if any('__' in str(cell) for cell in row):
+                    parts = [f'{float(subpart.replace("</td></tr>", "").replace(",", ".").replace("-", "").strip())/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') if '__' in part
+                                else subpart for part in parts for subpart in part.split('__')]
+                    # parts = [float(part) for idx, part in enumerate(parts) if idx > 0]
+                    html_row = '</td><td>'.join(parts[:-1])
+                    if not '</td></tr>' in html_row:
+                        html_row += '</td></tr>'
+                elif any('SUMME' in str(cell) for cell in row): 
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+            case 5:
+                parts = html_row.split('</td><td>')
+                if any('__' in str(cell) for cell in row):
+                    parts = [f'{float(subpart.replace("</td></tr>", "").replace(",", ".").replace("-", "").strip())/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') if '__' in part
+                                else subpart for part in parts for subpart in part.split('__')]
+                    # parts = [float(part) for idx, part in enumerate(parts) if idx > 0]
+                    html_row = '</td><td>'.join(parts)
+                    if not '</td></tr>' in html_row:
+                        html_row += '</td></tr>'
+                elif any('SUMME' in str(cell) for cell in row):
+                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                else:
+                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+            case _:
+                raise ValueError(f"Unsupported number of columns: {n_columns}")
             
         html_rows.append(html_row)
 
@@ -398,10 +403,10 @@ def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, un
         'margin-bottom': '5mm',
         'margin-left': '5mm',
         'margin-right': '5mm',
-        'zoom': '0.6',  # Shrink content to fit
+        'zoom': '0.5',  # Shrink content to fit
         'disable-smart-shrinking': '',
         'no-outline': None,
-        'dpi': 300
+        'dpi': 150
     }
     pdfkit.from_string(
         html_page,
@@ -428,9 +433,9 @@ if __name__ == "__main__":
     previous_year = '31.12.2022'
     column_names = ['E1', 'E2', 'E3', year, previous_year]
 
-    test_run = True
+    test_run = False
     if test_run:
-        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=True, span=False, unit_in_first_cell=False, unit='TEUR', max_length=50, add_text_around=True, sum_in_same_row=True)
+        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=False, span=False, unit_in_first_cell=False, unit='TEUR', max_length=50, add_text_around=True, sum_in_same_row=False)
     else:
         count = 0
         
@@ -478,5 +483,5 @@ if __name__ == "__main__":
                                                         add_enumeration=add_enumeration
                                                     )
 
-                                                print(f"Generated {count} PDF files.", end='\r')
+                                    print(f"Generated {count} PDF files.", end='\r')
         print(f"\nTotal generated PDF files: {count}")
