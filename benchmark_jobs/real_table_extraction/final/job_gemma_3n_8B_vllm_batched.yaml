@@ -9,6 +9,7 @@ spec:
       labels:
         app: gemma3n-8b-real-table-extraction-final-job
     spec:
+      priorityClassName: unimportant
       containers:
       - name: gemma3n-8b-real-table-extraction-final-job
         image: registry.datexis.com/s92818/remote-work-vllm:latest

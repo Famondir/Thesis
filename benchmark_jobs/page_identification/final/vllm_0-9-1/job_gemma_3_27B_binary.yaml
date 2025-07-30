@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: gemma-27b-real-table-extraction-final-job
+    name: gemma3-27b-binary-job-final-few-examples-vllm-0-9-1
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: gemma-27b-table-extraction-vllm-batched-jobreal-job
+        app: gemma3-27b-binary-job-final-few-examples
     spec:
       priorityClassName: unimportant
       containers:
-      - name: gemma-27b-table-extraction-vllm-batched-jobreal--job
-        image: registry.datexis.com/s92818/remote-work-vllm:latest
+      - name: gemma3-27b-binary-job-final-few-examples
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name google/gemma-3-27b-it --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 4"
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm_gemma.py --classifier binary --batched --model_name google/gemma-3-27b-it --tensor_parallel_size 4 --combine_system_prompts --n_loops 1"
         ]
         resources:
           requests:

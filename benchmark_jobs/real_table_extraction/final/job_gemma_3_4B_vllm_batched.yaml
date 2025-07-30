@@ -9,6 +9,7 @@ spec:
       labels:
         app: gemma-4b-table-extraction-vllm-batched-jobreal-job
     spec:
+      priorityClassName: unimportant
       containers:
       - name: gemma-4b-table-extraction-vllm-batched-jobreal--job
         image: registry.datexis.com/s92818/remote-work-vllm:latest
