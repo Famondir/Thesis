@@ -2,6 +2,11 @@ import pandas as pd
 import random
 import pdfkit
 from pprint import pprint
+import json
+from io import StringIO
+
+with open('/home/simon/Documents/data_science/Thesis/benchmark_truth/synthetic_tables/text_around.json', 'r') as file:
+    text_around = json.load(file)
 
 aktiva_structure_hgb = {
     'Anlagevermögen': {
@@ -129,11 +134,24 @@ def generate_header(n_columns = 3, first_cell = 'Aktiva', year = '31.12.2023', p
         header_html = ''.join(parts)
     return header_html
 
-def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False, span=True):
+def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False, span=True, max_length=10000, sum_in_same_row=False):
     if len(rows) == 0:
         return '<table><tr><th>No data available</th></tr></table>'
     
-    rows_cut = [row[0:3] for row in rows]
+    # Insert linebreak before 80 characters if there is a space
+    def insert_linebreak(text, max_length=max_length):
+        import textwrap
+
+        if isinstance(text, str) and len(text) > max_length:
+            # Use textwrap to insert line breaks at appropriate places
+            wrapped_text = textwrap.fill(text, width=max_length, break_long_words=False, replace_whitespace=False)
+            return wrapped_text.replace('\n', '<br>')
+        else:
+            return text
+
+    rows_cut = [[insert_linebreak(cell) if i == 0 else cell for i, cell in enumerate(row[0:3])] for row in rows]
+
+    # rows_cut = [row[0:3] for row in rows]
     
     html_rows = []
     if not unit_in_first_cell:
@@ -150,23 +168,51 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
             html_rows.append(html_row)
             continue
 
-        match n_columns:
-            case 3:
-                pass
-            case 4:
-                parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
-                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
-                else:
-                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-            case 5:
-                parts = html_row.split('</td><td>')
-                if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
-                    html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
-                else:
-                    html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
-            case _:
-                raise ValueError(f"Unsupported number of columns: {n_columns}")
+        if not sum_in_same_row:
+            match n_columns:
+                case 3:
+                    pass
+                case 4:
+                    parts = html_row.split('</td><td>')
+                    if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
+                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+                    else:
+                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                case 5:
+                    parts = html_row.split('</td><td>')
+                    if any('SUMME' in str(cell) for cell in row) or any(pd.Series(row[-2:]).eq(1)):
+                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                    else:
+                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+                case _:
+                    raise ValueError(f"Unsupported number of columns: {n_columns}")
+        else:
+            match n_columns:
+                case 3:
+                    pass
+                case 4:
+                    parts = html_row.split('</td><td>')
+                    if any('SUMME' in str(cell) for cell in row): 
+                        pass
+                    elif any(pd.Series(row[-2:]).eq(1)):
+                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:])
+                    else:
+                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                case 5:
+                    parts = html_row.split('</td><td>')
+                    if any('__' in str(cell) for cell in row):
+                        parts = [f'{float(subpart.replace("</td></tr>", "").replace(",", ".").replace("-", "").strip())/unit_list.get(unit, 1):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.') if '__' in part
+                                 else subpart for part in parts for subpart in part.split('__')]
+                        # parts = [float(part) for idx, part in enumerate(parts) if idx > 0]
+                        html_row = '</td><td>'.join(parts)
+                        if not '</td></tr>' in html_row:
+                            html_row += '</td></tr>'
+                    elif any(pd.Series(row[-2:]).eq(1)):
+                        html_row = '</td><td>'.join(parts[:1]) + '</td><td></td><td>' + '</td><td>'.join(parts[1:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:])
+                    else:
+                        html_row = '</td><td>'.join(parts[:2]) + '</td><td></td><td>' + '</td><td>'.join(parts[2:]).replace('</td></tr>', '</td><td></td></tr>')
+                case _:
+                    raise ValueError(f"Unsupported number of columns: {n_columns}")
             
         html_rows.append(html_row)
 
@@ -176,7 +222,7 @@ def generate_html_table(rows, unit='TEUR', n_columns=3, unit_in_first_cell=False
     html_table = '<table>\n' + '\n'.join(html_rows) + '\n</table>'
     return html_table
 
-def generate_html_page(html_table):
+def generate_html_page(html_table, add_text_around=False):
     html_page = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -200,7 +246,9 @@ def generate_html_page(html_table):
         </style>
     </head>
     <body>
+    {'' if not add_text_around else '<p>' + text_around['before'][random.randint(0, len(text_around['before']) - 1)] + '</p>'}
         {html_table}
+    {'' if not add_text_around else '<p>' + text_around['after'][random.randint(0, len(text_around['after']) - 1)] + '</p>'}
     </body>
     </html>
     """
@@ -250,7 +298,7 @@ def generate_row_list(df, add_enumeration=True):
                             rows.append([title] + df_item_temp[cols].iloc[0].tolist())
     return rows
 
-def add_sum_rows(df):
+def add_sum_rows(df, sum_in_same_row=False):
     df_with_sums = df.copy()
     df_with_sums['E1_E2'] = df_with_sums['E1'].astype(str) + '+' + df_with_sums['E2'].astype(str)
     df_with_sums['count_lvl2'] = df_with_sums.groupby('E1_E2')['E1_E2'].transform('count')
@@ -272,10 +320,16 @@ def add_sum_rows(df):
             # Find the last index where E1 and E2 match
             mask = (df_with_sums['E1'] == row.E1) & (df_with_sums['E2'] == row.E2)
             last_idx = df_with_sums[mask].index.max()
-            # Split df and insert new_row after last_idx
-            df_top = df_with_sums.iloc[:last_idx + 1]
-            df_bottom = df_with_sums.iloc[last_idx + 1:]
-            df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+            
+            if not sum_in_same_row:
+                # Split df and insert new_row after last_idx
+                df_top = df_with_sums.iloc[:last_idx + 1]
+                df_bottom = df_with_sums.iloc[last_idx + 1:]
+                df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+            else:
+                df_with_sums.iloc[last_idx,-4] = str(df_with_sums.iloc[last_idx,-4]) + "__" + str(new_row.iloc[0,-2])
+                df_with_sums.iloc[last_idx,-3] = str(df_with_sums.iloc[last_idx,-3]) + "__" + str(new_row.iloc[0,-1])
+                pass
         
     df_aggregated = df.groupby(['E1']).agg(
         {year: 'sum', previous_year: 'sum'}
@@ -293,10 +347,19 @@ def add_sum_rows(df):
             # Find the last index where E1 matches
             mask = (df_with_sums['E1'] == row.E1)
             last_idx = df_with_sums[mask].index.max()
-            # Split df and insert new_row after last_idx
+
             df_top = df_with_sums.iloc[:last_idx + 1]
             df_bottom = df_with_sums.iloc[last_idx + 1:]
             df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+            # if not sum_in_same_row:
+            #     # Split df and insert new_row after last_idx
+            #     df_top = df_with_sums.iloc[:last_idx + 1]
+            #     df_bottom = df_with_sums.iloc[last_idx + 1:]
+            #     df_with_sums = pd.concat([df_top, new_row, df_bottom], ignore_index=True)
+            # else:
+            #     df_with_sums.iloc[last_idx,-4] = str(df_with_sums.iloc[last_idx,-4]) + "__" + str(new_row.iloc[0,-2])
+            #     df_with_sums.iloc[last_idx,-3] = str(df_with_sums.iloc[last_idx,-3]) + "__" + str(new_row.iloc[0,-1])
+            #     pass
 
     # Add a final row for the total
     total_row = pd.DataFrame([['SUMME', 'SUMME', 'SUMME', df[year].sum(), df[previous_year].sum()]], columns=df.columns)
@@ -314,14 +377,19 @@ def generate_json(rows):
         json_data.append(json_row)
     return json_data
 
-def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, unit_in_first_cell=False, unit='TEUR', add_enumeration=True):
+def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, unit_in_first_cell=False, unit='TEUR', add_enumeration=True, shuffle_rows=False, max_length=50, add_text_around=False, sum_in_same_row=False):
     df = generate_table(column_names)
+    if shuffle_rows:
+        # Shuffle rows within each group of ['E1', 'E2']
+        df = df.groupby(['E1', 'E2'], group_keys=True, sort=False).apply(
+            lambda x: x.sample(frac=1, random_state=random.randint(0, 10000))
+        ).reset_index(drop=True)
     df_thinned = thin_table(df) if thin else df
-    df_with_sums = add_sum_rows(df_thinned)
+    df_with_sums = add_sum_rows(df_thinned, sum_in_same_row=sum_in_same_row)
     row_list = generate_row_list(df_with_sums, add_enumeration=add_enumeration)
-    pprint(generate_json(generate_row_list(df_with_sums, add_enumeration=False)))  # For debugging purposes
-    html_table = generate_html_table(row_list, n_columns=n_columns, unit_in_first_cell=unit_in_first_cell, span=span, unit=unit)
-    html_page = generate_html_page(html_table)
+    # pprint(generate_json(generate_row_list(df_with_sums, add_enumeration=False)))  # For debugging purposes
+    html_table = generate_html_table(row_list, n_columns=n_columns, unit_in_first_cell=unit_in_first_cell, span=span, unit=unit, max_length=max_length, sum_in_same_row=sum_in_same_row)
+    html_page = generate_html_page(html_table, add_text_around=add_text_around)
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')  # Adjust the path as necessary
     options = {
         'page-size': 'A4',
@@ -341,7 +409,16 @@ def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, un
         configuration=config,
         options=options
     )
+
     df.to_csv(output_path+'.csv', index=False)
+
+    # Export to HTML, replacing NaN/None/NA with empty string
+    df_print = pd.read_html(StringIO(html_table))[0]
+    df_print = df_print.where(pd.notna(df_print), '')
+
+    df_print.to_html(output_path+'.html', index=False, justify='left')
+    df_print.to_markdown(output_path+'.md', index=False)
+
 
 if __name__ == "__main__":
     seed = 41  # For reproducibility
@@ -353,7 +430,7 @@ if __name__ == "__main__":
 
     test_run = True
     if test_run:
-        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=True, span=False, unit_in_first_cell=False, unit='TEUR')
+        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=True, span=False, unit_in_first_cell=False, unit='TEUR', max_length=50, add_text_around=True, sum_in_same_row=True)
     else:
         count = 0
         
@@ -362,40 +439,44 @@ if __name__ == "__main__":
                 for thin in [True, False]:
                     for unit_in_first_cell in [True, False]:
                         for add_enumeration in [True, False]:
-                            for unit in unit_list.keys():
-                                for i in range(0, 2):
-                                    count += 1
-                                    base_year = random.randint(2000, 2023)
-                                    year = f'31.12.{base_year}'
-                                    previous_year = f'31.12.{base_year - 1}'
-                                    column_names = ['E1', 'E2', 'E3', year, previous_year]
+                            for max_length in [10000, 50]:
+                                for shuffle_rows in [True, False]:
+                                    for add_text_around in [True, False]:
+                                        for sum_in_same_row in [True, False]:
+                                            for unit in unit_list.keys():
+                                                for i in range(0, 1):
+                                                    count += 1
+                                                    base_year = random.randint(2000, 2023)
+                                                    year = f'31.12.{base_year}'
+                                                    previous_year = f'31.12.{base_year - 1}'
+                                                    column_names = ['E1', 'E2', 'E3', year, previous_year]
 
-                                    create_pdf(
-                                        f'./benchmark_truth/synthetic_tables/separate_files/aktiva_table_{n_columns}_columns_span_{span}_thin_{thin}_year_as_date_unit_in_first_cell_{unit_in_first_cell}_{unit}_enumeration_{add_enumeration}_{i}', 
-                                        column_names, 
-                                        n_columns=n_columns, 
-                                        thin=thin, span=span, 
-                                        unit_in_first_cell=unit_in_first_cell, 
-                                        unit=unit,
-                                        add_enumeration=add_enumeration
-                                        )  
+                                                    create_pdf(
+                                                        f'./benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__{n_columns}_columns__span_{span}__thin_{thin}__year_as_date__unit_in_first_cell_{unit_in_first_cell}__{unit}__enumeration_{add_enumeration}__shuffle_{shuffle_rows}__text_around_{add_text_around}__max_length_{max_length}__sum_in_same_row_{sum_in_same_row}__{i}', 
+                                                        column_names, 
+                                                        n_columns=n_columns, 
+                                                        thin=thin, span=span, 
+                                                        unit_in_first_cell=unit_in_first_cell, 
+                                                        unit=unit,
+                                                        add_enumeration=add_enumeration
+                                                        )  
 
-                                year = 'Geschäftsjahr'
-                                previous_year = 'Vorjahr'
-                                column_names = ['E1', 'E2', 'E3', year, previous_year]
+                                                year = 'Geschäftsjahr'
+                                                previous_year = 'Vorjahr'
+                                                column_names = ['E1', 'E2', 'E3', year, previous_year]
 
-                                for i in range(0, 1):
-                                    count += 1
-                                    create_pdf(
-                                        f'./benchmark_truth/synthetic_tables/separate_files/aktiva_table_{n_columns}_columns_span_{span}_thin_{thin}_year_as_text_unit_in_first_cell_{unit_in_first_cell}_{unit}_enumeration_{add_enumeration}_{i}', 
-                                        column_names, 
-                                        n_columns=n_columns, 
-                                        thin=thin, 
-                                        span=span, 
-                                        unit_in_first_cell=unit_in_first_cell, 
-                                        unit=unit,
-                                        add_enumeration=add_enumeration
-                                    )
+                                                for i in range(0, 1):
+                                                    count += 1
+                                                    create_pdf(
+                                                        f'./benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__{n_columns}_columns__span_{span}__thin_{thin}__year_as_text__unit_in_first_cell_{unit_in_first_cell}__{unit}__enumeration_{add_enumeration}__shuffle_{shuffle_rows}__text_around_{add_text_around}__max_length_{max_length}__sum_in_same_row_{sum_in_same_row}__{i}', 
+                                                        column_names, 
+                                                        n_columns=n_columns, 
+                                                        thin=thin, 
+                                                        span=span, 
+                                                        unit_in_first_cell=unit_in_first_cell, 
+                                                        unit=unit,
+                                                        add_enumeration=add_enumeration
+                                                    )
 
-                                print(f"Generated {count} PDF files.", end='\r')
+                                                print(f"Generated {count} PDF files.", end='\r')
         print(f"\nTotal generated PDF files: {count}")

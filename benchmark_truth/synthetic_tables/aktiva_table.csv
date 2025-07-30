@@ -2,28 +2,29 @@ E1,E2,E3,31.12.2023,31.12.2022
 Anlagevermögen,Immaterielle Vermögensgegenstände,Selbst geschaffene gewerbliche Schutzrechte und ähnliche Rechte und Werte,3810206.899957714,2307191.863104752
 Anlagevermögen,Immaterielle Vermögensgegenstände,Geschäfts- oder Firmenwert,,
 Anlagevermögen,Immaterielle Vermögensgegenstände,geleistete Anzahlungen,,
-Anlagevermögen,Immaterielle Vermögensgegenstände,"entgeltlich erworbene Konzessionen, gewerbliche Schutzrechte und ähnliche Rechte und Werte sowie Lizenzen an solchen Rechten und Werten",,
-Anlagevermögen,Sachanlagen,"Grundstücke, grundstücksgleiche Rechte und Bauten einschließlich der Bauten auf fremden Grundstücken",,
-Anlagevermögen,Sachanlagen,Technische Anlagen und Maschinen,,
-Anlagevermögen,Sachanlagen,"Andere Anlagen, Betriebs- und Geschäftsausstattung",,
+Anlagevermögen,Immaterielle Vermögensgegenstände,"entgeltlich erworbene Konzessionen, gewerbliche Schutzrechte und ähnliche Rechte und Werte sowie Lizenzen an solchen Rechten und Werten",5530594.756959842,3835440.6395527287
+Anlagevermögen,Sachanlagen,"Grundstücke, grundstücksgleiche Rechte und Bauten einschließlich der Bauten auf fremden Grundstücken",7316242.066268128,5764279.589751974
+Anlagevermögen,Sachanlagen,Technische Anlagen und Maschinen,7812095.675548225,6615809.7235742165
+Anlagevermögen,Sachanlagen,"Andere Anlagen, Betriebs- und Geschäftsausstattung",8392980.17459614,4393945.109010075
 Anlagevermögen,Sachanlagen,geleistete Anzahlungen und Anlagen im Bau,1550494.2079384022,1498350.57407401
 Anlagevermögen,Finanzanlagen,Sonstige Finanzanlagen,7231696.718848062,1675107.7963049056
-Anlagevermögen,Finanzanlagen,Anteile an verbundenen Unternehmen,,
-Anlagevermögen,Finanzanlagen,Ausleihungen an verbundene Unternehmen,,
-Anlagevermögen,Finanzanlagen,"Ausleihungen an Unternehmen, mit denen ein Beteiligungsverhältnis besteht",,
-Anlagevermögen,Finanzanlagen,Wertpapiere des Anlagevermögens,8410458.694013217,2158733.4627447617
-Anlagevermögen,Finanzanlagen,Sonstige Ausleihungen,,
-Umlaufvermögen,Vorräte,"Roh-, Hilfs- und Betriebsstoffe",,
-Umlaufvermögen,Vorräte,"Unfertige Erzeugnisse, unfertige Leistungen",,
-Umlaufvermögen,Vorräte,Fertige Erzeugnisse und Waren,,
-Umlaufvermögen,Vorräte,Geleistete Anzahlungen,535295.3274966666,3178002.255061079
-Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen aus Lieferungen und Leistungen,,
-Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen gegen verbundene Unternehmen,1820904.421426124,8877803.22109242
-Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,"Forderungen gegen Unternehmen, mit denen ein Beteiligungsverhältnis besteht",,
+Anlagevermögen,Finanzanlagen,Anteile an verbundenen Unternehmen,6546552.00922515,6207734.389885317
+Anlagevermögen,Finanzanlagen,Ausleihungen an verbundene Unternehmen,594991.4544685719,7843143.015187655
+Anlagevermögen,Finanzanlagen,Beteiligungen,330062.2427908639,8668916.99148983
+Anlagevermögen,Finanzanlagen,"Ausleihungen an Unternehmen, mit denen ein Beteiligungsverhältnis besteht",8410458.694013217,2158733.4627447617
+Anlagevermögen,Finanzanlagen,Wertpapiere des Anlagevermögens,7262379.851952618,7323401.15868937
+Anlagevermögen,Finanzanlagen,Sonstige Ausleihungen,1250037.8903180298,6699523.033092752
+Umlaufvermögen,Vorräte,"Roh-, Hilfs- und Betriebsstoffe",1237675.7784700964,9132215.689390045
+Umlaufvermögen,Vorräte,"Unfertige Erzeugnisse, unfertige Leistungen",6888515.122296453,9800049.303303862
+Umlaufvermögen,Vorräte,Fertige Erzeugnisse und Waren,535295.3274966666,3178002.255061079
+Umlaufvermögen,Vorräte,Geleistete Anzahlungen,6198999.213134944,6082066.936626187
+Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen aus Lieferungen und Leistungen,1820904.421426124,8877803.22109242
+Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Forderungen gegen verbundene Unternehmen,8465273.533567099,3014162.9576275297
+Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,"Forderungen gegen Unternehmen, mit denen ein Beteiligungsverhältnis besteht",1459075.9654873253,6676591.939741346
 Umlaufvermögen,Forderungen und sonstige Vermögensgegenstände,Sonstige Vermögensgegenstände,,
-Umlaufvermögen,Wertpapiere,Anteile an verbundenen Unternehmen,,
-Umlaufvermögen,Wertpapiere,Sonstige Wertpapiere,,
+Umlaufvermögen,Wertpapiere,Anteile an verbundenen Unternehmen,4932645.474337091,3948244.618654496
+Umlaufvermögen,Wertpapiere,Sonstige Wertpapiere,216647.76547828724,1349492.749412876
 Umlaufvermögen,"Kassenbestand, Bundesbankguthaben, Guthaben bei Kreditinstituten und Schecks",,,
-Rechnungsabgrenzungsposten,,,,
-Aktive latente Steuern,,,4256643.99059938,7444416.379909664
-Aktiver Unterschiedsbetrag aus der Vermögensverrechnung,,,5397872.479862915,8803525.568116324
+Rechnungsabgrenzungsposten,,,4256643.99059938,7444416.379909664
+Aktive latente Steuern,,,5397872.479862915,8803525.568116324
+Aktiver Unterschiedsbetrag aus der Vermögensverrechnung,,,6551186.998467808,3218704.922223795

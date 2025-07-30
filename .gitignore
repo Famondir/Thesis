@@ -29,3 +29,5 @@ R/_book/*.json
 !R/_book/*.css
 R/_main_cache/
 R/data_storage/
+benchmark_truth/synthetic_tables/aktiva_table.html
+benchmark_truth/synthetic_tables/aktiva_table.md
