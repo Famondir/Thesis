@@ -4,6 +4,7 @@ import pdfkit
 from pprint import pprint
 import json
 from io import StringIO
+import re
 
 with open('/home/simon/Documents/data_science/Thesis/benchmark_truth/synthetic_tables/text_around.json', 'r') as file:
     text_around = json.load(file)
@@ -97,7 +98,7 @@ def generate_table(column_names):
 
 def thin_table(df):
     n_rows = df.shape[0]
-    random_indices = random.sample(range(n_rows), random.randint(1, n_rows)-1)
+    random_indices = random.sample(range(n_rows), random.randint(1, n_rows-6))
     for idx in random_indices:
         df.at[idx, year] = pd.NA
         df.at[idx, previous_year] = pd.NA
@@ -418,9 +419,31 @@ def create_pdf(output_path, column_names, n_columns=4, thin=False, span=True, un
     df.to_csv(output_path+'.csv', index=False)
 
     # Export to HTML, replacing NaN/None/NA with empty string
-    df_print = pd.read_html(StringIO(html_table))[0]
+    df_print = pd.read_html(
+        StringIO(html_table),
+        decimal=',',
+        thousands='.'
+    )[0]
     df_print = df_print.where(pd.notna(df_print), '')
+    # df_print = df_print.map(lambda x: x.str.replace('.', ',') if x.dtype == "object" else x)  # Convert number strings to float
 
+    # Format floats with thousands separator '.' and decimal separator ','
+    def is_float_str(val):
+        try:
+            float(str(val))
+            return True
+        except (ValueError, TypeError):
+            return False
+
+    for idx, row in df_print.iterrows():
+        for col in df_print.columns[1:]:
+            val = row[col]
+            if is_float_str(val):
+                df_print.at[idx, col] = f"{float(val):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            else:
+                pass
+    
+    df_print.columns = [re.sub(r'\.1$', '', col) for col in df_print.columns]
     df_print.to_html(output_path+'.html', index=False, justify='left')
     df_print.to_markdown(output_path+'.md', index=False)
 
@@ -433,9 +456,9 @@ if __name__ == "__main__":
     previous_year = '31.12.2022'
     column_names = ['E1', 'E2', 'E3', year, previous_year]
 
-    test_run = False
+    test_run = True
     if test_run:
-        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=False, span=False, unit_in_first_cell=False, unit='TEUR', max_length=50, add_text_around=True, sum_in_same_row=False)
+        create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=False, span=False, unit_in_first_cell=False, unit='Mio. EUR', max_length=50, add_text_around=True, sum_in_same_row=False)
     else:
         count = 0
         
@@ -483,5 +506,5 @@ if __name__ == "__main__":
                                                         add_enumeration=add_enumeration
                                                     )
 
-                                    print(f"Generated {count} PDF files.", end='\r')
+                                            print(f"Generated {count} PDF files.", end='\r')
         print(f"\nTotal generated PDF files: {count}")
