@@ -1,6 +1,18 @@
+library(jsonlite)
+library(tidyverse)
+
 temp_list <- readRDS("data_storage/page_identification_llm.rds")
 df_binary <- temp_list$df_binary
 df_multi <- temp_list$df_multi
+
+method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
+method_familiy_colors <- c(
+  "zero_shot" = "#e41a1c", 
+  "law_context" = "#377eb8", 
+  "top_n_rag_examples" = "#4daf4a", 
+  "n_random_examples" = "#984ea3", 
+  'n_rag_examples' = "#ff7f00"
+  )
 
 #### Binary ####
 
@@ -24,7 +36,36 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) 
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
   facet_grid(model~classification_type) +
-  theme(legend.position = "bottom") +
+  scale_color_manual(values = method_familiy_colors) +
+  # theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  )
+
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) %>% 
+  filter(n_examples <= 5 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  scale_color_manual(values = method_familiy_colors) +
+  facet_grid(model~classification_type) +
+  # theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  )
+
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
+  filter(n_examples > 1 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  scale_color_manual(values = method_familiy_colors) +
+  geom_text(aes(label = n_examples)) +
+  facet_grid(model~classification_type) +
+  # theme(legend.position = "bottom") +
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
@@ -41,8 +82,8 @@ TUV####
 # df_binary_arragned <- df_binary %>% select(model, parameter_count, model_family) %>% unique() %>%
   # arrange(tolower(model_family), parameter_count)
 # model_letters <- tibble(model = df_binary_arragned %>% pull(model), facet = LETTERS[1:(df_binary_arragned %>% nrow())])
-model_by_size <- c('google_gemma-3-4b-it', 'google_gemma-3n-E4B-it', "google_gemma-3-12b-it",
-  "google_gemma-3-27b-it", "meta-llama_Llama-3.1-8B-Instruct", 
+model_by_size <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
+  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
   "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
   "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
   "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
@@ -70,18 +111,25 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
     shape = guide_legend(ncol = 1, title.position = "top")
   )
 
-df_temp <- (df_binary %>% arrange(desc(f1_score)))[1,"predictions"][[1]][[1]] %>% as_tibble()
+# mistral
+df_filtered <- df_binary %>% filter(classification_type == "Aktiva") %>% 
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
 df_flipped_score <- df_temp %>% 
   mutate(
     confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
     is_aktiva = str_detect(type, "Aktiva")
   )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
 
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
-  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .2) +
-  facet_wrap(~type)
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva)
 
 library(pROC)
 
@@ -92,6 +140,121 @@ roc_obj <- roc(df_flipped_score$is_aktiva, df_flipped_score$confidence_score)
 plot(roc_obj, main = "ROC Curve for Aktiva Classification")
 auc_val <- auc(roc_obj)
 legend("bottomright", legend = paste("AUC =", round(auc_val, 3)))
+
+# qwen
+df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva)
+
+###### per company ######
+
+no_ocr_needed <- read_csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv") %>% select(filepath) %>% 
+  unique() %>% mutate(filepath = str_replace(filepath, "..", "/pvc")) %>% .[[1]]
+
+l <- list()
+
+for (t in c('Aktiva', 'Passiva', 'GuV')) {
+  df_filtered <- df_binary %>% filter(classification_type == t) %>% 
+    arrange(desc(f1_score)) %>% select(model_family, method_family, predictions)
+  df_temp <- df_filtered %>% unnest(predictions) %>% filter(filepath %in% no_ocr_needed)
+  
+  df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model_family, method_family) %>% reframe(
+    n = n()
+  ) %>% complete(company, predicted_type, match, model_family, method_family,fill=list(n=0)) %>% 
+    mutate(
+      metric = if_else(predicted_type == t & match, "true_positive", ''),
+      metric = if_else(predicted_type == t & !match, "false_positive", metric),
+      metric = if_else(predicted_type != t & !match, "false_negative", metric),
+      metric = if_else(predicted_type != t & match, "true_negative", metric),
+    ) %>% select(-predicted_type, -match) %>% 
+    pivot_wider(names_from = metric, values_from = n) %>% 
+    mutate(
+      precision = true_positive/(true_positive+false_positive),
+      recall = true_positive/(true_positive+false_negative),
+      f1_score = 2*precision*recall/(precision+recall),
+      classification_type = t
+    )
+  
+  l[t] <- list(df_f1_by_company)
+}
+
+df_f1_by_company <- bind_rows(l)
+
+df_f1_by_company %>% ggplot() +
+  geom_boxplot(aes(x = company, y = f1_score)) +
+  geom_jitter(aes(x = company, y = f1_score, color = model_family), alpha = .4) +
+  facet_grid(~classification_type)
+
+for (t in c('Aktiva', 'Passiva', 'GuV')) {
+  df_filtered <- df_binary %>% filter(classification_type == t) %>% 
+    arrange(desc(f1_score)) %>% select(model, method, predictions, model_family, method_family)
+  df_temp <- df_filtered %>% unnest(predictions) %>% filter(filepath %in% no_ocr_needed)
+  
+  df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model,model_family, method, method_family) %>% reframe(
+    n = n()
+  ) %>% complete(company, predicted_type, match, model,model_family, method, method_family,fill=list(n=0)) %>% 
+    mutate(
+      metric = if_else(predicted_type == t & match, "true_positive", ''),
+      metric = if_else(predicted_type == t & !match, "false_positive", metric),
+      metric = if_else(predicted_type != t & !match, "false_negative", metric),
+      metric = if_else(predicted_type != t & match, "true_negative", metric),
+    ) %>% select(-predicted_type, -match) %>% 
+    pivot_wider(names_from = metric, values_from = n) %>% 
+    mutate(
+      precision = true_positive/(true_positive+false_positive),
+      recall = true_positive/(true_positive+false_negative),
+      f1_score = 2*precision*recall/(precision+recall),
+      classification_type = t
+    )
+  
+  l[t] <- list(df_f1_by_company)
+}
+
+# df_filtered <- df_binary %>% filter(classification_type == "Aktiva") %>% 
+#   arrange(desc(f1_score)) %>% select(model_family, method_family, predictions)
+# df_temp <- df_filtered %>% unnest(predictions)
+# 
+# df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model_family, method_family) %>% reframe(
+#   n = n()
+# ) %>% complete(company, predicted_type, match, model_family, method_family,fill=list(n=0)) %>% 
+#   mutate(
+#   metric = if_else(predicted_type == "Aktiva" & match, "true_positive", ''),
+#   metric = if_else(predicted_type == "Aktiva" & !match, "false_positive", metric),
+#   metric = if_else(predicted_type != "Aktiva" & !match, "false_negative", metric),
+#   metric = if_else(predicted_type != "Aktiva" & match, "true_negative", metric),
+# ) %>% select(-predicted_type, -match) %>% 
+#   pivot_wider(names_from = metric, values_from = n) %>% 
+#   mutate(
+#     precision = true_positive/(true_positive+false_positive),
+#     recall = true_positive/(true_positive+false_negative),
+#     f1_score = 2*precision*recall/(precision+recall)
+#   )
+
+df_f1_by_company <- bind_rows(l)
+
+df_f1_by_company %>% ggplot() +
+  geom_boxplot(aes(x = company, y = precision)) +
+  # geom_jitter(aes(x = company, y = recall, color = method_family), alpha = .4) +
+  facet_grid(classification_type~model_family) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
+
+n_reports_by_company_no_ocr <- df_temp %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
+n_reports_by_company <- df_filtered %>% unnest(predictions) %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
 
 #### Multiclass ####
 
@@ -120,7 +283,7 @@ df_selected %>%
   scale_x_discrete(guide = guide_axis(angle = 30))
 
 df_selected %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  ggplot(aes(x = runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +

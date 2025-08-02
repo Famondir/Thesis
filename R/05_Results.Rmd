@@ -68,7 +68,9 @@ metrics %>% bind_rows() %>%
     names_to = "metric",
     values_to = "value"
   ) %>%
-  filter(metric %in% c("acc", "precision", "recall", "F1")) %>%
+  filter(metric %in% c(
+    # "acc", 
+    "precision", "recall", "F1")) %>%
   ggplot() +
   geom_jitter(aes(x = method, y = value, color = package), alpha = 0.5, width = 0.2, height = 0) +
   facet_grid(metric~classification_type) +
@@ -77,6 +79,8 @@ metrics %>% bind_rows() %>%
     legend.position = "bottom"
   )
 ```
+
+Results by company?
 
 ### Advanced techniques
 
@@ -257,9 +261,26 @@ gpu_time_per_document_page_range %>% mutate_if(
 temp_list <- readRDS("data_storage/page_identification_llm.rds")
 df_binary <- temp_list$df_binary
 df_multi <- temp_list$df_multi
+
+method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
+method_familiy_colors <- c(
+  "zero_shot" = "#e41a1c", 
+  "law_context" = "#377eb8", 
+  "top_n_rag_examples" = "#4daf4a", 
+  "n_random_examples" = "#984ea3", 
+  'n_rag_examples' = "#ff7f00"
+  )
+
+df_binary <- df_binary %>% filter(!str_detect(model, "gemma") || str_detect(model, "0-9-1")) %>% 
+  mutate(
+  n_examples = as.numeric(n_examples),
+  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
+  n_examples = if_else(method_family == "law_context", 1, n_examples),
+  method_family = factor(method_family, levels = method_families)
+)
 ```
 
-```{r}
+```{r, echo=FALSE}
 binary_task <- list()
 binary_task$n_models <- df_binary$model %>% unique() %>% length()
 binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
@@ -274,9 +295,9 @@ Could be more efficient to predict "is any of interest" and then which type, bec
 
 `r  binary_task$n_models` models from `r binary_task$n_model_families` haven been benchmarked among `r binary_task$n_method_families` methods
 
-Most models have been used up to 3 examples for the context. Microsoft phi 4 and Falcon 3 only ran with one example because their context window is smaller.
+Most models have been used up to 3 examples for the context.
 
-The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst. This is surprising since they did a decent job in a similar task as described in section \@ref(#llm-table-detection). Surprisingly Mistral 2410
+The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst.^[This is not due to a temporary technical problems caused by a bug in the transformers version shipped with the vllm 0-9-2 image. Those problems have been overcome. The performance stays bad.] Surprisingly Mistral 2410 is the best performing model for all three prediction tasks even though it only has 8B parameters.
 
 ```{r display-metrics-llm-page-identification-binary, echo=FALSE, results="asis"}
 df_binary %>% 
@@ -298,30 +319,157 @@ df_binary %>%
   render_table()
 ```
 
-* f1
-* multiple models
-* best model detail (different methods / settings)
+It is interesting that the predictions do not get better by providing more and more examples. Especially for the n-rag-example approach we find a significant drop in the F1 score if the examples pages come from different companies annual reports. This is caused by a  sever recall drop. But also for the n-ranom-example approach we see this for the prediction of class Passiva.
 
-The experiments for best performing model, Ministral-8B-Instruct-2410, have been extended by methods with even more examples in the context.
+Recall better with examples from same company. Precision better without.
 
-```{r}
-df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 1) %>% 
+We can also see that the prediction performance is stable.^[Earlier experiments on a subset of the pages have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.]
+
+```{r, echo=FALSE, out.width="100%"}
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) %>% 
+  filter(n_examples <= 5 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
+  scale_color_manual(values = method_familiy_colors) +
   facet_grid(model~classification_type) +
-  theme(legend.position = "bottom") +
+  # theme(legend.position = "bottom") +
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
   )
 ```
 
-Some models have run for multiple times to check if the results are stable
-Earlier examples with supset have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.
+* f1
+* multiple models
+* best model detail (different methods / settings)
+
+The experiments for the best performing model, Ministral-8B-Instruct-2410, have been extended by methods with even more examples. Especially for the top-n-rag-example approach to get a better comparable picture based on the real number of examples / context length.
+
+```{r, echo=FALSE, out.width="100%"}
+df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
+  filter(n_examples > 1 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  scale_color_manual(values = method_familiy_colors) +
+  geom_text(aes(label = n_examples)) +
+  facet_grid(model~classification_type) +
+  # theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  )
+```
+
+```{r, echo=FALSE}
+read_csv("../benchmark_truth/real_example_count.csv") %>% kbl()
+```
+
+Predictions very accurate. Confidence not always 1. Wrong predictions with often with medium confidence. If Aktiva and Passiva on same page more often Aktiva predicted.
+
+```{r, echo=FALSE, out.width="100%"}
+df_filtered <- df_binary %>% filter(classification_type == "Aktiva") %>% 
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva)
+```
+
+Qwen returns always high confidence even if it is wrong.
+
+```{r, echo=FALSE, out.width="100%"}
+df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva)
+```
+
+* IBB other law
+* degewo only one where no ocr is needed
+
+mistral: recall IBB and Netzholding big range
+meta & mistral: very high precision for Amt für Statistik BBB <- lowest average pagecount (29.3) but IBB has more pages than berlinovo but better precision. No information about which company / report the page is from
+
+```{r, echo=FALSE, out.width="100%"}
+no_ocr_needed <- read_csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv") %>% select(filepath) %>% 
+  unique() %>% mutate(filepath = str_replace(filepath, "..", "/pvc")) %>% .[[1]]
+
+l <- list()
+
+for (t in c('Aktiva', 'Passiva', 'GuV')) {
+  df_filtered <- df_binary %>% filter(classification_type == t) %>% 
+    arrange(desc(f1_score)) %>% select(model, method, predictions, model_family, method_family)
+  df_temp <- df_filtered %>% unnest(predictions) %>% filter(filepath %in% no_ocr_needed)
+  
+  df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model,model_family, method, method_family) %>% reframe(
+    n = n()
+  ) %>% complete(company, predicted_type, match, model,model_family, method, method_family,fill=list(n=0)) %>% 
+    mutate(
+      metric = if_else(predicted_type == t & match, "true_positive", ''),
+      metric = if_else(predicted_type == t & !match, "false_positive", metric),
+      metric = if_else(predicted_type != t & !match, "false_negative", metric),
+      metric = if_else(predicted_type != t & match, "true_negative", metric),
+    ) %>% select(-predicted_type, -match) %>% 
+    pivot_wider(names_from = metric, values_from = n) %>% 
+    mutate(
+      precision = true_positive/(true_positive+false_positive),
+      recall = true_positive/(true_positive+false_negative),
+      f1_score = 2*precision*recall/(precision+recall),
+      classification_type = t
+    )
+  
+  l[t] <- list(df_f1_by_company)
+}
+
+df_f1_by_company <- bind_rows(l)
+
+df_f1_by_company %>% ggplot() +
+  geom_boxplot(aes(x = company, y = f1_score)) +
+  # geom_jitter(aes(x = company, y = f1_score, color = model), alpha = .4) +
+  facet_grid(classification_type~model_family) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
+```
+
+```{r}
+n_reports_by_company_no_ocr <- df_temp %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
+n_reports_by_company <- df_filtered %>% unnest(predictions) %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
+
+n_reports_by_company_no_ocr %>% kbl()
+n_reports_by_company %>% kbl()
+```
 
 ##### Multi classification
+
+Microsoft phi 4 and Falcon 3 only ran with one example because their context window is smaller.
 
 * f1
 * multiple models
@@ -331,6 +479,8 @@ Earlier examples with supset have been run five times indicating stable results.
 
 * top 1
 * top k
+
+low precision llm linked to position of correct page? numeric frequency?
 
 ### Comparison
 
@@ -342,4 +492,9 @@ Multiclassification more effective than three times single classification
 
 ## Table extraction
 
-* Google models again start underperforming without changes in task (neither data nor prompt?!)
+### Baseline: Regex
+
+### Extraction with LLMs
+
+* Google models again start underperforming without changes in task (neither data nor prompt?!) even though it was done with vllm already before
+

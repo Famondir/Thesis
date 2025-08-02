@@ -1,5 +1,7 @@
 # Methods
 
+norm gpu hours
+
 ## Data
 
 * companies Beteiligungsbericht

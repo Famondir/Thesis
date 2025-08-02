@@ -213,8 +213,6 @@ data_llm_speed <- data.frame(
 knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for processing ten asset tables using different libraries and approaches")
 ```
 
-### Table identification with LLMs {#llm-table-detection}
-
 ## Regular expressions {#regex-page-identification-code}
 
 Here one can find the three regular expressions used for the benchmarks presented in section \@ref(regex-page-identification).

@@ -6,10 +6,16 @@
 * relevance for reader (Gutachter)
 * link to previous chapter
 * relevant basic tasks
+* parameter vs active parameter
 
 ## Basic terms
 
 ## Technological topic (related work)
+
+* LLM generation
+* structured output
+* Fewshot
+* context length can be harmful
 
 * most important papers
 * connection of papers (timeline)
