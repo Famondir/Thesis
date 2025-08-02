@@ -1,29 +1,29 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: gemma3n-8b-real-table-extraction-final-job
+    name: mistral-2410-8b-synth-table-extraction-from-pdf-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: gemma3n-8b-real-table-extraction-final-job
+        app: mistral-2410-8b-synth-table-extraction-from-pdf-final-job
     spec:
       priorityClassName: unimportant
       containers:
-      - name: gemma3n-8b-real-table-extraction-final-job
-        image: registry.datexis.com/s92818/remote-work-vllm:latest
+      - name: mistral-2410-8b-synth-table-extraction-from-pdf-final-job
+        image: registry.datexis.com/s92818/remote-work-vllm-0-10-0:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --batched --model_name google/gemma-3n-E4B-it --combine_system_prompts --n_loops 1"
+          "python3 -u /pvc/thesis_benchmarks/final_synth_table_extraction_from_pdf_benchmark_vllm.py --model_name mistralai/Ministral-8B-Instruct-2410 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "2"
           limits:
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "2"
             memory: 128Gi
             cpu: "32"
         env:
@@ -41,13 +41,19 @@ spec:
         volumeMounts:
           - name: vllm-pvc
             mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: h200
+        gpu: a100
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
         - name: vllm-pvc
           persistentVolumeClaim:
             claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
       restartPolicy: Never

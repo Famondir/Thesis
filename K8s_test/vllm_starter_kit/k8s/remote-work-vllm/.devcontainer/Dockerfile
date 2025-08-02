@@ -28,7 +28,8 @@ RUN code-server --install-extension ms-python.python \
 # does not work :(
 
 RUN pip install pandas ipykernel ipywidgets
-RUN pip install transformers hf-xet xgrammar
+# RUN pip install transformers
+RUN pip install hf-xet xgrammar
 RUN pip install accelerate
 RUN pip install pypdfium2
 RUN pip install sentence_transformers

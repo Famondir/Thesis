@@ -456,7 +456,7 @@ if __name__ == "__main__":
     previous_year = '31.12.2022'
     column_names = ['E1', 'E2', 'E3', year, previous_year]
 
-    test_run = True
+    test_run = False
     if test_run:
         create_pdf('./benchmark_truth/synthetic_tables/aktiva_table', column_names, n_columns=5, thin=False, span=False, unit_in_first_cell=False, unit='Mio. EUR', max_length=50, add_text_around=True, sum_in_same_row=False)
     else:

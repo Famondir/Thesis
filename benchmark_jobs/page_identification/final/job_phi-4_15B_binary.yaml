@@ -10,6 +10,7 @@ spec:
       labels:
         app: phi4-15b-binary-job-final-few-examples
     spec:
+      priorityClassName: unimportant
       containers:
       - name: phi4-15b-binary-job-final-few-examples
         image: registry.datexis.com/s92818/remote-work-vllm:latest
