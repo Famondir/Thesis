@@ -1,29 +1,29 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: gemma3n-8b-binary-job-final-few-examples-vllm-0-9-1
+    name: qwen3-235b-synth-table-extraction-from-pdf-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: gemma3n-8b-binary-job-final-few-examples
+        app: qwen3-real-235b-table-extraction-vllm-batched-job
     spec:
       priorityClassName: unimportant
       containers:
-      - name: gemma3n-8b-binary-job-final-few-examples
-        image: registry.datexis.com/s92818/remote-work-vllm-0-10-0
+      - name: qwen3-real-235b-table-extraction-vllm-batched-job
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm_gemma.py --classifier binary --batched --model_name google/gemma-3n-E4B-it --combine_system_prompts"
+          "python3 -u /pvc/thesis_benchmarks/final_synth_table_extraction_from_pdf_benchmark_vllm.py --model_name Qwen/Qwen3-235B-A22B-Instruct-2507 --no_think --n_loops 1 --batched --tensor_parallel_size 8"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "8"
           limits:
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "8"
             memory: 128Gi
             cpu: "32"
         env:
@@ -41,13 +41,19 @@ spec:
         volumeMounts:
           - name: vllm-pvc
             mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: a100
+        gpu: b200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
         - name: vllm-pvc
           persistentVolumeClaim:
             claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
       restartPolicy: Never

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: gemma3n-8b-multi-job-final-few-examples-vllm-0-10-0
+    name: gemma3n-8b-multi-job-final-few-examples-vllm-0-9-1
 spec:
   backoffLimit: 0
   template:

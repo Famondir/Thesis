@@ -15,15 +15,15 @@ spec:
         image: registry.datexis.com/s92818/remote-work-vllm:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --model_name microsoft/phi-4 --n_loops 1 --batched"
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --model_name microsoft/phi-4 --n_loops 1 --batched --tensor_parallel_size 2"
         ]
         resources:
           requests:
-              cpu: "4"
+              cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "4"
+              nvidia.com/gpu: "2"
           limits:
-            nvidia.com/gpu: "4"
+            nvidia.com/gpu: "2"
             memory: 128Gi
             cpu: "32"
         env:
@@ -41,6 +41,8 @@ spec:
         volumeMounts:
           - name: vllm-pvc
             mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
         gpu: a100
@@ -50,4 +52,8 @@ spec:
         - name: vllm-pvc
           persistentVolumeClaim:
             claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
       restartPolicy: Never
