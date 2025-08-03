@@ -1,105 +1,18 @@
-library(jsonlite)
-library(tidyverse)
+df  <-  read_csv("data_storage/synth_table_extraction_llm.rds")
 
-unit_list = tribble(
-  ~unit, ~multiplier,
-  'EUR', 1, 
-  '€', 1, 
-  'Tsd. EUR', 1000, 
-  'Mio. EUR', 1000000, 
-  'TEUR', 1000, 
-  'T€', 1000, 
-  'Tsd. €', 1000, 
-  'Mio. €', 1000000
-)
-
-#### Final ####
-
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/synth_tables/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)] %>% 
-  .[grepl("synth", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  # Remove incomplete last JSON entry and close the list if file ends early
-  # if (!grepl("\\]$", file_content[length(file_content)])) {
-  #   # Find the last complete JSON object (ends with "},")
-  #   last_complete <- max(grep('\\.pdf', file_content))
-  #   file_content <- c(file_content[1:last_complete], "}]")
-  # }
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  name_split = (basename(file) %>% str_split("__"))[[1]]
-  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "ignore"))-1
-  # print(name_split)
-  
-  results <-  json_data$results %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      ignore_units = if_else((name_split[method_index+1] %>% str_split('_') %>% .[[1]] %>% .[3]) == "True", TRUE, FALSE),
-      input_format = name_split[2] %>% str_split("_") %>% .[[1]] %>% .[length(.)],
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble()),
-      runtime = json_data$runtime
-    ) %>% select(-df_joined)
-  
-  # results$predictions <- predictions
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
   mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
-  )
+    model_name = model_name %>% str_replace("/", "_")
+  ) %>% filter(str_detect(filename, "multi"))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
+norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+  add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
 
-df <- df %>% rowwise() %>% mutate(
-  n_columns = str_match(filepath, "(\\d)_columns")[2],
-  header_span = if_else("True" == str_match(filepath, "span_(False|True)")[2], TRUE, FALSE),
-  thin = if_else("True" == str_match(filepath, "thin_(False|True)")[2], TRUE, FALSE),
-  year_as = str_match(filepath, "year_as_(.*)__unit")[2],
-  unit_in_first_cell = if_else("True" == str_match(filepath, "unit_in_first_cell_(False|True)")[2], TRUE, FALSE),
-  unit_str = str_match(filepath, "unit_in_first_cell_(False|True)__(.*)__enumeration")[3],
-  unit_multiplier = unit_list %>% filter(unit == unit_str) %>% pull(multiplier),
-  enumeration = if_else("True" == str_match(filepath, "enumeration_(False|True)")[2], TRUE, FALSE),
-  shuffle_rows = if_else("True" == str_match(filepath, "shuffle_(False|True)")[2], TRUE, FALSE),
-  text_around = if_else("True" == str_match(filepath, "text_around_(False|True)")[2], TRUE, FALSE),
-  max_line_length = str_match(filepath, "max_length_(\\d+)")[2],
-  sum_same_line = if_else("True" == str_match(filepath, "sum_in_same_row_(False|True)")[2], TRUE, FALSE)
-) %>% #mutate(model_md = str_c(model, if_else(markdown, "_markdown", ""))) %>% 
-  mutate(
-  n_columns = ordered(n_columns, c("3", "4", "5"))
-) %>% mutate(
-  n_examples = as.numeric(n_examples),
-  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
-  n_examples = if_else(method_family == "static_example", 1, n_examples),
-  many_line_breaks = if_else(max_line_length == 50, TRUE, FALSE)
-)
+df2 <- df %>% filter(n_examples <= 5) %>% 
+  left_join(
+    norm_factors_few_examples %>% select(model_name, parameter_count), 
+    by = c("model" = "model_name")
+    )
 
 # # with NAs
 # extract_wrong_values <- function(df) {
@@ -155,15 +68,17 @@ logit <- function(x) {
   log((x+10^(-6))/(1-x+10^(-6)))
 }
 
-df_select <- df %>% mutate(
+df_select <- df2 %>% mutate(
   log10_unit_multiplier = log10(unit_multiplier),
-  logit_correct_total = percentage_correct_total %>% logit()
+  # logit_correct_total = percentage_correct_total %>% logit()
 ) %>% select(
   percentage_correct_total,
   # logit_correct_total,
   method_family,
   n_examples,
   # model,
+  parameter_count,
+  model_family,
   n_columns, 
   sum_same_line,
   header_span,
@@ -175,6 +90,7 @@ df_select <- df %>% mutate(
   # unit_str,
   # unit_multiplier,
   log10_unit_multiplier,
+  
   enumeration,
   shuffle_rows,
   text_around,
@@ -215,7 +131,9 @@ lm1 <- lm(
   formula = percentage_correct_total ~ 
     method_family +
     n_examples +
+    model_family +
     # model +
+    parameter_count +
     n_columns +
     n_columns:input_format +
     sum_same_line +
@@ -250,7 +168,7 @@ pfun <- function(object, newdata) {
   predict(object, data = newdata)
 }
 
-pfun(lm0, x)
+# pfun(lm1, x)
 
 backward <- step(lm1, direction = "backward", trace = 0)
 
@@ -261,8 +179,11 @@ library(vip)
 
 # Plot VI scores; by default, `vip()` displays the top ten features
 pal <- palette.colors(2, palette = "Okabe-Ito")  # colorblind friendly palette
-vip(vi_backward, num_features = length(coef(backward)),  # Figure 3
-    geom = "point", horizontal = FALSE, mapping = aes(color = Sign)) +
+vip(
+    vi_backward, num_features = length(coef(backward)),  # Figure 3
+    # geom = "point", horizontal = FALSE, 
+    mapping = aes(fill = Sign)
+  ) +
   scale_color_manual(values = unname(pal)) +
   theme_light() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -309,14 +230,16 @@ vip(mars)
 library(ranger)
 
 # number of features
-n_features <- 16
+n_features <- 16+2
 
 # train a default random forest model
 forest0 <- ranger(
   percentage_correct_total ~ 
     method_family +
     n_examples +
+    model_family +
     # model +
+    parameter_count +
     n_columns + 
     sum_same_line +
     header_span +
@@ -331,7 +254,7 @@ forest0 <- ranger(
     shuffle_rows +
     text_around +
     many_line_breaks,
-  data = df,
+  data = df2,
   mtry = floor(n_features / 3),
   respect.unordered.factors = "order",
   seed = 123,

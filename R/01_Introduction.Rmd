@@ -32,11 +32,30 @@ It is important to get numeric values totally accurate; numeric values are diffi
 * two sentences: why this problem? new problem or just a part in the big task? hard to solve of straight forward? research or application? what was not done and why?
 * building a system? what task to solve? core functionality? typical use cases?
 
+Research questions and hypothesss
+
+Q1: Can LLMs be used to efficiently extract financial information from German annual reports?
+Q2. Can LLMs be used to identify the page of interest automatically?
+
+Q3: Can confidence scores be used to head up the human in the loop on which results to double check? (How can sources of the automatic extraction being communicated down stream in order to make double checking easy before making decisions?)
+Q4: Can contextual information from similar documents reduce errors made during table extraction?
+Q5: What are characteristics of financial tables that make it hard for LLMs to identify / extract them? (How does the length and complexity of financial documents (e.g., multi-column layouts, nested tables) affect table extraction
+performance?)
+
 ## Methodology (1 p)
 
 * how to solve the problem?
 * what foundations to have in mind?
 * proceeding?
+
+Experimental / Comparative Research
+• Reimplementing framework(s)
+• Comparing / Benchmarking
+• Frameworks
+• Models
+• Methods
+• Use cases
+• Ablation test
 
 ## Thesis Outline (0.5 p)
 

@@ -34,6 +34,7 @@ options(kableExtra.latex.load_packages = FALSE)
 library(jsonlite)
 library(tidyverse)
 library(reticulate)
+use_python("~/anaconda3/envs/llm/bin/python")
 
 library(knitr)
 library(kableExtra)
@@ -67,6 +68,24 @@ Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Da
 * Google gemma war mit alter Klassifikation erfolgreich (anderer Prompt, mehr Seiten)
 
 implementation nach methods
+
+## Goals and Learnings {.unlisted .unnumbered}
+
+Achieved:
+
+* thesis with bookdown
+* docker image creation
+* cluster orchestration
+* llm usage
+* guided decoding
+
+Missed:
+
+* Administrating a k8s cluster
+* Fine tuning a model
+* using small language models
+* training a lm
+* using vllms
 
 \pagestyle{fancy}
 

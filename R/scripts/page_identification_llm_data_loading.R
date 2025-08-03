@@ -268,7 +268,7 @@ df_binary <- bind_rows(
         n_examples = str_match(method, "\\d+")[[1]],
         out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
         method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-        loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+        loop = as.numeric((basename(file) %>% str_replace('__no_think', '') %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
         classifier_type = paste(str_split(name_split[2], '_')[[1]][c(2,3)], collapse = "_"),
         classification_type = NA,
         runtime = json_data$runtime,

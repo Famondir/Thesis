@@ -22,7 +22,7 @@ num_tables <- data_unnested %>%
   nrow()
 
 # Get a list of all .json files in the folder
-json_files <- list.files("../benchmark_results/page_identification/", pattern = "regex\\.json$", full.names = TRUE)
+json_files <- list.files("../benchmark_results/page_identification/", pattern = "regex.*\\.json$", full.names = TRUE)
 
 calc_metrics <- function(classification_type) {
   # Initialize an empty dataframe to store results
@@ -46,6 +46,7 @@ calc_metrics <- function(classification_type) {
   # Loop through each .json file
   for (file in json_files) {
     # browser()
+    # print(file)
     
     json_data <- fromJSON(file)
     
@@ -165,4 +166,55 @@ for (df in metrics) {
   metric_summaries[type] <- list(results_df)
 }
 
-# print('hello')
+calc_metrics_by_company_and_type <- function(classification_type) {
+  df_list <- list()
+  
+  # Loop through each .json file
+  for (file in json_files) {
+    # browser()
+    
+    json_data <- fromJSON(file)
+    
+    # Extract the required values
+    correct_df <- as_tibble(fromJSON(json_data$correct)) %>% group_by(company, type) %>% summarise(n_correct = n())
+    wrong_df <- as_tibble(fromJSON(json_data$wrong)) %>% group_by(company, type) %>% summarise(n_wrong = n())
+    # missing_df <- as_tibble(fromJSON(json_data$missing)) 
+    # if (nrow(missing_df>0)) {
+    #     missing_df <- df_missing %>% group_by(company, type) %>% summarise(n_missing = n())
+    #   }
+    
+    filename <- basename(file)
+    package <- strsplit(filename, "_")[[1]][1]
+    method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
+    runtime <- round(json_data$runtime, 2)
+    
+    num_tables <- data_unnested %>% rowwise() %>% mutate(
+      company = str_split(filepath, "/")[[1]][3]
+    ) %>% group_by(type, company) %>% summarise(n_total = n())
+    
+    file_count <- data_unnested %>% rowwise() %>% mutate(
+      company = str_split(filepath, "/")[[1]][3]
+    ) %>% select(filepath, company) %>% unique() %>% group_by(company) %>% summarise(n_files = n())
+    
+    df_results <- correct_df %>% full_join(wrong_df) %>% full_join(num_tables) %>% 
+      full_join(file_count) %>% mutate(
+      num_true_pos = n_correct,
+      num_false_pos = n_wrong,
+      num_false_neg = n_total-n_correct,
+      # acc = round((num_true_pos+num_true_neg)/(total_pages),2)
+      precision = round(num_true_pos/(num_true_pos+num_false_pos),2),
+      recall = round(num_true_pos/(num_true_pos+num_false_neg),2),
+      F1 = round(2*precision*recall/(precision+recall),2),
+      package = package,
+      method = method,
+      runtime_in_s = runtime
+    ) %>% rename(classification_type = type)
+    
+    df_list[filename] <- list(df_results)
+    
+  }
+  
+  return(bind_rows(df_list) %>% as_tibble())
+}
+
+metrics_by_company_and_type <- calc_metrics_by_company_and_type(type)

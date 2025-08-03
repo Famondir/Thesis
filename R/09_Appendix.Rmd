@@ -199,7 +199,7 @@ In April 2025 there have been issues with running vllm within the Python framewo
 
 Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with vllm library run are around four to five times faster. Processing the messages in a batched mode again is six to seven times faster.
 
-The change of the experimental setup from transformers loop-based to vllm batched mode made is possible run the benchmark on whole PDF documents giving a sound estimate of the false positive rate in the page identification task (see section \@ref(llm-page-identification)). Previous experiments have only been using a subset of pages that have been selected with the baseline regex approach (see section \@ref(regex-page-identification)). One can find the former results in section \@ref(llm-table-detection).
+The change of the experimental setup from transformers loop-based to vllm batched mode made is possible run the benchmark on whole PDF documents giving a sound estimate of the false positive rate in the page identification task (see section \@ref(llm-page-identification)). Previous experiments have only been using a subset of pages that have been selected with the baseline regex approach (see section \@ref(regex-page-identification)).
 
 ```{r llm-spped-mini-benchmark-table, echo=FALSE}
 data_llm_speed <- data.frame(
@@ -279,6 +279,53 @@ regex_patterns_3 = {
     ]
 }
 ```
+
+## Figures
+
+\newpage
+
+```{r, echo=FALSE, figwidth=16, fig.height=12, out.width="160%", out.height="80%", results="asis", out.extra='angle=90', warning=FALSE}
+design = "
+ABCD##W
+EFGHI#x
+JKL####
+MNOPQRS
+TUV####
+"
+
+model_by_size <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
+  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
+  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
+  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
+  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
+  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
+  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
+  )
+
+df_binary %>% filter(classification_type == "Aktiva") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  )
+```
+
+\newpage
 
 ## Extraction framework flow chart
 
