@@ -88,7 +88,7 @@ metrics_by_company_and_type %>%
     pivot_longer(cols=c(F1, precision, recall), names_to = "metric") %>% 
     ggplot() +
     geom_boxplot(aes(x = company, y = value, fill = n_files), alpha = 0.5) +
-    geom_jitter(aes(x = company, y = value, color = method), alpha = 1) +
+    geom_jitter(aes(x = company, y = value, color = method), alpha = 1, height = 0) +
     facet_grid(classification_type~metric) +
     scale_x_discrete(guide = guide_axis(angle = 30)) +
   theme(
@@ -303,6 +303,8 @@ structured outputs forcing to answer with a *yes* or *no* for binary task or wit
 
 top n accuracy
 
+out of company vs in compnay rag
+
 #### Binary classification
 
 Could be more efficient to predict "is any of interest" and then which type, because dataset is highly imbalanced.
@@ -398,7 +400,7 @@ method__best_f1_aktiva <- df_filtered[1, "method"]
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
-  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
   labs(title = model_name_best_f1_aktiva,
        subtitle = method__best_f1_aktiva)
@@ -421,7 +423,7 @@ method__best_f1_aktiva <- df_filtered[1, "method"]
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
-  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
   labs(title = model_name_best_f1_aktiva,
        subtitle = method__best_f1_aktiva)
@@ -729,10 +731,10 @@ df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
 
 df_selected %>% 
   filter(model %in% c(
-    "mistralai_Ministral-8B-Instruct-2410"
+    "mistralai_Ministral-8B-Instruct-2410",
     # "mistralai_Mistral-Large-Instruct-2411",
     # "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
-    # "meta-llama_Llama-4-Scout-17B-16E-Instruct",
+    "meta-llama_Llama-4-Scout-17B-16E-Instruct"
     # "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8"
   )) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
@@ -740,13 +742,13 @@ df_selected %>%
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
   facet_grid(model~metric_type) +
-  scale_color_manual(values = method_familiy_colors) +
+  scale_color_manual(values = method_familiy_colors) #+
   # theme(legend.position = "bottom") +
   # guides(
   #   color = guide_legend(ncol = 1, title.position = "top"),
   #   shape = guide_legend(ncol = 1, title.position = "top")
   # ) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
+  # scale_x_discrete(guide = guide_axis(angle = 30))
 ```
 
 Most of the time pretty confident
@@ -770,7 +772,7 @@ method__best_f1_aktiva <- df_filtered[1, "method"]
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
-  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
   labs(title = model_name_best_f1_aktiva,
        subtitle = method__best_f1_aktiva)
@@ -1187,39 +1189,427 @@ Regex approach not even perfect with synthetic tables. Mistakes in the text pars
 
 ```{r table-extraction-regex-performance, echo=FALSE, out.width="100%"}
 df_table_extraction_regex %>%
-  select(c(model, percentage_correct_numeric, percentage_correct_total, T_EUR)) %>% 
-  pivot_longer(cols = -c(model, T_EUR)) %>% 
+  select(c(model, percentage_correct_numeric, percentage_correct_total, T_EUR, method)) %>% 
+  pivot_longer(cols = -c(model, T_EUR, method)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .5) +
+  geom_boxplot(aes(x = model, y = value, fill = method), alpha = .3) +
+  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .8, height = 0, shape = 4) +
   # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(~name)
 ```
 
 ```{r table-extraction-regex-NA, echo=FALSE, out.width="100%"}
-df_table_extraction_regex %>% select(c(model, NA_precision, NA_recall, NA_F1, T_EUR)) %>% 
-  pivot_longer(cols = -c(model, T_EUR)) %>% 
+df_table_extraction_regex %>% select(c(model, NA_precision, NA_recall, NA_F1, T_EUR, method)) %>% 
+  pivot_longer(cols = -c(model, T_EUR, method)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .5) +
+  geom_boxplot(aes(x = model, y = value, fill = method), alpha = .3) +
+  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .8, height = 0, shape = 4) +
   # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(~name)
 ```
 
 ### Extraction with LLMs
 
-* Google models again start underperforming without changes in task (neither data nor prompt?!) even though it was done with vllm already before
+```{r loading-table-extraction-datasets, echo=FALSE}
+df_real_table_extraction <- readRDS("data_storage/real_table_extraction_llm.rds")
+df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_synth.rds")
+df_real_table_extraction_azure <- readRDS("data_storage/real_table_extraction_azure.rds")
+
+model_by_size <- c(
+  'google_gemma-3-4b-it', 'google_gemma-3n-E4B-it', "google_gemma-3-12b-it",
+  "google_gemma-3-27b-it", "meta-llama_Llama-3.1-8B-Instruct", 
+  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
+  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
+  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
+  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
+  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-14B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  # "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1",
+  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
+)
+
+method_order <- c("top_n_rag_examples", "n_random_examples", "top_n_rag_examples_out_of_sample", "static_example", "zero_shot" )
+
+df_overview <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
+  filter(out_of_company != TRUE | is.na(out_of_company), n_examples <= 3) %>% 
+  filter(model %in% model_by_size) %>%
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+    )
+
+units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% mutate(
+  filepath = paste0('/pvc/benchmark_truth/real_tables/', company, '__', filename),
+  T_EUR = (T_in_year + T_in_previous_year)>0,
+  T_EUR_both = (T_in_year + T_in_previous_year)>1
+) %>% select(filepath, T_EUR, T_EUR_both)
+
+df_real_table_extraction_synth <- df_real_table_extraction_synth %>% left_join(units_real_tables)
+```
 
 * confidence usable to head for user checks?
+* not handled new entries
+* five examples bring not much more
+* xgboost
 
 #### Real tables only
 
+```{r table-extraction-llm-performance-total-overview, out.width="100%", fig.height=12}
+df_overview %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-performance-numeric-overview, out.width="100%", fig.height=12}
+df_overview %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-f1-overview, out.width="100%", fig.height=12}
+df_overview %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+Documents from same company help, especially gemma and gpt nano
+Maverick with 5 examples does not work anymore
+
+```{r table-extraction-llm-performance-total-overview-out-of-company, out.width="100%", fig.height=12}
+bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
+  filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
+  filter(model %in% model_by_size) %>%
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  # pivot_longer(cols = -c(model, method, model_family)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ out_of_company) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-confidence}
+confidence_vs_truth <- df_real_table_extraction %>% 
+  # filter(model == "Qwen_Qwen3-8B") %>% 
+  filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
+  group_by(method, model) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+    ) %>% ungroup() %>% 
+  arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_vs_truth %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence, fill = truth_NA), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE)
+```
+
+```{r}
+confidence_vs_truth %>%
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.005
+  ) %>%
+  group_by(conf_center, predicted_NA) %>%
+  summarize(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = conf_center, y = chance_false, color = predicted_NA)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Confidence Interval Center", y = "Chance False (%)", color = "Predicted NA") +
+  coord_cartesian(ylim = c(0, 100), xlim = c(0,1))
+```
+
 ##### GPT
 
-GPT results
+GPT 4.1 nano not sufficiently powerful, GPT 4.1 mini good to moderate in most cases, GPT 4.1 performs very good.
+
+GPT 4.1 costs five times of mini and 20 times of nano. But nano is useless for the task
+
+```{r}
+model_by_size_gpt <- c(
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+ "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1"
+)
+
+df_overview_gpt <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
+  filter(out_of_company != TRUE | is.na(out_of_company), n_examples <= 3) %>% 
+  filter(model %in% model_by_size_gpt) %>%
+  mutate(
+    model = factor(model, levels = model_by_size_gpt),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+    )
+```
+
+```{r table-extraction-llm-performance-total-gpt, out.width="100%", fig.height=10}
+df_overview_gpt %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .)
+```
+
+```{r table-extraction-llm-performance-numeric-gpt, out.width="100%", fig.height=10}
+df_overview_gpt %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .)
+```
+
+```{r table-extraction-llm-f1-gpt, out.width="100%", fig.height=10}
+df_overview_gpt %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .)
+```
+
+```{r costs-azure}
+costs_azure <- read_csv("../CostManagement_master-thesis_2025.csv")
+
+token_prop <- df_real_table_extraction %>% group_by(model, method, n_examples) %>% summarize(
+    request_tokens_total = sum(request_tokens[[1]])) %>% 
+    group_by(method, n_examples) %>% 
+    summarize(mean = mean(request_tokens_total, na.rm = TRUE)) %>% mutate(five_examples = n_examples == 5) %>% group_by(five_examples) %>% summarise(sum = sum(mean))
+
+five_ex_tokens <- token_prop %>% filter(five_examples == TRUE) %>% pull(sum)
+other_tokens <- token_prop %>% filter(five_examples == FALSE) %>% pull(sum)
+
+costs_azure %>% mutate(
+  Cost_all_tasks = Cost,
+  Cost_all_tasks = if_else(Meter == "gpt 4.1 Inp glbl Tokens", Cost_all_tasks+Cost_all_tasks*five_ex_tokens/other_tokens, Cost_all_tasks),
+  Cost_all_tasks = if_else(Meter == "gpt 4.1 Outp glbl Tokens", Cost_all_tasks+Cost_all_tasks*3/11, Cost_all_tasks)
+  ) %>% kbl()
+```
 
 #### Synthetic tables only
 
+span argument was not implemented correct in html tables and md :/
+
 #### Extract from real tables with synthetic content
+
+Real context better for real tables. But not useless.
+
+```{r compare-real-table-extraction-by-context-type, out.width="100%", fig.height=12}
+bind_rows(
+  df_real_table_extraction_synth %>% mutate(context = "synth"), 
+  df_real_table_extraction %>% mutate(context = "real")
+  ) %>% 
+  filter(model %in% c("Qwen_Qwen3-8B","mistralai_Ministral-8B-Instruct-2410")) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1,, fill=context, y = percentage_correct_total), alpha = .5) +
+  # scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model)
+```
+
+no examples with units only for one column. Can learn from synth context new skills
+
+```{r, out.width="100%", fig.height=12}
+df_real_table_extraction_synth %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = percentage_correct_total), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+```
+
+```{r, out.width="100%", fig.height=12}
+df_real_table_extraction_synth %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = percentage_correct_numeric), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_numeric), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+```
+
+```{r, out.width="100%", fig.height=12}
+df_real_table_extraction_synth %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = NA_F1), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = NA_F1), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+```
+
+```{r table-extraction-llm-confidence-synth-context}
+confidence_vs_truth <- df_real_table_extraction_synth %>% 
+  # filter(model == "Qwen_Qwen3-8B") %>% 
+  filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
+  group_by(method, model) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+  ) %>% group_by(ignore_units) %>% 
+  arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_vs_truth %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence, fill = truth_NA), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_wrap(~ignore_units)
+```
+
+```{r}
+confidence_vs_truth %>%
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.005
+  ) %>%
+  group_by(conf_center, predicted_NA, ignore_units) %>%
+  summarize(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = conf_center, y = chance_false, color = predicted_NA)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Confidence Interval Center", y = "Chance False (%)", color = "Predicted NA") +
+  coord_cartesian(ylim = c(0, 100), xlim = c(0,1)) +
+  facet_wrap(~ignore_units)
+```

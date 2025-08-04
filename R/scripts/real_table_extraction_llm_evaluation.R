@@ -1,151 +1,60 @@
 library(jsonlite)
 library(tidyverse)
 
+units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% mutate(
+  filepath = paste0('/pvc/benchmark_truth/real_tables/', company, '__', filename),
+  T_EUR = (T_in_year + T_in_previous_year)>0,
+  T_EUR_both = (T_in_year + T_in_previous_year)>1
+) %>% select(filepath, T_EUR, T_EUR_both)
+
 #### Final ####
 
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/real_tables/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)] %>% 
-  .[!grepl("synth", .)]
+df <- readRDS("data_storage/real_table_extraction_llm.rds")
+df <- df %>% left_join(units_real_tables)
 
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  # Remove incomplete last JSON entry and close the list if file ends early
-  if (!grepl("\\]$", file_content[length(file_content)])) {
-    # Find the last complete JSON object (ends with "},")
-    last_complete <- max(grep('\\.pdf', file_content))
-    file_content <- c(file_content[1:last_complete], "}]")
-  }
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  name_split = (basename(file) %>% str_split("__"))[[1]]
-  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
-  # print(name_split)
-  
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble())
-    ) %>% select(-df_joined)
-  
-  # results$predictions <- predictions
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
-  mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
-  )
-
-# with NAs
-extract_wrong_values <- function(df) {
-  df %>% mutate(
-    mistake_year = (year_truth != year_result) | (is.na(year_truth) & !is.na(year_result)) | (is.na(year_result) & !is.na(year_truth)),
-    mistake_year = if_else(is.na(mistake_year), FALSE, mistake_year),
-    mistake_previous_year =(previous_year_truth != previous_year_result) | (is.na(previous_year_truth) & !is.na(previous_year_result)) | (is.na(previous_year_result) & !is.na(previous_year_truth)),
-    mistake_previous_year = if_else(is.na(mistake_previous_year), FALSE, mistake_previous_year)
-  ) %>% select(
-    year_truth, year_result, 
-    previous_year_truth, previous_year_result,
-    mistake_year, mistake_previous_year
-  ) %>% 
-    filter(mistake_year | mistake_previous_year)  
-}
-
-# only floats
-extract_wrong_floats <- function(df) {
-  df %>% mutate(
-    mistake_year = (year_truth != year_result),
-    mistake_previous_year =(previous_year_truth != previous_year_result)
-  ) %>% select(
-    year_truth, year_result, 
-    previous_year_truth, previous_year_result,
-    mistake_year, mistake_previous_year
-  ) %>% 
-    filter(mistake_year | mistake_previous_year)
-}
-
-relative_float_diff <- df %>% 
-  mutate(wrong_floats = map(predictions, extract_wrong_floats)) %>%
-  select(filepath, wrong_floats, model, method) %>% 
-  rowwise() %>% mutate(n_wrong_floats = nrow(wrong_floats)) %>% 
-  filter(n_wrong_floats>0) %>% 
-  unnest(wrong_floats) %>% 
-  mutate(
-    ratio_this_year = year_result/year_truth,
-    ratio_previous_year = previous_year_result/previous_year_truth
-  ) %>% pivot_longer(
-    cols = c(ratio_this_year, ratio_previous_year),
-    names_to = "year_type",
-    values_to = "ratio",
-    names_prefix = "ratio_"
-  ) %>% unique()
-
-# relative_float_diff %>% saveRDS("data_storage/relative_float_diff_with_mistakes.rds")
-
-# checked (log 10 ratio and differing truth log 10)
-integer_multiplier <- relative_float_diff %>% 
-  filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1, 
-         as.integer(log(year_truth, base = 10)) != as.integer(log(previous_year_truth, base = 10))
-         ) %>% unique()
-
-# checked (log 10 ratio)
-integer_multiplier <- relative_float_diff %>% 
-  filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1
-  ) %>% unique()
-
-# unchecked (random ratio)
-integer_multiplier <- relative_float_diff %>% 
-  filter(!(log(ratio, base = 10) == as.integer(log(ratio, base = 10)))
-  ) %>% unique()
-  
-
-paths <- dir("../manual_download/", full.names=TRUE, recursive=TRUE)
-n_mistakes_identified <- tibble(change_date = file.info(paths)$ctime) %>% 
-  filter(change_date > as.POSIXct("2025-07-23")) %>% nrow()
+##### regression #####
 
 table_characteristics <- read.csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% 
   mutate(
     filepath = paste0("/pvc/benchmark_truth/real_tables/", company, "__", filename)
-    ) %>% as_tibble()
+  ) %>% as_tibble()
 
-df_characteristics <- df %>% 
-  select(filepath, method, model, percentage_correct_total) %>% 
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+  mutate(
+    model_name = model_name %>% str_replace("/", "_")
+  ) %>% filter(str_detect(filename, "multi"))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
+norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+  add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
+
+df_characteristics <- df %>% rowwise() %>% mutate(
+  mean_tokens = mean(request_tokens[[1]])
+) %>% 
+  select(
+    filepath, 
+    method_family, model_family, 
+    percentage_correct_total, 
+    n_examples, 
+    model, method,
+    mean_tokens
+  ) %>% 
   left_join(table_characteristics, by = "filepath")
 
-##### regression #####
+df_characteristics <- df_characteristics %>% filter(n_examples <= 5) %>% 
+  left_join(
+    norm_factors_few_examples %>% select(model_name, parameter_count), 
+    by = c("model" = "model_name")
+  )
 
-lm1 <- lm(
+lm0 <- lm(
   data = df_characteristics,
   formula = percentage_correct_total ~ 
-    method +
-    model +
+    method_family +
+    model_family +
+    n_examples +
+    # mean_tokens +
+    parameter_count +
+    parameter_count:model_family +
     n_columns + 
     T_in_previous_year + 
     T_in_year + 
@@ -155,19 +64,121 @@ lm1 <- lm(
     vorjahr +
     header_span
 )
-summary(lm1)
+summary(lm0)
 
-df_characteristics %>% select(is.numeric) %>% colMeans(na.rm= TRUE)
+# df_characteristics %>% select(is.numeric) %>% colMeans(na.rm= TRUE)
+
+backward <- step(lm0, direction = "backward", trace = 0)
+
+library(vip)
+
+# Extract VI scores
+(vi_backward <- vi(backward))
+
+# Plot VI scores; by default, `vip()` displays the top ten features
+pal <- palette.colors(2, palette = "Okabe-Ito")  # colorblind friendly palette
+vip(
+  vi_backward, num_features = length(coef(backward)),  # Figure 3
+  # geom = "point", horizontal = FALSE, 
+  mapping = aes(fill = Sign)
+) +
+  scale_color_manual(values = unname(pal)) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ##### plotting #####
 
-df %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>% 
-  pivot_longer(cols = -c(model, method)) %>% 
+library(ggh4x)
+
+model_by_size <- c(
+  'google_gemma-3-4b-it', 'google_gemma-3n-E4B-it', "google_gemma-3-12b-it",
+  "google_gemma-3-27b-it", "meta-llama_Llama-3.1-8B-Instruct", 
+  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
+  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
+  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
+  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
+  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
+  "Qwen_Qwen3-0.6B", "Qwen_Qwen3-1.7B", "Qwen_Qwen3-4B",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-14B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1",
+  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
+)
+
+method_order <- c("top_n_rag_examples", "n_random_examples", "top_n_rag_examples_out_of_sample", "static_example", "zero_shot" )
+
+bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+  filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
+  # select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family, method_family)) %>% 
+  filter(model %in% model_by_size) %>%
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  # pivot_longer(cols = -c(model, method, model_family)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ out_of_company) +
+  theme(
+    legend.position = "bottom"
+  )
+
+bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+  filter(out_of_company != TRUE | is.na(out_of_company), n_examples <= 3) %>% 
+  # select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family, method_family)) %>% 
+  filter(model %in% model_by_size) %>%
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+    ) %>% 
+  # pivot_longer(cols = -c(model, method, model_family)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .)
+
+bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+  filter(out_of_company != TRUE) %>% 
+  select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family)) %>% 
+  filter(model %in% model_by_size) %>% 
+  mutate(model = factor(model, levels = model_by_size)) %>% 
+  # pivot_longer(cols = -c(model, method, model_family)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_grid(method~1)
+
+df %>% filter(out_of_company != TRUE) %>% 
+  select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family, T_EUR)) %>% 
+  filter(model %in% c("mistralai_Ministral-8B-Instruct-2410")) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size)
+  ) %>% 
+  pivot_longer(cols = -c(model, method, model_family, T_EUR)) %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = value)) +
+  geom_jitter(aes(x = model, y = value, color = T_EUR), alpha = .5) +
   # facet_wrap(~name, ncol = 1) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(method~name)
+
+bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+  filter(out_of_company != TRUE) %>% 
+  select(c(model, method, NA_F1, model_family)) %>% 
+  filter(model %in% model_by_size) %>% 
+  mutate(model = factor(model, levels = model_by_size)) %>% 
+  # pivot_longer(cols = -c(model, method, model_family)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_grid(method~1)
 
 df %>% select(c(model, method, NA_precision, NA_recall, NA_F1)) %>% 
   pivot_longer(cols = -c(model, method)) %>% 
@@ -209,157 +220,190 @@ relative_float_diff %>%
   geom_histogram(aes(x = log_ratio, fill = log_ratio_is_int), binwidth = 1) +
   facet_grid(paste0(year_type,"\n", model)~method)
 
-#### Synth Context ####
+###### confidence ######
 
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/real_tables/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)] %>% 
-  .[grepl("synth", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  # Remove incomplete last JSON entry and close the list if file ends early
-  # if (!grepl("\\]$", file_content[length(file_content)])) {
-  #   # Find the last complete JSON object (ends with "},")
-  #   last_complete <- max(grep('\\.pdf', file_content))
-  #   file_content <- c(file_content[1:last_complete], "}]")
-  # }
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  name_split = (basename(file) %>% str_split("__"))[[1]]
-  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "ignore"))-1
-  # print(name_split)
-  
-  results <-  json_data$results %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      ignore_units = if_else((name_split[method_index+1] %>% str_split('_') %>% .[[1]] %>% .[3]) == "True", TRUE, FALSE),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble()),
-      runtime = json_data$runtime
-    ) %>% select(-df_joined)
-  
-  # results$predictions <- predictions
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
-  mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
+confidence_vs_truth <- df %>% 
+  # filter(model == "Qwen_Qwen3-8B") %>% 
+  filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
+  group_by(method, model) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+    ) %>% ungroup() %>% 
+  arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
   )
 
-# with NAs
-extract_wrong_values <- function(df) {
-  df %>% mutate(
-    mistake_year = (year_truth != year_result) | (is.na(year_truth) & !is.na(year_result)) | (is.na(year_result) & !is.na(year_truth)),
-    mistake_year = if_else(is.na(mistake_year), FALSE, mistake_year),
-    mistake_previous_year =(previous_year_truth != previous_year_result) | (is.na(previous_year_truth) & !is.na(previous_year_result)) | (is.na(previous_year_result) & !is.na(previous_year_truth)),
-    mistake_previous_year = if_else(is.na(mistake_previous_year), FALSE, mistake_previous_year)
-  ) %>% select(
-    year_truth, year_result, 
-    previous_year_truth, previous_year_result,
-    mistake_year, mistake_previous_year
-  ) %>% 
-    filter(mistake_year | mistake_previous_year)  
-}
+confidence_vs_truth %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence, fill = truth_NA), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE)# +
+  # coord_cartesian(ylim = c(0.95, 1))
+  # geom_jitter(aes(x = match, y = confidence))
 
-# only floats
-extract_wrong_floats <- function(df) {
-  df %>% mutate(
-    mistake_year = (year_truth != year_result),
-    mistake_previous_year =(previous_year_truth != previous_year_result)
-  ) %>% select(
-    year_truth, year_result, 
-    previous_year_truth, previous_year_result,
-    mistake_year, mistake_previous_year
-  ) %>% 
-    filter(mistake_year | mistake_previous_year)
-}
+# confidence_vs_truth %>%
+#   mutate(conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.01), include.lowest = TRUE)) %>%
+#   group_by(conf_interval, predicted_NA) %>%
+#   summarize(
+#     n_true = sum(match == TRUE, na.rm = TRUE),
+#     n_false = sum(match == FALSE, na.rm = TRUE),
+#     total = n_true + n_false,
+#     chance_false = if_else(total > 0, n_false / total * 100, NA_real_)
+#   ) %>% tail(20)
 
-relative_float_diff <- df %>% 
-  mutate(wrong_floats = map(predictions, extract_wrong_floats)) %>%
-  select(filepath, wrong_floats, model, method) %>% 
-  rowwise() %>% mutate(n_wrong_floats = nrow(wrong_floats)) %>% 
-  filter(n_wrong_floats>0) %>% 
-  unnest(wrong_floats) %>% 
+confidence_vs_truth %>%
   mutate(
-    ratio_this_year = year_result/year_truth,
-    ratio_previous_year = previous_year_result/previous_year_truth
-  ) %>% pivot_longer(
-    cols = c(ratio_this_year, ratio_previous_year),
-    names_to = "year_type",
-    values_to = "ratio",
-    names_prefix = "ratio_"
-  ) %>% unique()
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.005
+  ) %>%
+  group_by(conf_center, predicted_NA) %>%
+  summarize(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = conf_center, y = chance_false, color = predicted_NA)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Confidence Interval Center", y = "Chance False (%)", color = "Predicted NA") +
+  coord_cartesian(ylim = c(0, 100), xlim = c(0,1))
 
-# relative_float_diff %>% saveRDS("data_storage/relative_float_diff_with_mistakes.rds")
+#### Synth Context ####
 
-# checked (log 10 ratio and differing truth log 10)
-integer_multiplier <- relative_float_diff %>% 
-  filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1, 
-         as.integer(log(year_truth, base = 10)) != as.integer(log(previous_year_truth, base = 10))
-  ) %>% unique()
-
-# checked (log 10 ratio)
-integer_multiplier <- relative_float_diff %>% 
-  filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1
-  ) %>% unique()
-
-# unchecked (random ratio)
-integer_multiplier <- relative_float_diff %>% 
-  filter(!(log(ratio, base = 10) == as.integer(log(ratio, base = 10)))
-  ) %>% unique()
-
-
-paths <- dir("../manual_download/", full.names=TRUE, recursive=TRUE)
-n_mistakes_identified <- tibble(change_date = file.info(paths)$ctime) %>% 
-  filter(change_date > as.POSIXct("2025-07-23")) %>% nrow()
-
-table_characteristics <- read.csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% 
-  mutate(
-    filepath = paste0("/pvc/benchmark_truth/real_tables/", company, "__", filename)
-  ) %>% as_tibble()
-
-df_characteristics <- df %>% 
-  select(filepath, method, model, percentage_correct_total) %>% 
-  left_join(table_characteristics, by = "filepath")
+df_synth <- readRDS("data_storage/real_table_extraction_synth.rds")
+df_synth <- df_synth %>% left_join(units_real_tables)
 
 ##### plotting #####
 
-df %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total, ignore_units)) %>% 
-  pivot_longer(cols = -c(model, method, ignore_units)) %>% 
+bind_rows(
+  df_synth %>% mutate(context = "synth"), 
+  df %>% mutate(context = "real")
+  ) %>% 
+  filter(model %in% c("Qwen_Qwen3-8B","mistralai_Ministral-8B-Instruct-2410")) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
   ggplot() +
-  geom_boxplot(aes(x = model, fill=ignore_units, y = value)) +
+  geom_boxplot(aes(x = 1,, fill=context, y = percentage_correct_total), alpha = .3) +
+  # geom_jitter(
+  #   data = . %>% filter(n_col_T_EUR > 0), 
+  #   aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+  #   height = 0, alpha = .5, width = 0.3
+  # ) +
   # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(method~name)
+  facet_nested(method_family+n_examples~model)
 
-df %>% select(c(model, method, NA_precision, NA_recall, NA_F1, ignore_units)) %>% 
+df_synth %>% 
+  # select(c(
+  # model, method, percentage_correct_numeric, percentage_correct_total, ignore_units,
+  # T_EUR, T_EUR_both)) %>% 
+  # pivot_longer(cols = -c(model, method, ignore_units, T_EUR, T_EUR_both)) %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = percentage_correct_total), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+  # facet_grid(method~name)
+
+df_synth %>% 
+  # select(c(
+  # model, method, percentage_correct_numeric, percentage_correct_total, ignore_units,
+  # T_EUR, T_EUR_both)) %>% 
+  # pivot_longer(cols = -c(model, method, ignore_units, T_EUR, T_EUR_both)) %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = percentage_correct_numeric), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_numeric), 
+    height = 0, alpha = .5, width = 0.3
+  ) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+# facet_grid(method~name)
+
+df_synth %>% 
+  # select(c(
+  # model, method, percentage_correct_numeric, percentage_correct_total, ignore_units,
+  # T_EUR, T_EUR_both)) %>% 
+  # pivot_longer(cols = -c(model, method, ignore_units, T_EUR, T_EUR_both)) %>% 
+  mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=ignore_units, y = NA_F1), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = NA_F1), 
+    height = 0, alpha = .5, width = 0.3
+  ) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+ignore_units)
+# facet_grid(method~name)
+
+df_synth %>% select(c(model, method, NA_precision, NA_recall, NA_F1, ignore_units)) %>% 
   pivot_longer(cols = -c(model, method, ignore_units)) %>% 
   ggplot() +
   geom_boxplot(aes(x = model, fill=ignore_units, y = value)) +
@@ -367,24 +411,24 @@ df %>% select(c(model, method, NA_precision, NA_recall, NA_F1, ignore_units)) %>
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(name~method)
 
-df %>% ggplot() +
+df_synth %>% ggplot() +
   geom_boxplot(aes(x = model, y = deep_distance)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(method~1)
 
-df %>% ggplot() +
+df_synth %>% ggplot() +
   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1500)) +
   facet_grid(method~1)
 
-df %>% ggplot() +
+df_synth %>% ggplot() +
   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   coord_cartesian(ylim = c(0, 1)) +
   facet_grid(method~1)
 
-df %>% ggplot() +
+df_synth %>% ggplot() +
   geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) + # also between number and null?
   facet_grid(method~1)
@@ -398,6 +442,90 @@ relative_float_diff %>%
   ggplot() +
   geom_histogram(aes(x = log_ratio, fill = log_ratio_is_int), binwidth = 1) +
   facet_grid(paste0(year_type,"\n", model)~method)
+
+###### confidence ######
+
+confidence_vs_truth <- df_synth %>% 
+  # filter(model == "Qwen_Qwen3-8B") %>% 
+  filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
+  group_by(method, model) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+  ) %>% group_by(ignore_units) %>% 
+  arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_vs_truth %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence, fill = truth_NA), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_wrap(~ignore_units) # +
+# coord_cartesian(ylim = c(0.95, 1))
+# geom_jitter(aes(x = match, y = confidence))
+
+# confidence_vs_truth %>%
+#   mutate(conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.01), include.lowest = TRUE)) %>%
+#   group_by(conf_interval, predicted_NA) %>%
+#   summarize(
+#     n_true = sum(match == TRUE, na.rm = TRUE),
+#     n_false = sum(match == FALSE, na.rm = TRUE),
+#     total = n_true + n_false,
+#     chance_false = if_else(total > 0, n_false / total * 100, NA_real_)
+#   ) %>% tail(20)
+
+confidence_vs_truth %>%
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.005
+  ) %>%
+  group_by(conf_center, predicted_NA, ignore_units) %>%
+  summarize(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = conf_center, y = chance_false, color = predicted_NA)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Confidence Interval Center", y = "Chance False (%)", color = "Predicted NA") +
+  coord_cartesian(ylim = c(0, 100), xlim = c(0,1)) +
+  facet_wrap(~ignore_units)
 
 ##### regression #####
 
@@ -421,299 +549,61 @@ df_characteristics %>% select(is.numeric) %>% colMeans(na.rm= TRUE)
 
 #### Azure ####
 
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/real_tables/openai/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  # Remove incomplete last JSON entry and close the list if file ends early
-  if (!grepl("\\]$", file_content[length(file_content)])) {
-    # Find the last complete JSON object (ends with "},")
-    last_complete <- max(grep('\\.pdf', file_content))
-    file_content <- c(file_content[1:last_complete], "}]")
-  }
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  name_split = (basename(file) %>% str_split("__"))[[1]]
-  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
-  # print(name_split)
-  
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble())
-    ) %>% select(-df_joined)
-  
-  # results$predictions <- predictions
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
-  mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
-  )
+df_azure <- readRDS("data_storage/real_table_extraction_azure.rds")
 
 ##### plotting #####
 
-df %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>% 
-  pivot_longer(cols = -c(model, method)) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  # facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(method~name)
-
-df %>% select(c(model, method, NA_precision, NA_recall, NA_F1)) %>% 
-  pivot_longer(cols = -c(model, method)) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  # facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(name~method)
-
-# df %>% ggplot() +
-#   geom_boxplot(aes(x = model, y = deep_distance)) +
+# df_azure %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>% 
+#   pivot_longer(cols = -c(model, method)) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(x = model, y = value)) +
+#   # facet_wrap(~name, ncol = 1) +
 #   scale_x_discrete(guide = guide_axis(angle = 30)) +
+#   facet_grid(method~name)
+# 
+# df_azure %>% select(c(model, method, NA_precision, NA_recall, NA_F1)) %>% 
+#   pivot_longer(cols = -c(model, method)) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(x = model, y = value)) +
+#   # facet_wrap(~name, ncol = 1) +
+#   scale_x_discrete(guide = guide_axis(angle = 30)) +
+#   facet_grid(name~method)
+# 
+# # df_azure %>% ggplot() +
+# #   geom_boxplot(aes(x = model, y = deep_distance)) +
+# #   scale_x_discrete(guide = guide_axis(angle = 30)) +
+# #   facet_grid(method~1)
+# 
+# df_azure %>% ggplot() +
+#   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
+#   scale_x_discrete(guide = guide_axis(angle = 30)) +
+#   coord_cartesian(ylim = c(0, 1500)) +
+#   facet_grid(method~1)
+# 
+# df_azure %>% ggplot() +
+#   geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
+#   scale_x_discrete(guide = guide_axis(angle = 30)) +
+#   coord_cartesian(ylim = c(0, 1)) +
+#   facet_grid(method~1)
+# 
+# df_azure %>% ggplot() +
+#   geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
+#   scale_x_discrete(guide = guide_axis(angle = 30)) + # also between number and null?
 #   facet_grid(method~1)
 
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1500)) +
-  facet_grid(method~1)
 
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1)) +
-  facet_grid(method~1)
+costs_azure <- read_csv("../CostManagement_master-thesis_2025.csv")
 
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) + # also between number and null?
-  facet_grid(method~1)
+token_prop <- df %>% group_by(model, method, n_examples) %>% summarize(
+  request_tokens_total = sum(request_tokens[[1]])) %>% 
+  group_by(method, n_examples) %>% 
+  summarize(mean = mean(request_tokens_total, na.rm = TRUE)) %>% mutate(five_examples = n_examples == 5) %>% group_by(five_examples) %>% summarise(sum = sum(mean))
 
-#### Real ####
+five_ex_tokens <- token_prop %>% filter(five_examples == TRUE) %>% pull(sum)
+other_tokens <- token_prop %>% filter(five_examples == FALSE) %>% pull(sum)
 
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/real_tables/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[!grepl("_test_", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  # Remove incomplete last JSON entry and close the list if file ends early
-  if (!grepl("\\]$", file_content[length(file_content)])) {
-    # Find the last complete JSON object (ends with "},")
-    last_complete <- max(grep('\\.pdf', file_content))
-    file_content <- c(file_content[1:last_complete], "}]")
-  }
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  name_split = (basename(file) %>% str_split("__"))[[1]]
-  method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
-  # print(name_split)
-  
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      .before = 1
-    )
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
-  mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
-  )
-
-df <- df %>% rowwise() %>% mutate(
-  n_columns = str_match(filepath, "(.)_columns")[2],
-  span = if_else("True" == str_match(filepath, "span_(False|True)")[2], TRUE, FALSE),
-  thin = if_else("True" == str_match(filepath, "thin_(False|True)")[2], TRUE, FALSE),
-  year_as = str_match(filepath, "year_as_(.*)_unit")[2],
-  unit_in_first_cell = if_else("True" == str_match(filepath, "unit_in_first_cell_(False|True)")[2], TRUE, FALSE),
-  unit_str = str_match(filepath, "unit_in_first_cell_(False|True)_(.*)_enumeration")[3],
-  enumeration = if_else("True" == str_match(filepath, "enumeration_(False|True)")[2], TRUE, FALSE),
-  number_of_table = str_match(filepath, "enumeration_(False|True)_(.*)(_queued)?\\.pdf")[3]
-) %>% mutate(
-  n_columns = ordered(n_columns, c("3", "4", "5"))
-) # %>% filter(number_of_table %in% c("0", "1"))
-
-##### plotting #####
-
-df %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>% 
-  pivot_longer(cols = -c(model, method)) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  # facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(method~name)
-
-df %>% select(c(model, method, NA_precision, NA_recall, NA_F1)) %>% 
-  pivot_longer(cols = -c(model, method)) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  # facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(name~method)
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = deep_distance)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(method~1)
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1500)) +
-  facet_grid(method~1)
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1)) +
-  facet_grid(method~1)
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) + # also between number and null?
-  facet_grid(method~1)
-
-##### regression #####
-
-# lm_1 <- lm(
-#   data = df,
-#   formula = percentage_correct_total ~ n_columns + span + thin + year_as + unit_str + unit_in_first_cell + enumeration + number_of_table + model
-# )
-# 
-# summary(lm_1)
-
-# df %>% filter(grammar_error == TRUE)
-# df %>% group_by(filepath) %>% summarise(n = n()) %>% 
-
-#### Test ####
-
-json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/real_tables/",
-  pattern = "\\.json$",
-  full.names = TRUE
-) %>%
-  .[grepl("_test_", .)]
-
-meta_list_llm <- list()
-
-# Loop through each .json file
-for (file in json_files_table_extraction_llm) {
-  # print(file)
-  # Read the JSON file
-  # Read the JSON file and replace NaN with NULL in the file content
-  file_content <- readLines(file, warn = FALSE)
-  file_content <- gsub("\\bNaN\\b", "null", file_content)
-  file_content <- gsub("\\bInfinity\\b", "null", file_content)
-  json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
-  model_name <- (basename(file) %>% str_split("__"))[[1]][1] %>% str_replace("_vllm", "")
-  # if (grepl("_queued\\.json$", basename(file))) {
-  #   model_name <- paste0(model_name, "_queued")
-  # }
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(model = model_name, .before = 1)
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
-}
-
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
-  filter(grammar_error != TRUE || is.na(grammar_error)) %>%
-  unnest_wider(`NA`, names_sep = "_") %>%
-  unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
-  unnest_wider(`levenstein_distance`, names_sep = "_") %>%
-  # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
-  mutate(
-    NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
-    NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
-    NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
-    percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
-    percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
-  )
-
-df %>% select(c(model, percentage_correct_numeric, percentage_correct_total)) %>% 
-  pivot_longer(cols = -model) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
-
-df %>% select(c(model, NA_precision, NA_recall, NA_F1)) %>% 
-  pivot_longer(cols = -model) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  facet_wrap(~name, ncol = 1) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = deep_distance)) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1500))
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = relative_numeric_difference_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  coord_cartesian(ylim = c(0, 1))
-
-df %>% ggplot() +
-  geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) # also between number and null?
+costs_azure %>% mutate(
+  Cost_all_tasks = Cost,
+  Cost_all_tasks = if_else(Meter == "gpt 4.1 Inp glbl Tokens", Cost_all_tasks+Cost_all_tasks*five_ex_tokens/other_tokens, Cost_all_tasks),
+  Cost_all_tasks = if_else(Meter == "gpt 4.1 Outp glbl Tokens", Cost_all_tasks+Cost_all_tasks*3/11, Cost_all_tasks)
+)

@@ -1,5 +1,8 @@
 # Discussion
 
+* ensemble prediction
+* check for halluzination vs wrong placed / repeated numbers
+
 ## Not covered
 
 * OCR

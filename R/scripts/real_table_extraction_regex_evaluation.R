@@ -28,15 +28,15 @@ for (file in json_files_table_extraction_regex) {
   }
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
-  # name_split = (basename(file) %>% str_split("__"))[[1]]
+  name_split = (basename(file) %>% str_remove(".json") %>% str_split("__"))[[1]]
   # method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
   results <-  json_data %>% as_tibble() %>% rowwise() %>%  
     mutate(
-      model = basename(file) %>% str_replace('.json', '') %>% str_replace('evaluation_', ''),
+      model = name_split[2],
       # model = name_split[1], 
-      # method = name_split[method_index],
+      method = name_split[3],
       # n_examples = str_match(method, "\\d+")[[1]],
       # out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
       # method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
@@ -77,21 +77,23 @@ df %>% write_csv("data_storage/table_extraction_regex.rds")
 ##### plotting #####
 
 df %>%
-  select(c(model, percentage_correct_numeric, percentage_correct_total, T_EUR)) %>% 
-  pivot_longer(cols = -c(model, T_EUR)) %>% 
+  select(c(model, percentage_correct_numeric, percentage_correct_total, T_EUR, method)) %>% 
+  pivot_longer(cols = -c(model, T_EUR, method)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .5) +
+  geom_boxplot(aes(x = model, y = value, fill = method), alpha = .3) +
+  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .8, height = 0, shape = 4) +
   # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(~name)
 
-df %>% select(c(model, NA_precision, NA_recall, NA_F1, T_EUR)) %>% 
-  pivot_longer(cols = -c(model, T_EUR)) %>% 
+df %>% select(c(model, NA_precision, NA_recall, NA_F1, T_EUR, method)) %>% 
+  pivot_longer(cols = -c(model, T_EUR, method)) %>% 
   ggplot() +
-  geom_boxplot(aes(x = model, y = value)) +
-  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .5) +
+  geom_boxplot(aes(x = model, y = value, fill = method), alpha = .3) +
+  geom_jitter(data= . %>% filter(model == "real_tables"), aes(x = model, y = value, color = T_EUR), alpha = .8, height = 0, shape = 4) +
   # facet_wrap(~name, ncol = 1) +
+  scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_grid(~name)
 
@@ -114,9 +116,9 @@ df %>% ggplot() +
   geom_boxplot(aes(x = model, y = levenstein_distance_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30))
 
-#### modelin #####
+##### modeling ######
 
-##### Random Forest #####
+###### Random Forest ######
 
 unit_list = tribble(
   ~unit, ~multiplier,
@@ -156,12 +158,13 @@ df_synth <- df %>%
 library(ranger)
 
 # number of features
-n_features <- 16-6
+n_features <- 17-6
 
 # train a default random forest model
 forest0 <- ranger(
   percentage_correct_total ~ 
     # method_family +
+    method +
     # n_examples +
     # model +
     n_columns + 
@@ -190,6 +193,132 @@ forest0 <- ranger(
 
 vip::vip(forest0, num_features = 10, bar = FALSE)
 
+###### xgboost ######
+
+library(xgboost)
+
+# Prepare data for xgboost
+library(Matrix)
+
+# Select features and target
+features <- df_synth %>% select(
+  method,
+  n_columns,
+  sum_same_line,
+  header_span,
+  thin,
+  unit_in_first_cell,
+  year_as,
+  log_unit_multiplier,
+  enumeration,
+  shuffle_rows,
+  text_around,
+  many_line_breaks
+)
+
+# Convert categorical variables to factors
+features[] <- lapply(features, function(x) if(is.character(x) || is.logical(x)) as.factor(x) else x)
+
+# Create model matrix (one-hot encoding for factors)
+X_xgb <- model.matrix(~ . - 1, data = features)
+y_xgb <- df_synth$percentage_correct_total
+
+X_xgb <- model.matrix(
+   ~ 
+    # method_family +
+    # n_examples +
+    # model +
+    method +
+    n_columns +
+    sum_same_line +
+    header_span +
+    thin +
+    # ignore_units +
+    # input_format +
+    year_as +
+    unit_in_first_cell +
+    # unit_str +
+    # unit_multiplier +
+    log_unit_multiplier +
+    enumeration +
+    shuffle_rows +
+    text_around +
+    many_line_breaks - 1, 
+  data = features)
+
+X_xgb <- model.matrix(
+  ~ 
+    # method_family +
+    # n_examples +
+    # model_family +
+    # model +
+    method +
+    # parameter_count +
+    n_columns +
+    n_columns:method +
+    sum_same_line +
+    sum_same_line:method +
+    header_span +
+    header_span:method +
+    thin +
+    # ignore_units +
+    # ignore_units:input_format +
+    # input_format +
+    year_as +
+    unit_in_first_cell +
+    unit_in_first_cell:method +
+    # unit_str +
+    log_unit_multiplier +
+    log_unit_multiplier:method +
+    enumeration +
+    shuffle_rows +
+    text_around +
+    many_line_breaks +
+    many_line_breaks:method -1,
+  data = features)
+
+# Train xgboost regression model
+# xgb_model <- xgboost(
+#   data = X_xgb,
+#   label = y_xgb,
+#   nrounds = 100,
+#   objective = "reg:squarederror",
+#   verbose = 0,
+#   seed = 123
+# )
+
+# Get feature importance
+# vip::vip(xgb_model, num_features = 10)
+
+library(shapviz)
+
+fit <- xgb.train(
+  params = list(learning_rate = 0.1, nthread = 1), 
+  data = xgb.DMatrix(data.matrix(X_xgb), label = y_xgb, nthread = 1),
+  nrounds = 65
+)
+
+# Calculate RMSE on training data
+preds <- predict(fit, data.matrix(X_xgb))
+rmse <- sqrt(mean((y_xgb - preds)^2))
+print(rmse)
+
+X_explain <- X_xgb[sample(nrow(X_xgb), 2000), ]
+shp <- shapviz(fit, X_pred = data.matrix(X_explain), X = X_explain)
+
+sv_importance(shp, show_numbers = TRUE)
+
+sv_importance(shp, kind = "beeswarm")
+
+# Compute SHAP values for the random forest model
+sv_rf <- shapviz(xgb_model, X = X_explain,
+  X_pred = data.matrix(X_explain)
+)
+
+# Beeswarm plot for SHAP values
+plot(sv_rf, kind = "beeswarm")
+
+###### lm ######
 
 df_select <- df_synth %>% mutate(
   log10_unit_multiplier = log10(unit_multiplier),
@@ -198,6 +327,7 @@ df_select <- df_synth %>% mutate(
   percentage_correct_total,
   # logit_correct_total,
   # method_family,
+  method,
   # n_examples,
   # model,
   # parameter_count,
@@ -219,23 +349,19 @@ df_select <- df_synth %>% mutate(
   many_line_breaks
 )
 
-x <- df_select %>% select(-percentage_correct_total)
-
-# df %>% filter(grammar_error == TRUE)
-df %>% group_by(sum_same_line) %>% summarise(n = n())
-
 lm0 <- lm(
   data = df_select,
   formula = percentage_correct_total ~ 
-    method_family +
-    n_examples +
+    # method_family +
+    # n_examples +
     # model +
+    method +
     n_columns +
     sum_same_line +
     header_span +
     thin +
-    ignore_units +
-    input_format +
+    # ignore_units +
+    # input_format +
     year_as +
     unit_in_first_cell +
     # unit_str +
@@ -248,6 +374,25 @@ lm0 <- lm(
 )
 summary(lm0)
 
+backward <- step(lm0, direction = "backward", trace = 0)
+
+library(vip)
+
+# Extract VI scores
+(vi_backward <- vi(backward))
+
+# Plot VI scores; by default, `vip()` displays the top ten features
+pal <- palette.colors(2, palette = "Okabe-Ito")  # colorblind friendly palette
+vip(
+  vi_backward, num_features = length(coef(backward)),  # Figure 3
+  # geom = "point", horizontal = FALSE, 
+  mapping = aes(fill = Sign)
+) +
+  scale_color_manual(values = unname(pal)) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 lm1 <- lm(
   data = df_select,
   formula = percentage_correct_total ~ 
@@ -255,28 +400,29 @@ lm1 <- lm(
     # n_examples +
     # model_family +
     # model +
+    method +
     # parameter_count +
     n_columns +
-    # n_columns:input_format +
+    n_columns:method +
     sum_same_line +
-    # sum_same_line:input_format +
+    sum_same_line:method +
     header_span +
-    # header_span:input_format +
+    header_span:method +
     thin +
     # ignore_units +
     # ignore_units:input_format +
     # input_format +
     year_as +
     unit_in_first_cell +
-    # unit_in_first_cell:input_format +
+    unit_in_first_cell:method +
     # unit_str +
     log10_unit_multiplier +
-    # log10_unit_multiplier:input_format +
+    log10_unit_multiplier:method +
     enumeration +
     shuffle_rows +
     text_around +
-    many_line_breaks
-    # many_line_breaks:input_format
+    many_line_breaks +
+    many_line_breaks:method
 )
 summary(lm1)
 # sqrt(mean(lm1$residuals^2))

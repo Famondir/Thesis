@@ -3,15 +3,21 @@ title: "Extraction of tabular data from annual reports with LLMs"
 author: "Simon Schäfer"
 date: "September 1, 2025"
 site: "bookdown::bookdown_site"
+# Change this to FALSE if you'd like to install them manually on your own.
+# params:
+#   'Install needed packages for {thesisdown}': True
+  
 output:
   # bookdown::pdf_book:
   bookdown::pdf_document2:
+  # thesisdown::thesis_pdf:
     toc: false
     includes:
       in_header:
         - report_misc/bhtThesis.sty
         - report_misc/preamble.tex
   bookdown::gitbook:
+  # thesisdown::thesis_gitbook:
     code_folding: show
     toc_depth: 4
     config:

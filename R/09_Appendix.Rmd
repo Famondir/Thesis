@@ -282,9 +282,11 @@ regex_patterns_3 = {
 
 ## Figures
 
+\clearpage
 \newpage
+\newgeometry{paper=a3paper, left=2cm, right=2cm, top=2cm, bottom=2cm}
 
-```{r, echo=FALSE, figwidth=16, fig.height=12, out.width="160%", out.height="80%", results="asis", out.extra='angle=90', warning=FALSE}
+```{r, echo=FALSE, figwidth=16, fig.height=12, out.width="100%", out.height="100%", results="asis", out.extra='angle=0', warning=FALSE}
 design = "
 ABCD##W
 EFGHI#x
@@ -301,7 +303,7 @@ model_by_size <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1',
   "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
   "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
   "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
-  "Qwen_Qwen3-8B", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
   "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
   )
 
@@ -325,7 +327,9 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
   )
 ```
 
+\clearpage
 \newpage
+\restoregeometry
 
 ## Extraction framework flow chart
 

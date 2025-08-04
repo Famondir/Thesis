@@ -58,7 +58,8 @@ df2 <- df %>% filter(n_examples <= 5) %>%
 #     names_prefix = "ratio_"
 #   ) %>% unique()
 
-##### regression #####
+#### modeling #####
+###### regression ######
 
 probit <- function(x) {
   exp(x)/(exp(x)+1)
@@ -225,7 +226,7 @@ vi(mars, type = "gcv")
 # Plot VI scores (Figure 4)
 vip(mars)
 
-##### Random Forest #####
+###### Random Forest ######
 
 library(ranger)
 
@@ -331,7 +332,7 @@ ggplot(shap_imp, aes(reorder(Variable, Importance), Importance)) +
 #   seed = 123
 # )
 
-##### xgboost #####
+###### xgboost ######
 
 library(xgboost)
 # library(caret)
@@ -378,9 +379,31 @@ importance_matrix
 
 xgb.plot.importance(importance_matrix)
 
-##### Plotting ######
+#### Plotting #####
 
-df %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total, ignore_units, input_format)) %>% 
+df2 %>% 
+  # mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  filter(
+    ignore_units,
+    input_format == "html"
+    ) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = model, fill=model_family, y = percentage_correct_total), alpha = 1) +
+  # geom_jitter(
+  #   data = . %>% filter(n_col_T_EUR > 0), 
+  #   aes(x = 1, group=ignore_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+  #   height = 0, alpha = .5, width = 0.3
+  # ) +
+  # scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~.)
+
+df2 %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total, ignore_units, input_format)) %>% 
   pivot_longer(cols = -c(model, method, ignore_units, input_format)) %>% 
   ggplot() +
   geom_boxplot(aes(x = model, fill=ignore_units, y = value)) +
@@ -428,7 +451,8 @@ relative_float_diff %>%
   geom_histogram(aes(x = log_ratio, fill = log_ratio_is_int), binwidth = 1) +
   facet_grid(paste0(year_type,"\n", model)~method)
 
-#### Synth ####
+#### Old synth ####
+
 
 json_files_table_extraction_llm <- list.files(
   "../benchmark_results/table_extraction/llm/synth_tables",
@@ -468,14 +492,14 @@ for (file in json_files_table_extraction_llm) {
     file_content <- c(file_content[1:last_complete], "}]")
   }
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
-  
+
   name_split = (basename(file) %>% str_split("__"))[[1]]
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
-  
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
+
+  results <-  json_data %>% as_tibble() %>% rowwise() %>%
     mutate(
-      model = name_split[1], 
+      model = name_split[1],
       method = name_split[method_index],
       loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
       markdown = str_detect(file, "synth_tables_markdown"),
@@ -484,7 +508,7 @@ for (file in json_files_table_extraction_llm) {
   meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
 
-df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
+df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
   filter(grammar_error != TRUE || is.na(grammar_error)) %>%
   unnest_wider(`NA`, names_sep = "_") %>%
   unnest_wider(`relative_numeric_difference`, names_sep = "_") %>%
@@ -549,3 +573,4 @@ df %>% ggplot() +
   geom_boxplot(aes(x = model_md, y = levenstein_distance_mean)) +
   scale_x_discrete(guide = guide_axis(angle = 30))  + # also between number and null?
   facet_grid(method~1)
+

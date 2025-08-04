@@ -76,6 +76,13 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
     NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
     percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
+  ) %>% mutate(
+    model = str_replace(model, "_vllm", ""),
+    model_family = sub("_.*", "", model),
+    model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+    model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+    model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+    model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
   )
 
 # Vectorized version for efficiency (avoids rowwise)
@@ -106,10 +113,5 @@ df <- df %>%
     n_examples = if_else(method_family == "static_example", 1, n_examples),
     many_line_breaks = if_else(max_line_length == 50, TRUE, FALSE)
   )
-
-df <- df %>% mutate(
-  model = str_replace(model, "_vllm", ""),
-  model_family = sub("_.*", "", model)
-)
 
 df %>% write_csv("data_storage/synth_table_extraction_llm.rds")
