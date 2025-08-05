@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: mistral-2411-124b-synth-table-extraction-from-pdf-final-job
+    name: qwen3-30b-binary-job-final-few-examples
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: mistral-2411-124b-table-extraction-vllm-batched-jobreal-job
+        app: qwen3-235b-binary-job-final-few-examples
     spec:
       priorityClassName: unimportant
       containers:
-      - name: mistral-2411-124b-table-extraction-vllm-batched-jobreal--job
+      - name: qwen3-235b-binary-job-final-few-examples
         image: registry.datexis.com/s92818/remote-work-vllm-0-9-1:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_synth_table_extraction_from_pdf_benchmark_vllm.py --model_name mistralai/Mistral-Large-Instruct-2411 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 4"
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier binary --model_name Qwen/Qwen3-30B-A3B-Instruct-2507 --no_think --n_loops 1 --batched --tensor_parallel_size 4"
         ]
         resources:
           requests:
@@ -24,7 +24,7 @@ spec:
               nvidia.com/gpu: "4"
           limits:
             nvidia.com/gpu: "4"
-            memory: 256Gi
+            memory: 128Gi
             cpu: "32"
         env:
           - name: LANG
@@ -45,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: b200
+        gpu: h200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
