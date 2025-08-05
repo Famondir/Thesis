@@ -332,6 +332,81 @@ ggplot(shap_imp, aes(reorder(Variable, Importance), Importance)) +
 #   seed = 123
 # )
 
+library(shapviz)
+library(h2o)
+
+h2o.init()
+
+iris2 <- as.h2o(iris)
+
+# Train-test split
+set.seed(42)
+split <- h2o.splitFrame(iris2, ratios = 0.7, seed = 42)
+train <- split[[1]]
+test <- split[[2]]
+
+# Random forest
+xvars <- colnames(iris)[-1]
+fit_rf <- h2o.randomForest(x = xvars, y = "Sepal.Length", training_frame = train, validation_frame = test)
+shp_rf <- shapviz(fit_rf, X_pred = as.data.frame(test))
+sv_force(shp_rf, row_id = 1)
+sv_dependence(shp_rf, xvars)
+sv_importance(shp_rf, show_numbers = TRUE)
+sv_importance(shp_rf, kind = "beeswarm")
+
+# Evaluate metrics on test set
+pred_rf <- as.vector(h2o.predict(fit_rf, test))
+true_rf <- as.vector(test$Sepal.Length)
+rmse_rf <- sqrt(mean((pred_rf - true_rf)^2))
+cat("Random Forest RMSE on test set:", rmse_rf, "\n")
+
+# Linear model
+fit_lm <- h2o.glm(x = xvars, y = "Sepal.Length", training_frame = train, validation_frame = test)
+shp_lm <- shapviz(fit_lm, X_pred = as.data.frame(test), background_frame = train)
+sv_force(shp_lm, row_id = 1)
+sv_dependence(shp_lm, xvars)
+
+# Evaluate metrics on test set
+pred_lm <- as.vector(h2o.predict(fit_lm, test))
+true_lm <- as.vector(test$Sepal.Length)
+rmse_lm <- sqrt(mean((pred_lm - true_lm)^2))
+cat("Linear Model RMSE on test set:", rmse_lm, "\n")
+
+# H2O XGBoost model
+
+# Prepare data for H2O
+# df_h2o <- as.h2o(df_select)
+# set.seed(42)
+# split_h2o <- h2o.splitFrame(df_h2o, ratios = 0.7, seed = 42)
+# train_h2o <- split_h2o[[1]]
+# test_h2o <- split_h2o[[2]]
+# 
+# xvars_h2o <- setdiff(names(df_select), "percentage_correct_total")
+# yvar_h2o <- "percentage_correct_total"
+
+# Train H2O XGBoost model
+fit_xgb_h2o <- h2o.xgboost(
+  x = xvars,
+  y = "Sepal.Length",
+  training_frame = train,
+  validation_frame = test,
+  ntrees = 500,
+  max_depth = 8,
+  learn_rate = 0.01,
+  seed = 42
+)
+
+# SHAP values with shapviz
+shp_xgb <- shapviz(fit_xgb_h2o, X_pred = as.data.frame(test), background_frame = train)
+sv_force(shp_xgb, row_id = 1)
+sv_dependence(shp_xgb, xvars)
+
+# Evaluate metrics on test set
+pred_xgb <- as.vector(h2o.predict(fit_xgb_h2o, test_h2o))
+true_xgb <- as.vector(test_h2o$percentage_correct_total)
+rmse_xgb <- sqrt(mean((pred_xgb - true_xgb)^2))
+cat("H2O XGBoost RMSE on test set:", rmse_xgb, "\n")
+
 ###### xgboost ######
 
 library(xgboost)

@@ -1,4 +1,4 @@
-render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL) {
+render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom = "tiprfl") {
   # Replace **x** with <b>x</b> for HTML and \textbf{x} for LaTeX
   df <- df %>% bold_value_in_table()
   
@@ -34,9 +34,9 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL) {
       col_defs <- lapply(seq_along(dt_align), function(i) {
         list(targets = i - 1, className = paste0('dt-', dt_align[i]))
       })
-      datatable(df, escape = FALSE, options = list(pageLength = 10, columnDefs = col_defs, scrollX = TRUE))
+      datatable(df, escape = FALSE, options = list(pageLength = 10, columnDefs = col_defs, scrollX = TRUE, dom = dom))
     } else {
-      datatable(df, escape = FALSE, options = list(pageLength = 10, scrollX = TRUE))
+      datatable(df, escape = FALSE, options = list(pageLength = 10, scrollX = TRUE, dom = dom))
     }
   } else if (knitr::is_latex_output()) {
     kbl(

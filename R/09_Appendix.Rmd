@@ -2,6 +2,8 @@
 \renewcommand{\thechapter}{\Alph{chapter}}
 
 # Appendix
+\setcounter{chapshift}{0}
+\ChapFrame
 
 ## Local machine {#local-machine}
 
@@ -32,10 +34,10 @@ One can find the specifications of the local machine used to run the less comput
 
 ### Text extraction {#text-extraction-benchmark}
 
-```{r text-extraction, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag}
 data_text_extraction <- read.csv("../benchmark_results/text_extraction_benchmark_results.csv") %>% 
   arrange(runtime) %>% 
-  rename("library" = "pdfbackend", "runtime in s" = "runtime")
+  rename("package" = "pdfbackend", "runtime in s" = "runtime")
 
 # Find the lowest value in the "runtime in s" column and make it bold
 data_text_extraction <- data_text_extraction %>%
@@ -53,8 +55,8 @@ A basic requirement for all succeeding tasks is, that the text gets extracted fr
 
 The benchmark ran on the local machine described in section \@ref(local-machine). There have been `r total_pages` pages to extract the text from.
 
-```{r display-data-text-extraction, echo=FALSE, results="asis"}
-render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different libraries", ref = "display-data-text-extraction")
+```{r display-data-text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
+render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different Python package", ref = opts_current$get("label"), dom="t")
 ```
 
 The result of docling-parse is not formated as markdown yet but also just plain text.
@@ -63,7 +65,7 @@ For implementation in a system where the text has to get extracted live or frequ
 
 ### Table detection {#table-detection-benchmark}
 
-```{r table-detection-data-loading, echo=FALSE}
+```{r table-detection-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 # Get a list of all .json files in the folder
 json_files_table_detection <- list.files("../benchmark_results/table_detection/", pattern = "\\.json$", full.names = TRUE)
 
@@ -175,13 +177,13 @@ for (result in meta_list_llm) {
 
 not so important anymore
 
-```{r metric-plots, echo=FALSE, warning=FALSE}
+```{r metric-plots, echo=echo_flag, warning=warning_flag, message=message_flag}
 for (plot in metric_plots) {
   print(plot)
 }
 ```
 
-```{r display-results-df-llm, echo=FALSE, eval=knitr::is_html_output(), results='asis'}
+```{r display-results-df-llm, echo=echo_flag, warning=warning_flag, message=message_flag, eval=knitr::is_html_output(), results='asis'}
 results_df_llm %>% 
   mutate(
     F1_Aktiva = round(F1_Aktiva, 2),
@@ -201,7 +203,7 @@ Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with 
 
 The change of the experimental setup from transformers loop-based to vllm batched mode made is possible run the benchmark on whole PDF documents giving a sound estimate of the false positive rate in the page identification task (see section \@ref(llm-page-identification)). Previous experiments have only been using a subset of pages that have been selected with the baseline regex approach (see section \@ref(regex-page-identification)).
 
-```{r llm-spped-mini-benchmark-table, echo=FALSE}
+```{r llm-spped-mini-benchmark-table, echo=echo_flag, warning=warning_flag, message=message_flag}
 data_llm_speed <- data.frame(
   # model = c("Qwen 2.5 Instruct"),
   parameters = c(0.5, 3, 7),
@@ -283,10 +285,9 @@ regex_patterns_3 = {
 ## Figures
 
 \clearpage
-\newpage
-\newgeometry{paper=a3paper, left=2cm, right=2cm, top=2cm, bottom=2cm}
+\setAELandscapeLayout
 
-```{r, echo=FALSE, figwidth=16, fig.height=12, out.width="100%", out.height="100%", results="asis", out.extra='angle=0', warning=FALSE}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="100%", fig.height=12, fig.width=16, warning=FALSE}
 design = "
 ABCD##W
 EFGHI#x
@@ -328,8 +329,17 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
 ```
 
 \clearpage
-\newpage
-\restoregeometry
+\setAEPortraitLayout
+
+12sdgsdgj
+
+\clearpage
+\setASLandscapeLayout
+
+Landscape
+
+\clearpage
+\setDefaultLayout
 
 ## Extraction framework flow chart
 

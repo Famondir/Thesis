@@ -139,28 +139,99 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Geometrisches ...
+
+% \RequirePackage[a3paper,verbose]{geometry}
+% \RequirePackage{pdflscape}
+
+% \makeatletter
+% \setlength\paperheight     {297mm}
+% \setlength\paperwidth  	   {210mm}
+% \setlength\headheight      {2ex}
+% \setlength\headsep         {2ex}
+% \setlength\footskip        {25\p@}
+% \setlength\textwidth       {150mm}
+% \setlength\textheight      {245mm}
+% \setlength{\@tempdima}     {\paperwidth}
+% \addtolength{\@tempdima}   {-2in}
+% \addtolength{\@tempdima}   {-\textwidth}
+% \setlength\oddsidemargin   {0.5\@tempdima}
+% \setlength\evensidemargin  {\oddsidemargin}
+% \setlength{\@tempdima}     {\paperheight}
+% \addtolength{\@tempdima}   {-3in}
+% \addtolength{\@tempdima}   {-\textheight}
+% \setlength\topmargin       {.5\@tempdima}
+% \setlength\footnotesep     {12\p@}
+% \setlength{\skip\footins}  {10\p@ \@plus 2\p@ \@minus 4\p@}
+% \setlength{\marginparsep}  {1pt}
+% \setlength{\marginparwidth}{20mm}
+% \makeatother
+
+\RequirePackage[a4paper,
+  left=30mm,
+  right=25mm,
+  top=25mm,
+  bottom=25mm,
+  headheight=14pt,
+  headsep=2ex,
+  footskip=25pt,
+  marginparwidth=20mm,
+  marginparsep=1pt,
+  includeheadfoot,
+  twoside
+]{geometry}
+
 \makeatletter
-\setlength\paperheight     {297mm}
-\setlength\paperwidth  	   {210mm}
-\setlength\headheight      {2ex}
-\setlength\headsep         {2ex}
-\setlength\footskip        {25\p@}
-\setlength\textwidth       {150mm}
-\setlength\textheight      {245mm}
-\setlength{\@tempdima}     {\paperwidth}
-\addtolength{\@tempdima}   {-2in}
-\addtolength{\@tempdima}   {-\textwidth}
-\setlength\oddsidemargin   {0.5\@tempdima}
-\setlength\evensidemargin  {\oddsidemargin}
-\setlength{\@tempdima}     {\paperheight}
-\addtolength{\@tempdima}   {-3in}
-\addtolength{\@tempdima}   {-\textheight}
-\setlength\topmargin       {.5\@tempdima}
-\setlength\footnotesep     {12\p@}
-\setlength{\skip\footins}  {10\p@ \@plus 2\p@ \@minus 4\p@}
-\setlength{\marginparsep}  {1pt}
-\setlength{\marginparwidth}{20mm}
+\edef\hmm{\pdfpagewidth=\the\pdfpagewidth \pdfpageheight=\the\pdfpageheight\relax}
+
+\newcommand{\setDefaultLayout}{
+  \restoregeometry
+  \hmm
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+  \setlength{\headwidth}{\textwidth}
+}
+
+\newcommand{\setASLandscapeLayout}{
+  \restoregeometry
+  \hmm
+  \pdfpagewidth=297mm
+  \pdfpageheight=210mm
+  \setlength\paperheight{\pdfpageheight}
+  \setlength\paperwidth{\pdfpagewidth}
+  \setlength{\textwidth}{26cm}
+  \setlength{\headwidth}{\textwidth}
+  \setlength{\textheight}{17cm}
+  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=true}
+}
+
+\newcommand{\setAELandscapeLayout}{
+  \restoregeometry
+  \hmm
+  \pdfpagewidth=420mm
+  \pdfpageheight=297mm
+  \setlength\paperheight{\pdfpageheight}
+  \setlength\paperwidth{\pdfpagewidth}
+  \setlength{\textwidth}{38cm}
+  \setlength{\headwidth}{\textwidth}
+  \setlength{\textheight}{26cm}
+  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
+}
+
+\newcommand{\setAEPortraitLayout}{
+  \restoregeometry
+  \hmm
+  \pdfpagewidth=297mm
+  \pdfpageheight=420mm
+  \setlength\paperheight{\pdfpageheight}
+  \setlength\paperwidth{\pdfpagewidth}
+  \setlength{\textwidth}{26cm}
+  \setlength{\headwidth}{\textwidth}
+  \setlength{\textheight}{38cm}
+  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
+}
 \makeatother
+
+% \setDefaultLayout
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Seitenlayout

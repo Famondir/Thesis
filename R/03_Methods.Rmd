@@ -1,4 +1,5 @@
 # Methods
+\ChapFrame
 
 norm gpu hours
 
@@ -11,7 +12,7 @@ norm gpu hours
 
 ## Page identification
 
-```{r count_benchmark_documents, echo=FALSE, message=FALSE}
+```{r count_benchmark_documents, echo=echo_flag, warning=warning_flag, message=message_flag}
 # Initialize a counter for the total page count
 total_pages <- 0
 
@@ -89,11 +90,11 @@ multiple_tables_per_type_and_document <- data_unnested %>%
 
 The first task to solve, for a fully autonomous solution, is to identify the pages where the tables of interest are located. For benchmarking `r num_documents` annual reports from `r num_companies` companies have been used. For this benchmark we limit the tables of interest to those that show **Aktiva**, **Passiva** and **Gewinn- und Verlustrechnung**.
 
-```{r, eval = knitr::is_html_output(), echo=FALSE, results='asis', class.chunk='pre-detail'}
+```{r, eval = knitr::is_html_output(), echo=echo_flag, warning=warning_flag, message=message_flag, results='asis', class.chunk='pre-detail'}
 cat("<p>You can have a look at the ground truth data unfolding the following details element.</p>")
 ```
 
-```{r ground_truth_tables_of_interest, eval = knitr::is_html_output(), echo=FALSE, class.chunk='hideme'}
+```{r ground_truth_tables_of_interest, eval = knitr::is_html_output(), echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='hideme'}
 DT::datatable(data)
 ```
 
@@ -118,7 +119,7 @@ DT::datatable(data)
 
 In those documents there are `r num_pages` pages of interest holding `r num_tables` relevant tables. On `r num_two_tables_on_one_page` pages there have been two tables (**Aktiva** and **Passiva**) on a single page. `r num_consecutive_pages` tables are spread over two pages. In `r num_multiple_tables_per_document` documents there have been multiple tables per type of interest, distributed among the three types of tables as following:
 
-```{r display_multiple_tables_per_type_and_document, echo=FALSE}
+```{r display_multiple_tables_per_type_and_document, echo=echo_flag, warning=warning_flag, message=message_flag}
 knitr::kable(multiple_tables_per_type_and_document)
 ```
 

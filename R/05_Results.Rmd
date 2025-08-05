@@ -1,4 +1,5 @@
 # Results
+\ChapFrame
 
 ## Page identification
 
@@ -6,7 +7,7 @@ As described in \@ref(text-extraction-benchmark) open source libraries have been
 
 ### Baseline: Regex {#regex-page-identification}
 
-```{r page-identification-regex-data-loading, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, cache=TRUE, cache.extra = tools::md5sum('scripts/page_identification_regex.R')}
+```{r page-identification-regex-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag, message=FALSE, cache=TRUE, cache.extra = tools::md5sum('scripts/page_identification_regex.R')}
 source("scripts/page_identification_regex.R")
 ```
 
@@ -22,7 +23,9 @@ The regular expressions can be found in the appendix (see \@ref(regex-page-ident
 
 General bad precision. Increasing recall degrades precision even further. number of pages positive identified total; used as subset for table identification task
 
-```{r display-metrics-regex-page-identification-aktiva, echo=FALSE, results="asis"}
+\@ref(tab:display-metrics-regex-page-identification-aktiva)
+
+```{r display-metrics-regex-page-identification-aktiva, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 metric_summaries["Aktiva"][[1]] %>%
   mutate_if(
     is.numeric, 
@@ -31,11 +34,15 @@ metric_summaries["Aktiva"][[1]] %>%
       paste0("**", ., "**"),
       .
     )
-  ) %>% arrange(desc(method)) %>% 
-  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Aktiva'", ref="display-metrics-regex-page-identification-aktiva")
+  ) %>% 
+  arrange(desc(method)) %>% 
+  render_table(
+    alignment = "llrrr",
+    caption = "Comparing page identification metrics for different regular expressions for classification task 'Aktiva'",
+    ref = opts_current$get("label"), dom="t")
 ```
 
-```{r display-metrics-regex-page-identification-passiva, echo=FALSE, results="asis"}
+```{r display-metrics-regex-page-identification-passiva, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 metric_summaries["Passiva"][[1]] %>%
   mutate_if(
     is.numeric, 
@@ -45,10 +52,10 @@ metric_summaries["Passiva"][[1]] %>%
       .
     )
   ) %>% arrange(desc(method)) %>% 
-  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Passiva'", ref="display-metrics-regex-page-identification-passiva")
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Passiva'", ref = opts_current$get("label"), dom="t")
 ```
 
-```{r display-metrics-regex-page-identification-guv, echo=FALSE, results="asis"}
+```{r display-metrics-regex-page-identification-guv, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 metric_summaries["GuV"][[1]] %>%
   mutate_if(
     is.numeric, 
@@ -58,10 +65,10 @@ metric_summaries["GuV"][[1]] %>%
       .
     )
   ) %>% arrange(desc(method)) %>% 
-  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Gewinn- und Verlustrechnung'", ref="display-metrics-regex-page-identification-guv")
+  render_table(alignment="llrrr", caption="Comparing page identification metrics for different regular expressions for classification task 'Gewinn- und Verlustrechnung'", ref = opts_current$get("label"), dom="t")
 ```
 
-```{r display-metrics-plot-regex-page-identification, echo=FALSE, figwidth=8, fig.height=6, out.width="100%"}
+```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%"}
 metrics %>% bind_rows() %>%
   pivot_longer(
     cols = -c(package, method, classification_type),
@@ -82,7 +89,7 @@ metrics %>% bind_rows() %>%
 
 Results by company?
 
-```{r display-metrics-plot-regex-page-identification-details, echo=FALSE, figwidth=8, fig.height=8, out.width="100%"}
+```{r display-metrics-plot-regex-page-identification-details, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=8, out.width="100%"}
 metrics_by_company_and_type %>% 
     select(company, n_files, method, F1, precision, recall, classification_type) %>%
     pivot_longer(cols=c(F1, precision, recall), names_to = "metric") %>% 
@@ -98,7 +105,7 @@ metrics_by_company_and_type %>%
 
 ### Table of Contents understanding
 
-```{r page-identification-toc-data-loading, echo=FALSE}
+```{r page-identification-toc-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 source("scripts/page_identification_toc_data_loading.R")
 ```
 
@@ -114,7 +121,7 @@ An optional step for larger documents in @li_extracting_2023 framework is to ide
 
 My expectation was to find the TOC within the first five pages. Often we find way less than 200 lines of text on the five first pages (see Figure \@ref(fig:page-identification-toc-histogram)). Some files are not machine readable without OCR and thus show zero lines in the first five pages as well.
 
-```{r page-identification-toc-histogram, echo=FALSE, fig.width=8, fig.height=3, out.width="80%", fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
+```{r page-identification-toc-histogram, echo=echo_flag, warning=warning_flag, message=message_flag, fig.width=8, fig.height=3, out.width="80%", fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
 tibble(num_lines = num_lines) %>% ggplot() +
   geom_histogram(aes(x = num_lines), bins = 20) +
   labs(x = "Number of lines in the first 5 pages", y = "Count")
@@ -138,7 +145,7 @@ One can see that correct predictions for the page range are more probable when t
 
 Almost no influence if TOC is passed formated as markdown or json. With the json formated TOC it found two more correct page ranges (single test run). It was testes because the relation *page_number* heading and value might have been clearer in json for a linear working LLM.
 
-```{r page-identification-toc-mr-degration, echo=FALSE, results="asis"}
+```{r page-identification-toc-mr-degration, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_toc_benchmark_mr_degration %>% ggplot() +
   geom_col(aes(x = n_entries, y = value, fill = correct)) +
   geom_line(aes(x = as.numeric(n_entries), y = 100*perc_correct, group = 1)) +
@@ -153,7 +160,7 @@ df_toc_benchmark_mr_degration %>% ggplot() +
 
 The LLM performed best on the machine readable TOC. It resulted in highest ratio of correct page ranges as well as in highest absolute numbers even though there were least available TOC.
 
-```{r page-identification-toc-analysis, echo=FALSE, results="asis", out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+```{r page-identification-toc-analysis, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
 df_toc_benchmark %>% ggplot() +
   geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
   geom_text(
@@ -177,7 +184,7 @@ df_toc_benchmark %>% ggplot() +
 
 Values can be higher than 80, the total number of PDF files, since there can be multiple tables of interested for the same type in a single document or a table of interest can span two pages. Since the prompt for the LLM was not elaborated enough to cover cases, where there are multiple tables of interest for a single type that are not placed on concurrent pages, one could argue to drop those files from the analysis. This does not change the results significantly, since there are only few files with more than one table of interest per type.
 
-```{r page-identification-toc-analysis-cleaned, echo=FALSE, results="asis"}
+```{r page-identification-toc-analysis-cleaned, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_toc_benchmark_cleaned <- df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
   mutate(count = n()) %>% filter(count <= 4) %>% group_by(type, benchmark_type) %>% 
   mutate(
@@ -205,7 +212,7 @@ df_toc_benchmark_cleaned <- df_toc_benchmark %>% group_by(filepath, benchmark_ty
 
 Besides a single group that was predicted far off for the machine readable TOC approach the LLM reported higher confidence for the correct page ranges and got the ranges less far off. But it did not predict the smallest ranges.
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 mean_ranges %>%
   mutate_if(
     is.numeric, 
@@ -218,7 +225,7 @@ mean_ranges %>%
   render_table()
 ```
 
-```{r page-identification-toc-range_logprobs, echo=FALSE, results="asis", out.width="100%"}
+```{r page-identification-toc-range_logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
   distance_confidence_plot() +
   facet_wrap(~benchmark_type, nrow = 1) +
@@ -231,7 +238,7 @@ In general the LLM performed worst to identify the correct page range for *Passi
 
 This problem was solved by explicitly mentioning that assets and liabilities are both part of the balance sheets for the five pages and 200 lines approach but not for the machine readable TOC one.
 
-```{r page-identification-toc-analysis-balanced, echo=FALSE, results="asis", out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+```{r page-identification-toc-analysis-balanced, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
 balanced_df_toc_benchmark %>% ggplot() +
   geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
   geom_text(
@@ -255,7 +262,7 @@ balanced_df_toc_benchmark %>% ggplot() +
 
 A pragmatic way would be to use the machine readable TOC approachs prediction for the *Aktiva* page range and add one to the end page to get the *Passiva* page range. Beside the problem to predict a correct page range for *Passiva* the machine readable TOC approach was very effective and is also pretty efficient if one counts in the effort the LLM driven TOC extraction takes.
 
-```{r page-identification-toc-gpu-time-comparison, echo=FALSE, results="asis"}
+```{r page-identification-toc-gpu-time-comparison, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 gpu_time_per_document_page_range %>% mutate_if(
   is.numeric, 
   ~ifelse(
@@ -269,7 +276,7 @@ gpu_time_per_document_page_range %>% mutate_if(
 
 ### Classification with LLMs {#llm-page-identification}
 
-```{r page-identification-llm-data-loading, echo=FALSE}
+```{r page-identification-llm-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 temp_list <- readRDS("data_storage/page_identification_llm.rds")
 df_binary <- temp_list$df_binary
 df_multi <- temp_list$df_multi
@@ -292,7 +299,7 @@ df_binary <- df_binary %>% filter(!str_detect(model, "gemma") || str_detect(mode
 )
 ```
 
-```{r, echo=FALSE}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 binary_task <- list()
 binary_task$n_models <- df_binary$model %>% unique() %>% length()
 binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
@@ -315,7 +322,7 @@ Most models have been used up to 3 examples for the context.
 
 The best combination of model and method for each method family is presented in the following table. It is clear that the Google Gemma models are performing worst.^[This is not due to a temporary technical problems caused by a bug in the transformers version shipped with the vllm 0-9-2 image. Those problems have been overcome. The performance stays bad.] Surprisingly Mistral 2410 is the best performing model for all three prediction tasks even though it only has 8B parameters.
 
-```{r table-metrics-llm-page-identification-binary, echo=FALSE, results="asis"}
+```{r table-metrics-llm-page-identification-binary, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_binary %>% 
   filter(is.finite(f1_score), loop == 0) %>% 
   filter(n_examples <= 3 | is.na(n_examples)) %>%
@@ -341,7 +348,7 @@ Recall better with examples from same company. Precision better without.
 
 We can also see that the prediction performance is stable.^[Earlier experiments on a subset of the pages have been run five times indicating stable results. Running the experiments up to tree times in this very task indicate this as well.]
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) %>% 
   filter(n_examples <= 5 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
@@ -363,7 +370,7 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) 
 
 The experiments for the best performing model, Ministral-8B-Instruct-2410, have been extended by methods with even more examples. Especially for the top-n-rag-example approach to get a better comparable picture based on the real number of examples / context length.
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
   filter(n_examples > 1 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime, y = f1_score)) +
@@ -379,13 +386,13 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) 
   )
 ```
 
-```{r, echo=FALSE}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 read_csv("../benchmark_truth/real_example_count.csv") %>% kbl()
 ```
 
 Predictions very accurate. Confidence not always 1. Wrong predictions with often with medium confidence. If Aktiva and Passiva on same page more often Aktiva predicted. Confidence for no displayed as 1-confidence to represent confidence for yes (binary classification).
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_filtered <- df_binary %>% filter(classification_type == "Aktiva") %>% 
   arrange(desc(f1_score))
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -408,7 +415,7 @@ df_flipped_score %>%
 
 Qwen returns always high confidence even if it is wrong.
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
   arrange(desc(f1_score))
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -435,7 +442,7 @@ df_flipped_score %>%
 mistral: recall IBB and Netzholding big range
 meta & mistral: very high precision for Amt für Statistik BBB <- lowest average pagecount (29.3) but IBB has more pages than berlinovo but better precision. No information about which company / report the page is from
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 no_ocr_needed <- read_csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv") %>% select(filepath) %>% 
   unique() %>% mutate(filepath = str_replace(filepath, "..", "/pvc")) %>% .[[1]]
 
@@ -477,7 +484,7 @@ df_f1_by_company %>%
   scale_x_discrete(guide = guide_axis(angle = 30))
 ```
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 n_reports_by_company_no_ocr <- df_temp %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
 n_reports_by_company <- df_filtered %>% unnest(predictions) %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
 
@@ -490,7 +497,7 @@ n_reports_by_company %>% kbl()
 
 PR curves for all classes look very alike- showing micro average curve
 
-```{r micro-pr-curve-llm-binary-1, echo=FALSE, out.width="100%"}
+```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 library(PRROC)
 library(patchwork)
 
@@ -573,7 +580,7 @@ g2 <- pr_df %>%
 g1 + g2
 ```
 
-```{r micro-pr-curve-llm-binary-300, echo=FALSE, out.width="100%"}
+```{r micro-pr-curve-llm-binary-300, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 library(PRROC)
 library(patchwork)
 
@@ -667,7 +674,7 @@ Gemma performs much better than with binary classification
 
 drop with Qwen-14B
 
-```{r table-metrics-llm-page-identification-multi, echo=FALSE, results="asis"}
+```{r table-metrics-llm-page-identification-multi, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_multi %>% 
   unnest(metrics) %>% 
   filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
@@ -704,7 +711,7 @@ df_multi %>%
 
 Mistral-8B-2410 almost as good as Mistral-123B-2411 but much faster
 
-```{r table-metrics-llm-page-identification-multi-small-models, echo=FALSE, results="asis"}
+```{r table-metrics-llm-page-identification-multi-small-models, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_multi %>% 
   unnest(metrics) %>% 
   filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
@@ -726,7 +733,7 @@ df_multi %>%
 
 Mistral-2410 reaches good performance already with few examples and can work with law-context approach but more examples don't realy help any further
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
 
 df_selected %>% 
@@ -757,7 +764,7 @@ If Aktiva and Passiva on same page it predicts Aktiva. Also one Passiva missclas
 No flipped confidence
 ^[classify framework in needs special models with pooling capability. Would have been interesting but time was limited and would have needed new special models in most cases]
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_filtered <- df_selected %>%
   arrange(desc(f1_score))
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -784,7 +791,7 @@ Microsoft phi 4 and Falcon 3 only ran with one and two examples because their co
 * multiple models
 * best model detail (different methods / settings)
 
-```{r micro-pr-curve-llm-multi-1, echo=FALSE, out.width="100%"}
+```{r micro-pr-curve-llm-multi-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 library(PRROC)
 library(patchwork)
 
@@ -850,7 +857,7 @@ g2 <- pr_df %>%
 g1 + g2
 ```
 
-```{r micro-pr-curve-llm-multi-300, echo=FALSE, out.width="100%"}
+```{r micro-pr-curve-llm-multi-300, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 library(PRROC)
 library(patchwork)
 
@@ -940,7 +947,7 @@ Count of dates
 
 low precision llm linked to position of correct page? numeric frequency?
 
-```{python random-forest-2-predictors, include=TRUE, eval=FALSE, class.source = 'fold-hide'}
+```{python random-forest-2-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -996,7 +1003,7 @@ df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].r
 df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
 ```
 
-```{r top-n-accuracy-term-frequency, echo=FALSE, message=FALSE}
+```{r top-n-accuracy-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
   mutate(data_split = 'test', n_predictors = 2)
 df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
@@ -1034,8 +1041,58 @@ results %>% ggplot() +
 
 ```
 
-```{python random-forest-4-predictors, include=TRUE, eval=TRUE, class.source = 'fold-hide', message=FALSE, warning=FALSE}
+```{python forest-map-tf-2-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-2preds.sav'), results='hold'}
+import shap
+import pickle
 import pandas as pd
+
+import matplotlib.pyplot as plt
+from sklearn.inspection import DecisionBoundaryDisplay
+from matplotlib.colors import ListedColormap
+
+predictors = [
+    "term_frequency", 
+    "float_frequency", 
+    "date_count", 
+    "integer_count"
+]
+
+clf = pickle.load(open('data_storage/rf-tf-2preds.sav', 'rb'))
+df_test_split = pd.read_csv("data_storage/term_frequency_results_2_predictors_test.csv")
+
+
+X = df_test_split[["term_frequency", "float_frequency"]].values
+
+cm = plt.cm.RdBu
+cm_bright = ListedColormap(["#FF0000", "#0000FF"])
+x_min, x_max = X[:, 0].min() - 0.05, X[:, 0].max() + 0.05
+y_min, y_max = X[:, 1].min() - 0.05, X[:, 1].max() + 0.05
+
+plt.figure(figsize=(8, 6))
+ax = plt.gca()
+catch_this_message =DecisionBoundaryDisplay.from_estimator(
+    clf, X, cmap=cm, alpha=0.8, ax=ax, eps=0.05
+)
+
+df_test_split_sorted = df_test_split.sort_values('is_truth')
+X_test = df_test_split_sorted[["term_frequency", "float_frequency"]].values
+y_test = df_test_split_sorted["is_truth"].values
+score = clf.score(X_test, y_test)
+
+# ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright, edgecolors="k", label="Train")
+ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6, edgecolors="k", label="Test")
+catch_this_message =ax.set_xlim(x_min, x_max)
+catch_this_message =ax.set_ylim(y_min, y_max)
+ax.set_xlabel("term_frequency")
+ax.set_ylabel("float_frequency")
+ax.set_title(f"RandomForestClassifier (accuracy={score:.2f})")
+plt.legend()
+plt.show()
+```
+
+```{python random-forest-4-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
+import pandas as pd
+import pickle
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -1073,7 +1130,7 @@ X_train, X_test, y_train, y_test, df_train_split, df_test_split = train_test_spl
 
 # Train Random Forest model
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
-dummy = clf.fit(X_train, y_train)
+catch_this_message =clf.fit(X_train, y_train)
 
 # Predict and rerank: get predicted probabilities for each page
 df_train_split["score"] = clf.predict_proba(X_train)[:, 1]
@@ -1093,17 +1150,20 @@ df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].r
 df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
 ```
 
-```{python shap-tf-4-predictors, echo=FALSE}
-# !pip install shap
-# import shap
-# 
-# # Use the same predictors and trained RandomForestClassifier (clf) as in cell 20
-# explainer = shap.TreeExplainer(clf)
-# shap_values = explainer.shap_values(X_test)
-# 
-# # Plot summary for class 1 (is_truth == 1)
-# shap.summary_plot(shap_values[:,:,1], X_test, feature_names=predictors)
+```{python shap-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-preds.sav')}
 import shap
+import pickle
+import pandas as pd
+
+predictors = [
+    "term_frequency", 
+    "float_frequency", 
+    "date_count", 
+    "integer_count"
+]
+
+clf = pickle.load(open('data_storage/rf-tf-4preds.sav', 'rb'))
+df_test_split = pd.read_csv("data_storage/term_frequency_results_4_predictors_test.csv")
 
 # Use the same predictors and trained RandomForestClassifier (clf) as in cell 20
 explainer = shap.TreeExplainer(clf)
@@ -1113,7 +1173,8 @@ shap_values = explainer.shap_values(df_test_split[predictors].values)
 shap.summary_plot(shap_values[:,:,1], df_test_split[predictors].values, feature_names=predictors)
 ```
 
-```{r micro-pr-curve-tf-4-predictors, echo=FALSE, out.width="100%"}
+
+```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 library(PRROC)
 library(patchwork)
 
@@ -1178,16 +1239,17 @@ Multiclassification more effective than three times single classification
 Combine term frequency with llm approach to limit page range
 
 ## Table extraction
+\ChapFrame
 
 ### Baseline: Regex
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_table_extraction_regex <- read_csv("data_storage/table_extraction_regex.rds")
 ```
 
 Regex approach not even perfect with synthetic tables. Mistakes in the text parsed with pdfium.
 
-```{r table-extraction-regex-performance, echo=FALSE, out.width="100%"}
+```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_table_extraction_regex %>%
   select(c(model, percentage_correct_numeric, percentage_correct_total, T_EUR, method)) %>% 
   pivot_longer(cols = -c(model, T_EUR, method)) %>% 
@@ -1200,7 +1262,7 @@ df_table_extraction_regex %>%
   facet_grid(~name)
 ```
 
-```{r table-extraction-regex-NA, echo=FALSE, out.width="100%"}
+```{r table-extraction-regex-NA, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
 df_table_extraction_regex %>% select(c(model, NA_precision, NA_recall, NA_F1, T_EUR, method)) %>% 
   pivot_longer(cols = -c(model, T_EUR, method)) %>% 
   ggplot() +
@@ -1214,7 +1276,7 @@ df_table_extraction_regex %>% select(c(model, NA_precision, NA_recall, NA_F1, T_
 
 ### Extraction with LLMs
 
-```{r loading-table-extraction-datasets, echo=FALSE}
+```{r loading-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_real_table_extraction <- readRDS("data_storage/real_table_extraction_llm.rds")
 df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_synth.rds")
 df_real_table_extraction_azure <- readRDS("data_storage/real_table_extraction_azure.rds")
@@ -1260,7 +1322,7 @@ df_real_table_extraction_synth <- df_real_table_extraction_synth %>% left_join(u
 
 #### Real tables only
 
-```{r table-extraction-llm-performance-total-overview, out.width="100%", fig.height=12}
+```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_overview %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
@@ -1271,7 +1333,7 @@ df_overview %>%
   )
 ```
 
-```{r table-extraction-llm-performance-numeric-overview, out.width="100%", fig.height=12}
+```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_overview %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
@@ -1282,7 +1344,7 @@ df_overview %>%
   )
 ```
 
-```{r table-extraction-llm-f1-overview, out.width="100%", fig.height=12}
+```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_overview %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
@@ -1296,7 +1358,7 @@ df_overview %>%
 Documents from same company help, especially gemma and gpt nano
 Maverick with 5 examples does not work anymore
 
-```{r table-extraction-llm-performance-total-overview-out-of-company, out.width="100%", fig.height=12}
+```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
   filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
   filter(model %in% model_by_size) %>%
@@ -1316,7 +1378,7 @@ bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>%
   )
 ```
 
-```{r table-extraction-llm-confidence}
+```{r table-extraction-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag}
 confidence_vs_truth <- df_real_table_extraction %>% 
   # filter(model == "Qwen_Qwen3-8B") %>% 
   filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
@@ -1367,7 +1429,7 @@ confidence_vs_truth %>% ggplot() +
   scale_x_discrete(drop = FALSE)
 ```
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 confidence_vs_truth %>%
   mutate(
     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
@@ -1394,7 +1456,7 @@ GPT 4.1 nano not sufficiently powerful, GPT 4.1 mini good to moderate in most ca
 
 GPT 4.1 costs five times of mini and 20 times of nano. But nano is useless for the task
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 model_by_size_gpt <- c(
   "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-235B-A22B-Instruct-2507",
  "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1"
@@ -1410,7 +1472,7 @@ df_overview_gpt <- bind_rows(df_real_table_extraction, df_real_table_extraction_
     )
 ```
 
-```{r table-extraction-llm-performance-total-gpt, out.width="100%", fig.height=10}
+```{r table-extraction-llm-performance-total-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10}
 df_overview_gpt %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
@@ -1418,7 +1480,7 @@ df_overview_gpt %>%
   facet_nested(method_family + n_examples ~ .)
 ```
 
-```{r table-extraction-llm-performance-numeric-gpt, out.width="100%", fig.height=10}
+```{r table-extraction-llm-performance-numeric-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10}
 df_overview_gpt %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
@@ -1426,7 +1488,7 @@ df_overview_gpt %>%
   facet_nested(method_family + n_examples ~ .)
 ```
 
-```{r table-extraction-llm-f1-gpt, out.width="100%", fig.height=10}
+```{r table-extraction-llm-f1-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10}
 df_overview_gpt %>% 
   ggplot() +
   geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
@@ -1434,7 +1496,7 @@ df_overview_gpt %>%
   facet_nested(method_family + n_examples ~ .)
 ```
 
-```{r costs-azure}
+```{r costs-azure, echo=echo_flag, warning=warning_flag, message=message_flag}
 costs_azure <- read_csv("../CostManagement_master-thesis_2025.csv")
 
 token_prop <- df_real_table_extraction %>% group_by(model, method, n_examples) %>% summarize(
@@ -1460,7 +1522,7 @@ span argument was not implemented correct in html tables and md :/
 
 Real context better for real tables. But not useless.
 
-```{r compare-real-table-extraction-by-context-type, out.width="100%", fig.height=12}
+```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 bind_rows(
   df_real_table_extraction_synth %>% mutate(context = "synth"), 
   df_real_table_extraction %>% mutate(context = "real")
@@ -1480,7 +1542,7 @@ bind_rows(
 
 no examples with units only for one column. Can learn from synth context new skills
 
-```{r, out.width="100%", fig.height=12}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_real_table_extraction_synth %>% 
   mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
   mutate(
@@ -1500,7 +1562,7 @@ df_real_table_extraction_synth %>%
   facet_nested(method_family+n_examples~model+ignore_units)
 ```
 
-```{r, out.width="100%", fig.height=12}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_real_table_extraction_synth %>% 
   mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
   mutate(
@@ -1520,7 +1582,7 @@ df_real_table_extraction_synth %>%
   facet_nested(method_family+n_examples~model+ignore_units)
 ```
 
-```{r, out.width="100%", fig.height=12}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12}
 df_real_table_extraction_synth %>% 
   mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
   mutate(
@@ -1540,7 +1602,7 @@ df_real_table_extraction_synth %>%
   facet_nested(method_family+n_examples~model+ignore_units)
 ```
 
-```{r table-extraction-llm-confidence-synth-context}
+```{r table-extraction-llm-confidence-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag}
 confidence_vs_truth <- df_real_table_extraction_synth %>% 
   # filter(model == "Qwen_Qwen3-8B") %>% 
   filter(model == "mistralai_Ministral-8B-Instruct-2410") %>% 
@@ -1592,7 +1654,7 @@ confidence_vs_truth %>% ggplot() +
   facet_wrap(~ignore_units)
 ```
 
-```{r}
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag}
 confidence_vs_truth %>%
   mutate(
     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),

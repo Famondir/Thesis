@@ -1,6 +1,7 @@
 \pagenumbering{arabic} 
 
 # Introduction
+\ChapFrame
 
 ## Motivation
 
@@ -18,10 +19,6 @@ changing from HGB to IFSR
 knitr::include_graphics("images/beteiligungsunternehmen.png")
 ```
 
-[![Click me](images/beteiligungsunternehmen.png)](images/beteiligungsunternehmen.png)
-
-<a href="images/beteiligungsunternehmen.png"target="_blank"><img src="images/beteiligungsunternehmen.png"></a>
-
 ## Objectives
 
 The sixth division at RHvB is auditing the companies Berlin is a stakeholder of. Basic information they have to process are the balance sheets and profit and loss accounting. Those information is provided via their annual reports in form of PDF files. The provided annual reports often differ from the publicly available ones in matter of information granularity and design and are treated as non public information. Automate the extraction of those information would be a good starting point for AI assisted information retrieval from PDFs for the RHvB overall.
@@ -34,7 +31,7 @@ It is important to get numeric values totally accurate; numeric values are diffi
 
 Research questions and hypothesss
 
-Q1: Can LLMs be used to efficiently extract financial information from German annual reports?
+Q1: Can a \acr{LLM} be used to efficiently extract financial information from German annual reports?
 Q2. Can LLMs be used to identify the page of interest automatically?
 
 Q3: Can confidence scores be used to head up the human in the loop on which results to double check? (How can sources of the automatic extraction being communicated down stream in order to make double checking easy before making decisions?)

@@ -1,35 +1,54 @@
 ---
 title: "Extraction of tabular data from annual reports with LLMs"
 author: "Simon Schäfer"
-date: "September 1, 2025"
+date: "September 8, 2025"
 site: "bookdown::bookdown_site"
 # Change this to FALSE if you'd like to install them manually on your own.
 # params:
 #   'Install needed packages for {thesisdown}': True
-  
+
 output:
   # bookdown::pdf_book:
   bookdown::pdf_document2:
-  # thesisdown::thesis_pdf:
+    pandoc_args: !expr acronymsdown::add_filter()
     toc: false
+    lof: yes 
+    lot: yes
     includes:
       in_header:
         - report_misc/bhtThesis.sty
         - report_misc/preamble.tex
   bookdown::gitbook:
-  # thesisdown::thesis_gitbook:
-    code_folding: show
+    pandoc_args: !expr acronymsdown::add_filter()
+    code_folding: hide
     toc_depth: 4
     config:
       toc:
         before: |
           <li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
+    includes:
+      after_body: 
+        - report_misc/lightbox.html
 css: "report_misc/style.css"
 documentclass: book
 bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
 biblio-style: apa
 link-citations: yes
 csl: report_misc/apa-single-spaced.csl
+acronyms:
+  loa_title: ""
+  insert_loa: false
+  # sorting: usage
+  include_unused: true
+  style: short-long
+  keys:
+    - shortname: Rmd
+      longname: Rmarkdown document
+    - key: yaml
+      shortname: YAML
+      longname: YAML Ain't Markup Language
+    - shortname: LLM
+      longname: large language model
 ---
 
 ```{r setup, include=FALSE}
@@ -45,6 +64,22 @@ use_python("~/anaconda3/envs/llm/bin/python")
 library(knitr)
 library(kableExtra)
 library(DT) # For interactive HTML tables
+
+`?` <- function(x, y) {
+  xs <- as.list(substitute(x))
+  if (xs[[1]] == as.name("<-")) x <- eval(xs[[3]])
+  r <- eval(sapply(strsplit(deparse(substitute(y)), ":"), function(e) parse(text = e))[[2 - as.logical(x)]])
+  if (xs[[1]] == as.name("<-")) {
+    xs[[3]] <- r
+        eval.parent(as.call(xs))
+  } else {
+    r
+  }
+}  
+
+echo_flag <- knitr::is_html_output() ? NA : FALSE
+message_flag = FALSE
+warning_flag = FALSE
 ```
 
 ```{r load_layout_functions, include=FALSE}

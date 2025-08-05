@@ -23,7 +23,7 @@
 <meta name="author" content="Simon Schäfer" />
 
 
-<meta name="date" content="2025-09-01" />
+<meta name="date" content="2025-09-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -288,6 +288,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="" data-path="glossary.html"><a href="glossary.html"><i class="fa fa-check"></i>Glossary</a></li>
 <li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a>
 <ul>
 <li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#local-machine"><i class="fa fa-check"></i><b>8.1</b> Local machine</a>
@@ -348,8 +349,6 @@ changing from HGB to IFSR</p>
 Figure 1.1: Companies Berlin has holds share at
 </p>
 </div>
-<p><a href="images/beteiligungsunternehmen.png"><img src="images/beteiligungsunternehmen.png" alt="Click me" /></a></p>
-<p><a href="images/beteiligungsunternehmen.png"target="_blank"><img src="images/beteiligungsunternehmen.png"></a></p>
 </div>
 <div id="objectives" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> Objectives<a href="introduction.html#objectives" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -361,7 +360,7 @@ Figure 1.1: Companies Berlin has holds share at
 <li>building a system? what task to solve? core functionality? typical use cases?</li>
 </ul>
 <p>Research questions and hypothesss</p>
-<p>Q1: Can LLMs be used to efficiently extract financial information from German annual reports?
+<p>Q1: Can a <a href="glossary.html#acronyms_LLM">LLM (large language model)</a> be used to efficiently extract financial information from German annual reports?
 Q2. Can LLMs be used to identify the page of interest automatically?</p>
 <p>Q3: Can confidence scores be used to head up the human in the loop on which results to double check? (How can sources of the automatic extraction being communicated down stream in order to make double checking easy before making decisions?)
 Q4: Can contextual information from similar documents reduce errors made during table extraction?
@@ -446,6 +445,46 @@ performance?)</p>
 BMI, Referat O2 (Ed.). (2013). <em>Minikommentar zum <span>Gesetz</span> zur <span>Förderung</span> der elektroni- schen <span>Verwaltung</span> sowie zur änderung weiterer <span>Vor</span>- schriften</em>.
 </div>
 </div>
+<script>
+// Lightbox functionality for displaying images in a modal view
+document.addEventListener("DOMContentLoaded", function () {
+  // Create a lightbox container
+  const lightbox = document.createElement("div");
+  lightbox.id = "lightbox";
+  lightbox.style.position = "fixed";
+  lightbox.style.top = "0";
+  lightbox.style.left = "0";
+  lightbox.style.width = "100%";
+  lightbox.style.height = "100%";
+  lightbox.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  lightbox.style.display = "none";
+  lightbox.style.justifyContent = "center";
+  lightbox.style.alignItems = "center";
+  lightbox.style.zIndex = "1000";
+  document.body.appendChild(lightbox);
+
+  // Add an image element to the lightbox
+  const lightboxImage = document.createElement("img");
+  lightboxImage.style.maxWidth = "90%";
+  lightboxImage.style.maxHeight = "90%";
+  lightbox.appendChild(lightboxImage);
+
+  // Close lightbox on click
+  lightbox.addEventListener("click", function () {
+    lightbox.style.display = "none";
+  });
+
+  // Add onclick event to all images
+  const images = document.querySelectorAll("img");
+  images.forEach((img) => {
+    img.style.cursor = "pointer"; // Change cursor to indicate clickability
+    img.addEventListener("click", function () {
+      lightboxImage.src = img.src; // Set the lightbox image source
+      lightbox.style.display = "flex"; // Show the lightbox
+    });
+  });
+});
+</script>
             </section>
 
           </div>
