@@ -1,0 +1,225 @@
+<script>
+// Lightbox functionality for displaying images in a modal view
+document.addEventListener("DOMContentLoaded", function () {
+  // Create a lightbox container
+  const lightbox = document.createElement("div");
+  lightbox.id = "lightbox";
+  lightbox.style.position = "fixed";
+  lightbox.style.top = "0";
+  lightbox.style.left = "0";
+  lightbox.style.width = "100%";
+  lightbox.style.height = "100%";
+  lightbox.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  lightbox.style.display = "none";
+  lightbox.style.justifyContent = "center";
+  lightbox.style.alignItems = "center";
+  lightbox.style.zIndex = "1000";
+  document.body.appendChild(lightbox);
+
+  // Add an image element to the lightbox
+  const lightboxImage = document.createElement("img");
+  lightboxImage.id = "lightbox-image";
+  lightboxImage.style.maxWidth = "90%";
+  lightboxImage.style.maxHeight = "90%";
+  lightbox.appendChild(lightboxImage);
+
+  // Close lightbox on click
+  lightbox.addEventListener("click", function () {
+    lightbox.style.display = "none";
+  });
+
+  // Add onclick event to all images
+  const images = document.querySelectorAll("img");
+  images.forEach((img) => {
+    img.style.cursor = "pointer"; // Change cursor to indicate clickability
+    img.addEventListener("click", function () {
+      lightboxImage.src = img.src; // Set the lightbox image source
+      lightbox.style.display = "flex"; // Show the lightbox
+    });
+  });
+});
+</script>
+
+<script>
+// Image slider/carousel functionality for divs with class "image-slider"
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.image-slider').forEach(function (slider) {
+    const images = slider.querySelectorAll('img');
+    if (images.length < 2) return; // No need for slider if only one image
+
+    // Hide all images except the first
+    images.forEach((img, i) => img.style.display = i === 0 ? 'inline' : 'none');
+    let current = 0;
+
+    // Create navigation buttons
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '⟨ Prev';
+    prevBtn.style.marginRight = '10px';
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next ⟩';
+    nextBtn.style.marginLeft = '10px';
+
+    // Create a caption container
+    const captionContainer = document.createElement('div');
+    captionContainer.style.fontStyle = 'italic';
+    captionContainer.style.color = '#555';
+
+    // Create a flex container for buttons and caption
+    const controlsContainer = document.createElement('div');
+    controlsContainer.style.display = 'flex';
+    controlsContainer.style.justifyContent = 'space-between';
+    controlsContainer.style.alignItems = 'center';
+    controlsContainer.style.marginTop = '10px';
+    controlsContainer.style.width = '100%';
+
+    // Place buttons and caption in flex container
+    controlsContainer.appendChild(prevBtn);
+    controlsContainer.appendChild(captionContainer);
+    controlsContainer.appendChild(nextBtn);
+
+    // Function to update the caption
+    const updateCaption = () => {
+      const caption = images[current].nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        captionContainer.textContent = caption.textContent;
+      } else {
+        captionContainer.textContent = ''; // Clear caption if none exists
+      }
+    };
+
+    // Function to show the next image
+    const showNextImage = () => {
+      images[current].style.display = 'none';
+      current = (current + 1) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Function to show the previous image
+    const showPrevImage = () => {
+      images[current].style.display = 'none';
+      current = (current - 1 + images.length) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Button click handlers
+    prevBtn.onclick = function () {
+      stopAutoSlide();
+      showPrevImage();
+    };
+    nextBtn.onclick = function () {
+      stopAutoSlide();
+      showNextImage();
+    };
+
+    // Insert controls container below images
+    slider.appendChild(controlsContainer);
+
+    // Automatic sliding
+    let autoSlideInterval = setInterval(showNextImage, 2000);
+
+    // Stop automatic sliding on user interaction
+    const stopAutoSlide = () => {
+      clearInterval(autoSlideInterval);
+    };
+
+    // Stop auto-slide when the user interacts with the slider
+    prevBtn.addEventListener('click', stopAutoSlide);
+    nextBtn.addEventListener('click', stopAutoSlide);
+    images.forEach((img) => {
+      img.addEventListener('click', stopAutoSlide);
+    });
+
+    // Initialize the caption
+    updateCaption();
+  });
+});
+</script>
+
+<script>
+// Dropdown filter functionality for images with lightbox
+document.addEventListener("DOMContentLoaded", function () {
+  // Create a dropdown filter for each "image-selector" div
+  document.querySelectorAll('.image-selector').forEach(function (slider) {
+    const images = slider.querySelectorAll('img');
+    if (images.length === 0) return;
+
+    // Create a dropdown filter container
+    const filterContainer = document.createElement('div');
+    filterContainer.classList.add('filter-container');
+
+    const dropdown = document.createElement('select');
+    dropdown.multiple = true;
+    dropdown.classList.add('filter-dropdown');
+
+    // Add options to the dropdown
+    const uniqueCategories = new Set();
+    images.forEach((img) => {
+      const caption = img.nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        uniqueCategories.add(caption.textContent.trim());
+      }
+    });
+
+    uniqueCategories.forEach((category) => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      option.selected = true; // Select all by default
+      dropdown.appendChild(option);
+    });
+
+    filterContainer.appendChild(dropdown);
+    slider.appendChild(filterContainer);
+
+    // Add a grid container for filtered images
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('image-grid');
+    slider.appendChild(gridContainer);
+
+    // Choices.js initialization
+    const choices = new Choices(dropdown, {
+      removeItemButton: true,
+      shouldSort: false,
+      searchEnabled: false,
+      placeholder: true,
+      placeholderValue: 'Filter categories',
+    });
+
+    // Filtering function
+    const filterImages = () => {
+      const selectedCategories = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+      gridContainer.innerHTML = '';
+      images.forEach((img) => {
+        const caption = img.nextElementSibling;
+        if (caption && caption.classList.contains('image-caption')) {
+          const category = caption.textContent.trim();
+          if (selectedCategories.includes(category)) {
+            const imgWrapper = document.createElement('div');
+            imgWrapper.classList.add('image-wrapper');
+            const imgClone = img.cloneNode(true);
+            imgClone.style.cursor = 'pointer';
+            imgClone.addEventListener('click', function () {
+              const lightboxImage = document.querySelector("#lightbox img");
+              const lightbox = document.querySelector("#lightbox");
+              lightboxImage.src = imgClone.src;
+              lightbox.style.display = 'flex';
+            });
+            imgWrapper.appendChild(imgClone);
+            const captionClone = caption.cloneNode(true);
+            imgWrapper.appendChild(captionClone);
+            gridContainer.appendChild(imgWrapper);
+          }
+        }
+      });
+    };
+
+    // Listen for changes from Choices.js
+    dropdown.addEventListener('change', filterImages);
+
+    // Initial grid
+    filterImages();
+  });
+});
+</script>

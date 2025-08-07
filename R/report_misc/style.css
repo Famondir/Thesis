@@ -51,3 +51,58 @@ h5 span.header-section-number, h6 span.header-section-number {
 .summary > li:first-child {
   height: auto !important; 
 }
+
+/*--- Image HTML ---*/
+
+.image-slider span.image-caption, .image-selector span.image-caption {
+    display: none;
+}
+
+.image-selector p>img {
+    display: none;
+}
+
+.choices {
+  width: 100%;
+}
+
+/* Dropdown filter container */
+/* .filter-container {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+} */
+
+/* Multi-select dropdown styling */
+/* .filter-dropdown {
+  min-width: 200px;
+  height: auto;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  appearance: auto;
+} */
+
+/* Grid container for images */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Wrapper for each image and caption */
+.image-wrapper {
+  text-align: center;
+}
+
+/* Captions below images */
+.image-wrapper .image-caption {
+  margin-top: 5px;
+  font-style: italic;
+  color: #555;
+  font-size: 12px;
+}
