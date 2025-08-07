@@ -140,9 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 // Dropdown filter functionality for images with lightbox
 document.addEventListener("DOMContentLoaded", function () {
-  // Create a dropdown filter for each "image-selector" div
-  document.querySelectorAll('.image-selector').forEach(function (slider) {
-    const images = slider.querySelectorAll('img');
+  document.querySelectorAll('.image-selector').forEach(function (selector) {
+    const images = selector.querySelectorAll('img');
     if (images.length === 0) return;
 
     // Create a dropdown filter container
@@ -154,11 +153,12 @@ document.addEventListener("DOMContentLoaded", function () {
     dropdown.classList.add('filter-dropdown');
 
     // Add options to the dropdown
-    const uniqueCategories = new Set();
+    const uniqueCategories = [];
     images.forEach((img) => {
       const caption = img.nextElementSibling;
       if (caption && caption.classList.contains('image-caption')) {
-        uniqueCategories.add(caption.textContent.trim());
+        const category = caption.textContent.trim();
+        if (!uniqueCategories.includes(category)) uniqueCategories.push(category);
       }
     });
 
@@ -166,17 +166,17 @@ document.addEventListener("DOMContentLoaded", function () {
       const option = document.createElement('option');
       option.value = category;
       option.textContent = category;
-      option.selected = true; // Select all by default
+      // Do NOT set option.selected here!
       dropdown.appendChild(option);
     });
 
     filterContainer.appendChild(dropdown);
-    slider.appendChild(filterContainer);
+    selector.appendChild(filterContainer);
 
     // Add a grid container for filtered images
     const gridContainer = document.createElement('div');
     gridContainer.classList.add('image-grid');
-    slider.appendChild(gridContainer);
+    selector.appendChild(gridContainer);
 
     // Choices.js initialization
     const choices = new Choices(dropdown, {
@@ -187,10 +187,15 @@ document.addEventListener("DOMContentLoaded", function () {
       placeholderValue: 'Filter categories',
     });
 
+    // Clear any existing selection first, then set initial selection
+    choices.removeActiveItems(); // This clears existing selections
+    choices.setChoiceByValue(uniqueCategories[0]); // This sets only the first category
+
     // Filtering function
     const filterImages = () => {
       const selectedCategories = Array.from(dropdown.selectedOptions).map(opt => opt.value);
       gridContainer.innerHTML = '';
+      let shownWrappers = [];
       images.forEach((img) => {
         const caption = img.nextElementSibling;
         if (caption && caption.classList.contains('image-caption')) {
@@ -210,15 +215,20 @@ document.addEventListener("DOMContentLoaded", function () {
             const captionClone = caption.cloneNode(true);
             imgWrapper.appendChild(captionClone);
             gridContainer.appendChild(imgWrapper);
+            shownWrappers.push(imgWrapper);
           }
         }
       });
+      // If only one image is shown, make it span both columns
+      if (shownWrappers.length === 1) {
+        shownWrappers[0].style.gridColumn = "span 2";
+      }
     };
 
     // Listen for changes from Choices.js
     dropdown.addEventListener('change', filterImages);
 
-    // Initial grid
+    // Initial grid (only first category shown)
     filterImages();
   });
 });

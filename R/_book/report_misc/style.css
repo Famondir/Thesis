@@ -89,7 +89,7 @@ h5 span.header-section-number, h6 span.header-section-number {
 /* Grid container for images */
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-top: 10px;
 }
