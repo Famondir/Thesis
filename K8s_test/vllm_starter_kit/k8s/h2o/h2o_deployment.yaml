@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: h2o-stateful-set
+  namespace: s92818
+spec:
+  serviceName: h2o-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: h2o-k8s
+  template:
+    metadata:
+      labels:
+        app: h2o-k8s
+    spec:
+      containers:
+        - name: h2o-k8s
+          image: registry.datexis.com/s92818/h2o-3-46:latest
+          resources:
+            requests:
+              cpu: "1"
+              memory: "32Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "8"
+              memory: "512Gi"
+              nvidia.com/gpu: "1"
+          ports:
+            - containerPort: 54321
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /kubernetes/isLeaderNode
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 1
+          env:
+          - name: H2O_KUBERNETES_SERVICE_DNS
+            value: h2o-service.s92818.svc.cluster.local
+          - name: H2O_NODE_LOOKUP_TIMEOUT
+            value: '180'
+          - name: H2O_NODE_EXPECTED_COUNT
+            value: '3'
+          - name: H2O_KUBERNETES_API_PORT
+            value: '8081'
+      imagePullSecrets:
+      - name: private-registry-auth
+      nodeSelector:
+        gpu: a100

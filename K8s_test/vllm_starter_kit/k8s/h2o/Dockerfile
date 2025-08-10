@@ -1,0 +1,1 @@
+FROM h2oai/h2o-open-source-k8s:3.46.0.7-2
