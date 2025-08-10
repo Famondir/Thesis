@@ -28,13 +28,14 @@ for (file in json_files_table_extraction_regex) {
   }
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
-  # name_split = (basename(file) %>% str_split("__"))[[1]]
+  name_split = (basename(file) %>% str_split("__"))[[1]]
   # method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
   results <-  json_data %>% as_tibble() %>% rowwise() %>%  
     mutate(
-      model = basename(file) %>% str_replace('.json', '') %>% str_replace('evaluation_', ''),
+      extraction_backend = name_split[3] %>% str_replace('.json', ''),
+      table_type = name_split[2],
       # model = name_split[1], 
       # method = name_split[method_index],
       # n_examples = str_match(method, "\\d+")[[1]],
@@ -72,7 +73,7 @@ units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characterist
 
 df <- df %>% left_join(units_real_tables)
 
-df %>% write_csv("data_storage/table_extraction_regex.rds")
+df %>% saveRDS("data_storage/table_extraction_regex.rds")
 
 ##### plotting #####
 

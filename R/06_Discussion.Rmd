@@ -4,6 +4,18 @@
 * ensemble prediction
 * check for halluzination vs wrong placed / repeated numbers
 
+## Table extraction
+
+building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
+
+### Regex baseline
+
+* synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
+
 ## Not covered
 
 * OCR
+* fine-tuning
+* using something smaller (e.g. LSTMs) instead LLMs
+* building application, UX design (ref Ambacher 2024)
+* table extraction (either VLLMs or classic approaches <-- tyred tabula but was not successful (because of missing visual traits)?)

@@ -71,7 +71,7 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
   # rename_with(~ gsub("^NA_", "NA_", .x)) %>%  # Ensures prefix is NA_
   mutate(
     NA_total_truth = NA_true_positive + NA_false_negative,
-    NA_precision = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_positive), NA),
+    NA_precision = if_else(NA_total_truth > 0, if_else((NA_true_positive + NA_false_positive)>0, NA_true_positive/(NA_true_positive + NA_false_positive), 0), NA),
     NA_recall = if_else(NA_total_truth > 0, NA_true_positive/(NA_true_positive + NA_false_negative), NA),
     NA_F1 = if_else((NA_precision + NA_recall) > 0, (2 * NA_precision * NA_recall)/(NA_precision + NA_recall), 0),
     percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
@@ -114,4 +114,4 @@ df <- df %>%
     many_line_breaks = if_else(max_line_length == 50, TRUE, FALSE)
   )
 
-df %>% write_csv("data_storage/synth_table_extraction_llm.rds")
+df %>% saveRDS("data_storage/synth_table_extraction_llm.rds")

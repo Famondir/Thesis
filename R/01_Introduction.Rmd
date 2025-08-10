@@ -56,7 +56,7 @@ Experimental / Comparative Research
 
 ## Thesis Outline (0.5 p)
 
-## To place in chapters abovehttp://127.0.0.1:29003/rmd_output/4/images/beteiligungsunternehmen.png
+## To place in chapters above
 
 This master thesis is motivated by a use case from practical work at the Berlin court of audit (Rechnungshof von Berlin; RHvB). The auditors often are faced with the problem that they need information that is provided as natural language or in tables inside of unstructured documents, i.e. in PDF files. The goal of this thesis is benchmarking methods for automated information extraction from specific tables from PDF files.
 

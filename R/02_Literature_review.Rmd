@@ -9,7 +9,65 @@
 * relevant basic tasks
 * parameter vs active parameter
 
+## NLP history
+
 ## Basic terms
+
+## Supervised Learning Approaches
+
+### Generalized Linear Models
+
+### Random Forest
+
+XGBoost not used finally, because calculation \acr{SHAP} values for XGBoost model took to long for just a first glimpse on what might influence the extraction.
+
+### Large Language Models
+
+#### Embeddings
+
+#### Neural networks in NLP
+
+#### Attention / Multi-Head
+
+#### Transformers
+
+#### Encoder
+
+#### Decoder
+
+#### BERT
+
+#### Bi-Encoder
+
+#### Mixture of Experts
+
+#### Guided decoding
+
+generation template strict (closed) vs open
+
+#### Classification trained models (not used)
+
+Soft max
+
+#### Few-shot Learning
+
+#### RAG
+
+#### GPT (Generative Pretrained Transformers)
+
+### Information extraction
+
+closed-domain vs open-domain
+
+## Data balancing
+
+### Under sampling, oversampling
+
+## Evaluation Metrics
+
+### For classification
+
+### For regression
 
 ## Technological topic (related work)
 
@@ -22,6 +80,8 @@
 * connection of papers (timeline)
 * what used, what not?
 * extending existing paper?
+
+## Term frequency
 
 ### Extraction of numeric values
 

@@ -1,26 +1,3 @@
-# Initialize a counter for the total page count
-total_pages <- 0
-
-# Get the list of PDF files in the specified directory
-pdf_files <- list.files(path = "../Geschaeftsberichte", pattern = "\\.pdf$", full.names = TRUE, recursive = TRUE)
-
-# Loop through each PDF file to count pages
-for (pdf_file in pdf_files) {
-  # Use the pdftools package to count pages
-  total_pages <- total_pages + pdftools::pdf_info(pdf_file)$pages
-}
-
-# all tables that could have been found
-data <- read.csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv")
-
-# Split the "type" column by '&' and explode it into multiple rows
-data_unnested <- data %>%
-  mutate(type = strsplit(as.character(type), "&")) %>%
-  unnest(type)
-
-num_tables <- data_unnested %>% 
-  nrow()
-
 # Get a list of all .json files in the folder
 json_files <- list.files("../benchmark_results/page_identification/", pattern = "regex.*\\.json$", full.names = TRUE)
 
@@ -218,3 +195,9 @@ calc_metrics_by_company_and_type <- function(classification_type) {
 }
 
 metrics_by_company_and_type <- calc_metrics_by_company_and_type(type)
+
+list(
+  metrics = metrics,
+  metric_summaries = metric_summaries, 
+  metrics_by_company_and_type = metrics_by_company_and_type
+  ) %>% saveRDS("data_storage/page_identification_regex.rds")

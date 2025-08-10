@@ -25,9 +25,9 @@ recalc_mectrics <- function(df, classification_type) {
   fn <- df_reeval %>% filter(predicted_type == "no", match == FALSE) %>% nrow()
   tn <- df_reeval %>% filter(predicted_type == "no", match == TRUE) %>% nrow()
   n <- df_reeval %>% nrow()
-  accuracy <- (tp + tn)/(n)
-  precision <- tp/(tp+fp)
-  recall <- tp/(tp+fn)
+  accuracy <- if_else(n>0, (tp + tn)/(n), 0)
+  precision <- if_else((tp+fp)>0, tp/(tp+fp), 0)
+  recall <- if_else((tp+fn)>0, tp/(tp+fn), 0)
   f1_score <- ifelse(precision+recall != 0, 2*precision*recall/(precision+recall), 0)
   
   metrics <- list()
@@ -55,8 +55,8 @@ calculate_micro_macro_metrics <- function(metrics, suffix = "") {
   tn_micro <- sum(sapply(metrics, function(x) x$true_negative))
   n_micro <- sum(sapply(metrics, function(x) x$n_pages))
   
-  micro_precision <- tp_micro / (tp_micro + fp_micro)
-  micro_recall <- tp_micro / (tp_micro + fn_micro)
+  micro_precision <- if_else((tp_micro + fp_micro)>0, tp_micro / (tp_micro + fp_micro), 0)
+  micro_recall <- if_else((tp_micro + fn_micro)>0, tp_micro / (tp_micro + fn_micro), 0)
   micro_f1 <- ifelse(micro_precision + micro_recall != 0, 2 * micro_precision * micro_recall / (micro_precision + micro_recall), 0)
   micro_accuracy <- (tp_micro + tn_micro) / n_micro
   
@@ -105,9 +105,9 @@ recalc_mectrics_multiclass <- function(df) {
     fn <- df_reeval %>% filter(type == classification_type, match == FALSE) %>% nrow()
     tn <- df_reeval %>% filter(type != classification_type, match == TRUE) %>% nrow()
     n <- df_reeval %>% nrow()
-    accuracy <- (tp + tn)/(n)
-    precision <- tp/(tp+fp)
-    recall <- tp/(tp+fn)
+    accuracy <- if_else(n>0, (tp + tn)/(n), 0)
+    precision <- if_else((tp+fp)>0, tp/(tp+fp), 0)
+    recall <- if_else((tp+fn)>0, tp/(tp+fn), 0)
     f1_score <- ifelse(precision+recall != 0, 2*precision*recall/(precision+recall), 0)
     
     metrics <- list()

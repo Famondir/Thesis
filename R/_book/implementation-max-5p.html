@@ -64,6 +64,11 @@
 <script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.css">
+<script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js"></script> -->
 
 
 <style type="text/css">
@@ -181,7 +186,7 @@ div.csl-indent {
 <li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#objectives"><i class="fa fa-check"></i><b>1.2</b> Objectives</a></li>
 <li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#methodology-1-p"><i class="fa fa-check"></i><b>1.3</b> Methodology (1 p)</a></li>
 <li class="chapter" data-level="1.4" data-path="introduction.html"><a href="introduction.html#thesis-outline-0.5-p"><i class="fa fa-check"></i><b>1.4</b> Thesis Outline (0.5 p)</a></li>
-<li class="chapter" data-level="1.5" data-path="introduction.html"><a href="introduction.html#to-place-in-chapters-abovehttp127.0.0.129003rmd_output4imagesbeteiligungsunternehmen.png"><i class="fa fa-check"></i><b>1.5</b> To place in chapters abovehttp://127.0.0.1:29003/rmd_output/4/images/beteiligungsunternehmen.png</a></li>
+<li class="chapter" data-level="1.5" data-path="introduction.html"><a href="introduction.html#to-place-in-chapters-above"><i class="fa fa-check"></i><b>1.5</b> To place in chapters above</a></li>
 <li class="chapter" data-level="1.6" data-path="introduction.html"><a href="introduction.html#rhvb"><i class="fa fa-check"></i><b>1.6</b> RHvB</a></li>
 <li class="chapter" data-level="1.7" data-path="04_Implementation.html"><a href="#datenverf%C3%BCgbarkeit"><i class="fa fa-check"></i><b>1.7</b> Datenverfügbarkeit</a></li>
 <li class="chapter" data-level="1.8" data-path="introduction.html"><a href="introduction.html#unstrukturierte-daten"><i class="fa fa-check"></i><b>1.8</b> Unstrukturierte Daten</a>
@@ -191,29 +196,63 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html"><i class="fa fa-check"></i><b>2</b> Literature review (less than 10 p)</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#basic-terms"><i class="fa fa-check"></i><b>2.1</b> Basic terms</a></li>
-<li class="chapter" data-level="2.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#technological-topic-related-work"><i class="fa fa-check"></i><b>2.2</b> Technological topic (related work)</a>
+<li class="chapter" data-level="2.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#nlp-history"><i class="fa fa-check"></i><b>2.1</b> NLP history</a></li>
+<li class="chapter" data-level="2.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#basic-terms"><i class="fa fa-check"></i><b>2.2</b> Basic terms</a></li>
+<li class="chapter" data-level="2.3" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#supervised-learning-approaches"><i class="fa fa-check"></i><b>2.3</b> Supervised Learning Approaches</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#extraction-of-numeric-values"><i class="fa fa-check"></i><b>2.2.1</b> Extraction of numeric values</a></li>
+<li class="chapter" data-level="2.3.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#generalized-linear-models"><i class="fa fa-check"></i><b>2.3.1</b> Generalized Linear Models</a></li>
+<li class="chapter" data-level="2.3.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#random-forest"><i class="fa fa-check"></i><b>2.3.2</b> Random Forest</a></li>
+<li class="chapter" data-level="2.3.3" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#large-language-models"><i class="fa fa-check"></i><b>2.3.3</b> Large Language Models</a>
+<ul>
+<li class="chapter" data-level="2.3.3.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#embeddings"><i class="fa fa-check"></i><b>2.3.3.1</b> Embeddings</a></li>
+<li class="chapter" data-level="2.3.3.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#neural-networks-in-nlp"><i class="fa fa-check"></i><b>2.3.3.2</b> Neural networks in NLP</a></li>
+<li class="chapter" data-level="2.3.3.3" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#attention-multi-head"><i class="fa fa-check"></i><b>2.3.3.3</b> Attention / Multi-Head</a></li>
+<li class="chapter" data-level="2.3.3.4" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#transformers"><i class="fa fa-check"></i><b>2.3.3.4</b> Transformers</a></li>
+<li class="chapter" data-level="2.3.3.5" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#encoder"><i class="fa fa-check"></i><b>2.3.3.5</b> Encoder</a></li>
+<li class="chapter" data-level="2.3.3.6" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#decoder"><i class="fa fa-check"></i><b>2.3.3.6</b> Decoder</a></li>
+<li class="chapter" data-level="2.3.3.7" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#bert"><i class="fa fa-check"></i><b>2.3.3.7</b> BERT</a></li>
+<li class="chapter" data-level="2.3.3.8" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#bi-encoder"><i class="fa fa-check"></i><b>2.3.3.8</b> Bi-Encoder</a></li>
+<li class="chapter" data-level="2.3.3.9" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#mixture-of-experts"><i class="fa fa-check"></i><b>2.3.3.9</b> Mixture of Experts</a></li>
+<li class="chapter" data-level="2.3.3.10" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#guided-decoding"><i class="fa fa-check"></i><b>2.3.3.10</b> Guided decoding</a></li>
+<li class="chapter" data-level="2.3.3.11" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#classification-trained-models-not-used"><i class="fa fa-check"></i><b>2.3.3.11</b> Classification trained models (not used)</a></li>
+<li class="chapter" data-level="2.3.3.12" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#few-shot-learning"><i class="fa fa-check"></i><b>2.3.3.12</b> Few-shot Learning</a></li>
+<li class="chapter" data-level="2.3.3.13" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#rag"><i class="fa fa-check"></i><b>2.3.3.13</b> RAG</a></li>
+<li class="chapter" data-level="2.3.3.14" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#gpt-generative-pretrained-transformers"><i class="fa fa-check"></i><b>2.3.3.14</b> GPT (Generative Pretrained Transformers)</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#optinal-more-topics-like-previous"><i class="fa fa-check"></i><b>2.3</b> optinal more topics like previous</a></li>
-<li class="chapter" data-level="2.4" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#summary-0.5-p"><i class="fa fa-check"></i><b>2.4</b> Summary (0.5 p)</a></li>
-<li class="chapter" data-level="2.5" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#to-place-in-chapters-above"><i class="fa fa-check"></i><b>2.5</b> To place in chapters above</a></li>
-<li class="chapter" data-level="2.6" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#table-extraction-tasks"><i class="fa fa-check"></i><b>2.6</b> Table extraction tasks</a>
-<ul>
-<li class="chapter" data-level="2.6.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#difficulties"><i class="fa fa-check"></i><b>2.6.1</b> Difficulties</a></li>
+<li class="chapter" data-level="2.3.4" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#information-extraction"><i class="fa fa-check"></i><b>2.3.4</b> Information extraction</a></li>
 </ul></li>
-<li class="chapter" data-level="2.7" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-extrtaction-process"><i class="fa fa-check"></i><b>2.7</b> Document Extrtaction Process</a>
+<li class="chapter" data-level="2.4" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#data-balancing"><i class="fa fa-check"></i><b>2.4</b> Data balancing</a>
 <ul>
-<li class="chapter" data-level="2.7.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-layout-analysis"><i class="fa fa-check"></i><b>2.7.1</b> Document Layout Analysis</a>
-<ul>
-<li class="chapter" data-level="2.7.1.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#vision-grid-transformer"><i class="fa fa-check"></i><b>2.7.1.1</b> Vision Grid Transformer</a></li>
+<li class="chapter" data-level="2.4.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#under-sampling-oversampling"><i class="fa fa-check"></i><b>2.4.1</b> Under sampling, oversampling</a></li>
 </ul></li>
-<li class="chapter" data-level="2.7.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#section-1"><i class="fa fa-check"></i><b>2.7.2</b> </a></li>
-</ul></li>
-<li class="chapter" data-level="2.8" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tools"><i class="fa fa-check"></i><b>2.8</b> Tools</a>
+<li class="chapter" data-level="2.5" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#evaluation-metrics"><i class="fa fa-check"></i><b>2.5</b> Evaluation Metrics</a>
 <ul>
-<li class="chapter" data-level="2.8.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tableformer"><i class="fa fa-check"></i><b>2.8.1</b> TableFormer</a></li>
+<li class="chapter" data-level="2.5.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#for-classification"><i class="fa fa-check"></i><b>2.5.1</b> For classification</a></li>
+<li class="chapter" data-level="2.5.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#for-regression"><i class="fa fa-check"></i><b>2.5.2</b> For regression</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#technological-topic-related-work"><i class="fa fa-check"></i><b>2.6</b> Technological topic (related work)</a></li>
+<li class="chapter" data-level="2.7" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#term-frequency"><i class="fa fa-check"></i><b>2.7</b> Term frequency</a>
+<ul>
+<li class="chapter" data-level="2.7.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#extraction-of-numeric-values"><i class="fa fa-check"></i><b>2.7.1</b> Extraction of numeric values</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#optinal-more-topics-like-previous"><i class="fa fa-check"></i><b>2.8</b> optinal more topics like previous</a></li>
+<li class="chapter" data-level="2.9" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#summary-0.5-p"><i class="fa fa-check"></i><b>2.9</b> Summary (0.5 p)</a></li>
+<li class="chapter" data-level="2.10" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#to-place-in-chapters-above-1"><i class="fa fa-check"></i><b>2.10</b> To place in chapters above</a></li>
+<li class="chapter" data-level="2.11" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#table-extraction-tasks"><i class="fa fa-check"></i><b>2.11</b> Table extraction tasks</a>
+<ul>
+<li class="chapter" data-level="2.11.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#difficulties"><i class="fa fa-check"></i><b>2.11.1</b> Difficulties</a></li>
+</ul></li>
+<li class="chapter" data-level="2.12" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-extrtaction-process"><i class="fa fa-check"></i><b>2.12</b> Document Extrtaction Process</a>
+<ul>
+<li class="chapter" data-level="2.12.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#document-layout-analysis"><i class="fa fa-check"></i><b>2.12.1</b> Document Layout Analysis</a>
+<ul>
+<li class="chapter" data-level="2.12.1.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#vision-grid-transformer"><i class="fa fa-check"></i><b>2.12.1.1</b> Vision Grid Transformer</a></li>
+</ul></li>
+<li class="chapter" data-level="2.12.2" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#section-1"><i class="fa fa-check"></i><b>2.12.2</b> </a></li>
+</ul></li>
+<li class="chapter" data-level="2.13" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tools"><i class="fa fa-check"></i><b>2.13</b> Tools</a>
+<ul>
+<li class="chapter" data-level="2.13.1" data-path="literature-review-less-than-10-p.html"><a href="literature-review-less-than-10-p.html#tableformer"><i class="fa fa-check"></i><b>2.13.1</b> TableFormer</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a>
@@ -233,7 +272,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.3.2" data-path="methods.html"><a href="methods.html#vision-model"><i class="fa fa-check"></i><b>3.3.2</b> Vision Model</a></li>
 <li class="chapter" data-level="3.3.3" data-path="methods.html"><a href="methods.html#docling-and-co"><i class="fa fa-check"></i><b>3.3.3</b> Docling and Co</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="methods.html"><a href="methods.html#information-extraction"><i class="fa fa-check"></i><b>3.4</b> Information extraction</a>
+<li class="chapter" data-level="3.4" data-path="methods.html"><a href="methods.html#information-extraction-1"><i class="fa fa-check"></i><b>3.4</b> Information extraction</a>
 <ul>
 <li class="chapter" data-level="3.4.1" data-path="methods.html"><a href="methods.html#baselines-1"><i class="fa fa-check"></i><b>3.4.1</b> Baselines</a></li>
 <li class="chapter" data-level="3.4.2" data-path="methods.html"><a href="methods.html#simple-pipeline"><i class="fa fa-check"></i><b>3.4.2</b> Simple pipeline</a></li>
@@ -280,11 +319,16 @@ div.csl-indent {
 <li class="chapter" data-level="5.2.2.2" data-path="results.html"><a href="results.html#synthetic-tables-only"><i class="fa fa-check"></i><b>5.2.2.2</b> Synthetic tables only</a></li>
 <li class="chapter" data-level="5.2.2.3" data-path="results.html"><a href="results.html#extract-from-real-tables-with-synthetic-content"><i class="fa fa-check"></i><b>5.2.2.3</b> Extract from real tables with synthetic content</a></li>
 </ul></li>
+<li class="chapter" data-level="5.2.3" data-path="results.html"><a href="results.html#comparing-table-extraction-methods"><i class="fa fa-check"></i><b>5.2.3</b> Comparison</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.1</b> Not covered</a></li>
+<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#table-extraction-1"><i class="fa fa-check"></i><b>6.1</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="discussion.html"><a href="discussion.html#regex-baseline"><i class="fa fa-check"></i><b>6.1.1</b> Regex baseline</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.2</b> Not covered</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -308,7 +352,9 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="appendix.html"><a href="appendix.html#regex-page-identification-code"><i class="fa fa-check"></i><b>8.3</b> Regular expressions</a></li>
 <li class="chapter" data-level="8.4" data-path="appendix.html"><a href="appendix.html#figures"><i class="fa fa-check"></i><b>8.4</b> Figures</a></li>
-<li class="chapter" data-level="8.5" data-path="appendix.html"><a href="appendix.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>8.5</b> Extraction framework flow chart</a></li>
+<li class="chapter" data-level="8.5" data-path="appendix.html"><a href="appendix.html#annual-comprehensive-financial-report-balance-sheet"><i class="fa fa-check"></i><b>8.5</b> Annual Comprehensive Financial Report Balance Sheet</a></li>
+<li class="chapter" data-level="8.6" data-path="appendix.html"><a href="appendix.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>8.6</b> Extraction framework flow chart</a></li>
+<li class="chapter" data-level="8.7" data-path="appendix.html"><a href="appendix.html#regex-extraction-mistakes"><i class="fa fa-check"></i><b>8.7</b> Table extraction with regular expressions</a></li>
 </ul></li>
 </ul>
 
@@ -357,6 +403,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add an image element to the lightbox
   const lightboxImage = document.createElement("img");
+  lightboxImage.id = "lightbox-image";
   lightboxImage.style.maxWidth = "90%";
   lightboxImage.style.maxHeight = "90%";
   lightbox.appendChild(lightboxImage);
@@ -374,6 +421,200 @@ document.addEventListener("DOMContentLoaded", function () {
       lightboxImage.src = img.src; // Set the lightbox image source
       lightbox.style.display = "flex"; // Show the lightbox
     });
+  });
+});
+</script>
+
+<script>
+// Image slider/carousel functionality for divs with class "image-slider"
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.image-slider').forEach(function (slider) {
+    const images = slider.querySelectorAll('img');
+    if (images.length < 2) return; // No need for slider if only one image
+
+    // Hide all images except the first
+    images.forEach((img, i) => img.style.display = i === 0 ? 'inline' : 'none');
+    let current = 0;
+
+    // Create navigation buttons
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '⟨ Prev';
+    prevBtn.style.marginRight = '10px';
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next ⟩';
+    nextBtn.style.marginLeft = '10px';
+
+    // Create a caption container
+    const captionContainer = document.createElement('div');
+    captionContainer.style.fontStyle = 'italic';
+    captionContainer.style.color = '#555';
+
+    // Create a flex container for buttons and caption
+    const controlsContainer = document.createElement('div');
+    controlsContainer.style.display = 'flex';
+    controlsContainer.style.justifyContent = 'space-between';
+    controlsContainer.style.alignItems = 'center';
+    controlsContainer.style.marginTop = '10px';
+    controlsContainer.style.width = '100%';
+
+    // Place buttons and caption in flex container
+    controlsContainer.appendChild(prevBtn);
+    controlsContainer.appendChild(captionContainer);
+    controlsContainer.appendChild(nextBtn);
+
+    // Function to update the caption
+    const updateCaption = () => {
+      const caption = images[current].nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        captionContainer.textContent = caption.textContent;
+      } else {
+        captionContainer.textContent = ''; // Clear caption if none exists
+      }
+    };
+
+    // Function to show the next image
+    const showNextImage = () => {
+      images[current].style.display = 'none';
+      current = (current + 1) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Function to show the previous image
+    const showPrevImage = () => {
+      images[current].style.display = 'none';
+      current = (current - 1 + images.length) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Button click handlers
+    prevBtn.onclick = function () {
+      stopAutoSlide();
+      showPrevImage();
+    };
+    nextBtn.onclick = function () {
+      stopAutoSlide();
+      showNextImage();
+    };
+
+    // Insert controls container below images
+    slider.appendChild(controlsContainer);
+
+    // Automatic sliding
+    let autoSlideInterval = setInterval(showNextImage, 2000);
+
+    // Stop automatic sliding on user interaction
+    const stopAutoSlide = () => {
+      clearInterval(autoSlideInterval);
+    };
+
+    // Stop auto-slide when the user interacts with the slider
+    prevBtn.addEventListener('click', stopAutoSlide);
+    nextBtn.addEventListener('click', stopAutoSlide);
+    images.forEach((img) => {
+      img.addEventListener('click', stopAutoSlide);
+    });
+
+    // Initialize the caption
+    updateCaption();
+  });
+});
+</script>
+
+<script>
+// Dropdown filter functionality for images with lightbox
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.image-selector').forEach(function (selector) {
+    const images = selector.querySelectorAll('img');
+    if (images.length === 0) return;
+
+    // Create a dropdown filter container
+    const filterContainer = document.createElement('div');
+    filterContainer.classList.add('filter-container');
+
+    const dropdown = document.createElement('select');
+    dropdown.multiple = true;
+    dropdown.classList.add('filter-dropdown');
+
+    // Add options to the dropdown
+    const uniqueCategories = [];
+    images.forEach((img) => {
+      const caption = img.nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        const category = caption.textContent.trim();
+        if (!uniqueCategories.includes(category)) uniqueCategories.push(category);
+      }
+    });
+
+    uniqueCategories.forEach((category) => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      // Do NOT set option.selected here!
+      dropdown.appendChild(option);
+    });
+
+    filterContainer.appendChild(dropdown);
+    selector.appendChild(filterContainer);
+
+    // Add a grid container for filtered images
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('image-grid');
+    selector.appendChild(gridContainer);
+
+    // Choices.js initialization
+    const choices = new Choices(dropdown, {
+      removeItemButton: true,
+      shouldSort: false,
+      searchEnabled: false,
+      placeholder: true,
+      placeholderValue: 'Filter categories',
+    });
+
+    // Clear any existing selection first, then set initial selection
+    choices.removeActiveItems(); // This clears existing selections
+    choices.setChoiceByValue(uniqueCategories[0]); // This sets only the first category
+
+    // Filtering function
+    const filterImages = () => {
+      const selectedCategories = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+      gridContainer.innerHTML = '';
+      let shownWrappers = [];
+      images.forEach((img) => {
+        const caption = img.nextElementSibling;
+        if (caption && caption.classList.contains('image-caption')) {
+          const category = caption.textContent.trim();
+          if (selectedCategories.includes(category)) {
+            const imgWrapper = document.createElement('div');
+            imgWrapper.classList.add('image-wrapper');
+            const imgClone = img.cloneNode(true);
+            imgClone.style.cursor = 'pointer';
+            imgClone.addEventListener('click', function () {
+              const lightboxImage = document.querySelector("#lightbox img");
+              const lightbox = document.querySelector("#lightbox");
+              lightboxImage.src = imgClone.src;
+              lightbox.style.display = 'flex';
+            });
+            imgWrapper.appendChild(imgClone);
+            const captionClone = caption.cloneNode(true);
+            imgWrapper.appendChild(captionClone);
+            gridContainer.appendChild(imgWrapper);
+            shownWrappers.push(imgWrapper);
+          }
+        }
+      });
+      // If only one image is shown, make it span both columns
+      if (shownWrappers.length === 1) {
+        shownWrappers[0].style.gridColumn = "span 2";
+      }
+    };
+
+    // Listen for changes from Choices.js
+    dropdown.addEventListener('change', filterImages);
+
+    // Initial grid (only first category shown)
+    filterImages();
   });
 });
 </script>

@@ -17,8 +17,9 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom =
       caption <- gsub(latex_sub, "\\\\\\1", caption) # Escape LaTeX special characters
     }
   
-    df <- df %>% mutate_all(~gsub(latex_sub, "\\\\\\1", .)) %>% setNames(
-      gsub(latex_sub, "\\\\\\1", colnames(.))
+    df <- df %>%
+      mutate(across(everything(), ~gsub(latex_sub, "\\\\\\1", .))) %>%
+      setNames(gsub(latex_sub, "\\\\\\1", colnames(.))
     ) # Escape LaTeX special characters in column names
   }
 

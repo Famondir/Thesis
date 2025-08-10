@@ -42,3 +42,19 @@ plot_shap_importance_signed <- function(shp, n = 10, max_label_length = 30, show
   
   p
 }
+
+convert_binary <- function(x) {
+  if (all(x %in% c(0, 1))) {
+    as.logical(x)
+  } else {
+    x
+  }
+}
+
+convert_shap_x <- function(shap) {
+  shap$X <- shap$X %>% mutate(across(everything(), convert_binary)) %>% 
+    mutate(
+      n_columns = factor(as.numeric(n_columns)+1)
+      )
+  return(shap)
+}

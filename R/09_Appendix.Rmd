@@ -105,10 +105,10 @@ for (result in meta_list) {
       y = "Metric Value",
       color = "Metric"
     ) +
-    theme_minimal() +
+    # theme_minimal() +
     theme(legend.position = "bottom")
   
-  metric_plots[[length(metric_plots) + 1]] <- table_detection_plot
+  metric_plots[[length(metric_plots) + 1]] <- list(image = table_detection_plot, title = str_replace(result$model, ".json", ""))
 }
 
 json_files_table_detection_llm <- list.files("../benchmark_results/table_detection/llm/", pattern = "\\.json$", full.names = TRUE)
@@ -174,12 +174,19 @@ for (result in meta_list_llm) {
 * yolo benchmark and table transformer
 * skip classification with llm
 
-
 not so important anymore
 
-```{r metric-plots, echo=echo_flag, warning=warning_flag, message=message_flag}
-for (plot in metric_plots) {
-  print(plot)
+```{r metric-plots-slider, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-slider', out.width="100%", results='asis'}
+for (entry in metric_plots) {
+  print(entry$image)
+  cat(paste0("<span class='image-caption'>You see the plot for: ",entry$title,". \n(Click to stop automatic rotation.)</span>"))
+}
+```
+
+```{r metric-plots-selector, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-selector', out.width="100%", results='asis'}
+for (entry in metric_plots) {
+  print(entry$image)
+  cat(paste0("<span class='image-caption'>",entry$title,"</span>"))
 }
 ```
 
@@ -284,10 +291,115 @@ regex_patterns_3 = {
 
 ## Figures
 
+```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach"}
+real_table_extraction_regex_shap_plot
+```
+
+```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=16, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs"}
+for (i in 1:4) {
+  real_table_extraction_llm_shap_plot[[i]] <- real_table_extraction_llm_shap_plot[[i]] + plot_layout(tag_level = 'new')
+}
+  
+real_table_extraction_llm_shap_plot + plot_annotation(tag_levels = c('A', '1'), tag_sep = '.') +
+  plot_annotation(
+  title = 'The surprising truth about mtcars',
+  subtitle = 'These 3 plots will reveal yet-untold secrets about our beloved data-set',
+  caption = 'Disclaimer: None of these plots are insightful'
+) & theme(plot.title = element_text(size = 22))
+```
+
+```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach"}
+synth_table_extraction_regex_shap_plot
+```
+
 \clearpage
 \setAELandscapeLayout
 
-```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="100%", fig.height=12, fig.width=16, warning=FALSE}
+```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, message=message_flag,out.height="95%", fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds"))}
+model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-oss-120b", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
+
+df_temp <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
+  filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
+  filter(model %in% model_selection) %>%
+  mutate(
+    model = factor(model, levels = model_selection),
+    model_family = factor(model_family),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples))),
+    examples_from_same_company = !out_of_company
+  )
+
+p1 <- df_temp %>% filter(!str_detect(model_family, "Qwen"), model_family != "microsoft") %>% ggplot() +
+  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family)) +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_jitter(
+    aes(x = examples_from_same_company, y = percentage_correct_total),
+    shape = 4, height = 0.005, alpha = .5
+    ) +
+  # scale_x_discrete(guide = guide_axis(angle = 30)) +
+  scale_fill_discrete(guide = "none", drop = FALSE) +
+  facet_nested(method_family + n_examples ~ model_family + model) +
+  theme(
+    legend.position = "bottom",
+    axis.title.x = element_blank()
+  ) +
+  coord_cartesian(ylim = c(0, 1))
+
+p2 <- df_temp %>% filter(str_detect(model_family, "Qwen") | model_family == "microsoft") %>% ggplot() +
+  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family), show.legend = T) +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_jitter(
+    aes(x = examples_from_same_company, y = percentage_correct_total),
+    shape = 4, height = 0.005, alpha = .5
+    ) +
+  # scale_x_discrete(guide = guide_axis(angle = 30)) +
+  scale_fill_discrete(drop = FALSE) +
+  facet_nested(method_family + n_examples ~ model_family + model) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  coord_cartesian(ylim = c(0, 1))
+
+p1 /
+  p2
+```
+```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, warning=FALSE, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded."}
 design = "
 ABCD##W
 EFGHI#x
@@ -341,6 +453,386 @@ Landscape
 \clearpage
 \setDefaultLayout
 
+## Annual Comprehensive Financial Report Balance Sheet
+
+```{r acfr23-balance-sheet, out.width="100%", echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Example balance sheet pagefom Californias Annual Comprehensive Financial Report 2023"), class.chunk='pdf-embed'}
+knitr::include_graphics("./images/acfr23_balance.pdf")
+```
+
 ## Extraction framework flow chart
 
-![Framework of](images/extraction_framework_flow_chart.png){width=100%}
+![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){width=100%}
+
+## Table extraction with regular expressions {#regex-extraction-mistakes}
+
+Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__3_columns__span_False__thin_False__year_as_text__unit_in_first_cell_True__Mio. €__enumeration_False__shuffle_True__text_around_True__max_length_50__sum_in_same_row_False__0.pdf':
+
+```{verbatim}
+A
+
+ktiva(inMio. €)GeschäftsjahrVorjahr
+
+Anlagevermögen Immaterielle Verm
+
+ögensgegenstände
+
+SelbstgeschaffenegewerblicheSchutzrechteund
+
+ähnlicheRechteundWerte
+
+0,184,77
+
+Geschäfts-oderFirmenwert4,426,78
+
+geleisteteAnzahlungen1,780,65
+
+entgeltlicherworbeneKonzessionen, gewerbliche
+
+SchutzrechteundähnlicheRechteundWertesowie
+
+LizenzenansolchenRechtenundWerten
+
+4,646,71
+
+11,0218,91
+
+Sachanlagen
+
+Grundstücke, grundstücksgleicheRechteundBauten
+
+einschließlichderBautenauffremdenGrundstücken
+
+2,802,55
+
+TechnischeAnlagenundMaschinen5,205,53
+
+AndereAnlagen, Betriebs-undGeschäftsausstattung1,601,93
+
+geleisteteAnzahlungenundAnlagen imBau3,255,81
+
+12,8615,83
+
+Finanzanlagen
+
+SonstigeFinanzanlagen7,446,51
+
+AnteileanverbundenenUnternehmen0,499,83
+
+AusleihungenanverbundeneUnternehmen0,573,49
+
+Beteiligungen1,059,43
+
+AusleihungenanUnternehmen, mitdenenein
+
+Beteiligungsverhältnisbesteht
+
+6,957,65
+
+WertpapieredesAnlagevermögens2,002,71
+
+SonstigeAusleihungen9,091,52
+
+27,5841,13
+
+51,4675,87
+
+Umlaufvermögen
+
+Vorräte
+
+Roh-, Hilfs-undBetriebsstoffe0,382,98
+
+UnfertigeErzeugnisse, unfertigeLeistungen3,236,19
+
+FertigeErzeugnisseundWaren6,724,98
+
+GeleisteteAnzahlungen4,024,83
+
+14,3418,98
+
+ForderungenundsonstigeVermögensgegenstände
+
+ForderungenausLieferungenundLeistungen4,328,36
+
+ForderungengegenverbundeneUnternehmen6,082,38
+
+ForderungengegenUnternehmen, mitdenenein
+
+Beteiligungsverhältnisbesteht
+
+7,878,11
+
+SonstigeVermögensgegenstände1,968,30
+
+20,2227,15
+
+Wertpapiere
+
+AnteileanverbundenenUnternehmen2,383,24
+
+SonstigeWertpapiere0,077,65
+
+2,4410,88
+
+Kassenbestand, Bundesbankguthaben, Guthabenbei Kreditinstituten und Schecks
+
+4,144,00
+
+41,1561,01
+
+Rechnungsabgrenzungsposten2,746,78
+
+Aktive latenteSteuern8,464,60
+
+AktiverUnterschiedsbetragausder
+
+Vermögensverrechnung
+
+2,863,35
+
+106,67151,61
+```
+
+Extract by pdfminer for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__3_columns__span_False__thin_False__year_as_text__unit_in_first_cell_True__Mio. €__enumeration_False__shuffle_True__text_around_True__max_length_50__sum_in_same_row_False__0.pdf':
+
+```{verbatim}
+Aktiva (in Mio. €)
+
+Anlagevermögen
+
+Immaterielle Vermögensgegenstände
+
+Selbst geschaffene gewerbliche Schutzrechte und
+ähnliche Rechte und Werte
+
+Geschäfts- oder Firmenwert
+
+geleistete Anzahlungen
+
+entgeltlich erworbene Konzessionen, gewerbliche
+Schutzrechte und ähnliche Rechte und Werte sowie
+Lizenzen an solchen Rechten und Werten
+
+Sachanlagen
+
+Grundstücke, grundstücksgleiche Rechte und Bauten
+einschließlich der Bauten auf fremden Grundstücken
+
+Technische Anlagen und Maschinen
+
+Andere Anlagen, Betriebs- und Geschäftsausstattung
+
+geleistete Anzahlungen und Anlagen im Bau
+
+Finanzanlagen
+
+Sonstige Finanzanlagen
+
+Anteile an verbundenen Unternehmen
+
+Ausleihungen an verbundene Unternehmen
+
+Beteiligungen
+
+Ausleihungen an Unternehmen, mit denen ein
+Beteiligungsverhältnis besteht
+
+Wertpapiere des Anlagevermögens
+
+Sonstige Ausleihungen
+
+Umlaufvermögen
+
+Vorräte
+
+Roh-, Hilfs- und Betriebsstoffe
+
+Unfertige Erzeugnisse, unfertige Leistungen
+
+Fertige Erzeugnisse und Waren
+
+Geleistete Anzahlungen
+
+Forderungen und sonstige Vermögensgegenstände
+
+Forderungen aus Lieferungen und Leistungen
+
+Forderungen gegen verbundene Unternehmen
+
+Forderungen gegen Unternehmen, mit denen ein
+Beteiligungsverhältnis besteht
+
+Sonstige Vermögensgegenstände
+
+Wertpapiere
+
+Anteile an verbundenen Unternehmen
+
+Sonstige Wertpapiere
+
+Kassenbestand, Bundesbankguthaben, Guthaben bei
+Kreditinstituten und Schecks
+
+Rechnungsabgrenzungsposten
+
+Aktive latente Steuern
+
+Aktiver Unterschiedsbetrag aus der
+Vermögensverrechnung
+
+Geschäftsjahr
+
+Vorjahr
+
+0,18
+
+4,42
+
+1,78
+
+4,64
+
+11,02
+
+2,80
+
+5,20
+
+1,60
+
+3,25
+
+12,86
+
+7,44
+
+0,49
+
+0,57
+
+1,05
+
+6,95
+
+2,00
+
+9,09
+
+27,58
+
+51,46
+
+0,38
+
+3,23
+
+6,72
+
+4,02
+
+14,34
+
+4,32
+
+6,08
+
+7,87
+
+1,96
+
+20,22
+
+2,38
+
+0,07
+
+2,44
+
+4,14
+
+41,15
+
+2,74
+
+8,46
+
+2,86
+
+4,77
+
+6,78
+
+0,65
+
+6,71
+
+18,91
+
+2,55
+
+5,53
+
+1,93
+
+5,81
+
+15,83
+
+6,51
+
+9,83
+
+3,49
+
+9,43
+
+7,65
+
+2,71
+
+1,52
+
+41,13
+
+75,87
+
+2,98
+
+6,19
+
+4,98
+
+4,83
+
+18,98
+
+8,36
+
+2,38
+
+8,11
+
+8,30
+
+27,15
+
+3,24
+
+7,65
+
+10,88
+
+4,00
+
+61,01
+
+6,78
+
+4,60
+
+3,35
+
+106,67
+
+151,61
+```

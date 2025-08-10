@@ -27,8 +27,10 @@ output:
         before: |
           <li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
     includes:
+      in_header:
+        - report_misc/head.html
       after_body: 
-        - report_misc/lightbox.html
+        - report_misc/image_effects.html
 css: "report_misc/style.css"
 documentclass: book
 bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
@@ -49,6 +51,14 @@ acronyms:
       longname: YAML Ain't Markup Language
     - shortname: LLM
       longname: large language model
+    - shortname: SHAP
+      longname: SHapley Additive exPlanations
+    - shortname: glm
+      longname: generalized linear model
+    - shortname: regex
+      longname: regular expression
+    - shortname: RHvB
+      longname: Rechnungshof von Berlin
 ---
 
 ```{r setup, include=FALSE}
@@ -65,25 +75,20 @@ library(knitr)
 library(kableExtra)
 library(DT) # For interactive HTML tables
 
-`?` <- function(x, y) {
-  xs <- as.list(substitute(x))
-  if (xs[[1]] == as.name("<-")) x <- eval(xs[[3]])
-  r <- eval(sapply(strsplit(deparse(substitute(y)), ":"), function(e) parse(text = e))[[2 - as.logical(x)]])
-  if (xs[[1]] == as.name("<-")) {
-    xs[[3]] <- r
-        eval.parent(as.call(xs))
-  } else {
-    r
-  }
-}  
-
-echo_flag <- knitr::is_html_output() ? NA : FALSE
-message_flag = FALSE
-warning_flag = FALSE
+library(shapviz)
+library(h2o)
+library(stringr)
+library(ggplot2)
+library(patchwork)
 ```
 
 ```{r load_layout_functions, include=FALSE}
 source("report_misc/layout_functions.R")
+source("report_misc/helper_functions.R")
+
+echo_flag <- knitr::is_html_output() ? NA : FALSE
+message_flag = FALSE
+warning_flag = FALSE
 ```
 
 \pagenumbering{gobble}
@@ -103,12 +108,21 @@ This can be seen as a reimplementation study of "Extracting Financial Data from 
 
 Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Dateien. Dabei wird sich auf das Auslesen der Bilanzen und Gewinn- und Verlustrechnungen aus Jahresabschlüssen deutscher Unternehmen beschränkt. Ein besonderer Aspekt der Aufgabe ist die Berücksichtigung der Hierarchie innerhalb der Tabellen, um die Werte einem festen Schema zuzuordnen und so den Import in eine relationale Datenbank vorzubereiten.
 
+## Reading advices {.unlisted .unnumbered}
+
+The author recommends to read the thesis in its digital gitbook version instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution^[Most of the time the thesis was inspected at a third of the authors 42" screen with 4k resolution. For inspecting the large overview graphics it is a very handy tool the author recommends every data scientist or software developer.]. The more, the merrier.
+
+\huge <span style="font-size: 1.5em;">😊</span> \normalsize
+
 ## Notes {.unlisted .unnumbered}
 
 * Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
 * Google gemma war mit alter Klassifikation erfolgreich (anderer Prompt, mehr Seiten)
 
 implementation nach methods
+
+* rerun real table analysis after creating more gold standarsd with good working approach
+* found mistakes in gold standard with the llm results
 
 ## Goals and Learnings {.unlisted .unnumbered}
 

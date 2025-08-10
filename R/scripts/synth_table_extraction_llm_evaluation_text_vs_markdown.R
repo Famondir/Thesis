@@ -1,18 +1,475 @@
-df  <-  read_csv("data_storage/synth_table_extraction_llm.rds")
+library(tidyverse)
+source("report_misc/helper_functions.R")
+
+df  <- readRDS("data_storage/synth_table_extraction_llm.rds")
 
 norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
   mutate(
     model_name = model_name %>% str_replace("/", "_")
-  ) %>% filter(str_detect(filename, "multi"))
-norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
-norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
-  add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
+  ) # %>% filter(str_detect(filename, "multi"))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
+# norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+#   add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
+
+#### h2o final modeling ####
+
+library(shapviz)
+library(h2o)
+
+# h2o.shutdown()
+h2o.init(max_mem_size = "16G")
+
+results <- readRDS("data_storage/synth_table_extraction_h2o_results_sample_100_shap_100.rds")
+
+results$perc_numeric$shap_values$rf %>% sv_importance(show_numbers = TRUE)
+results$perc_numeric$shap_values$rf %>% sv_importance(kind = "beeswarm")
+results$perc_numeric$shap_values$rf %>% sv_dependence("method_family")
+# results$perc_numeric$shap_values$rf %>% plot_shap_importance_signed(max_label_length = 30) +
+#   coord_cartesian(xlim = c(0, 0.15))
+
+##### percentage_correct_total #####
+
+sample_size <- 1000
 
 df2 <- df %>% filter(n_examples <= 5) %>% 
   left_join(
     norm_factors_few_examples %>% select(model_name, parameter_count), 
     by = c("model" = "model_name")
-    )
+    ) %>% mutate(
+      log10_unit_multiplier = log10(unit_multiplier),
+      respect_units = !ignore_units,
+      n_columns = as.character(n_columns)
+    ) %>% sample_n(sample_size)
+
+# just use basic contrats, the missing columns will have value 0 and are not missing when summing up
+# contr.none <- function(n, levels = NULL, ...) {
+#   if (is.null(levels)) {
+#     if (is.character(n)) {
+#       levels <- n
+#       n <- length(n)
+#     } else {
+#       levels <- as.character(seq_len(n))
+#     }
+#   }
+#   mat <- diag(n)
+#   colnames(mat) <- levels
+#   rownames(mat) <- levels
+#   mat
+# }
+# options(contrasts = c("contr.none", "contr.none"))
+
+formula_perc_numeric_pdf = percentage_correct_total ~
+  method_family +
+  n_examples +
+  model_family +
+  parameter_count +
+  n_columns +
+  n_columns:input_format +
+  sum_same_line +
+  sum_same_line:input_format +
+  header_span +
+  header_span:input_format +
+  header_span:respect_units +
+  thin +
+  respect_units +
+  respect_units:input_format +
+  input_format +
+  year_as +
+  unit_in_first_cell +
+  unit_in_first_cell:input_format +
+  log10_unit_multiplier +
+  log10_unit_multiplier:input_format +
+  enumeration +
+  shuffle_rows +
+  text_around +
+  many_line_breaks +
+  many_line_breaks:input_format
+
+# df_modeling_perc_numeric_pdf <- df2 %>% 
+#   # filter(input_format == "pdf") %>% 
+#   model.matrix(
+#     data = ., object = formula_perc_numeric_pdf,
+#     contrasts.arg = list(
+#       input_format = "contr.none", n_columns = "contr.none", 
+#       method_family = "contr.none", model_family = "contr.none"
+#       )
+#     ) %>% 
+#   as_tibble() %>% select(-any_of("(Intercept)")) %>% mutate(
+#     target = df2$percentage_correct_total, .before = 1
+#   )
+
+df_modeling_perc_numeric_pdf <- df2 %>% select(all.vars(formula_perc_numeric_pdf)) %>% 
+  mutate(across(where(is.character), as.factor))
+
+df_modeling_perc_numeric_pdf %>% colnames()
+
+df_modeling_perc_numeric_pdf.h2o <- as.h2o(df_modeling_perc_numeric_pdf)
+
+# Train-test split
+set.seed(42)
+split <- h2o.splitFrame(df_modeling_perc_numeric_pdf.h2o, ratios = 0.7, seed = 42)
+train <- split[[1]]
+test <- split[[2]]
+
+xvars <- colnames(df_modeling_perc_numeric_pdf)[-1]
+
+# Linear model
+fit_lm_perc_numeric <- h2o.glm(x = xvars, y = colnames(df_modeling_perc_numeric_pdf)[1], training_frame = train, validation_frame = test)
+# fit_lm_perc_numeric_ia <- h2o.glm(
+#   x = xvars, y = colnames(df_modeling_perc_numeric_pdf)[1], training_frame = train, validation_frame = test,
+#   interaction_pairs = list(
+#     c('input_format', 'n_columns'), c('input_format', 'sum_same_line'), 
+#     c('input_format', 'log10_unit_multiplier'), 
+#     c('input_format', 'respect_units')
+#   ))
+
+shap_test_sample <- test # sample_n(as_tibble(test), size = 100)
+# shap_test_sample <- sample_n(as_tibble(test), size = 1000)
+
+# aggregate_shap_values <- list(
+#   method_family = c("method_familystatic_example", "method_familytop_n_rag_examples_out_of_sample", "method_familyzero_shot"),
+#   n_columns = c("n_columns4", "n_columns5"),
+#   input_format = c("input_formatmarkdown", "input_formatpdf"),
+#   model_family = c("model_familyLlama.3", "model_familyLlama.4", "model_familymistralai", "model_familyQwen.2.5", "model_familyQwen.3")
+# )
+# 
+# collapse_shap(
+#   shp_lm_perc_numeric$S,
+#   aggregate_shap_values
+#   ) %>% abs() %>% colMeans()
+
+shp_lm_perc_numeric <- shapviz(
+  fit_lm_perc_numeric, X_pred = shap_test_sample, background_frame = train
+  )
+
+# lm_test <- lm(data = bind_cols(
+#   shp$S %>% as_tibble() %>%  mutate(type1 = "importance") %>% 
+#     pivot_longer(cols = -type1, names_to = "colname1", values_to = "importance"),
+#   shp$X %>% as_tibble() %>%  mutate(type2 = "value") %>%
+#     pivot_longer(cols = -type2, names_to = "colname2", values_to = "value")
+# ) %>% filter(colname1 == "input_formatpdf.log10_unit_multiplier"), importance ~ value)
+# lm_test$coefficients["value"]
+
+# sv_force(shp_lm_perc_numeric, row_id = 1)
+sv_dependence(shp_lm_perc_numeric, xvars)
+sv_importance(shp_lm_perc_numeric, show_numbers = TRUE)
+sv_importance(shp_lm_perc_numeric, kind = "beeswarm")
+# sv_importance(shp_lm_perc_numeric, kind = "no")
+
+shp_lm_perc_numeric %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+
+# Evaluate metrics on test set
+# pred_lm <- as.vector(h2o.predict(fit_lm, test))
+# true_lm <- as.vector(test[1])
+# rmse_lm <- sqrt(mean((pred_lm - true_lm)^2))
+# cat("Linear Model RMSE on test set:", rmse_lm, "\n")
+
+# Random forest
+fit_rf_perc_numeric <- h2o.randomForest(x = xvars, y = colnames(df_modeling_perc_numeric_pdf)[1], training_frame = train, validation_frame = test)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+shp_rf_perc_numeric <- shapviz(fit_rf_perc_numeric, X_pred = shap_test_sample)
+# sv_force(shp_rf_perc_numeric, row_id = 1)
+# sv_dependence(shp_rf_perc_numeric, xvars)
+# sv_importance(shp_rf_perc_numeric, show_numbers = TRUE)
+sv_importance(shp_rf_perc_numeric, kind = "beeswarm")
+
+shp_rf_perc_numeric %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+
+# Evaluate metrics on test set
+# pred_rf <- as.vector(h2o.predict(fit_rf, test))
+# true_rf <- as.vector(test$Sepal.Length)
+# rmse_rf <- sqrt(mean((pred_rf - true_rf)^2))
+# cat("Random Forest RMSE on test set:", rmse_rf, "\n")
+
+# H2O XGBoost model
+
+# Train H2O XGBoost model
+fit_xgb_h2o_perc_numeric <- h2o.xgboost(
+  x = xvars,
+  y = colnames(df_modeling_perc_numeric_pdf)[1],
+  training_frame = train,
+  validation_frame = test,
+  ntrees = 500,
+  max_depth = 8,
+  learn_rate = 0.01,
+  seed = 42
+)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+# SHAP values with shapviz
+shp_xgb_perc_numeric <- shapviz(fit_xgb_h2o_perc_numeric, X_pred = shap_test_sample, background_frame = train)
+# sv_force(shp_xgb_perc_numeric, row_id = 1)
+# sv_dependence(shp_xgb, xvars)
+sv_importance(shp_xgb_perc_numeric, show_numbers = TRUE)
+sv_importance(shp_xgb_perc_numeric, kind = "beeswarm")
+
+shp_xgb_perc_numeric %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+# Evaluate metrics on test set
+# pred_xgb <- as.vector(h2o.predict(fit_xgb_h2o, test_h2o))
+# true_xgb <- as.vector(test_h2o$percentage_correct_total)
+# rmse_xgb <- sqrt(mean((pred_xgb - true_xgb)^2))
+# cat("H2O XGBoost RMSE on test set:", rmse_xgb, "\n")
+
+##### F1 NA ######
+
+df2 <- df %>% filter(n_examples <= 5) %>% 
+  filter(!is.na(NA_F1)) %>% 
+  left_join(
+    norm_factors_few_examples %>% select(model_name, parameter_count), 
+    by = c("model" = "model_name")
+  ) %>% mutate(
+    log10_unit_multiplier = log10(unit_multiplier),
+    respect_units = !ignore_units,
+    n_columns = factor(n_columns)
+  ) %>% sample_n(sample_size)
+
+formula_NA_F1_pdf = NA_F1 ~ 
+  method_family +
+  n_examples +
+  model_family +
+  parameter_count +
+  n_columns +
+  n_columns:input_format +
+  sum_same_line +
+  sum_same_line:input_format +
+  header_span +
+  header_span:input_format +
+  header_span:respect_units +
+  # thin +
+  respect_units +
+  respect_units:input_format +
+  input_format +
+  year_as +
+  unit_in_first_cell +
+  unit_in_first_cell:input_format +
+  log10_unit_multiplier +
+  log10_unit_multiplier:input_format +
+  enumeration +
+  shuffle_rows +
+  text_around +
+  many_line_breaks +
+  many_line_breaks:input_format
+
+df_modeling_NA_F1_pdf <- df2 %>% 
+  # filter(input_format == "pdf") %>% 
+  model.matrix(data = ., object = formula_NA_F1_pdf) %>% 
+  as_tibble() %>% select(-"(Intercept)") %>% mutate(
+    target = df2$NA_F1, .before = 1
+  )
+
+library(shapviz)
+library(h2o)
+
+# h2o.shutdown()
+h2o.init()
+
+df_modeling_NA_F1_pdf.h2o <- as.h2o(df_modeling_NA_F1_pdf)
+
+# Train-test split
+set.seed(42)
+split <- h2o.splitFrame(df_modeling_NA_F1_pdf.h2o, ratios = 0.7, seed = 42)
+train <- split[[1]]
+test <- split[[2]]
+
+xvars <- colnames(df_modeling_NA_F1_pdf)[-1]
+
+# Linear model
+fit_lm_NA_F1 <- h2o.glm(x = xvars, y = colnames(df_modeling_NA_F1_pdf)[1], training_frame = train, validation_frame = test)
+
+shap_test_sample <- test # sample_n(as_tibble(test), size = 100)
+
+shp_lm_NA_F1 <- shapviz(fit_lm_NA_F1, X_pred = shap_test_sample, background_frame = train)
+# sv_force(shp_lm, row_id = 1)
+# sv_dependence(shp_lm, xvars)
+# sv_importance(shp_lm, show_numbers = TRUE)
+sv_importance(shp_lm_NA_F1, kind = "beeswarm")
+
+shp_lm_NA_F1 %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+# Random forest
+fit_rf_NA_F1 <- h2o.randomForest(x = xvars, y = colnames(df_modeling_NA_F1_pdf)[1], training_frame = train, validation_frame = test)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+shp_rf <- shapviz(fit_rf_NA_F1, X_pred = shap_test_sample)
+# sv_force(shp_rf, row_id = 1)
+# sv_dependence(shp_rf, xvars)
+# sv_importance(shp_rf, show_numbers = TRUE)
+sv_importance(shp_rf_NA_F1, kind = "beeswarm")
+
+shp_rf_NA_F1 %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+# H2O XGBoost model
+
+# Train H2O XGBoost model
+fit_xgb_h2o_NA_F1 <- h2o.xgboost(
+  x = xvars,
+  y = colnames(df_modeling_NA_F1_pdf)[1],
+  training_frame = train,
+  validation_frame = test,
+  ntrees = 500,
+  max_depth = 8,
+  learn_rate = 0.01,
+  seed = 42
+)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+# SHAP values with shapviz
+shp_xgb_NA_F1 <- shapviz(fit_xgb_h2o_NA_F1, X_pred = shap_test_sample, background_frame = train)
+# sv_force(shp_xgb, row_id = 1)
+# sv_dependence(shp_xgb, xvars)
+# sv_importance(shp_xgb, show_numbers = TRUE)
+sv_importance(shp_xgb_NA_F1, kind = "beeswarm")
+
+shp_xgb_NA_F1 %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+##### confidence #####
+
+df2 <- df %>% filter(n_examples <= 5) %>% 
+  # filter(model_family = "mistral") %>% 
+  left_join(
+    norm_factors_few_examples %>% select(model_name, parameter_count), 
+    by = c("model" = "model_name")
+  ) %>% mutate(
+    log10_unit_multiplier = log10(unit_multiplier),
+    respect_units = !ignore_units,
+    n_columns = factor(n_columns)
+  ) %>% unnest(predictions) %>% 
+  sample_n(2*sample_size) %>% pivot_longer(
+    cols = starts_with("confidence"), 
+    values_to = "confidence", 
+    names_to = "year", names_prefix = "confidence_"
+  ) %>% filter(
+    !is.na(confidence)
+  ) %>% 
+  sample_n(sample_size)
+
+formula_confidence_pdf = confidence ~ 
+  method_family +
+  n_examples +
+  model_family +
+  parameter_count +
+  n_columns +
+  n_columns:input_format +
+  sum_same_line +
+  sum_same_line:input_format +
+  header_span +
+  header_span:input_format +
+  header_span:respect_units +
+  # thin +
+  respect_units +
+  respect_units:input_format +
+  input_format +
+  year_as +
+  unit_in_first_cell +
+  unit_in_first_cell:input_format +
+  log10_unit_multiplier +
+  log10_unit_multiplier:input_format +
+  enumeration +
+  shuffle_rows +
+  text_around +
+  many_line_breaks +
+  many_line_breaks:input_format
+
+df_modeling_confidence_pdf <- df2 %>% 
+  # filter(input_format == "pdf") %>% 
+  model.matrix(data = ., object = formula_confidence_pdf) %>% 
+  as_tibble() %>% select(-"(Intercept)") %>% mutate(
+    target = df2$confidence, .before = 1
+  )
+
+# library(shapviz)
+# library(h2o)
+# 
+# # h2o.shutdown()
+# h2o.init()
+
+df_modeling_confidence_pdf.h2o <- as.h2o(df_modeling_confidence_pdf)
+
+# Train-test split
+set.seed(42)
+split <- h2o.splitFrame(df_modeling_confidence_pdf.h2o, ratios = 0.7, seed = 42)
+train <- split[[1]]
+test <- split[[2]]
+
+xvars <- colnames(df_modeling_confidence_pdf)[-1]
+
+# Linear model
+fit_lm_confidence <- h2o.glm(x = xvars, y = colnames(df_modeling_confidence_pdf)[1], training_frame = train, validation_frame = test)
+
+shap_test_sample <- test # sample_n(as_tibble(test), size = 100)
+
+shp_lm_confidence <- shapviz(fit_lm_confidence, X_pred = shap_test_sample, background_frame = train)
+# sv_force(shp_lm, row_id = 1)
+# sv_dependence(shp_lm, xvars)
+# sv_importance(shp_lm, show_numbers = TRUE)
+sv_importance(shp_lm_confidence, kind = "beeswarm")
+
+shp_lm_confidence %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+# Random forest
+fit_rf_confidence <- h2o.randomForest(x = xvars, y = colnames(df_modeling_confidence_pdf)[1], training_frame = train, validation_frame = test)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+shp_rf_confidence <- shapviz(fit_rf_confidence, X_pred = shap_test_sample)
+# sv_force(shp_rf, row_id = 1)
+# sv_dependence(shp_rf, xvars)
+# sv_importance(shp_rf, show_numbers = TRUE)
+sv_importance(shp_rf_confidence, kind = "beeswarm")
+
+shp_rf_confidence %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+# H2O XGBoost model
+
+# Train H2O XGBoost model
+fit_xgb_h2o_confidence <- h2o.xgboost(
+  x = xvars,
+  y = colnames(df_modeling_confidence_pdf)[1],
+  training_frame = train,
+  validation_frame = test,
+  ntrees = 500,
+  max_depth = 8,
+  learn_rate = 0.01,
+  seed = 42
+)
+
+shap_test_sample <- test #sample_n(as_tibble(test), size = 100)
+
+# SHAP values with shapviz
+shp_xgb_confidence <- shapviz(fit_xgb_h2o_confidence, X_pred = shap_test_sample, background_frame = train)
+# sv_force(shp_xgb, row_id = 1)
+# sv_dependence(shp_xgb, xvars)
+# sv_importance(shp_xgb, show_numbers = TRUE)
+sv_importance(shp_xgb_confidence, kind = "beeswarm")
+
+shp_xgb_confidence %>% plot_shap_importance_signed(max_label_length = 30) +
+  coord_cartesian(xlim = c(0, 0.15))
+
+##### export #####
+
+list(
+  shp_lm_perc_numeric, shp_rf_perc_numeric, shp_xgb_perc_numeric,
+  shp_xgb_NA_F1, shp_xgb_NA_F1, shp_xgb_NA_F1,
+  shp_lm_confidence, shp_rf_confidence, shp_xgb_confidence
+) %>% saveRDS("data_storage/synth_table_extraction_h2o_results.rds")
+
+#### old stuff ####
 
 # # with NAs
 # extract_wrong_values <- function(df) {
@@ -133,7 +590,6 @@ lm1 <- lm(
     method_family +
     n_examples +
     model_family +
-    # model +
     parameter_count +
     n_columns +
     n_columns:input_format +
@@ -331,81 +787,6 @@ ggplot(shap_imp, aes(reorder(Variable, Importance), Importance)) +
 #   respect.unordered.factors = "order",
 #   seed = 123
 # )
-
-library(shapviz)
-library(h2o)
-
-h2o.init()
-
-iris2 <- as.h2o(iris)
-
-# Train-test split
-set.seed(42)
-split <- h2o.splitFrame(iris2, ratios = 0.7, seed = 42)
-train <- split[[1]]
-test <- split[[2]]
-
-# Random forest
-xvars <- colnames(iris)[-1]
-fit_rf <- h2o.randomForest(x = xvars, y = "Sepal.Length", training_frame = train, validation_frame = test)
-shp_rf <- shapviz(fit_rf, X_pred = as.data.frame(test))
-sv_force(shp_rf, row_id = 1)
-sv_dependence(shp_rf, xvars)
-sv_importance(shp_rf, show_numbers = TRUE)
-sv_importance(shp_rf, kind = "beeswarm")
-
-# Evaluate metrics on test set
-pred_rf <- as.vector(h2o.predict(fit_rf, test))
-true_rf <- as.vector(test$Sepal.Length)
-rmse_rf <- sqrt(mean((pred_rf - true_rf)^2))
-cat("Random Forest RMSE on test set:", rmse_rf, "\n")
-
-# Linear model
-fit_lm <- h2o.glm(x = xvars, y = "Sepal.Length", training_frame = train, validation_frame = test)
-shp_lm <- shapviz(fit_lm, X_pred = as.data.frame(test), background_frame = train)
-sv_force(shp_lm, row_id = 1)
-sv_dependence(shp_lm, xvars)
-
-# Evaluate metrics on test set
-pred_lm <- as.vector(h2o.predict(fit_lm, test))
-true_lm <- as.vector(test$Sepal.Length)
-rmse_lm <- sqrt(mean((pred_lm - true_lm)^2))
-cat("Linear Model RMSE on test set:", rmse_lm, "\n")
-
-# H2O XGBoost model
-
-# Prepare data for H2O
-# df_h2o <- as.h2o(df_select)
-# set.seed(42)
-# split_h2o <- h2o.splitFrame(df_h2o, ratios = 0.7, seed = 42)
-# train_h2o <- split_h2o[[1]]
-# test_h2o <- split_h2o[[2]]
-# 
-# xvars_h2o <- setdiff(names(df_select), "percentage_correct_total")
-# yvar_h2o <- "percentage_correct_total"
-
-# Train H2O XGBoost model
-fit_xgb_h2o <- h2o.xgboost(
-  x = xvars,
-  y = "Sepal.Length",
-  training_frame = train,
-  validation_frame = test,
-  ntrees = 500,
-  max_depth = 8,
-  learn_rate = 0.01,
-  seed = 42
-)
-
-# SHAP values with shapviz
-shp_xgb <- shapviz(fit_xgb_h2o, X_pred = as.data.frame(test), background_frame = train)
-sv_force(shp_xgb, row_id = 1)
-sv_dependence(shp_xgb, xvars)
-
-# Evaluate metrics on test set
-pred_xgb <- as.vector(h2o.predict(fit_xgb_h2o, test_h2o))
-true_xgb <- as.vector(test_h2o$percentage_correct_total)
-rmse_xgb <- sqrt(mean((pred_xgb - true_xgb)^2))
-cat("H2O XGBoost RMSE on test set:", rmse_xgb, "\n")
 
 ###### xgboost ######
 

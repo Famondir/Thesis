@@ -23,7 +23,7 @@ norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/ru
   mutate(
     model_name = model_name %>% str_replace("/", "_")
   ) %>% filter(str_detect(filename, "multi"))
-norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
 norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
   add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
 
@@ -553,14 +553,14 @@ df_azure <- readRDS("data_storage/real_table_extraction_azure.rds")
 
 ##### plotting #####
 
-# df_azure %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>% 
-#   pivot_longer(cols = -c(model, method)) %>% 
-#   ggplot() +
-#   geom_boxplot(aes(x = model, y = value)) +
-#   # facet_wrap(~name, ncol = 1) +
-#   scale_x_discrete(guide = guide_axis(angle = 30)) +
-#   facet_grid(method~name)
-# 
+df_azure %>% select(c(model, method, percentage_correct_numeric, percentage_correct_total)) %>%
+  pivot_longer(cols = -c(model, method)) %>%
+  ggplot() +
+  geom_boxplot(aes(x = model, y = value)) +
+  # facet_wrap(~name, ncol = 1) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_grid(method~name)
+
 # df_azure %>% select(c(model, method, NA_precision, NA_recall, NA_F1)) %>% 
 #   pivot_longer(cols = -c(model, method)) %>% 
 #   ggplot() +
