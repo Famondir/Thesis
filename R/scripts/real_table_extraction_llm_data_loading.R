@@ -30,6 +30,7 @@ for (file in json_files_table_extraction_llm) {
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
   name_split = (basename(file) %>% str_split("__"))[[1]]
+  if (str_detect(name_split[1], "gpt-oss")) next
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
@@ -238,6 +239,7 @@ json_files_table_extraction_llm <- list.files(
   .[!grepl("_test_", .)]
 
 meta_list_llm <- list()
+error_list <- list()
 
 # Loop through each .json file
 for (file in json_files_table_extraction_llm) {
@@ -259,21 +261,43 @@ for (file in json_files_table_extraction_llm) {
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
-  results <-  json_data %>% as_tibble() %>% rowwise() %>%  
-    mutate(
-      model = name_split[1], 
-      method = name_split[method_index],
-      n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(basename(file), "out_of_sample") == TRUE, NA),
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
-      loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble()),
-      request_tokens = list(json_data$request_tokens)
-    ) %>% select(-df_joined)
+  results <- json_data %>% as_tibble() %>% filter(!json_error)
+  errors <- json_data %>% as_tibble() %>% filter(json_error)
+  
+  if (nrow(results) > 0) {
+    results <- results %>% rowwise() %>%  
+      mutate(
+        model = name_split[1], 
+        method = name_split[method_index],
+        n_examples = str_match(method, "\\d+")[[1]],
+        out_of_company = if_else(str_detect(method, "rag"), str_detect(basename(file), "out_of_sample") == TRUE, NA),
+        method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
+        loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+        predictions = list(fromJSON(df_joined) %>% as_tibble()),
+        request_tokens = list(json_data$request_tokens)
+      ) %>% select(-df_joined)
+    
+    meta_list_llm[[length(meta_list_llm) + 1]] <- results
+  }
+  
+  if (nrow(errors) > 0) {
+    # browser()
+    error_list[[length(meta_list_llm) + 1]] <- errors %>% rowwise() %>% 
+      mutate(
+        model = name_split[1], 
+        method = name_split[method_index],
+        n_examples = str_match(method, "\\d+")[[1]],
+        out_of_company = if_else(str_detect(method, "rag"), str_detect(basename(file), "out_of_sample") == TRUE, NA),
+        method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
+        loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
+        request_tokens = list(json_data$request_tokens)
+      )
+  }
   
   # results$predictions <- predictions
-  meta_list_llm[[length(meta_list_llm) + 1]] <- results
 }
+
+df_errors <- bind_rows(error_list)
 
 df_azure <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>% 
   filter(grammar_error != TRUE || is.na(grammar_error)) %>%
@@ -358,8 +382,11 @@ df_azure <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) 
 
 df_azure %>% filter(model %in% c(
   "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1", 
-  "gpt-oss-120b_azure", "gpt-5-mini_azure"
+  "openai_gpt-oss-20b", "gpt-oss-120b_azure", "gpt-5-mini_azure"
   )) %>% mutate(
     model = str_remove(model, "_azure")
   ) %>% 
   saveRDS("data_storage/real_table_extraction_azure.rds")
+
+df_errors %>% 
+  saveRDS("data_storage/real_table_extraction_azure_errors.rds")

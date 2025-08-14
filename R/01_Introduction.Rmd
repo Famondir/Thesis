@@ -15,7 +15,7 @@ missing law to access digital data and no law to choose the format of the data
 [extensible Business Reporting Language](https://de.xbrl.org/) as a standard
 changing from HGB to IFSR
 
-```{r beteiligungsunternehmen, echo=FALSE, out.width="100%", fig.cap="Companies Berlin has holds share at"}
+```{r beteiligungsunternehmen, echo=FALSE, out.width="100%", fig.cap="Overview of companies Berlin holds share at"}
 knitr::include_graphics("images/beteiligungsunternehmen.png")
 ```
 

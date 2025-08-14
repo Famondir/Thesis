@@ -26,7 +26,11 @@ json_files_table_extraction_llm <- list.files(
 meta_list_llm <- list()
 
 # Loop through each .json file
-for (file in json_files_table_extraction_llm) {
+total_files <- length(json_files_table_extraction_llm)
+for (i in seq_along(json_files_table_extraction_llm)) {
+  file <- json_files_table_extraction_llm[i]
+  cat(sprintf("\rProcessing file %d of %d...", i, total_files))
+  flush.console()
   # print(file)
   # Read the JSON file
   # Read the JSON file and replace NaN with NULL in the file content
@@ -50,10 +54,10 @@ for (file in json_files_table_extraction_llm) {
       model = name_split[1], 
       method = name_split[method_index],
       n_examples = str_match(method, "\\d+")[[1]],
-      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_company"), NA),
+      out_of_company = if_else(str_detect(method, "rag"), str_detect(method, "out_of_sample"), NA),
       ignore_units = if_else((name_split[method_index+1] %>% str_split('_') %>% .[[1]] %>% .[3]) == "True", TRUE, FALSE),
       input_format = name_split[2] %>% str_split("_") %>% .[[1]] %>% .[length(.)],
-      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_company', ''),
+      method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
       loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
       predictions = list(fromJSON(df_joined) %>% as_tibble()),
       runtime = json_data$runtime

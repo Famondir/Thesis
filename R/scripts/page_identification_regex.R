@@ -1,3 +1,5 @@
+source("./scripts/page_identification_preparations.R")
+
 # Get a list of all .json files in the folder
 json_files <- list.files("../benchmark_results/page_identification/", pattern = "regex.*\\.json$", full.names = TRUE)
 
@@ -28,19 +30,23 @@ calc_metrics <- function(classification_type) {
     json_data <- fromJSON(file)
     
     # Extract the required values
-    correct_df <- as.data.frame(fromJSON(json_data$correct)) %>% filter(type == classification_type)
-    wrong_df <- as.data.frame(fromJSON(json_data$wrong)) %>% filter(type == classification_type)
-    missing_df <- as.data.frame(fromJSON(json_data$missing)) %>% filter(type == classification_type)
+    correct_df <- as.data.frame(fromJSON(json_data$correct)) %>% filter(type == classification_type) %>% 
+      filter(file %in% filenames_no_ocr)
+    wrong_df <- as.data.frame(fromJSON(json_data$wrong)) %>% filter(type == classification_type) %>% 
+      filter(file %in% filenames_no_ocr)
+    missing_df <- as.data.frame(fromJSON(json_data$missing)) %>% filter(type == classification_type) %>% 
+      filter(file %in% filenames_no_ocr)
     
     filename <- basename(file)
     package <- strsplit(filename, "_")[[1]][1]
     method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
     
-    num_tables <- data_unnested %>% filter(type == classification_type) %>% nrow()
+    num_tables <- data_unnested %>% anti_join(consecutive_pages) %>% 
+      ungroup() %>% filter(type == classification_type) %>% nrow()
     
     num_true_pos <- num_correct <- nrow(correct_df)
     num_false_pos <- num_wrong <- nrow(wrong_df)
-    num_false_neg <- num_tables-num_correct
+    num_false_neg <- max(0, num_tables-num_true_pos)
     num_true_neg <- total_pages-num_true_pos-num_false_pos-num_false_neg
     num_missing <- nrow(missing_df)
     runtime <- round(json_data$runtime, 2)
@@ -143,18 +149,20 @@ for (df in metrics) {
   metric_summaries[type] <- list(results_df)
 }
 
-calc_metrics_by_company_and_type <- function(classification_type) {
+calc_metrics_by_company_and_type <- function() {
   df_list <- list()
   
   # Loop through each .json file
   for (file in json_files) {
-    # browser()
+     # browser()
     
     json_data <- fromJSON(file)
     
     # Extract the required values
-    correct_df <- as_tibble(fromJSON(json_data$correct)) %>% group_by(company, type) %>% summarise(n_correct = n())
-    wrong_df <- as_tibble(fromJSON(json_data$wrong)) %>% group_by(company, type) %>% summarise(n_wrong = n())
+    correct_df <- as_tibble(fromJSON(json_data$correct)) %>% 
+      filter(file %in% filenames_no_ocr) %>% 
+      group_by(company, type) %>% summarise(n_correct = n())
+    wrong_df <- as_tibble(fromJSON(json_data$wrong)) %>% filter(file %in% filenames_no_ocr) %>% group_by(company, type) %>% summarise(n_wrong = n())
     # missing_df <- as_tibble(fromJSON(json_data$missing)) 
     # if (nrow(missing_df>0)) {
     #     missing_df <- df_missing %>% group_by(company, type) %>% summarise(n_missing = n())
@@ -165,7 +173,8 @@ calc_metrics_by_company_and_type <- function(classification_type) {
     method <- gsub("\\.json$", "", paste(strsplit(filename, "_")[[1]][-1], collapse = " "))
     runtime <- round(json_data$runtime, 2)
     
-    num_tables <- data_unnested %>% rowwise() %>% mutate(
+    num_tables <- data_unnested %>% anti_join(consecutive_pages) %>% 
+      rowwise() %>% mutate(
       company = str_split(filepath, "/")[[1]][3]
     ) %>% group_by(type, company) %>% summarise(n_total = n())
     
@@ -174,10 +183,10 @@ calc_metrics_by_company_and_type <- function(classification_type) {
     ) %>% select(filepath, company) %>% unique() %>% group_by(company) %>% summarise(n_files = n())
     
     df_results <- correct_df %>% full_join(wrong_df) %>% full_join(num_tables) %>% 
-      full_join(file_count) %>% mutate(
+      full_join(file_count) %>% rowwise() %>% mutate(
       num_true_pos = n_correct,
       num_false_pos = n_wrong,
-      num_false_neg = n_total-n_correct,
+      num_false_neg = max(0, (n_total-n_correct)),
       # acc = round((num_true_pos+num_true_neg)/(total_pages),2)
       precision = round(num_true_pos/(num_true_pos+num_false_pos),2),
       recall = round(num_true_pos/(num_true_pos+num_false_neg),2),
@@ -194,7 +203,7 @@ calc_metrics_by_company_and_type <- function(classification_type) {
   return(bind_rows(df_list) %>% as_tibble())
 }
 
-metrics_by_company_and_type <- calc_metrics_by_company_and_type(type)
+metrics_by_company_and_type <- calc_metrics_by_company_and_type()
 
 list(
   metrics = metrics,

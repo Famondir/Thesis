@@ -2,6 +2,7 @@
 \renewcommand{\thechapter}{\Alph{chapter}}
 
 # Appendix
+
 \setcounter{chapshift}{0}
 \ChapFrame
 
@@ -9,32 +10,35 @@
 
 One can find the specifications of the local machine used to run the less computationally demanding tasks below. It is a lightweight laptop device. Its performance cores support hyperthreading and have a clock range between 2.1 and 4.7 GHz. However, due to the flat design, there is little active cooling. Thus, thermal throttling starts rather quickly. It is therefore a reasonable assumption that most locally benchmarked tasks are running at 2.1 GHz. Despite this handicap, it has a sufficiently large RAM of 32 GB and 3 GB of NVMe disk space.
 
-### System Details Report {-}
+### System Details Report {.unnumbered}
 
-#### Report details {-}
-- **Date generated:**                              2025-07-19 13:56:16
+#### Report details {.unnumbered}
 
-#### Hardware Information: {-}
-- **Hardware Model:**                              LG Electronics 17ZB90Q-G.AD79G
-- **Memory:**                                      32.0 GiB
-- **Processor:**                                   12th Gen Intel® Core™ i7-1260P × 16
-- **Graphics:**                                    Intel® Graphics (ADL GT2)
-- **Disk Capacity:**                               3.0 TB
+-   **Date generated:** 2025-07-19 13:56:16
 
-#### Software Information: {-}
-- **Firmware Version:**                            A2ZG0150 X64
-- **OS Name:**                                     Ubuntu 24.04.2 LTS
-- **OS Build:**                                    (null)
-- **OS Type:**                                     64-bit
-- **GNOME Version:**                               46
-- **Windowing System:**                            Wayland
-- **Kernel Version:**                              Linux 6.11.0-29-generic
+#### Hardware Information: {.unnumbered}
+
+-   **Hardware Model:** LG Electronics 17ZB90Q-G.AD79G
+-   **Memory:** 32.0 GiB
+-   **Processor:** 12th Gen Intel® Core™ i7-1260P × 16
+-   **Graphics:** Intel® Graphics (ADL GT2)
+-   **Disk Capacity:** 3.0 TB
+
+#### Software Information: {.unnumbered}
+
+-   **Firmware Version:** A2ZG0150 X64
+-   **OS Name:** Ubuntu 24.04.2 LTS
+-   **OS Build:** (null)
+-   **OS Type:** 64-bit
+-   **GNOME Version:** 46
+-   **Windowing System:** Wayland
+-   **Kernel Version:** Linux 6.11.0-29-generic
 
 ## Benchmarks
 
 ### Text extraction {#text-extraction-benchmark}
 
-```{r text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag}
+```{r text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum("../benchmark_results/text_extraction_benchmark_results.csv")}
 data_text_extraction <- read.csv("../benchmark_results/text_extraction_benchmark_results.csv") %>% 
   arrange(runtime) %>% 
   rename("package" = "pdfbackend", "runtime in s" = "runtime")
@@ -88,8 +92,6 @@ for (file in json_files_table_detection) {
 }
 
 # Plot the metrics over threshold
-library(ggplot2)
-
 metric_plots <- list()
 
 for (result in meta_list) {
@@ -171,8 +173,8 @@ for (result in meta_list_llm) {
 }
 ```
 
-* yolo benchmark and table transformer
-* skip classification with llm
+-   yolo benchmark and table transformer
+-   skip classification with llm
 
 not so important anymore
 
@@ -220,6 +222,53 @@ data_llm_speed <- data.frame(
 ) %>% setNames(c("Model parameters (in B)", "Transformers", "vLLM", "vLLM batched"))
 
 knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for processing ten asset tables using different libraries and approaches")
+```
+
+## Prompts
+
+### TOC understanding {#toc-understanding-promts}
+
+Base prompt:
+
+```{python, eval=FALSE}
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant that can determine the page range information in a German financial report can be found at based on the documents table of contents."},
+        {"role": "user", "content": f"This is the table of contents:\n\n{toc_string}"},
+        {"role": "user", "content": f"On which pages might the win and loss statement (in German: Gewinn- und Verlustrechnung; GuV) and the balance sheets (German: Bilanz) be located? Give seperate answers for:\n\n1) the assets (German: Aktiva) table.\n2) the liabilities (German: Passiva) table.\n3) the win and loss statement."},
+        specific_prompt,
+        {"role": "user", "content": f"Answer in JSON format with keys 'GuV', 'Aktiva', and 'Passiva' and the page range as values."},
+    ]
+```
+
+First attempt:
+
+```{python, eval=FALSE}
+specific_prompt = {"role": "user", "content": f"The assets and liabilities tables often are on separate pages. They are often located directly before the win and loss statement. Rarely the tables for any of the three can span multiple pages."}
+```
+
+Given hint that assets and liabilities are part of the balance sheet:
+
+```{python, eval=FALSE}
+specific_prompt = {"role": "user", "content": f"The assets and liabilities are part of the balance sheet (in German: Bilanz). The assets and liabilities tables often are on separate pages. They are often located directly before the win and loss statement. Rarely the tables for any of the three can span multiple pages."}
+```
+
+Stating, that liabilities are on next page:
+
+```{python, eval=FALSE}
+specific_prompt = {"role": "user", "content": f"The assets and liabilities are part of the balance sheet (in German: Bilanz). The liabilities table is often on the page after the assets table. They are often located directly before the win and loss statement. Rarely the tables for any of the three can span multiple pages."}
+```
+
+\acr{TOC} extraction from text prompt:
+
+```{python, eval=FALSE}
+    messages = [
+        {"role": "system", "content": "[Role] You are a helpful assistant that can identify table of contents in a German financial report."},
+        {"role": "system", "content": f"[Context] These are the text lines of the first {i} pages:\n\n{start_pages}"},
+        {"role": "user", "content": f"[Tasks] 1. Please identify if there is a table of contents in the text."},
+        {"role": "user", "content": f"2. If there is a table of contents, please extract its text."},
+        {"role": "user", "content": f"3. Answer as JSON with the table of contents text as string in the key 'toc'."},
+        {"role": "user", "content": f"If there is no table of contents, return an empty string."},
+    ]
 ```
 
 ## Regular expressions {#regex-page-identification-code}
@@ -291,11 +340,45 @@ regex_patterns_3 = {
 
 ## Figures
 
-```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach"}
+### Page identification
+
+#### Regex baseline
+
+```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", cache=cache_large_figures}
+metrics_plot_regex_page_identification
+```
+
+```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach", cache=cache_large_figures}
 real_table_extraction_regex_shap_plot
 ```
 
-```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=16, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs"}
+#### TOC understanding
+
+```{r page-identification-toc-analysis-balanced, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+balanced_df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
+  geom_text(
+    data = balanced_df_toc_benchmark %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1) # +
+  # theme(
+  #   legend.position = "bottom"
+  # )
+```
+
+### Table extraction
+
+```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=16, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs", cache=cache_large_figures}
 for (i in 1:4) {
   real_table_extraction_llm_shap_plot[[i]] <- real_table_extraction_llm_shap_plot[[i]] + plot_layout(tag_level = 'new')
 }
@@ -308,14 +391,65 @@ real_table_extraction_llm_shap_plot + plot_annotation(tag_levels = c('A', '1'), 
 ) & theme(plot.title = element_text(size = 22))
 ```
 
-```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach"}
+```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach", cache=cache_large_figures}
 synth_table_extraction_regex_shap_plot
+```
+
+```{r compare-effect-of-respecting-units-on-overall-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_total), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r compare-effect-of-respecting-units-on-numeric-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_numeric), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_numeric), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r compare-effect-of-respecting-units-on-NA-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = NA_F1), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = NA_F1), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
 ```
 
 \clearpage
 \setAELandscapeLayout
 
-```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
   geom_hline(yintercept = real_table_extraction_regex_total_performance_mean, linetype = "dashed") +
@@ -327,7 +461,7 @@ df_overview %>%
   )
 ```
 
-```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, message=message_flag,out.height="95%", fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
   geom_hline(yintercept = real_table_extraction_regex_num_performance_mean, linetype = "dashed") +
@@ -339,7 +473,7 @@ df_overview %>%
   )
 ```
 
-```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
   geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
@@ -351,8 +485,8 @@ df_overview %>%
   )
 ```
 
-```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds"))}
-model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-oss-120b", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
+```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the overall extraction performance depending on the condition if examples from the same company can be used (only for Amt für Statistik Berlin-Brandenburg).", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds")), cache=cache_large_figures}
+model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-oss-20b", "gpt-oss-120b", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
 
 df_temp <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
   filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
@@ -399,7 +533,8 @@ p2 <- df_temp %>% filter(str_detect(model_family, "Qwen") | model_family == "mic
 p1 /
   p2
 ```
-```{r, echo=echo_flag, warning=warning_flag, message=message_flag, out.height="95%", fig.height=12, fig.width=20, warning=FALSE, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded."}
+
+```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
 design = "
 ABCD##W
 EFGHI#x
@@ -440,6 +575,65 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
   )
 ```
 
+```{r comparing-table-extraction-performance-among-real-and-synth-aktiva-data, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the table extraction performance among real and synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% mutate(target_data = "synth") %>% 
+  bind_rows(
+    df_overview %>% filter(model %in% df_overview_synth$model) %>% 
+      mutate(
+        target_data = "real", 
+        n_examples = factor(
+          n_examples, 
+          levels = levels(df_overview_synth$n_examples), 
+          ordered = TRUE
+          )
+        ) %>% select(-request_tokens)
+    ) %>% filter(as.numeric(n_examples) != 1) %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = target_data, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ model_family+model) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r synth-table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r synth-table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r synth-table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
 \clearpage
 \setAEPortraitLayout
 
@@ -455,17 +649,21 @@ Landscape
 
 ## Annual Comprehensive Financial Report Balance Sheet
 
-```{r acfr23-balance-sheet, out.width="100%", echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Example balance sheet pagefom Californias Annual Comprehensive Financial Report 2023"), class.chunk='pdf-embed'}
+```{r acfr23-balance-sheet, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Example balance sheet pagefom Californias Annual Comprehensive Financial Report 2023"), class.chunk='pdf-embed'}
 knitr::include_graphics("./images/acfr23_balance.pdf")
 ```
 
 ## Extraction framework flow chart
 
-![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){width=100%}
+```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Flowchart of the extraction framework")}
+knitr::include_graphics("./images/extraction_framework_flow_chart.png")
+```
+
+![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){width="100%"}
 
 ## Table extraction with regular expressions {#regex-extraction-mistakes}
 
-Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__3_columns__span_False__thin_False__year_as_text__unit_in_first_cell_True__Mio. €__enumeration_False__shuffle_True__text_around_True__max_length_50__sum_in_same_row_False__0.pdf':
+Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns\_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
 
 ```{verbatim}
 A
@@ -593,7 +791,7 @@ Vermögensverrechnung
 106,67151,61
 ```
 
-Extract by pdfminer for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table__3_columns__span_False__thin_False__year_as_text__unit_in_first_cell_True__Mio. €__enumeration_False__shuffle_True__text_around_True__max_length_50__sum_in_same_row_False__0.pdf':
+Extract by pdfminer for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns\_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
 
 ```{verbatim}
 Aktiva (in Mio. €)

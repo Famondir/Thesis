@@ -47,7 +47,7 @@ df_characteristics <- df %>% mutate(
   ) %>%
   select(-multiplier) %>% 
   mutate(
-    n_columns = as.character(n_columns, c("3", "4", "5"))
+    n_columns = as.character(n_columns)
   ) %>% mutate(
     many_line_breaks = if_else(max_line_length == 50, TRUE, FALSE),
     log10_unit_multiplier = log10(unit_multiplier)
@@ -547,4 +547,4 @@ list(
       # xgb = shp_xgb_binomial
     )
   )
-) %>% saveRDS(paste0("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_",sample_size,"_shap_",test_sample_size,".rds"))
+) %>% saveRDS(paste0("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_",sample_size,"_shap_",test_sample_size,"_NA_recoded.rds"))

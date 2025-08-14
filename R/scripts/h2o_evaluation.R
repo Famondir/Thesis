@@ -308,7 +308,7 @@ shap %>% sv_importance(kind = "beeswarm")
 
 #### synth tables regex ####
 
-results <- readRDS("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000_NA_recoded.rds")
 
 ##### numeric #####
 
@@ -387,7 +387,7 @@ shap %>% sv_importance(kind = "beeswarm")
 
 #### synth tables lmm ####
 
-results <- readRDS("data_storage/h2o/synth_table_extraction_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/synth_table_extraction_h2o_results_sample_50000_shap_2000_NA_recoded.rds")
 
 ##### numeric #####
 
@@ -405,8 +405,12 @@ shap %>% styled_waterfall(row_id = idx_lowest[length(idx_lowest)])
 shap %>% styled_waterfall(row_id = idx_lowest[1])
 shap %>% sv_force(row_id = idx_lowest[1])
 shap %>% sv_dependence(colnames(.$X))
+shap %>% sv_dependence("method_family")
 shap %>% sv_importance(show_numbers = TRUE)
-shap %>% sv_importance(kind = "beeswarm")
+shap %>% sv_importance(kind = "beeswarm", max_display = 30)
+
+shap %>% sv_dependence(colnames(.$X), color_var = "input_format")
+shap %>% sv_dependence(colnames(.$X), color_var = "respect_units")
 
 ##### NA_F1 #####
 
@@ -425,7 +429,10 @@ shap %>% styled_waterfall(row_id = idx_lowest[1])
 shap %>% sv_force(row_id = idx_lowest[1])
 shap %>% sv_dependence(colnames(.$X))
 shap %>% sv_importance(show_numbers = TRUE)
-shap %>% sv_importance(kind = "beeswarm")
+shap %>% sv_importance(kind = "beeswarm", max_display = 30)
+
+shap %>% sv_dependence(colnames(.$X), color_var = "input_format")
+shap %>% sv_dependence(colnames(.$X), color_var = "respect_units")
 
 ##### binomial #####
 
@@ -450,7 +457,10 @@ shap %>% sv_dependence("label", color_var = "missing") +
     ifelse(nchar(x) > 40, paste0("...", trimmed), trimmed)
   })
 shap %>% sv_importance(show_numbers = TRUE)
-shap %>% sv_importance(kind = "beeswarm")
+shap %>% sv_importance(kind = "beeswarm", max_display = 30)
+
+shap %>% sv_dependence(colnames(.$X), color_var = "input_format")
+shap %>% sv_dependence(colnames(.$X), color_var = "respect_units")
 
 ##### confidence #####
 
@@ -475,4 +485,8 @@ shap %>% sv_dependence("label", color_var = "missing") +
     ifelse(nchar(x) > 40, paste0("...", trimmed), trimmed)
   })
 shap %>% sv_importance(show_numbers = TRUE)
-shap %>% sv_importance(kind = "beeswarm")
+shap %>% sv_importance(kind = "beeswarm", max_display = 30)
+
+shap %>% sv_dependence(colnames(.$X), color_var = "input_format")
+shap %>% sv_dependence(colnames(.$X), color_var = "respect_units")
+shap %>% sv_dependence(colnames(.$X), color_var = "many_line_breaks")

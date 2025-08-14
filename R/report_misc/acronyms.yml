@@ -1,0 +1,30 @@
+---
+acronyms:
+  keys:
+    - shortname: LLM
+      longname: large language model
+    - shortname: SHAP
+      longname: SHapley Additive exPlanations
+    - shortname: glm
+      longname: generalized linear model
+    - shortname: regex
+      longname: regular expression
+    - shortname: RHvB
+      longname: Rechnungshof von Berlin
+    - shortname: ebnf
+      longname: extended Backus–Naur form
+    - shortname: json
+      longname: JavaScript Object Notation
+    - shortname: TOC
+      longname: table of contents
+    - shortname: GuV
+      longname: Gewinn- und Verlustrechnung
+    - shortname: HGB
+      longname: Handelsgesetzbuch
+    - shortname: RechKredV
+      longname: Verordnung über die Rechnungslegung der Kreditinstitute, Finanzdienstleistungsinstitute und Wertpapierinstitute
+    - shortname: PDF
+      longname: Portable Document Format
+    - shortname: ACFR
+      longname: Annual Comprehensive Financial Report
+---

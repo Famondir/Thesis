@@ -663,4 +663,4 @@ list(
       # xgb = shp_xgb_binomial
     )
   )
-) %>% saveRDS(paste0("data_storage/h2o/synth_table_extraction_h2o_results_sample_",sample_size,"_shap_",test_sample_size,".rds"))
+) %>% saveRDS(paste0("data_storage/h2o/synth_table_extraction_h2o_results_sample_",sample_size,"_shap_",test_sample_size,"_NA_recoded.rds"))

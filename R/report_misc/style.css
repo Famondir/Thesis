@@ -10,28 +10,53 @@
   }
 }
 
-.figure {
-  text-align:center;
-}
-
-img {
-  max-width: 800px !important;
-  display: block;
+.page-inner p, 
+.page-inner ol, 
+.page-inner ul,
+.page-inner details,
+.page-inner :is(h1, h2, h3, h4, h5, h6),
+.page-inner .figure,
+.page-inner div.datatables,
+.page-inner div.references,
+.page-inner table {
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.big-image {
-  max-width: 100%;
-  height: auto;
-}
-
-.scroll-x {
+.page-inner div.big-table, 
+.page-inner div.big-table div.datatables, 
+.page-inner div.big-table div.datatables * {
+  max-width: 100% !important;
   overflow-x: auto;
 }
 
+/* .figure {
+  text-align:center;
+}
+
+.figure img {
+  max-width: 800px !important;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+} */
+
+/* .book .book-body .page-wrapper .page-inner .big-image {
+  max-width: 100% !important;
+  height: auto;
+} */
+
+/* .scroll-x {
+  overflow-x: auto;
+} */
+
 h5 span.header-section-number, h6 span.header-section-number {
   display: none;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal ol, .book .book-body .page-wrapper .page-inner section.normal ul {
+    margin: auto;
 }
 
 /*--- Folding ---*/

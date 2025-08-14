@@ -1,16 +1,22 @@
 # Discussion
 \ChapFrame
 
-* ensemble prediction
-* check for halluzination vs wrong placed / repeated numbers
+## Limitations
 
-## Table extraction
+### table extraction
 
-building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
+* found mistakes in gold standard with the llm results; mistakes found by human double check
+* new lines / splitted lines
+* test synthetic hypothesis with pymupdf extract
 
-### Regex baseline
+#### Regex baseline
 
 * synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
+
+### classification
+
+* Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
+* predictor: n_big_tables (tf or llm relevant?)
 
 ## Not covered
 
@@ -18,4 +24,19 @@ building a document extraction database document by document can improve perform
 * fine-tuning
 * using something smaller (e.g. LSTMs) instead LLMs
 * building application, UX design (ref Ambacher 2024)
-* table extraction (either VLLMs or classic approaches <-- tyred tabula but was not successful (because of missing visual traits)?)
+* table extraction (either VLLMs or classic approaches <-- tried tabula but was not successful (because of missing visual traits)?)
+
+in company document next / previous year more helpful than years further away?
+
+## Outlook
+
+* ensemble from multiple models or are errors systematic? (e.g. Wohnungsbaugenossenschaften splitting some rows in multiple and none is picked?)
+* check for halluzination vs wrong placed / repeated numbers
+* no perfect score even with synthetic data
+* flexible extraction (name something, find it, get it)
+* 
+
+### Table extraction
+
+building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
+

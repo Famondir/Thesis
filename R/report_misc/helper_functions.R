@@ -58,3 +58,7 @@ convert_shap_x <- function(shap) {
       )
   return(shap)
 }
+
+format_floats <- function(x, n_digits = 1) {
+  format(round(x, n_digits), nsmall = n_digits)
+}
