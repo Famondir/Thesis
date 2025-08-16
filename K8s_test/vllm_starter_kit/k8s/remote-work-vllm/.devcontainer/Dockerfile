@@ -2,6 +2,7 @@
 # FROM vllm/vllm-openai:latest
 # FROM vllm/vllm-openai:v0.9.1
 FROM vllm/vllm-openai:v0.10.0
+# FROM vllm/vllm-openai:gptoss
 
 ENV TERM=xterm
 
@@ -41,6 +42,7 @@ RUN pip install nltk
 RUN pip install openpyxl
 RUN pip install tabulate
 RUN pip install matplotlib
+RUN pip install odfpy
 # RUN pip install --upgrade transformers
 # for kimi k2
 # RUN pip install blobfile

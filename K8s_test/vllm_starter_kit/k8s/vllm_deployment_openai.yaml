@@ -21,7 +21,7 @@ spec:
         args: [
           # "vllm serve Qwen/Qwen2.5-7B --port 8000 --host 0.0.0.0 --tensor-parallel-size 1 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
           # "vllm serve mistralai/Mistral-Small-3.1-24B-Instruct-2503 --tokenizer_mode mistral --config_format mistral --load_format mistral --tool-call-parser mistral --enable-auto-tool-choice --limit_mm_per_prompt 'image=10' --tensor-parallel-size 4  --port 8000 --host 0.0.0.0 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
-          "vllm serve mistralai/Ministral-8B-Instruct-2410 --tensor-parallel-size 1  --port 8000 --host 0.0.0.0 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
+          "vllm serve mistralai/Ministral-8B-Instruct-2410 --tensor-parallel-size 2  --port 8000 --host 0.0.0.0 --api-key sk-1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef --dtype auto"
         ]
         # args: [
         #   "vllm serve Qwen/Qwen2.5-7B --trust-remote-code --enable-chunked-prefill --max_num_batched_tokens 1024 --port 8000 --host 0.0.0.0"
@@ -40,9 +40,9 @@ spec:
           requests:
               cpu: "2"
               memory: "64Gi"
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "2"
           limits:
-            nvidia.com/gpu: "1"
+            nvidia.com/gpu: "2"
             memory: 128Gi
             cpu: "32"
         env:
@@ -64,7 +64,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: h200
+        gpu: a100
       imagePullSecrets:
         - name: private-registry-auth
       volumes:
