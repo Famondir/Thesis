@@ -32,4 +32,6 @@ acronyms:
     - key: vllm
       shortname: vLLM
       longname: Virtual Large Language Model
+    - shortname: AUC
+      longname: area under the curve
 ---

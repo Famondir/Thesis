@@ -1062,63 +1062,67 @@ single document or a table of interest can span two pages.</p></li>
 <span id="cb18-22"><a href="results.html#cb18-22" tabindex="-1"></a>  <span class="st">&quot;Qwen_Qwen2.5-14B-Instruct&quot;</span>, <span class="st">&quot;Qwen_Qwen2.5-32B-Instruct&quot;</span>, <span class="st">&quot;Qwen_Qwen2.5-72B-Instruct&quot;</span>,</span>
 <span id="cb18-23"><a href="results.html#cb18-23" tabindex="-1"></a>  <span class="st">&quot;Qwen_Qwen3-8B&quot;</span>, <span class="st">&quot;Qwen_Qwen3-30B-A3B-Instruct-2507&quot;</span>, <span class="st">&quot;Qwen_Qwen3-32B&quot;</span>, <span class="st">&quot;Qwen_Qwen3-235B-A22B-Instruct-2507&quot;</span>,</span>
 <span id="cb18-24"><a href="results.html#cb18-24" tabindex="-1"></a>  <span class="st">&quot;tiiuae_Falcon3-10B-Instruct&quot;</span>, <span class="st">&quot;microsoft_phi-4&quot;</span></span>
-<span id="cb18-25"><a href="results.html#cb18-25" tabindex="-1"></a>  )</span>
+<span id="cb18-25"><a href="results.html#cb18-25" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">gsub</span>(<span class="st">&quot;^[^_]+_&quot;</span>, <span class="st">&quot;&quot;</span>, .)</span>
 <span id="cb18-26"><a href="results.html#cb18-26" tabindex="-1"></a></span>
-<span id="cb18-27"><a href="results.html#cb18-27" tabindex="-1"></a>df_binary <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(model <span class="sc">%in%</span> model_by_size_classification) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-27"><a href="results.html#cb18-27" tabindex="-1"></a>df_binary <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> </span>
 <span id="cb18-28"><a href="results.html#cb18-28" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb18-29"><a href="results.html#cb18-29" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">as.numeric</span>(n_examples),</span>
 <span id="cb18-30"><a href="results.html#cb18-30" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;zero_shot&quot;</span>, <span class="dv">0</span>, n_examples),</span>
 <span id="cb18-31"><a href="results.html#cb18-31" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;law_context&quot;</span>, <span class="dv">1</span>, n_examples),</span>
 <span id="cb18-32"><a href="results.html#cb18-32" tabindex="-1"></a>  <span class="at">method_family =</span> <span class="fu">factor</span>(method_family, <span class="at">levels =</span> method_families)</span>
-<span id="cb18-33"><a href="results.html#cb18-33" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="co"># %&gt;% </span></span>
-<span id="cb18-34"><a href="results.html#cb18-34" tabindex="-1"></a>  <span class="co"># mutate(</span></span>
-<span id="cb18-35"><a href="results.html#cb18-35" tabindex="-1"></a>  <span class="co">#   model = str_replace(model, &quot;_vllm&quot;, &quot;&quot;),</span></span>
-<span id="cb18-36"><a href="results.html#cb18-36" tabindex="-1"></a>  <span class="co">#   model_family = sub(&quot;_.*&quot;, &quot;&quot;, model),</span></span>
-<span id="cb18-37"><a href="results.html#cb18-37" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen2&quot;), &quot;Qwen 2.5&quot;, model_family),</span></span>
-<span id="cb18-38"><a href="results.html#cb18-38" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen3&quot;), &quot;Qwen 3&quot;, model_family),</span></span>
-<span id="cb18-39"><a href="results.html#cb18-39" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-3&quot;), &quot;Llama-3&quot;, model_family),</span></span>
-<span id="cb18-40"><a href="results.html#cb18-40" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-4&quot;), &quot;Llama-4&quot;, model_family)</span></span>
-<span id="cb18-41"><a href="results.html#cb18-41" tabindex="-1"></a>  <span class="co"># )</span></span>
-<span id="cb18-42"><a href="results.html#cb18-42" tabindex="-1"></a></span>
-<span id="cb18-43"><a href="results.html#cb18-43" tabindex="-1"></a>binary_task <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb18-44"><a href="results.html#cb18-44" tabindex="-1"></a>binary_task<span class="sc">$</span>n_models <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
-<span id="cb18-45"><a href="results.html#cb18-45" tabindex="-1"></a>binary_task<span class="sc">$</span>n_model_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
-<span id="cb18-46"><a href="results.html#cb18-46" tabindex="-1"></a>binary_task<span class="sc">$</span>n_method_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>method_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
-<span id="cb18-47"><a href="results.html#cb18-47" tabindex="-1"></a></span>
-<span id="cb18-48"><a href="results.html#cb18-48" tabindex="-1"></a>top_performer_binary <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> </span>
-<span id="cb18-49"><a href="results.html#cb18-49" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.finite</span>(f1_score), loop <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-50"><a href="results.html#cb18-50" tabindex="-1"></a>  <span class="fu">filter</span>(n_examples <span class="sc">&lt;=</span> <span class="dv">3</span> <span class="sc">|</span> <span class="fu">is.na</span>(n_examples)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-51"><a href="results.html#cb18-51" tabindex="-1"></a>  <span class="fu">group_by</span>(model_family, classification_type) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-52"><a href="results.html#cb18-52" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">n =</span> <span class="dv">1</span>, f1_score) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-53"><a href="results.html#cb18-53" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score)) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-54"><a href="results.html#cb18-54" tabindex="-1"></a>  <span class="fu">select</span>(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) <span class="sc">%&gt;%</span></span>
-<span id="cb18-55"><a href="results.html#cb18-55" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-56"><a href="results.html#cb18-56" tabindex="-1"></a>    <span class="at">f1_score =</span> <span class="fu">round</span>(f1_score, <span class="dv">2</span>),</span>
-<span id="cb18-57"><a href="results.html#cb18-57" tabindex="-1"></a>    <span class="at">norm_runtime =</span> <span class="fu">round</span>(norm_runtime, <span class="dv">0</span>),</span>
-<span id="cb18-58"><a href="results.html#cb18-58" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(</span>
-<span id="cb18-59"><a href="results.html#cb18-59" tabindex="-1"></a>    <span class="st">&quot;runtime in s&quot;</span> <span class="ot">=</span> norm_runtime,</span>
-<span id="cb18-60"><a href="results.html#cb18-60" tabindex="-1"></a>  )</span>
-<span id="cb18-61"><a href="results.html#cb18-61" tabindex="-1"></a></span>
-<span id="cb18-62"><a href="results.html#cb18-62" tabindex="-1"></a>top_performer_binary_median <span class="ot">&lt;-</span> top_performer_binary <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(classification_type) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">median =</span> <span class="fu">median</span>(f1_score))</span>
-<span id="cb18-63"><a href="results.html#cb18-63" tabindex="-1"></a>top_performer_binary_median_guv <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;GuV&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
-<span id="cb18-64"><a href="results.html#cb18-64" tabindex="-1"></a>top_performer_binary_median_aktiva <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;Aktiva&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
-<span id="cb18-65"><a href="results.html#cb18-65" tabindex="-1"></a>top_performer_binary_median_passiva <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;Passiva&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
-<span id="cb18-66"><a href="results.html#cb18-66" tabindex="-1"></a></span>
-<span id="cb18-67"><a href="results.html#cb18-67" tabindex="-1"></a>df_multi <span class="ot">&lt;-</span> df_multi <span class="sc">%&gt;%</span> <span class="fu">filter</span>(model <span class="sc">%in%</span> model_by_size_classification) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-68"><a href="results.html#cb18-68" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-69"><a href="results.html#cb18-69" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">as.numeric</span>(n_examples),</span>
-<span id="cb18-70"><a href="results.html#cb18-70" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;zero_shot&quot;</span>, <span class="dv">0</span>, n_examples),</span>
-<span id="cb18-71"><a href="results.html#cb18-71" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;law_context&quot;</span>, <span class="dv">1</span>, n_examples),</span>
-<span id="cb18-72"><a href="results.html#cb18-72" tabindex="-1"></a>  <span class="at">method_family =</span> <span class="fu">factor</span>(method_family, <span class="at">levels =</span> method_families)</span>
-<span id="cb18-73"><a href="results.html#cb18-73" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="co">#%&gt;%</span></span>
-<span id="cb18-74"><a href="results.html#cb18-74" tabindex="-1"></a>  <span class="co"># mutate(</span></span>
-<span id="cb18-75"><a href="results.html#cb18-75" tabindex="-1"></a>  <span class="co">#   model = str_replace(model, &quot;_vllm&quot;, &quot;&quot;),</span></span>
-<span id="cb18-76"><a href="results.html#cb18-76" tabindex="-1"></a>  <span class="co">#   model_family = sub(&quot;_.*&quot;, &quot;&quot;, model),</span></span>
-<span id="cb18-77"><a href="results.html#cb18-77" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen2&quot;), &quot;Qwen 2.5&quot;, model_family),</span></span>
-<span id="cb18-78"><a href="results.html#cb18-78" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen3&quot;), &quot;Qwen 3&quot;, model_family),</span></span>
-<span id="cb18-79"><a href="results.html#cb18-79" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-3&quot;), &quot;Llama-3&quot;, model_family),</span></span>
-<span id="cb18-80"><a href="results.html#cb18-80" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-4&quot;), &quot;Llama-4&quot;, model_family)</span></span>
-<span id="cb18-81"><a href="results.html#cb18-81" tabindex="-1"></a>  <span class="co"># )</span></span></code></pre></div>
+<span id="cb18-33"><a href="results.html#cb18-33" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">model =</span> <span class="fu">gsub</span>(<span class="st">&quot;^[^_]+_&quot;</span>, <span class="st">&quot;&quot;</span>, model)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-34"><a href="results.html#cb18-34" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">%in%</span> model_by_size_classification) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-35"><a href="results.html#cb18-35" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="co"># %&gt;% </span></span>
+<span id="cb18-36"><a href="results.html#cb18-36" tabindex="-1"></a>  <span class="co"># mutate(</span></span>
+<span id="cb18-37"><a href="results.html#cb18-37" tabindex="-1"></a>  <span class="co">#   model = str_replace(model, &quot;_vllm&quot;, &quot;&quot;),</span></span>
+<span id="cb18-38"><a href="results.html#cb18-38" tabindex="-1"></a>  <span class="co">#   model_family = sub(&quot;_.*&quot;, &quot;&quot;, model),</span></span>
+<span id="cb18-39"><a href="results.html#cb18-39" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen2&quot;), &quot;Qwen 2.5&quot;, model_family),</span></span>
+<span id="cb18-40"><a href="results.html#cb18-40" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen3&quot;), &quot;Qwen 3&quot;, model_family),</span></span>
+<span id="cb18-41"><a href="results.html#cb18-41" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-3&quot;), &quot;Llama-3&quot;, model_family),</span></span>
+<span id="cb18-42"><a href="results.html#cb18-42" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-4&quot;), &quot;Llama-4&quot;, model_family)</span></span>
+<span id="cb18-43"><a href="results.html#cb18-43" tabindex="-1"></a>  <span class="co"># )</span></span>
+<span id="cb18-44"><a href="results.html#cb18-44" tabindex="-1"></a></span>
+<span id="cb18-45"><a href="results.html#cb18-45" tabindex="-1"></a>binary_task <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb18-46"><a href="results.html#cb18-46" tabindex="-1"></a>binary_task<span class="sc">$</span>n_models <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb18-47"><a href="results.html#cb18-47" tabindex="-1"></a>binary_task<span class="sc">$</span>n_model_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>model_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb18-48"><a href="results.html#cb18-48" tabindex="-1"></a>binary_task<span class="sc">$</span>n_method_families <span class="ot">&lt;-</span> df_binary<span class="sc">$</span>method_family <span class="sc">%&gt;%</span> <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb18-49"><a href="results.html#cb18-49" tabindex="-1"></a></span>
+<span id="cb18-50"><a href="results.html#cb18-50" tabindex="-1"></a>top_performer_binary <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> </span>
+<span id="cb18-51"><a href="results.html#cb18-51" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.finite</span>(f1_score), loop <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-52"><a href="results.html#cb18-52" tabindex="-1"></a>  <span class="fu">filter</span>(n_examples <span class="sc">&lt;=</span> <span class="dv">3</span> <span class="sc">|</span> <span class="fu">is.na</span>(n_examples)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-53"><a href="results.html#cb18-53" tabindex="-1"></a>  <span class="fu">group_by</span>(model_family, classification_type) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-54"><a href="results.html#cb18-54" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">n =</span> <span class="dv">1</span>, f1_score) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-55"><a href="results.html#cb18-55" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-56"><a href="results.html#cb18-56" tabindex="-1"></a>  <span class="fu">select</span>(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) <span class="sc">%&gt;%</span></span>
+<span id="cb18-57"><a href="results.html#cb18-57" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-58"><a href="results.html#cb18-58" tabindex="-1"></a>    <span class="at">f1_score =</span> <span class="fu">round</span>(f1_score, <span class="dv">2</span>),</span>
+<span id="cb18-59"><a href="results.html#cb18-59" tabindex="-1"></a>    <span class="at">norm_runtime =</span> <span class="fu">round</span>(norm_runtime, <span class="dv">0</span>),</span>
+<span id="cb18-60"><a href="results.html#cb18-60" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(</span>
+<span id="cb18-61"><a href="results.html#cb18-61" tabindex="-1"></a>    <span class="st">&quot;runtime in s&quot;</span> <span class="ot">=</span> norm_runtime,</span>
+<span id="cb18-62"><a href="results.html#cb18-62" tabindex="-1"></a>  )</span>
+<span id="cb18-63"><a href="results.html#cb18-63" tabindex="-1"></a></span>
+<span id="cb18-64"><a href="results.html#cb18-64" tabindex="-1"></a>top_performer_binary_median <span class="ot">&lt;-</span> top_performer_binary <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(classification_type) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">median =</span> <span class="fu">median</span>(f1_score))</span>
+<span id="cb18-65"><a href="results.html#cb18-65" tabindex="-1"></a>top_performer_binary_median_guv <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;GuV&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
+<span id="cb18-66"><a href="results.html#cb18-66" tabindex="-1"></a>top_performer_binary_median_aktiva <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;Aktiva&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
+<span id="cb18-67"><a href="results.html#cb18-67" tabindex="-1"></a>top_performer_binary_median_passiva <span class="ot">&lt;-</span> top_performer_binary_median <span class="sc">%&gt;%</span> <span class="fu">filter</span>(classification_type <span class="sc">==</span> <span class="st">&quot;Passiva&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(median)</span>
+<span id="cb18-68"><a href="results.html#cb18-68" tabindex="-1"></a></span>
+<span id="cb18-69"><a href="results.html#cb18-69" tabindex="-1"></a>df_multi <span class="ot">&lt;-</span> df_multi <span class="sc">%&gt;%</span> </span>
+<span id="cb18-70"><a href="results.html#cb18-70" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-71"><a href="results.html#cb18-71" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">as.numeric</span>(n_examples),</span>
+<span id="cb18-72"><a href="results.html#cb18-72" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;zero_shot&quot;</span>, <span class="dv">0</span>, n_examples),</span>
+<span id="cb18-73"><a href="results.html#cb18-73" tabindex="-1"></a>  <span class="at">n_examples =</span> <span class="fu">if_else</span>(method_family <span class="sc">==</span> <span class="st">&quot;law_context&quot;</span>, <span class="dv">1</span>, n_examples),</span>
+<span id="cb18-74"><a href="results.html#cb18-74" tabindex="-1"></a>  <span class="at">method_family =</span> <span class="fu">factor</span>(method_family, <span class="at">levels =</span> method_families)</span>
+<span id="cb18-75"><a href="results.html#cb18-75" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">model =</span> <span class="fu">gsub</span>(<span class="st">&quot;^[^_]+_&quot;</span>, <span class="st">&quot;&quot;</span>, model)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-76"><a href="results.html#cb18-76" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">%in%</span> model_by_size_classification) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-77"><a href="results.html#cb18-77" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="co">#%&gt;%</span></span>
+<span id="cb18-78"><a href="results.html#cb18-78" tabindex="-1"></a>  <span class="co"># mutate(</span></span>
+<span id="cb18-79"><a href="results.html#cb18-79" tabindex="-1"></a>  <span class="co">#   model = str_replace(model, &quot;_vllm&quot;, &quot;&quot;),</span></span>
+<span id="cb18-80"><a href="results.html#cb18-80" tabindex="-1"></a>  <span class="co">#   model_family = sub(&quot;_.*&quot;, &quot;&quot;, model),</span></span>
+<span id="cb18-81"><a href="results.html#cb18-81" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen2&quot;), &quot;Qwen 2.5&quot;, model_family),</span></span>
+<span id="cb18-82"><a href="results.html#cb18-82" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Qwen3&quot;), &quot;Qwen 3&quot;, model_family),</span></span>
+<span id="cb18-83"><a href="results.html#cb18-83" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-3&quot;), &quot;Llama-3&quot;, model_family),</span></span>
+<span id="cb18-84"><a href="results.html#cb18-84" tabindex="-1"></a>  <span class="co">#   model_family = if_else(str_detect(model, &quot;Llama-4&quot;), &quot;Llama-4&quot;, model_family)</span></span>
+<span id="cb18-85"><a href="results.html#cb18-85" tabindex="-1"></a>  <span class="co"># )</span></span></code></pre></div>
 </details>
 <p>The third approach we present in this section, uses pretrained
 <a href="glossary.html#acronyms_LLM">LLM</a>s to classify, if a given text extract is including any of the
@@ -1190,7 +1194,7 @@ totaling in 2.1 GB of data for the final results.</p>
 </caption>
 </table>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-a1a170db501854e1b3e7" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-a1a170db501854e1b3e7">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25"],["google","google","google","google","Llama-3","Llama-3","Llama-3","Llama-4","Llama-4","microsoft","mistralai","mistralai","mistralai","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 3","Qwen 3","Qwen 3","Qwen 3","tiiuae"],["google_gemma-3-4b-it-0-9-1","google_gemma-3n-E4B-it-0-9-1","google_gemma-3-12b-it-0-9-1","google_gemma-3-27b-it-0-9-1","meta-llama_Llama-3.1-8B-Instruct","meta-llama_Llama-3.1-70B-Instruct","meta-llama_Llama-3.3-70B-Instruct","meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8","meta-llama_Llama-4-Scout-17B-16E-Instruct","microsoft_phi-4","mistralai_Ministral-8B-Instruct-2410","mistralai_Mistral-Small-3.1-24B-Instruct-2503","mistralai_Mistral-Large-Instruct-2411","Qwen_Qwen2.5-0.5B-Instruct","Qwen_Qwen2.5-1.5B-Instruct","Qwen_Qwen2.5-3B-Instruct","Qwen_Qwen2.5-7B-Instruct","Qwen_Qwen2.5-14B-Instruct","Qwen_Qwen2.5-32B-Instruct","Qwen_Qwen2.5-72B-Instruct","Qwen_Qwen3-8B","Qwen_Qwen3-30B-A3B-Instruct-2507","Qwen_Qwen3-32B","Qwen_Qwen3-235B-A22B-Instruct-2507","tiiuae_Falcon3-10B-Instruct"],["4","4","12","27","8","70","70","17","17","15","8","24","124","0.5","1.5","3","7","14","32","72","8","30","32","235","10"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>parameter_count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"parameter_count","targets":3}],"scrollX":true,"dom":"tiprfl","order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-a1a170db501854e1b3e7">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25"],["Falcon3-10B-Instruct","gemma-3-12b-it-0-9-1","gemma-3-27b-it-0-9-1","gemma-3-4b-it-0-9-1","gemma-3n-E4B-it-0-9-1","Llama-3","Llama-3","Llama-3","Llama-4","Llama-4","Ministral-8B-Instruct-2410","Mistral-Large-Instruct-2411","Mistral-Small-3.1-24B-Instruct-2503","phi-4","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 3","Qwen 3","Qwen 3","Qwen 3"],["Falcon3-10B-Instruct","gemma-3-12b-it-0-9-1","gemma-3-27b-it-0-9-1","gemma-3-4b-it-0-9-1","gemma-3n-E4B-it-0-9-1","Llama-3.1-8B-Instruct","Llama-3.1-70B-Instruct","Llama-3.3-70B-Instruct","Llama-4-Maverick-17B-128E-Instruct-FP8","Llama-4-Scout-17B-16E-Instruct","Ministral-8B-Instruct-2410","Mistral-Large-Instruct-2411","Mistral-Small-3.1-24B-Instruct-2503","phi-4","Qwen2.5-0.5B-Instruct","Qwen2.5-1.5B-Instruct","Qwen2.5-3B-Instruct","Qwen2.5-7B-Instruct","Qwen2.5-14B-Instruct","Qwen2.5-32B-Instruct","Qwen2.5-72B-Instruct","Qwen3-8B","Qwen3-30B-A3B-Instruct-2507","Qwen3-32B","Qwen3-235B-A22B-Instruct-2507"],["10","12","27","4","4","8","70","70","17","17","8","124","24","15","0.5","1.5","3","7","14","32","72","8","30","32","235"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>parameter_count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"parameter_count","targets":3}],"scrollX":true,"dom":"tiprfl","order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>To do:</p>
 <ul>
 <li>compare out of company vs in company rag</li>
@@ -1227,7 +1231,7 @@ was surprising that Googles gemma models perform so bad<a href="#fn13" class="fo
 </caption>
 </table>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-74e0803d7930e46e5266" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-74e0803d7930e46e5266">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"],["mistralai","meta-llama","Qwen","mistralai","mistralai","meta-llama","Qwen","Qwen","meta-llama","meta-llama","Qwen","microsoft","microsoft","google","google","google","tiiuae","tiiuae","tiiuae"],["mistralai_Ministral-8B-Instruct-2410","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","mistralai_Ministral-8B-Instruct-2410","mistralai_Ministral-8B-Instruct-2410","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","Qwen_Qwen3-235B-A22B-Instruct-2507","meta-llama_Llama-4-Scout-17B-16E-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","Qwen_Qwen2.5-32B-Instruct","microsoft_phi-4","microsoft_phi-4","google_gemma-3-27b-it-0-9-1","google_gemma-3-27b-it-0-9-1","google_gemma-3-27b-it-0-9-1","tiiuae_Falcon3-10B-Instruct","tiiuae_Falcon3-10B-Instruct","tiiuae_Falcon3-10B-Instruct"],["GuV","GuV","GuV","Passiva","Aktiva","Passiva","Aktiva","Aktiva","Aktiva","Aktiva","Passiva","Aktiva","Passiva","Passiva","Aktiva","GuV","Passiva","Aktiva","GuV"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","law_context","law_context","n_rag_examples","n_rag_examples","n_rag_examples","n_random_examples","n_rag_examples","top_n_rag_examples"],["3","3","1","3","3","3","1","3","1","3","1","1","1","1","1","1","1","1","1"],["0.99","0.98","0.93","0.92","0.92","0.86","0.85","0.85","0.84","0.84","0.81","0.7","0.66","0.58","0.54","0.52","0.5","0.45","0.34"],["917","4062","1985","858","878","3037","1806","7442","2318","3052","1967","102","101","1849","2588","1800","469","1065","222"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>classification_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-left"},{"targets":4,"className":"dt-left"},{"targets":5,"className":"dt-right"},{"targets":6,"className":"dt-right"},{"targets":7,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"classification_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"scrollX":true,"dom":"tiprfl","order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-74e0803d7930e46e5266">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"],["mistralai","meta-llama","Qwen","mistralai","mistralai","meta-llama","Qwen","Qwen","meta-llama","meta-llama","Qwen","microsoft","microsoft","google","google","google","tiiuae","tiiuae","tiiuae"],["Ministral-8B-Instruct-2410","Llama-4-Scout-17B-16E-Instruct","Qwen2.5-32B-Instruct","Ministral-8B-Instruct-2410","Ministral-8B-Instruct-2410","Llama-4-Scout-17B-16E-Instruct","Qwen2.5-32B-Instruct","Qwen3-235B-A22B-Instruct-2507","Llama-4-Scout-17B-16E-Instruct","Llama-4-Scout-17B-16E-Instruct","Qwen2.5-32B-Instruct","phi-4","phi-4","gemma-3-27b-it-0-9-1","gemma-3-27b-it-0-9-1","gemma-3-27b-it-0-9-1","Falcon3-10B-Instruct","Falcon3-10B-Instruct","Falcon3-10B-Instruct"],["GuV","GuV","GuV","Passiva","Aktiva","Passiva","Aktiva","Aktiva","Aktiva","Aktiva","Passiva","Aktiva","Passiva","Passiva","Aktiva","GuV","Passiva","Aktiva","GuV"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","law_context","law_context","n_rag_examples","n_rag_examples","n_rag_examples","n_random_examples","n_rag_examples","top_n_rag_examples"],["3","3","1","3","3","3","1","3","1","3","1","1","1","1","1","1","1","1","1"],["0.99","0.98","0.93","0.92","0.92","0.86","0.85","0.85","0.84","0.84","0.81","0.7","0.66","0.58","0.54","0.52","0.5","0.45","0.34"],["917","4062","1985","858","878","3037","1806","7442","2318","3052","1967","102","101","1849","2588","1800","469","1065","222"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>classification_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-left"},{"targets":3,"className":"dt-left"},{"targets":4,"className":"dt-left"},{"targets":5,"className":"dt-right"},{"targets":6,"className":"dt-right"},{"targets":7,"className":"dt-right"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"classification_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"scrollX":true,"dom":"tiprfl","order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Figure <a href="results.html#fig:binary-classification-result-mistral-plot">5.10</a> shows, the
 classification performance for Mistral 8B 2410 in detail. It shows the
@@ -1271,7 +1275,7 @@ times shows similar results in the F1 score for each strategy. This is
 reflected by closely overlapping shapes of the same color with the same
 number within.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="results.html#cb21-1" tabindex="-1"></a>df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(model <span class="sc">==</span> <span class="st">&quot;mistralai_Ministral-8B-Instruct-2410&quot;</span>, loop <span class="sc">&lt;</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="results.html#cb21-1" tabindex="-1"></a>df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(model <span class="sc">==</span> <span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span>, loop <span class="sc">&lt;</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb21-2"><a href="results.html#cb21-2" tabindex="-1"></a>  <span class="fu">filter</span>(n_examples <span class="sc">&lt;=</span> <span class="dv">5</span> <span class="sc">|</span> <span class="fu">is.na</span>(n_examples)) <span class="sc">%&gt;%</span> </span>
 <span id="cb21-3"><a href="results.html#cb21-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> norm_runtime<span class="sc">/</span><span class="dv">60</span>, <span class="at">y =</span> f1_score)) <span class="sc">+</span></span>
 <span id="cb21-4"><a href="results.html#cb21-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> method_family, <span class="at">shape =</span> out_of_company), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">6</span>) <span class="sc">+</span></span>
@@ -1309,7 +1313,7 @@ are no contrasting examples provided.</p>
 <span id="cb22-3"><a href="results.html#cb22-3" tabindex="-1"></a>  <span class="st">&quot;n_examples&quot;</span> <span class="ot">=</span> <span class="st">&quot;n_example&quot;</span>, </span>
 <span id="cb22-4"><a href="results.html#cb22-4" tabindex="-1"></a>  <span class="st">&quot;classifier_type&quot;</span> <span class="ot">=</span> <span class="st">&quot;classification&quot;</span></span>
 <span id="cb22-5"><a href="results.html#cb22-5" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">sum_examples =</span> sum) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-6"><a href="results.html#cb22-6" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">==</span> <span class="st">&quot;mistralai_Ministral-8B-Instruct-2410&quot;</span>, loop <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-6"><a href="results.html#cb22-6" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">==</span> <span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span>, loop <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb22-7"><a href="results.html#cb22-7" tabindex="-1"></a>  <span class="fu">filter</span>(n_examples <span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">|</span> <span class="fu">is.na</span>(n_examples)) <span class="sc">%&gt;%</span> </span>
 <span id="cb22-8"><a href="results.html#cb22-8" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> norm_runtime<span class="sc">/</span><span class="dv">60</span>, <span class="at">y =</span> f1_score)) <span class="sc">+</span></span>
 <span id="cb22-9"><a href="results.html#cb22-9" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> method_family, <span class="at">shape =</span> out_of_company), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">6</span>) <span class="sc">+</span></span>
@@ -1354,21 +1358,23 @@ least show stable performance.</p>
 <div id="confidence" class="section level5 hasAnchor" number="5.1.3.1.1">
 <h5><span class="header-section-number">5.1.3.1.1</span> Confidence<a href="results.html#confidence" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="results.html#cb23-1" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
-<span id="cb23-2"><a href="results.html#cb23-2" tabindex="-1"></a>  classification_type <span class="sc">==</span> <span class="st">&quot;Aktiva&quot;</span>, n_examples<span class="sc">&lt;=</span><span class="dv">3</span></span>
-<span id="cb23-3"><a href="results.html#cb23-3" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb23-4"><a href="results.html#cb23-4" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score))</span>
-<span id="cb23-5"><a href="results.html#cb23-5" tabindex="-1"></a></span>
-<span id="cb23-6"><a href="results.html#cb23-6" tabindex="-1"></a>df_temp <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>,<span class="st">&quot;predictions&quot;</span>][[<span class="dv">1</span>]][[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()</span>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="results.html#cb23-1" tabindex="-1"></a>target_type <span class="ot">&lt;-</span> <span class="st">&quot;Aktiva&quot;</span></span>
+<span id="cb23-2"><a href="results.html#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="results.html#cb23-3" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb23-4"><a href="results.html#cb23-4" tabindex="-1"></a>  classification_type <span class="sc">==</span> target_type, n_examples<span class="sc">&lt;=</span><span class="dv">3</span></span>
+<span id="cb23-5"><a href="results.html#cb23-5" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb23-6"><a href="results.html#cb23-6" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score))</span>
 <span id="cb23-7"><a href="results.html#cb23-7" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="results.html#cb23-8" tabindex="-1"></a>df_flipped_score <span class="ot">&lt;-</span> df_temp <span class="sc">%&gt;%</span> </span>
-<span id="cb23-9"><a href="results.html#cb23-9" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb23-10"><a href="results.html#cb23-10" tabindex="-1"></a>    <span class="at">confidence_score =</span> <span class="fu">if_else</span>(predicted_type <span class="sc">==</span> <span class="st">&quot;no&quot;</span>, <span class="dv">1</span><span class="sc">-</span>confidence_score, confidence_score),</span>
-<span id="cb23-11"><a href="results.html#cb23-11" tabindex="-1"></a>    <span class="at">is_aktiva =</span> <span class="fu">str_detect</span>(type, <span class="st">&quot;Aktiva&quot;</span>)</span>
-<span id="cb23-12"><a href="results.html#cb23-12" tabindex="-1"></a>  )</span>
-<span id="cb23-13"><a href="results.html#cb23-13" tabindex="-1"></a></span>
-<span id="cb23-14"><a href="results.html#cb23-14" tabindex="-1"></a>model_name_best_f1_aktiva <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>, <span class="st">&quot;model&quot;</span>]</span>
-<span id="cb23-15"><a href="results.html#cb23-15" tabindex="-1"></a>method__best_f1_aktiva <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>, <span class="st">&quot;method&quot;</span>]</span></code></pre></div>
+<span id="cb23-8"><a href="results.html#cb23-8" tabindex="-1"></a>df_temp <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>,<span class="st">&quot;predictions&quot;</span>][[<span class="dv">1</span>]][[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb23-9"><a href="results.html#cb23-9" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="results.html#cb23-10" tabindex="-1"></a>df_flipped_score <span class="ot">&lt;-</span> df_temp <span class="sc">%&gt;%</span> </span>
+<span id="cb23-11"><a href="results.html#cb23-11" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb23-12"><a href="results.html#cb23-12" tabindex="-1"></a>    <span class="at">confidence_score =</span> <span class="fu">if_else</span>(predicted_type <span class="sc">==</span> <span class="st">&quot;no&quot;</span>, <span class="dv">1</span><span class="sc">-</span>confidence_score, confidence_score),</span>
+<span id="cb23-13"><a href="results.html#cb23-13" tabindex="-1"></a>    <span class="at">is_aktiva =</span> <span class="fu">str_detect</span>(type, target_type)</span>
+<span id="cb23-14"><a href="results.html#cb23-14" tabindex="-1"></a>  )</span>
+<span id="cb23-15"><a href="results.html#cb23-15" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="results.html#cb23-16" tabindex="-1"></a>model_name_best_f1_aktiva <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>, <span class="st">&quot;model&quot;</span>]</span>
+<span id="cb23-17"><a href="results.html#cb23-17" tabindex="-1"></a>method__best_f1_aktiva <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>, <span class="st">&quot;method&quot;</span>]</span></code></pre></div>
 </details>
 <p>I investigate the relation between the reported confidence for an answer
 and its correctness, to check if it is possible to inform humans in the
@@ -1424,7 +1430,7 @@ Figure 5.12: Showing the confidence score for the Aktiva classification task gro
 </details>
 <p>This is different for models of most other model families. Figure
 <a href="results.html#fig:confidence-match-plot-qwen-binary">5.13</a> shows, that
-Qwen_Qwen2.5-32B-Instruct returns always high confidence scores,
+Qwen2.5-32B-Instruct returns always high confidence scores,
 even when it is wrong. The model shows perfect recall but its precision
 is worse than the precision of the Mistral model.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1442,156 +1448,157 @@ is worse than the precision of the Mistral model.</p>
 Figure 5.13: Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct.
 </p>
 </div>
-<!-- mistral: recall IBB and Netzholding big range meta & mistral: very high -->
-<!-- precision for Amt für Statistik BBB \<- lowest average pagecount (29.3) -->
-<!-- but IBB has more pages than berlinovo but better precision. No -->
-<!-- information about which company / report the page is from -->
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="results.html#cb27-1" tabindex="-1"></a><span class="co"># no_ocr_needed &lt;- read_csv(&quot;../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv&quot;) %&gt;% select(filepath) %&gt;% </span></span>
-<span id="cb27-2"><a href="results.html#cb27-2" tabindex="-1"></a><span class="co">#   unique() %&gt;% mutate(filepath = str_replace(filepath, &quot;..&quot;, &quot;/pvc&quot;)) %&gt;% .[[1]]</span></span>
-<span id="cb27-3"><a href="results.html#cb27-3" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb27-4"><a href="results.html#cb27-4" tabindex="-1"></a><span class="co"># l &lt;- list()</span></span>
-<span id="cb27-5"><a href="results.html#cb27-5" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb27-6"><a href="results.html#cb27-6" tabindex="-1"></a><span class="co"># for (t in c(&#39;Aktiva&#39;, &#39;Passiva&#39;, &#39;GuV&#39;)) {</span></span>
-<span id="cb27-7"><a href="results.html#cb27-7" tabindex="-1"></a><span class="co">#   df_filtered &lt;- df_binary %&gt;% filter(classification_type == t) %&gt;% </span></span>
-<span id="cb27-8"><a href="results.html#cb27-8" tabindex="-1"></a><span class="co">#     arrange(desc(f1_score)) %&gt;% select(model, method, predictions, model_family, method_family)</span></span>
-<span id="cb27-9"><a href="results.html#cb27-9" tabindex="-1"></a><span class="co">#   df_temp &lt;- df_filtered %&gt;% unnest(predictions) %&gt;% filter(filepath %in% no_ocr_needed)</span></span>
-<span id="cb27-10"><a href="results.html#cb27-10" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb27-11"><a href="results.html#cb27-11" tabindex="-1"></a><span class="co">#   df_f1_by_company &lt;- df_temp %&gt;% group_by(company, predicted_type, match, model,model_family, method, method_family) %&gt;% reframe(</span></span>
-<span id="cb27-12"><a href="results.html#cb27-12" tabindex="-1"></a><span class="co">#     n = n()</span></span>
-<span id="cb27-13"><a href="results.html#cb27-13" tabindex="-1"></a><span class="co">#   ) %&gt;% complete(company, predicted_type, match, model,model_family, method, method_family,fill=list(n=0)) %&gt;% </span></span>
-<span id="cb27-14"><a href="results.html#cb27-14" tabindex="-1"></a><span class="co">#     mutate(</span></span>
-<span id="cb27-15"><a href="results.html#cb27-15" tabindex="-1"></a><span class="co">#       metric = if_else(predicted_type == t &amp; match, &quot;true_positive&quot;, &#39;&#39;),</span></span>
-<span id="cb27-16"><a href="results.html#cb27-16" tabindex="-1"></a><span class="co">#       metric = if_else(predicted_type == t &amp; !match, &quot;false_positive&quot;, metric),</span></span>
-<span id="cb27-17"><a href="results.html#cb27-17" tabindex="-1"></a><span class="co">#       metric = if_else(predicted_type != t &amp; !match, &quot;false_negative&quot;, metric),</span></span>
-<span id="cb27-18"><a href="results.html#cb27-18" tabindex="-1"></a><span class="co">#       metric = if_else(predicted_type != t &amp; match, &quot;true_negative&quot;, metric),</span></span>
-<span id="cb27-19"><a href="results.html#cb27-19" tabindex="-1"></a><span class="co">#     ) %&gt;% select(-predicted_type, -match) %&gt;% </span></span>
-<span id="cb27-20"><a href="results.html#cb27-20" tabindex="-1"></a><span class="co">#     pivot_wider(names_from = metric, values_from = n) %&gt;% </span></span>
-<span id="cb27-21"><a href="results.html#cb27-21" tabindex="-1"></a><span class="co">#     mutate(</span></span>
-<span id="cb27-22"><a href="results.html#cb27-22" tabindex="-1"></a><span class="co">#       precision = true_positive/(true_positive+false_positive),</span></span>
-<span id="cb27-23"><a href="results.html#cb27-23" tabindex="-1"></a><span class="co">#       recall = true_positive/(true_positive+false_negative),</span></span>
-<span id="cb27-24"><a href="results.html#cb27-24" tabindex="-1"></a><span class="co">#       f1_score = 2*precision*recall/(precision+recall),</span></span>
-<span id="cb27-25"><a href="results.html#cb27-25" tabindex="-1"></a><span class="co">#       classification_type = t</span></span>
-<span id="cb27-26"><a href="results.html#cb27-26" tabindex="-1"></a><span class="co">#     )</span></span>
-<span id="cb27-27"><a href="results.html#cb27-27" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb27-28"><a href="results.html#cb27-28" tabindex="-1"></a><span class="co">#   l[t] &lt;- list(df_f1_by_company)</span></span>
-<span id="cb27-29"><a href="results.html#cb27-29" tabindex="-1"></a><span class="co"># }</span></span>
-<span id="cb27-30"><a href="results.html#cb27-30" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb27-31"><a href="results.html#cb27-31" tabindex="-1"></a><span class="co"># df_f1_by_company &lt;- bind_rows(l)</span></span>
-<span id="cb27-32"><a href="results.html#cb27-32" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb27-33"><a href="results.html#cb27-33" tabindex="-1"></a><span class="co"># df_f1_by_company %&gt;% </span></span>
-<span id="cb27-34"><a href="results.html#cb27-34" tabindex="-1"></a><span class="co">#   filter(!model_family %in% c(&#39;microsoft&#39;, &#39;tiiuae&#39;)) %&gt;% </span></span>
-<span id="cb27-35"><a href="results.html#cb27-35" tabindex="-1"></a><span class="co">#   ggplot() +</span></span>
-<span id="cb27-36"><a href="results.html#cb27-36" tabindex="-1"></a><span class="co">#   geom_boxplot(aes(x = company, y = f1_score)) +</span></span>
-<span id="cb27-37"><a href="results.html#cb27-37" tabindex="-1"></a><span class="co">#   # geom_jitter(aes(x = company, y = f1_score, color = model), alpha = .4) +</span></span>
-<span id="cb27-38"><a href="results.html#cb27-38" tabindex="-1"></a><span class="co">#   facet_grid(classification_type~model_family) +</span></span>
-<span id="cb27-39"><a href="results.html#cb27-39" tabindex="-1"></a><span class="co">#   scale_x_discrete(guide = guide_axis(angle = 30))</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="results.html#cb27-1" tabindex="-1"></a><span class="fu">library</span>(yardstick)</span>
+<span id="cb27-2"><a href="results.html#cb27-2" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="results.html#cb27-3" tabindex="-1"></a>calc_micro_f1 <span class="ot">&lt;-</span> <span class="cf">function</span>(df, model_name, method_name) {</span>
+<span id="cb27-4"><a href="results.html#cb27-4" tabindex="-1"></a>  l_temp <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb27-5"><a href="results.html#cb27-5" tabindex="-1"></a>  <span class="co"># browser()</span></span>
+<span id="cb27-6"><a href="results.html#cb27-6" tabindex="-1"></a>  </span>
+<span id="cb27-7"><a href="results.html#cb27-7" tabindex="-1"></a>  <span class="cf">for</span> (target <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;Aktiva&#39;</span>, <span class="st">&#39;GuV&#39;</span>, <span class="st">&#39;Passiva&#39;</span>)) {</span>
+<span id="cb27-8"><a href="results.html#cb27-8" tabindex="-1"></a>    <span class="co"># t &lt;- &quot;Aktiva&quot;</span></span>
+<span id="cb27-9"><a href="results.html#cb27-9" tabindex="-1"></a>    <span class="co"># df_filtered &lt;- df %&gt;% filter(</span></span>
+<span id="cb27-10"><a href="results.html#cb27-10" tabindex="-1"></a>    <span class="co">#   classification_type == t,</span></span>
+<span id="cb27-11"><a href="results.html#cb27-11" tabindex="-1"></a>    <span class="co">#   n_examples &lt;= 3,</span></span>
+<span id="cb27-12"><a href="results.html#cb27-12" tabindex="-1"></a>    <span class="co">#   loop == 0) %&gt;% </span></span>
+<span id="cb27-13"><a href="results.html#cb27-13" tabindex="-1"></a>    <span class="co">#   arrange(desc(f1_score))</span></span>
+<span id="cb27-14"><a href="results.html#cb27-14" tabindex="-1"></a>    <span class="co"># model_name_best_f1_aktiva &lt;- df_filtered[model_rank, &quot;model&quot;]</span></span>
+<span id="cb27-15"><a href="results.html#cb27-15" tabindex="-1"></a>    <span class="co"># method_best_f1_aktiva &lt;- df_filtered[model_rank, &quot;method&quot;]</span></span>
+<span id="cb27-16"><a href="results.html#cb27-16" tabindex="-1"></a>    </span>
+<span id="cb27-17"><a href="results.html#cb27-17" tabindex="-1"></a>    df_filtered <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb27-18"><a href="results.html#cb27-18" tabindex="-1"></a>      <span class="fu">filter</span>(</span>
+<span id="cb27-19"><a href="results.html#cb27-19" tabindex="-1"></a>        classification_type <span class="sc">==</span> target,</span>
+<span id="cb27-20"><a href="results.html#cb27-20" tabindex="-1"></a>        model <span class="sc">==</span> model_name,</span>
+<span id="cb27-21"><a href="results.html#cb27-21" tabindex="-1"></a>        method <span class="sc">==</span> method_name,</span>
+<span id="cb27-22"><a href="results.html#cb27-22" tabindex="-1"></a>        loop <span class="sc">==</span> <span class="dv">0</span></span>
+<span id="cb27-23"><a href="results.html#cb27-23" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-24"><a href="results.html#cb27-24" tabindex="-1"></a>      <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score))</span>
+<span id="cb27-25"><a href="results.html#cb27-25" tabindex="-1"></a>    </span>
+<span id="cb27-26"><a href="results.html#cb27-26" tabindex="-1"></a>    df_temp <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>,<span class="st">&quot;predictions&quot;</span>][[<span class="dv">1</span>]][[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb27-27"><a href="results.html#cb27-27" tabindex="-1"></a>    </span>
+<span id="cb27-28"><a href="results.html#cb27-28" tabindex="-1"></a>    df_flipped_score <span class="ot">&lt;-</span> df_temp <span class="sc">%&gt;%</span> </span>
+<span id="cb27-29"><a href="results.html#cb27-29" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
+<span id="cb27-30"><a href="results.html#cb27-30" tabindex="-1"></a>        <span class="at">confidence_score =</span> <span class="fu">if_else</span>(predicted_type <span class="sc">==</span> <span class="st">&quot;no&quot;</span>, <span class="dv">1</span><span class="sc">-</span>confidence_score, confidence_score),</span>
+<span id="cb27-31"><a href="results.html#cb27-31" tabindex="-1"></a>        <span class="at">target =</span> target</span>
+<span id="cb27-32"><a href="results.html#cb27-32" tabindex="-1"></a>      )</span>
+<span id="cb27-33"><a href="results.html#cb27-33" tabindex="-1"></a>    l_temp[target] <span class="ot">&lt;-</span> <span class="fu">list</span>(df_flipped_score)</span>
+<span id="cb27-34"><a href="results.html#cb27-34" tabindex="-1"></a>  }</span>
+<span id="cb27-35"><a href="results.html#cb27-35" tabindex="-1"></a>  </span>
+<span id="cb27-36"><a href="results.html#cb27-36" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">df =</span> <span class="fu">bind_rows</span>(l_temp), <span class="at">model =</span> model_name, <span class="at">method =</span> method_name)</span>
+<span id="cb27-37"><a href="results.html#cb27-37" tabindex="-1"></a>}</span>
+<span id="cb27-38"><a href="results.html#cb27-38" tabindex="-1"></a></span>
+<span id="cb27-39"><a href="results.html#cb27-39" tabindex="-1"></a>plot_pr_double_curve <span class="ot">&lt;-</span> <span class="cf">function</span>(l, selected_type, <span class="at">x_stuff =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb27-40"><a href="results.html#cb27-40" tabindex="-1"></a>  <span class="co"># browser()</span></span>
+<span id="cb27-41"><a href="results.html#cb27-41" tabindex="-1"></a>  df_temp2 <span class="ot">&lt;-</span> l<span class="sc">$</span>df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(target <span class="sc">==</span> selected_type) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-42"><a href="results.html#cb27-42" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">if_else</span>(type <span class="sc">==</span> selected_type, type, <span class="st">&quot;no&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-43"><a href="results.html#cb27-43" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(type, <span class="at">levels =</span> <span class="fu">c</span>(selected_type, <span class="st">&quot;no&quot;</span>)))</span>
+<span id="cb27-44"><a href="results.html#cb27-44" tabindex="-1"></a>  <span class="co"># pr_obj &lt;- pr.curve(scores.class0 = df_temp2$confidence_score[df_temp2$match == 1],</span></span>
+<span id="cb27-45"><a href="results.html#cb27-45" tabindex="-1"></a>  <span class="co">#                    scores.class1 = df_temp2$confidence_score[df_temp2$match == 0],</span></span>
+<span id="cb27-46"><a href="results.html#cb27-46" tabindex="-1"></a>  <span class="co">#                    curve = TRUE)</span></span>
+<span id="cb27-47"><a href="results.html#cb27-47" tabindex="-1"></a>  </span>
+<span id="cb27-48"><a href="results.html#cb27-48" tabindex="-1"></a>  <span class="co"># Precision-Recall Curve with ggplot2</span></span>
+<span id="cb27-49"><a href="results.html#cb27-49" tabindex="-1"></a>  </span>
+<span id="cb27-50"><a href="results.html#cb27-50" tabindex="-1"></a>  pr_df <span class="ot">&lt;-</span> df_temp2 <span class="sc">%&gt;%</span> <span class="fu">pr_curve</span>(type, confidence_score) <span class="sc">%&gt;%</span></span>
+<span id="cb27-51"><a href="results.html#cb27-51" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">threshold =</span> .threshold) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(threshold<span class="sc">&lt;=</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-52"><a href="results.html#cb27-52" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">f1 =</span> <span class="dv">2</span> <span class="sc">*</span> precision <span class="sc">*</span> recall <span class="sc">/</span> (precision <span class="sc">+</span> recall))</span>
+<span id="cb27-53"><a href="results.html#cb27-53" tabindex="-1"></a>  </span>
+<span id="cb27-54"><a href="results.html#cb27-54" tabindex="-1"></a>  pr_auc <span class="ot">&lt;-</span> <span class="fu">round</span>(df_temp2 <span class="sc">%&gt;%</span> <span class="fu">pr_auc</span>(type, confidence_score) <span class="sc">%&gt;%</span> .<span class="sc">$</span>.estimate, <span class="dv">3</span>)</span>
+<span id="cb27-55"><a href="results.html#cb27-55" tabindex="-1"></a>  best_F1_row <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(<span class="at">n =</span> <span class="dv">1</span>, f1)  </span>
+<span id="cb27-56"><a href="results.html#cb27-56" tabindex="-1"></a>  best_F1_row_high_recall <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span> </span>
+<span id="cb27-57"><a href="results.html#cb27-57" tabindex="-1"></a>    <span class="fu">filter</span>(recall <span class="sc">&gt;</span> <span class="fl">0.999</span>, precision <span class="sc">&gt;</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(<span class="at">n =</span> <span class="dv">1</span>, f1)  </span>
+<span id="cb27-58"><a href="results.html#cb27-58" tabindex="-1"></a>  best_F1 <span class="ot">&lt;-</span> best_F1_row  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(f1)</span>
+<span id="cb27-59"><a href="results.html#cb27-59" tabindex="-1"></a>  best_F1_high_recall <span class="ot">&lt;-</span> best_F1_row_high_recall <span class="sc">%&gt;%</span> <span class="fu">pull</span>(f1)</span>
+<span id="cb27-60"><a href="results.html#cb27-60" tabindex="-1"></a>  best_threshold <span class="ot">&lt;-</span> best_F1_row  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(threshold)</span>
+<span id="cb27-61"><a href="results.html#cb27-61" tabindex="-1"></a>  best_threshold_high_recall <span class="ot">&lt;-</span> best_F1_row_high_recall  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(threshold)</span>
+<span id="cb27-62"><a href="results.html#cb27-62" tabindex="-1"></a>  best_precision_high_recall <span class="ot">&lt;-</span> best_F1_row_high_recall  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(precision)</span>
+<span id="cb27-63"><a href="results.html#cb27-63" tabindex="-1"></a>  </span>
+<span id="cb27-64"><a href="results.html#cb27-64" tabindex="-1"></a>  g1 <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span></span>
+<span id="cb27-65"><a href="results.html#cb27-65" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision)) <span class="sc">+</span></span>
+<span id="cb27-66"><a href="results.html#cb27-66" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color =</span> threshold), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb27-67"><a href="results.html#cb27-67" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb27-68"><a href="results.html#cb27-68" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb27-69"><a href="results.html#cb27-69" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">&quot;Precision-Recall Curve for &quot;</span>, selected_type, <span class="st">&quot; (AUC = &quot;</span>, pr_auc, <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb27-70"><a href="results.html#cb27-70" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;Recall&quot;</span>,</span>
+<span id="cb27-71"><a href="results.html#cb27-71" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Precision&quot;</span></span>
+<span id="cb27-72"><a href="results.html#cb27-72" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb27-73"><a href="results.html#cb27-73" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb27-74"><a href="results.html#cb27-74" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb27-75"><a href="results.html#cb27-75" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb27-76"><a href="results.html#cb27-76" tabindex="-1"></a>    )</span>
+<span id="cb27-77"><a href="results.html#cb27-77" tabindex="-1"></a>  </span>
+<span id="cb27-78"><a href="results.html#cb27-78" tabindex="-1"></a>  g2 <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span></span>
+<span id="cb27-79"><a href="results.html#cb27-79" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision, <span class="at">color =</span> f1)) <span class="sc">+</span></span>
+<span id="cb27-80"><a href="results.html#cb27-80" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb27-81"><a href="results.html#cb27-81" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;viridis&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb27-82"><a href="results.html#cb27-82" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb27-83"><a href="results.html#cb27-83" tabindex="-1"></a>      <span class="co"># title = &quot;Precision-Recall Curve colored by F1 score&quot;,</span></span>
+<span id="cb27-84"><a href="results.html#cb27-84" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;Recall&quot;</span>,</span>
+<span id="cb27-85"><a href="results.html#cb27-85" tabindex="-1"></a>      <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb27-86"><a href="results.html#cb27-86" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;F1 score&quot;</span></span>
+<span id="cb27-87"><a href="results.html#cb27-87" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb27-88"><a href="results.html#cb27-88" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb27-89"><a href="results.html#cb27-89" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb27-90"><a href="results.html#cb27-90" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb27-91"><a href="results.html#cb27-91" tabindex="-1"></a>    ) </span>
+<span id="cb27-92"><a href="results.html#cb27-92" tabindex="-1"></a>  </span>
+<span id="cb27-93"><a href="results.html#cb27-93" tabindex="-1"></a>  <span class="cf">if</span> (x_stuff <span class="sc">==</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb27-94"><a href="results.html#cb27-94" tabindex="-1"></a>    g1 <span class="ot">&lt;-</span> g1 <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-95"><a href="results.html#cb27-95" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb27-96"><a href="results.html#cb27-96" tabindex="-1"></a>    </span>
+<span id="cb27-97"><a href="results.html#cb27-97" tabindex="-1"></a>    g2 <span class="ot">&lt;-</span> g2 <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-98"><a href="results.html#cb27-98" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb27-99"><a href="results.html#cb27-99" tabindex="-1"></a>  }</span>
+<span id="cb27-100"><a href="results.html#cb27-100" tabindex="-1"></a>  </span>
+<span id="cb27-101"><a href="results.html#cb27-101" tabindex="-1"></a>  combined_plot <span class="ot">&lt;-</span> g1 <span class="sc">+</span> g2</span>
+<span id="cb27-102"><a href="results.html#cb27-102" tabindex="-1"></a>  combined_plot <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">caption =</span> <span class="fu">paste0</span>(</span>
+<span id="cb27-103"><a href="results.html#cb27-103" tabindex="-1"></a>    <span class="st">&#39;Best F1 score of &#39;</span>, <span class="fu">round</span>(best_F1,<span class="dv">3</span>) , <span class="st">&#39; gets reached with threshold of value &#39;</span>, <span class="fu">round</span>(best_threshold,<span class="dv">3</span>), <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&#39;</span>,</span>
+<span id="cb27-104"><a href="results.html#cb27-104" tabindex="-1"></a>    <span class="st">&#39;Best F1 score with recall &gt; 0.999 of &#39;</span>, <span class="fu">round</span>(best_F1_high_recall,<span class="dv">3</span>) , <span class="st">&#39; gets reached with threshold of value &#39;</span>, <span class="fu">round</span>(best_threshold_high_recall,<span class="dv">3</span>), <span class="st">&#39; (corresp. precision value: &#39;</span>, <span class="fu">round</span>(best_precision_high_recall,<span class="dv">3</span>) , <span class="st">&#39;)&#39;</span>))</span>
+<span id="cb27-105"><a href="results.html#cb27-105" tabindex="-1"></a>}</span>
+<span id="cb27-106"><a href="results.html#cb27-106" tabindex="-1"></a></span>
+<span id="cb27-107"><a href="results.html#cb27-107" tabindex="-1"></a></span>
+<span id="cb27-108"><a href="results.html#cb27-108" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span></span>
+<span id="cb27-109"><a href="results.html#cb27-109" tabindex="-1"></a>method <span class="ot">&lt;-</span> <span class="st">&quot;3_rag_examples&quot;</span></span>
+<span id="cb27-110"><a href="results.html#cb27-110" tabindex="-1"></a></span>
+<span id="cb27-111"><a href="results.html#cb27-111" tabindex="-1"></a>df_temp_mistral <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">calc_micro_f1</span>(model, method)</span>
+<span id="cb27-112"><a href="results.html#cb27-112" tabindex="-1"></a>p_aktiva <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;Aktiva&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-113"><a href="results.html#cb27-113" tabindex="-1"></a>p_passiva <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;Passiva&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-114"><a href="results.html#cb27-114" tabindex="-1"></a>p_guv <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;GuV&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-115"><a href="results.html#cb27-115" tabindex="-1"></a></span>
+<span id="cb27-116"><a href="results.html#cb27-116" tabindex="-1"></a><span class="fu">wrap_elements</span>(p_aktiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_passiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_guv) <span class="sc">+</span></span>
+<span id="cb27-117"><a href="results.html#cb27-117" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb27-118"><a href="results.html#cb27-118" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="fu">str_c</span>(model, <span class="st">&quot; with &quot;</span>, method))</span></code></pre></div>
 </details>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="results.html#cb28-1" tabindex="-1"></a>calc_micro_f1 <span class="ot">&lt;-</span> <span class="cf">function</span>(df, model_name, method_name) {</span>
-<span id="cb28-2"><a href="results.html#cb28-2" tabindex="-1"></a>  l_temp <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb28-3"><a href="results.html#cb28-3" tabindex="-1"></a>  <span class="co"># browser()</span></span>
-<span id="cb28-4"><a href="results.html#cb28-4" tabindex="-1"></a>  </span>
-<span id="cb28-5"><a href="results.html#cb28-5" tabindex="-1"></a>  <span class="cf">for</span> (target <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;Aktiva&#39;</span>, <span class="st">&#39;GuV&#39;</span>, <span class="st">&#39;Passiva&#39;</span>)) {</span>
-<span id="cb28-6"><a href="results.html#cb28-6" tabindex="-1"></a>    <span class="co"># t &lt;- &quot;Aktiva&quot;</span></span>
-<span id="cb28-7"><a href="results.html#cb28-7" tabindex="-1"></a>    <span class="co"># df_filtered &lt;- df %&gt;% filter(</span></span>
-<span id="cb28-8"><a href="results.html#cb28-8" tabindex="-1"></a>    <span class="co">#   classification_type == t,</span></span>
-<span id="cb28-9"><a href="results.html#cb28-9" tabindex="-1"></a>    <span class="co">#   n_examples &lt;= 3,</span></span>
-<span id="cb28-10"><a href="results.html#cb28-10" tabindex="-1"></a>    <span class="co">#   loop == 0) %&gt;% </span></span>
-<span id="cb28-11"><a href="results.html#cb28-11" tabindex="-1"></a>    <span class="co">#   arrange(desc(f1_score))</span></span>
-<span id="cb28-12"><a href="results.html#cb28-12" tabindex="-1"></a>    <span class="co"># model_name_best_f1_aktiva &lt;- df_filtered[model_rank, &quot;model&quot;]</span></span>
-<span id="cb28-13"><a href="results.html#cb28-13" tabindex="-1"></a>    <span class="co"># method_best_f1_aktiva &lt;- df_filtered[model_rank, &quot;method&quot;]</span></span>
-<span id="cb28-14"><a href="results.html#cb28-14" tabindex="-1"></a>    </span>
-<span id="cb28-15"><a href="results.html#cb28-15" tabindex="-1"></a>    df_filtered <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb28-16"><a href="results.html#cb28-16" tabindex="-1"></a>      <span class="fu">filter</span>(</span>
-<span id="cb28-17"><a href="results.html#cb28-17" tabindex="-1"></a>        classification_type <span class="sc">==</span> target,</span>
-<span id="cb28-18"><a href="results.html#cb28-18" tabindex="-1"></a>        model <span class="sc">==</span> model_name,</span>
-<span id="cb28-19"><a href="results.html#cb28-19" tabindex="-1"></a>        method <span class="sc">==</span> method_name,</span>
-<span id="cb28-20"><a href="results.html#cb28-20" tabindex="-1"></a>        loop <span class="sc">==</span> <span class="dv">0</span></span>
-<span id="cb28-21"><a href="results.html#cb28-21" tabindex="-1"></a>      ) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-22"><a href="results.html#cb28-22" tabindex="-1"></a>      <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score))</span>
-<span id="cb28-23"><a href="results.html#cb28-23" tabindex="-1"></a>    </span>
-<span id="cb28-24"><a href="results.html#cb28-24" tabindex="-1"></a>    df_temp <span class="ot">&lt;-</span> df_filtered[<span class="dv">1</span>,<span class="st">&quot;predictions&quot;</span>][[<span class="dv">1</span>]][[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()</span>
-<span id="cb28-25"><a href="results.html#cb28-25" tabindex="-1"></a>    </span>
-<span id="cb28-26"><a href="results.html#cb28-26" tabindex="-1"></a>    df_flipped_score <span class="ot">&lt;-</span> df_temp <span class="sc">%&gt;%</span> </span>
-<span id="cb28-27"><a href="results.html#cb28-27" tabindex="-1"></a>      <span class="fu">mutate</span>(</span>
-<span id="cb28-28"><a href="results.html#cb28-28" tabindex="-1"></a>        <span class="co"># confidence_score = if_else(predicted_type == &quot;no&quot;, 1-confidence_score, confidence_score),</span></span>
-<span id="cb28-29"><a href="results.html#cb28-29" tabindex="-1"></a>        <span class="at">target =</span> target</span>
-<span id="cb28-30"><a href="results.html#cb28-30" tabindex="-1"></a>      )</span>
-<span id="cb28-31"><a href="results.html#cb28-31" tabindex="-1"></a>    l_temp[target] <span class="ot">&lt;-</span> <span class="fu">list</span>(df_flipped_score)</span>
-<span id="cb28-32"><a href="results.html#cb28-32" tabindex="-1"></a>  }</span>
-<span id="cb28-33"><a href="results.html#cb28-33" tabindex="-1"></a>  </span>
-<span id="cb28-34"><a href="results.html#cb28-34" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">df =</span> <span class="fu">bind_rows</span>(l_temp), <span class="at">model =</span> model_name, <span class="at">method =</span> method_name)</span>
-<span id="cb28-35"><a href="results.html#cb28-35" tabindex="-1"></a>}</span>
-<span id="cb28-36"><a href="results.html#cb28-36" tabindex="-1"></a></span>
-<span id="cb28-37"><a href="results.html#cb28-37" tabindex="-1"></a>plot_pr_double_curve <span class="ot">&lt;-</span> <span class="cf">function</span>(l) {</span>
-<span id="cb28-38"><a href="results.html#cb28-38" tabindex="-1"></a>  df_temp2 <span class="ot">&lt;-</span> l<span class="sc">$</span>df</span>
-<span id="cb28-39"><a href="results.html#cb28-39" tabindex="-1"></a>  pr_obj <span class="ot">&lt;-</span> <span class="fu">pr.curve</span>(<span class="at">scores.class0 =</span> df_temp2<span class="sc">$</span>confidence_score[df_temp2<span class="sc">$</span>match <span class="sc">==</span> <span class="dv">1</span>],</span>
-<span id="cb28-40"><a href="results.html#cb28-40" tabindex="-1"></a>                     <span class="at">scores.class1 =</span> df_temp2<span class="sc">$</span>confidence_score[df_temp2<span class="sc">$</span>match <span class="sc">==</span> <span class="dv">0</span>],</span>
-<span id="cb28-41"><a href="results.html#cb28-41" tabindex="-1"></a>                     <span class="at">curve =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb28-42"><a href="results.html#cb28-42" tabindex="-1"></a>  </span>
-<span id="cb28-43"><a href="results.html#cb28-43" tabindex="-1"></a>  <span class="co"># Precision-Recall Curve with ggplot2</span></span>
-<span id="cb28-44"><a href="results.html#cb28-44" tabindex="-1"></a>  </span>
-<span id="cb28-45"><a href="results.html#cb28-45" tabindex="-1"></a>  pr_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb28-46"><a href="results.html#cb28-46" tabindex="-1"></a>    <span class="at">recall =</span> pr_obj<span class="sc">$</span>curve[, <span class="dv">1</span>],</span>
-<span id="cb28-47"><a href="results.html#cb28-47" tabindex="-1"></a>    <span class="at">precision =</span> pr_obj<span class="sc">$</span>curve[, <span class="dv">2</span>],</span>
-<span id="cb28-48"><a href="results.html#cb28-48" tabindex="-1"></a>    <span class="at">threshold =</span> pr_obj<span class="sc">$</span>curve[, <span class="dv">3</span>]</span>
-<span id="cb28-49"><a href="results.html#cb28-49" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb28-50"><a href="results.html#cb28-50" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">f1 =</span> <span class="dv">2</span> <span class="sc">*</span> precision <span class="sc">*</span> recall <span class="sc">/</span> (precision <span class="sc">+</span> recall))</span>
-<span id="cb28-51"><a href="results.html#cb28-51" tabindex="-1"></a>  </span>
-<span id="cb28-52"><a href="results.html#cb28-52" tabindex="-1"></a>  pr_auc <span class="ot">&lt;-</span> <span class="fu">round</span>(pr_obj<span class="sc">$</span>auc.integral, <span class="dv">3</span>)</span>
-<span id="cb28-53"><a href="results.html#cb28-53" tabindex="-1"></a>  best_F1_row <span class="ot">&lt;-</span> pr_obj<span class="sc">$</span>curve <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">F1 =</span> <span class="dv">2</span><span class="sc">*</span>V1<span class="sc">*</span>V2<span class="sc">/</span>(V1<span class="sc">+</span>V2)) <span class="sc">%&gt;%</span></span>
-<span id="cb28-54"><a href="results.html#cb28-54" tabindex="-1"></a>    <span class="fu">slice_max</span>(<span class="at">n =</span> <span class="dv">1</span>, F1)  </span>
-<span id="cb28-55"><a href="results.html#cb28-55" tabindex="-1"></a>  best_F1 <span class="ot">&lt;-</span> best_F1_row  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(F1)</span>
-<span id="cb28-56"><a href="results.html#cb28-56" tabindex="-1"></a>  best_threshold <span class="ot">&lt;-</span> best_F1_row  <span class="sc">%&gt;%</span> <span class="fu">pull</span>(V3)</span>
-<span id="cb28-57"><a href="results.html#cb28-57" tabindex="-1"></a>  </span>
-<span id="cb28-58"><a href="results.html#cb28-58" tabindex="-1"></a>  g1 <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span></span>
-<span id="cb28-59"><a href="results.html#cb28-59" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision)) <span class="sc">+</span></span>
-<span id="cb28-60"><a href="results.html#cb28-60" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color =</span> threshold), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb28-61"><a href="results.html#cb28-61" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb28-62"><a href="results.html#cb28-62" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb28-63"><a href="results.html#cb28-63" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">str_c</span>(<span class="st">&quot;Precision-Recall Curve (AUC = &quot;</span>, pr_auc, <span class="st">&quot;)&quot;</span>),</span>
-<span id="cb28-64"><a href="results.html#cb28-64" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="fu">str_c</span>(l<span class="sc">$</span>model, <span class="st">&quot; with &quot;</span>, l<span class="sc">$</span>method),</span>
-<span id="cb28-65"><a href="results.html#cb28-65" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;Recall&quot;</span>,</span>
-<span id="cb28-66"><a href="results.html#cb28-66" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Precision&quot;</span></span>
-<span id="cb28-67"><a href="results.html#cb28-67" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb28-68"><a href="results.html#cb28-68" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb28-69"><a href="results.html#cb28-69" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb28-70"><a href="results.html#cb28-70" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
-<span id="cb28-71"><a href="results.html#cb28-71" tabindex="-1"></a>    )</span>
-<span id="cb28-72"><a href="results.html#cb28-72" tabindex="-1"></a>  </span>
-<span id="cb28-73"><a href="results.html#cb28-73" tabindex="-1"></a>  g2 <span class="ot">&lt;-</span> pr_df <span class="sc">%&gt;%</span></span>
-<span id="cb28-74"><a href="results.html#cb28-74" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision, <span class="at">color =</span> f1)) <span class="sc">+</span></span>
-<span id="cb28-75"><a href="results.html#cb28-75" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb28-76"><a href="results.html#cb28-76" tabindex="-1"></a>    <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;viridis&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb28-77"><a href="results.html#cb28-77" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb28-78"><a href="results.html#cb28-78" tabindex="-1"></a>      <span class="co"># title = &quot;Precision-Recall Curve colored by F1 score&quot;,</span></span>
-<span id="cb28-79"><a href="results.html#cb28-79" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;Recall&quot;</span>,</span>
-<span id="cb28-80"><a href="results.html#cb28-80" tabindex="-1"></a>      <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb28-81"><a href="results.html#cb28-81" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;F1 score&quot;</span></span>
-<span id="cb28-82"><a href="results.html#cb28-82" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb28-83"><a href="results.html#cb28-83" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb28-84"><a href="results.html#cb28-84" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb28-85"><a href="results.html#cb28-85" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
-<span id="cb28-86"><a href="results.html#cb28-86" tabindex="-1"></a>    ) </span>
-<span id="cb28-87"><a href="results.html#cb28-87" tabindex="-1"></a>  </span>
-<span id="cb28-88"><a href="results.html#cb28-88" tabindex="-1"></a>  g1 <span class="sc">+</span> g2 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">caption =</span> <span class="fu">paste0</span>(<span class="st">&#39;Best F1 score &#39;</span>, <span class="fu">round</span>(best_F1,<span class="dv">3</span>) , <span class="st">&#39; gets reached with threshold of value &#39;</span>, <span class="fu">round</span>(best_threshold,<span class="dv">3</span>)))</span>
-<span id="cb28-89"><a href="results.html#cb28-89" tabindex="-1"></a>}</span></code></pre></div>
-</details>
+<p><img src="_main_files/figure-html/def-micro-pr-function-1.png" width="672" /></p>
 <p>Figure <a href="results.html#fig:micro-pr-curve-llm-binary-1">5.14</a> shows the
-precision-recall-curve for the best performing model twice. On the left
-plot the line color represents the threshold score one could use to
-decide when to accept a response as it is. On the right plot the line
-color is showing the F1 score that results with a chosen threshold. The
-precision recall curves for all target classes look identical. Thus, a
-combined micro average curve is presented. For an almost perfect model
-there is nothing one can adjust. The curve shown in Figure
-<a href="results.html#fig:micro-pr-curve-llm-binary-qwen-1-5b">5.15</a> is more interesting.
-Here, one can decide if the F1 score or the recall score is more
-important for the workflow one wants to implement.</p>
+precision-recall-curve for the best performing model twice for each
+target type. On the left plots the line color represents the threshold
+score one could use to decide when to accept a response as it is. On the
+right plots the line color is showing the F1 score that results with a
+chosen threshold.</p>
+<p>The <a href="glossary.html#acronyms_AUC">AUC (area under the curve)</a> value is lowest for <strong>Aktiva</strong>. Here the F1 score is
+highest for a threshold value of 0.73. This prevents to classify the
+pages of type <em>other</em> to get classified as <strong>Aktiva</strong>. If it is required
+to have a very high recall value a threshold of 0.44 should be chosen.</p>
+<p>The precision-recall-curve for <strong>Passiva</strong> is very similar but there is
+a step close to the recall value of 1.0. This has the effect that for a
+a guaranteed high recall a very low precision (0.24) and F1 (0.38) has
+to be accepted<a href="#fn19" class="footnote-ref" id="fnref19"><sup>19</sup></a>.</p>
+<p>The shape of the precision-recall-curve for <strong>GuV</strong> almost perfectly
+reaches the top right corner. The highest F1 score is found with a
+threshold value of .56. With a threshold value of 0.5 a very high recall
+is guaranteed and the F1 score is just a little lower.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="results.html#cb29-1" tabindex="-1"></a>df_temp_mistral <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">calc_micro_f1</span>(<span class="st">&quot;mistralai_Ministral-8B-Instruct-2410&quot;</span>, <span class="st">&quot;3_rag_examples&quot;</span>)</span>
-<span id="cb29-2"><a href="results.html#cb29-2" tabindex="-1"></a>df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="results.html#cb28-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span></span>
+<span id="cb28-2"><a href="results.html#cb28-2" tabindex="-1"></a>method <span class="ot">&lt;-</span> <span class="st">&quot;3_rag_examples&quot;</span></span>
+<span id="cb28-3"><a href="results.html#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="results.html#cb28-4" tabindex="-1"></a>df_temp_mistral <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">calc_micro_f1</span>(model, method)</span>
+<span id="cb28-5"><a href="results.html#cb28-5" tabindex="-1"></a>p_aktiva <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;Aktiva&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-6"><a href="results.html#cb28-6" tabindex="-1"></a>p_passiva <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;Passiva&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-7"><a href="results.html#cb28-7" tabindex="-1"></a>p_guv <span class="ot">&lt;-</span> df_temp_mistral <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>(<span class="st">&quot;GuV&quot;</span>, <span class="at">x_stuff =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-8"><a href="results.html#cb28-8" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="results.html#cb28-9" tabindex="-1"></a><span class="fu">wrap_elements</span>(p_aktiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_passiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_guv) <span class="sc">+</span></span>
+<span id="cb28-10"><a href="results.html#cb28-10" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb28-11"><a href="results.html#cb28-11" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="fu">str_c</span>(model, <span class="st">&quot; with &quot;</span>, method))</span></code></pre></div>
 </details>
 <div class="figure"><span style="display:block;" id="fig:micro-pr-curve-llm-binary-1"></span>
 <img src="_main_files/figure-html/micro-pr-curve-llm-binary-1-1.png" alt="Showing the precsion-recall-curve for the best performing model." width="100%" />
@@ -1599,14 +1606,92 @@ important for the workflow one wants to implement.</p>
 Figure 5.14: Showing the precsion-recall-curve for the best performing model.
 </p>
 </div>
+<p>Figure <a href="results.html#fig:table-dientification-llm-confidence">5.15</a> summarizes the
+relation between reported confidence and correctness of the
+classification for all target types and compares it among the best
+performing model-strategy combinations for Ministral-8B-Instruct-2410
+and Qwen3-8B. One can see, that the reported confidence for correct and
+incorrect classifications are separable in most cases for Mistral-8B.
+This separation is worse for Qwen3-8B and worst for target type
+<strong>Passiva</strong>.</p>
+<p>Figure <a href="results.html#fig:table-identification-llm-confidence-lm">5.16</a> shows, that for
+Ministral-8B values with a confidence of 0.7 and more a human don’t has
+to double check the classification for target type <strong>GuV</strong>. This
+interval is smallest for <strong>Passiva</strong> where only confidences above 0.9
+can be fully trusted. These empirical intervals will probably get
+smaller, once more data is evaluated. If one is less strict and accepts
+misclassifiaction rates of 1 % the found interval for <strong>Passiva</strong> starts
+at 0.8 and is probably less depended on the sample evaluated.</p>
+<p>For Qwen3-8B we find almost no range without any misclassification. One
+could build an application that is not asking for a human intervention
+for reported confidences over 0.9 and then give the possibility to
+change the page to extract information from later on. Anyhow, only a few
+predictions for both models have such a high confidence score. Thus, a
+human will double check the selected pages in most cases.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="results.html#cb30-1" tabindex="-1"></a>df_temp_qwen <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> <span class="fu">calc_micro_f1</span>(<span class="st">&quot;Qwen_Qwen2.5-1.5B-Instruct&quot;</span>, <span class="st">&quot;1_rag_examples&quot;</span>)</span>
-<span id="cb30-2"><a href="results.html#cb30-2" tabindex="-1"></a>df_temp_qwen <span class="sc">%&gt;%</span> <span class="fu">plot_pr_double_curve</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="results.html#cb29-1" tabindex="-1"></a>confidence_vs_truth <span class="ot">&lt;-</span> df_binary <span class="sc">%&gt;%</span> </span>
+<span id="cb29-2"><a href="results.html#cb29-2" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span>, <span class="st">&quot;Qwen3-8B&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-3"><a href="results.html#cb29-3" tabindex="-1"></a>  <span class="fu">group_by</span>(method, model) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb29-4"><a href="results.html#cb29-4" tabindex="-1"></a>    <span class="at">mean_f1 =</span> <span class="fu">mean</span>(f1_score, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">.before =</span> <span class="dv">1</span></span>
+<span id="cb29-5"><a href="results.html#cb29-5" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(model) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-6"><a href="results.html#cb29-6" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_f1)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-7"><a href="results.html#cb29-7" tabindex="-1"></a>  <span class="fu">slice_max</span>(mean_f1, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-8"><a href="results.html#cb29-8" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>filepath) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-9"><a href="results.html#cb29-9" tabindex="-1"></a>  <span class="fu">unnest</span>(predictions) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb29-10"><a href="results.html#cb29-10" tabindex="-1"></a>    <span class="at">match =</span> <span class="fu">factor</span>(match, <span class="at">levels =</span> <span class="fu">c</span>(F, T)),</span>
+<span id="cb29-11"><a href="results.html#cb29-11" tabindex="-1"></a>    <span class="co"># truth_NA = factor(truth_NA, levels = c(F, T))</span></span>
+<span id="cb29-12"><a href="results.html#cb29-12" tabindex="-1"></a>  )</span>
+<span id="cb29-13"><a href="results.html#cb29-13" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="results.html#cb29-14" tabindex="-1"></a>confidence_vs_truth <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-15"><a href="results.html#cb29-15" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(</span>
+<span id="cb29-16"><a href="results.html#cb29-16" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> match, <span class="at">y =</span> confidence_score, <span class="at">fill =</span> classification_type), </span>
+<span id="cb29-17"><a href="results.html#cb29-17" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">&quot;single&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb29-18"><a href="results.html#cb29-18" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">drop =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb29-19"><a href="results.html#cb29-19" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">drop =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb29-20"><a href="results.html#cb29-20" tabindex="-1"></a>  <span class="fu">facet_nested</span>(<span class="sc">~</span> model <span class="sc">+</span> classification_type)</span></code></pre></div>
 </details>
-<div class="figure"><span style="display:block;" id="fig:micro-pr-curve-llm-binary-qwen-1-5b"></span>
-<img src="_main_files/figure-html/micro-pr-curve-llm-binary-qwen-1-5b-1.png" alt="Showing the precsion-recall-curve for." width="100%" />
+<div class="figure"><span style="display:block;" id="fig:table-dientification-llm-confidence"></span>
+<img src="_main_files/figure-html/table-dientification-llm-confidence-1.png" alt="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters." width="100%" />
 <p class="caption">
-Figure 5.15: Showing the precsion-recall-curve for.
+Figure 5.15: Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.
+</p>
+</div>
+<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="results.html#cb30-1" tabindex="-1"></a>confidence_vs_truth <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">confidence =</span> confidence_score) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-2"><a href="results.html#cb30-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb30-3"><a href="results.html#cb30-3" tabindex="-1"></a>    <span class="at">conf_interval =</span> <span class="fu">cut</span>(confidence, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.05</span>), <span class="at">include.lowest =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb30-4"><a href="results.html#cb30-4" tabindex="-1"></a>    <span class="at">conf_center =</span> <span class="fu">as.numeric</span>(<span class="fu">sub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">((.+),(.+)</span><span class="sc">\\</span><span class="st">]&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, <span class="fu">levels</span>(conf_interval))[conf_interval]) <span class="sc">+</span> <span class="fl">0.025</span></span>
+<span id="cb30-5"><a href="results.html#cb30-5" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb30-6"><a href="results.html#cb30-6" tabindex="-1"></a>  <span class="fu">group_by</span>(conf_center, classification_type, model) <span class="sc">%&gt;%</span></span>
+<span id="cb30-7"><a href="results.html#cb30-7" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb30-8"><a href="results.html#cb30-8" tabindex="-1"></a>    <span class="at">n_true =</span> <span class="fu">sum</span>(match <span class="sc">==</span> <span class="cn">TRUE</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb30-9"><a href="results.html#cb30-9" tabindex="-1"></a>    <span class="at">n_false =</span> <span class="fu">sum</span>(match <span class="sc">==</span> <span class="cn">FALSE</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb30-10"><a href="results.html#cb30-10" tabindex="-1"></a>    <span class="at">total =</span> n_true <span class="sc">+</span> n_false,</span>
+<span id="cb30-11"><a href="results.html#cb30-11" tabindex="-1"></a>    <span class="at">chance_false =</span> <span class="fu">if_else</span>(total <span class="sc">&gt;</span> <span class="dv">0</span>, n_false <span class="sc">/</span> total <span class="sc">*</span> <span class="dv">100</span>, <span class="cn">NA_real_</span>),</span>
+<span id="cb30-12"><a href="results.html#cb30-12" tabindex="-1"></a>    <span class="at">chance_zero =</span> chance_false <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb30-13"><a href="results.html#cb30-13" tabindex="-1"></a>    <span class="at">chance_below_1 =</span> chance_false <span class="sc">&lt;</span> <span class="dv">1</span>,</span>
+<span id="cb30-14"><a href="results.html#cb30-14" tabindex="-1"></a>    <span class="at">chance_low =</span> <span class="fu">if_else</span>(chance_zero, <span class="dv">0</span>, <span class="fu">if_else</span>(chance_below_1, <span class="dv">1</span>, <span class="dv">2</span>)),</span>
+<span id="cb30-15"><a href="results.html#cb30-15" tabindex="-1"></a>    <span class="at">chance_low =</span> <span class="fu">factor</span>(chance_low, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;equls 0 %&quot;</span>, <span class="st">&quot;below 1 %&quot;</span>, <span class="st">&quot;more&quot;</span>)),</span>
+<span id="cb30-16"><a href="results.html#cb30-16" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb30-17"><a href="results.html#cb30-17" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb30-18"><a href="results.html#cb30-18" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> conf_center, <span class="at">y =</span> chance_false, <span class="at">color =</span> chance_low<span class="co">#, fill = chance_low</span></span>
+<span id="cb30-19"><a href="results.html#cb30-19" tabindex="-1"></a>             )) <span class="sc">+</span></span>
+<span id="cb30-20"><a href="results.html#cb30-20" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb30-21"><a href="results.html#cb30-21" tabindex="-1"></a>  <span class="co"># geom_hline(yintercept = 1, linetype = &quot;dashed&quot;) +</span></span>
+<span id="cb30-22"><a href="results.html#cb30-22" tabindex="-1"></a>  <span class="co"># geom_smooth(method = &quot;lm&quot;, se = TRUE) +</span></span>
+<span id="cb30-23"><a href="results.html#cb30-23" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;green&quot;</span>, <span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb30-24"><a href="results.html#cb30-24" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;green&quot;</span>, <span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb30-25"><a href="results.html#cb30-25" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Confidence Interval&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Chance False (%)&quot;</span>, <span class="at">color =</span> <span class="st">&quot;mistake rate&quot;</span>) <span class="sc">+</span></span>
+<span id="cb30-26"><a href="results.html#cb30-26" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(</span>
+<span id="cb30-27"><a href="results.html#cb30-27" tabindex="-1"></a>    <span class="co"># ylim = c(0, 100), </span></span>
+<span id="cb30-28"><a href="results.html#cb30-28" tabindex="-1"></a>    <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb30-29"><a href="results.html#cb30-29" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb30-30"><a href="results.html#cb30-30" tabindex="-1"></a>  <span class="fu">facet_grid</span>(classification_type <span class="sc">~</span> model)</span></code></pre></div>
+</details>
+<div class="figure"><span style="display:block;" id="fig:table-identification-llm-confidence-lm"></span>
+<img src="_main_files/figure-html/table-identification-llm-confidence-lm-1.png" alt="Estimating the relative frequency to find a wrong classification over different confidence intervals" width="100%" />
+<p class="caption">
+Figure 5.16: Estimating the relative frequency to find a wrong classification over different confidence intervals
 </p>
 </div>
 <p>Discussion:</p>
@@ -1651,7 +1736,7 @@ classification</p>
 <span id="cb31-16"><a href="results.html#cb31-16" tabindex="-1"></a>  <span class="fu">render_table</span>()</span></code></pre></div>
 </details>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-febdaaab49e57f2c1108" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-febdaaab49e57f2c1108">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["meta-llama","meta-llama","mistralai","meta-llama","mistralai","Qwen","Qwen","Qwen","mistralai","google","google","google","tiiuae","tiiuae","microsoft","microsoft","tiiuae","microsoft"],["meta-llama_Llama-4-Scout-17B-16E-Instruct","meta-llama_Llama-4-Scout-17B-16E-Instruct","mistralai_Mistral-Large-Instruct-2411","meta-llama_Llama-4-Scout-17B-16E-Instruct","mistralai_Mistral-Large-Instruct-2411","Qwen_Qwen2.5-32B-Instruct","Qwen_Qwen3-235B-A22B-Instruct-2507","Qwen_Qwen2.5-72B-Instruct","mistralai_Mistral-Large-Instruct-2411","google_gemma-3-27b-it-0-9-1","google_gemma-3-27b-it-0-9-1","google_gemma-3-27b-it-0-9-1","tiiuae_Falcon3-10B-Instruct","tiiuae_Falcon3-10B-Instruct","microsoft_phi-4","microsoft_phi-4","tiiuae_Falcon3-10B-Instruct","microsoft_phi-4"],["Aktiva","GuV","Passiva","Passiva","Aktiva","Aktiva","GuV","Passiva","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","Aktiva","Passiva","GuV"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_random_examples","top_n_rag_examples","n_rag_examples"],["3","1","1","3","3","3","3","1","1","3","1","1","1","3","2","1","3","1"],["1","1","0.99","0.99","0.98","0.98","0.97","0.97","0.96","0.89","0.82","0.79","0.71","0.71","0.67","0.6","0.59","0.46"],["4451","2541","7061","4451","18744","5664","11164","3908","7061","4297","2606","2606","868","2393","1660","493","494","1725"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>metric_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"metric_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-febdaaab49e57f2c1108">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],["meta-llama","meta-llama","mistralai","meta-llama","mistralai","Qwen","Qwen","Qwen","mistralai","google","google","google","tiiuae","tiiuae","microsoft","microsoft","tiiuae","microsoft"],["Llama-4-Scout-17B-16E-Instruct","Llama-4-Scout-17B-16E-Instruct","Mistral-Large-Instruct-2411","Llama-4-Scout-17B-16E-Instruct","Mistral-Large-Instruct-2411","Qwen2.5-32B-Instruct","Qwen3-235B-A22B-Instruct-2507","Qwen2.5-72B-Instruct","Mistral-Large-Instruct-2411","gemma-3-27b-it-0-9-1","gemma-3-27b-it-0-9-1","gemma-3-27b-it-0-9-1","Falcon3-10B-Instruct","Falcon3-10B-Instruct","phi-4","phi-4","Falcon3-10B-Instruct","phi-4"],["Aktiva","GuV","Passiva","Passiva","Aktiva","Aktiva","GuV","Passiva","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","Aktiva","Passiva","GuV"],["n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_random_examples","top_n_rag_examples","n_rag_examples"],["3","1","1","3","3","3","3","1","1","3","1","1","1","3","2","1","3","1"],["1","1","0.99","0.99","0.98","0.98","0.97","0.97","0.96","0.89","0.82","0.79","0.71","0.71","0.67","0.6","0.59","0.46"],["4451","2541","7061","4451","18744","5664","11164","3908","7061","4297","2606","2606","868","2393","1660","493","494","1725"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>metric_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"metric_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="results.html#cb32-1" tabindex="-1"></a><span class="co"># df_multi %&gt;% </span></span>
 <span id="cb32-2"><a href="results.html#cb32-2" tabindex="-1"></a><span class="co">#   unnest(metrics) %&gt;% </span></span>
@@ -1692,7 +1777,7 @@ classification</p>
 <span id="cb33-17"><a href="results.html#cb33-17" tabindex="-1"></a>  <span class="fu">render_table</span>()</span></code></pre></div>
 </details>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-d14a6e4cb5144daa37cf" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-d14a6e4cb5144daa37cf">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["mistralai","mistralai","mistralai","meta-llama","Qwen","meta-llama","google","Qwen","Qwen","tiiuae","tiiuae","google","meta-llama","tiiuae","google"],["mistralai_Ministral-8B-Instruct-2410","mistralai_Ministral-8B-Instruct-2410","mistralai_Ministral-8B-Instruct-2410","meta-llama_Llama-3.1-8B-Instruct","Qwen_Qwen2.5-3B-Instruct","meta-llama_Llama-3.1-8B-Instruct","google_gemma-3-12b-it-0-9-1","Qwen_Qwen2.5-3B-Instruct","Qwen_Qwen2.5-3B-Instruct","tiiuae_Falcon3-10B-Instruct","tiiuae_Falcon3-10B-Instruct","google_gemma-3-12b-it-0-9-1","meta-llama_Llama-3.1-8B-Instruct","tiiuae_Falcon3-10B-Instruct","google_gemma-3-12b-it-0-9-1"],["Aktiva","Passiva","GuV","Passiva","Aktiva","Aktiva","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","Passiva","GuV"],["n_rag_examples","top_n_rag_examples","top_n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","n_rag_examples","top_n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","top_n_rag_examples","top_n_rag_examples"],["1","3","3","1","1","3","3","1","1","1","3","3","1","3","1"],["0.98","0.96","0.95","0.95","0.86","0.86","0.85","0.83","0.76","0.71","0.71","0.69","0.65","0.59","0.47"],["686","279","279","593","492","269","2733","187","492","868","2393","2733","205","494","232"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>metric_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"metric_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-d14a6e4cb5144daa37cf">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["mistralai","mistralai","mistralai","meta-llama","Qwen","meta-llama","google","Qwen","Qwen","tiiuae","tiiuae","google","meta-llama","tiiuae","google"],["Ministral-8B-Instruct-2410","Ministral-8B-Instruct-2410","Ministral-8B-Instruct-2410","Llama-3.1-8B-Instruct","Qwen2.5-3B-Instruct","Llama-3.1-8B-Instruct","gemma-3-12b-it-0-9-1","Qwen2.5-3B-Instruct","Qwen2.5-3B-Instruct","Falcon3-10B-Instruct","Falcon3-10B-Instruct","gemma-3-12b-it-0-9-1","Llama-3.1-8B-Instruct","Falcon3-10B-Instruct","gemma-3-12b-it-0-9-1"],["Aktiva","Passiva","GuV","Passiva","Aktiva","Aktiva","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","Passiva","GuV"],["n_rag_examples","top_n_rag_examples","top_n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","n_rag_examples","top_n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","n_rag_examples","top_n_rag_examples","top_n_rag_examples","top_n_rag_examples"],["1","3","3","1","1","3","3","1","1","1","3","3","1","3","1"],["0.98","0.96","0.95","0.95","0.86","0.86","0.85","0.83","0.76","0.71","0.71","0.69","0.65","0.59","0.47"],["686","279","279","593","492","269","2733","187","492","868","2393","2733","205","494","232"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>model_family<\/th>\n      <th>model<\/th>\n      <th>metric_type<\/th>\n      <th>method_family<\/th>\n      <th>n_examples<\/th>\n      <th>f1_score<\/th>\n      <th>runtime in s<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"model_family","targets":1},{"name":"model","targets":2},{"name":"metric_type","targets":3},{"name":"method_family","targets":4},{"name":"n_examples","targets":5},{"name":"f1_score","targets":6},{"name":"runtime in s","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <p>Mistral-2410 reaches good performance already with few examples and can
 work with law-context approach but more examples don’t realy help any
@@ -1702,11 +1787,11 @@ further</p>
 <span id="cb34-2"><a href="results.html#cb34-2" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="results.html#cb34-3" tabindex="-1"></a>df_selected <span class="sc">%&gt;%</span> </span>
 <span id="cb34-4"><a href="results.html#cb34-4" tabindex="-1"></a>  <span class="fu">filter</span>(model <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb34-5"><a href="results.html#cb34-5" tabindex="-1"></a>    <span class="st">&quot;mistralai_Ministral-8B-Instruct-2410&quot;</span>,</span>
-<span id="cb34-6"><a href="results.html#cb34-6" tabindex="-1"></a>    <span class="co"># &quot;mistralai_Mistral-Large-Instruct-2411&quot;,</span></span>
-<span id="cb34-7"><a href="results.html#cb34-7" tabindex="-1"></a>    <span class="co"># &quot;mistralai_Mistral-Small-3.1-24B-Instruct-2503&quot;,</span></span>
-<span id="cb34-8"><a href="results.html#cb34-8" tabindex="-1"></a>    <span class="st">&quot;meta-llama_Llama-4-Scout-17B-16E-Instruct&quot;</span></span>
-<span id="cb34-9"><a href="results.html#cb34-9" tabindex="-1"></a>    <span class="co"># &quot;meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8&quot;</span></span>
+<span id="cb34-5"><a href="results.html#cb34-5" tabindex="-1"></a>    <span class="st">&quot;Ministral-8B-Instruct-2410&quot;</span>,</span>
+<span id="cb34-6"><a href="results.html#cb34-6" tabindex="-1"></a>    <span class="co"># &quot;Mistral-Large-Instruct-2411&quot;,</span></span>
+<span id="cb34-7"><a href="results.html#cb34-7" tabindex="-1"></a>    <span class="co"># &quot;Mistral-Small-3.1-24B-Instruct-2503&quot;,</span></span>
+<span id="cb34-8"><a href="results.html#cb34-8" tabindex="-1"></a>    <span class="st">&quot;Llama-4-Scout-17B-16E-Instruct&quot;</span></span>
+<span id="cb34-9"><a href="results.html#cb34-9" tabindex="-1"></a>    <span class="co"># &quot;Llama-4-Maverick-17B-128E-Instruct-FP8&quot;</span></span>
 <span id="cb34-10"><a href="results.html#cb34-10" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
 <span id="cb34-11"><a href="results.html#cb34-11" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> norm_runtime<span class="sc">/</span><span class="dv">60</span>, <span class="at">y =</span> f1_score)) <span class="sc">+</span></span>
 <span id="cb34-12"><a href="results.html#cb34-12" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> method_family, <span class="at">shape =</span> out_of_company), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">6</span>) <span class="sc">+</span></span>
@@ -1727,7 +1812,7 @@ further</p>
 </details>
 <p>Most of the time pretty confident most problems with class “other” If
 Aktiva and Passiva on same page it predicts Aktiva. Also one Passiva
-missclassified as Aktiva No flipped confidence <a href="#fn19" class="footnote-ref" id="fnref19"><sup>19</sup></a></p>
+missclassified as Aktiva No flipped confidence <a href="#fn20" class="footnote-ref" id="fnref20"><sup>20</sup></a></p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="results.html#cb36-1" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> df_selected <span class="sc">%&gt;%</span></span>
 <span id="cb36-2"><a href="results.html#cb36-2" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(f1_score))</span>
@@ -2197,18 +2282,18 @@ ttask? What data has been used?</p>
 <h3><span class="header-section-number">5.2.1</span> Baseline: Regex<a href="results.html#baseline-regex" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The baseline for the table extraction task is set by an approach using
 regular expressions on the text extract. The approach performs much
-better<a href="#fn20" class="footnote-ref" id="fnref20"><sup>20</sup></a> on the synthetic dataset compared to the real
-dataset (see Figure <a href="results.html#fig:table-extraction-regex-performance">5.16</a>). Even
+better<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a> on the synthetic dataset compared to the real
+dataset (see Figure <a href="results.html#fig:table-extraction-regex-performance">5.17</a>). Even
 though, it does not perform perfectly and its performance is more
 consistent on the text extracted with pymupdf compared to pdfium. Some
 possible explanations are:</p>
 <ul>
-<li>a duplicated row name<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a></li>
+<li>a duplicated row name<a href="#fn22" class="footnote-ref" id="fnref22"><sup>22</sup></a></li>
 <li>numeric columns extracted separated from row names by extraction
 libraries</li>
-<li>sums in the same row as the single values<a href="#fn22" class="footnote-ref" id="fnref22"><sup>22</sup></a></li>
-<li>with pdfium: missing white space<a href="#fn23" class="footnote-ref" id="fnref23"><sup>23</sup></a></li>
-<li>with pdfium: random line breaks<a href="#fn24" class="footnote-ref" id="fnref24"><sup>24</sup></a></li>
+<li>sums in the same row as the single values<a href="#fn23" class="footnote-ref" id="fnref23"><sup>23</sup></a></li>
+<li>with pdfium: missing white space<a href="#fn24" class="footnote-ref" id="fnref24"><sup>24</sup></a></li>
+<li>with pdfium: random line breaks<a href="#fn25" class="footnote-ref" id="fnref25"><sup>25</sup></a></li>
 </ul>
 <p>You can find some examples for incorrect extracted texts in section
 <a href="appendix.html#regex-extraction-mistakes">8.9</a>.</p>
@@ -2238,12 +2323,12 @@ dataset.</p>
 <div class="figure"><span style="display:block;" id="fig:table-extraction-regex-performance"></span>
 <img src="_main_files/figure-html/table-extraction-regex-performance-1.png" alt="Performance overall and on numeric value extraction with regular expressions. Showing single scores for *percentage correct numeric* on real tables to explain wide boxes." width="100%" />
 <p class="caption">
-Figure 5.16: Performance overall and on numeric value extraction with regular expressions. Showing single scores for <em>percentage correct numeric</em> on real tables to explain wide boxes.
+Figure 5.17: Performance overall and on numeric value extraction with regular expressions. Showing single scores for <em>percentage correct numeric</em> on real tables to explain wide boxes.
 </p>
 </div>
 <p>The random line breaks result in some missed row names which is
 reflected by the bigger spread for NA precision with pdfium on the
-synthetic dataset (see Figure <a href="results.html#fig:table-extraction-regex-NA">5.17</a>).
+synthetic dataset (see Figure <a href="results.html#fig:table-extraction-regex-NA">5.18</a>).
 Nevertheless, the NA precision for the majority of the cases is perfect.
 This is different with the real dataset. The NA precision is found to be
 at only
@@ -2262,7 +2347,7 @@ at only
 <div class="figure"><span style="display:block;" id="fig:table-extraction-regex-NA"></span>
 <img src="_main_files/figure-html/table-extraction-regex-NA-1.png" alt="Performance on classification for missing values with regular expressions" width="100%" />
 <p class="caption">
-Figure 5.17: Performance on classification for missing values with regular expressions
+Figure 5.18: Performance on classification for missing values with regular expressions
 </p>
 </div>
 <div id="hypotheses" class="section level5 hasAnchor" number="5.2.1.0.1">
@@ -2522,11 +2607,11 @@ has been trained with 50_000 rows and the <a href="glossary.html#acronyms_SHAP">
 calculated on 2_000 rows each.</p>
 <p>Very interestingly the number of columns is having an opposite effect
 for the two libraries (see Figure
-<a href="results.html#fig:synth-table-extraction-regex-shap-num-details-plot">5.18</a> A).
+<a href="results.html#fig:synth-table-extraction-regex-shap-num-details-plot">5.19</a> A).
 Besides that often only pdfium struggled with some of the table
 characteristics while pymupdf is not influenced by them (for an example
 with header_span see Figure
-<a href="results.html#fig:synth-table-extraction-regex-shap-num-details-plot">5.18</a> B).</p>
+<a href="results.html#fig:synth-table-extraction-regex-shap-num-details-plot">5.19</a> B).</p>
 <p>It might be worth noting that the row for <em>Anteile an verbundenen
 Unternehmen</em> was rated to have a clear negative effect on the chance to
 extract the correct value.</p>
@@ -2718,7 +2803,7 @@ for the maleous text extractions of pdfium as well.</p>
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-regex-shap-num-details-plot"></span>
 <img src="_main_files/figure-html/synth-table-extraction-regex-shap-num-details-plot-1.png" alt="Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data" width="100%" />
 <p class="caption">
-Figure 5.18: Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data
+Figure 5.19: Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data
 </p>
 </div>
 </div>
@@ -2805,14 +2890,14 @@ Figure 5.18: Showing the influence of the extraxtion library on the numeric text
 <h4><span class="header-section-number">5.2.2.1</span> Real tables only<a href="results.html#real-tables-only" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>For the table extraction task
 31 open source models
-have been benchmarked<a href="#fn25" class="footnote-ref" id="fnref25"><sup>25</sup></a>. The results are presented in
+have been benchmarked<a href="#fn26" class="footnote-ref" id="fnref26"><sup>26</sup></a>. The results are presented in
 Figure <a href="appendix.html#fig:table-extraction-llm-performance-total-overview">8.11</a>,
 <a href="appendix.html#fig:table-extraction-llm-performance-numeric-overview">8.12</a> and
 <a href="appendix.html#fig:table-extraction-llm-f1-overview">8.13</a>).</p>
 <p>Most models need a context learning approach to beat the performance of
 the regular expression approach at total and numeric correctness rate
 and F1 score. Only 5 models perform better
-without any guidance<a href="#fn26" class="footnote-ref" id="fnref26"><sup>26</sup></a> (see Table
+without any guidance<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a> (see Table
 <a href="results.html#tab:zero-and-synth-performing-models-tab">5.11</a>).
 10 models achieved an performance better as
 the regex baseline using the approach to learn with a fixed example from
@@ -2834,7 +2919,7 @@ Table <a href="results.html#tab:table-metrics-llm-real-table-extraction">5.13</a
 performance for the best model-method approach for each model family.
 Most of the top performing model-method combinations rely on the maximum
 number of examples provided. Only the Llama-3 and Falcon3 model perform
-best with three examples<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a>.</p>
+best with three examples<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a>.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="results.html#cb53-1" tabindex="-1"></a>zero_shot_stars <span class="sc">%&gt;%</span> <span class="fu">full_join</span>(static_example_stars, <span class="fu">join_by</span>(model), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">&quot;_zero_shot&quot;</span>, <span class="st">&quot;_static_example&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">select</span>(model, <span class="fu">starts_with</span>(<span class="st">&quot;mean_total&quot;</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb53-2"><a href="results.html#cb53-2" tabindex="-1"></a><span class="fu">mutate_if</span>(</span>
@@ -2926,11 +3011,11 @@ Maverick model could get reduced a bit.</li>
 </ul>
 <p>To examine the question, if the reported confidence score of the
 responses can be used, to flag the predicted values as potentially
-wrong. Again, Figure <a href="results.html#fig:table-extraction-llm-confidence">5.19</a> shows,
+wrong. Again, Figure <a href="results.html#fig:table-extraction-llm-confidence">5.20</a> shows,
 that Qwen 3 reports very high confidence values no matter if the results
 are correct or not. With the Mistral model we find a wider range of
 confidences given and for wrong results lower confidence is reported.</p>
-<p>Figure <a href="results.html#fig:table-extraction-llm-confidence-lm">5.20</a> shows, that the
+<p>Figure <a href="results.html#fig:table-extraction-llm-confidence-lm">5.21</a> shows, that the
 chance to make an mistake by believing the prediction is rising with
 lower confidence. The chance to make a mistake is higher for predictions
 of numeric values than for believing a value is not present in the
@@ -2989,7 +3074,7 @@ reported by Qwen 3.</p>
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-confidence"></span>
 <img src="_main_files/figure-html/table-extraction-llm-confidence-1.png" alt="Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters." width="100%" />
 <p class="caption">
-Figure 5.19: Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters.
+Figure 5.20: Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -3016,7 +3101,7 @@ Figure 5.19: Comparing the reported confidence scores for the table extraction t
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-confidence-lm"></span>
 <img src="_main_files/figure-html/table-extraction-llm-confidence-lm-1.png" alt="Estimating the relative frequency to find a wrong extraction result over different confidence intervals" width="100%" />
 <p class="caption">
-Figure 5.20: Estimating the relative frequency to find a wrong extraction result over different confidence intervals
+Figure 5.21: Estimating the relative frequency to find a wrong extraction result over different confidence intervals
 </p>
 </div>
 <div id="hypotheses-1" class="section level5 hasAnchor" number="5.2.2.1.1">
@@ -3104,11 +3189,11 @@ also the F1 score.</li>
 </ol>
 <p>Two interesting details found while inspecting the dependence plots for
 the metric <em>percentage_numeric_correct</em> are (see Figure
-<a href="results.html#fig:real-table-extraction-llm-shap-num-details-plot">5.21</a> A) that the
+<a href="results.html#fig:real-table-extraction-llm-shap-num-details-plot">5.22</a> A) that the
 bad performance of LLamas Maverick with five examples is easily
 spottable and that the negative effect of <em>T_in_year</em> might be caused by
 an interaction with <em>vis_separated_rows</em> completely (see Figure
-<a href="results.html#fig:real-table-extraction-llm-shap-num-details-plot">5.21</a> B). To
+<a href="results.html#fig:real-table-extraction-llm-shap-num-details-plot">5.22</a> B). To
 investigate the second finding one would need tables where the uni is
 present in the year column and having no visual separation of the rows
 at the same time. Synthetic data potentiall could help to answer such
@@ -3352,7 +3437,7 @@ questions.</p>
 <div class="figure"><span style="display:block;" id="fig:real-table-extraction-llm-shap-num-details-plot"></span>
 <img src="_main_files/figure-html/real-table-extraction-llm-shap-num-details-plot-1.png" alt="Showing the influence of many examples on Llama 4 Maverick (A) and interaction between *T in year* and *vis separated rows* (B)" width="100%" />
 <p class="caption">
-Figure 5.21: Showing the influence of many examples on Llama 4 Maverick (A) and interaction between <em>T in year</em> and <em>vis separated rows</em> (B)
+Figure 5.22: Showing the influence of many examples on Llama 4 Maverick (A) and interaction between <em>T in year</em> and <em>vis separated rows</em> (B)
 </p>
 </div>
 </div>
@@ -3389,9 +3474,9 @@ public available reports often are visually more appealing and more
 heterogeneous in their structure.</p>
 <p>As a reference to compare the performance of OpenAI’s models with the
 results of four Qwen 3 models are shown as well (see Figure
-<a href="results.html#fig:table-extraction-llm-performance-total-gpt">5.22</a>,
-<a href="results.html#fig:table-extraction-llm-performance-numeric-gpt">5.23</a> and
-<a href="results.html#fig:table-extraction-llm-f1-gpt">5.24</a>). Surprisingly gpt-5-mini is
+<a href="results.html#fig:table-extraction-llm-performance-total-gpt">5.23</a>,
+<a href="results.html#fig:table-extraction-llm-performance-numeric-gpt">5.24</a> and
+<a href="results.html#fig:table-extraction-llm-f1-gpt">5.25</a>). Surprisingly gpt-5-mini is
 almost performing as good as the top Qwen 3 model and gpt-4.1. But
 besides gpt-4.1-nano and Qwen3-0.6B all models perform pretty well with
 the random or top-rag example methods. The ranking for the best
@@ -3417,7 +3502,7 @@ grammar. Running gpt-5-chat resulted in the error informing that a
 approach worked flawless. Running gpt-oss-20b with the vllm offline
 inference framework was possible and the new harmony output format could
 be processed after minor code changes for most
-approaches<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a>. With a gpt-oss-120b instance hosted on Azure
+approaches<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>. With a gpt-oss-120b instance hosted on Azure
 the guided decoding worked flawless.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="results.html#cb63-1" tabindex="-1"></a>df_overview_gpt <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(model, method) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">mean_percentage_correct_total =</span> <span class="fu">mean</span>(percentage_correct_total)) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_percentage_correct_total)) <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_percentage_correct_total)) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">mean_percentage_correct_total =</span> <span class="fu">round</span>(mean_percentage_correct_total, <span class="dv">2</span>)) <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="st">&quot;mean correct total&quot;</span> <span class="ot">=</span> mean_percentage_correct_total) <span class="sc">%&gt;%</span> <span class="fu">kbl</span>()</span></code></pre></div>
@@ -3564,7 +3649,7 @@ gpt-4.1-nano
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-total-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-total-gpt-1.png" alt="Comparing the percentage of correct predictions overall for OpenAi's LLMs with some Qwen 3 models" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 5.22: Comparing the percentage of correct predictions overall for OpenAi’s LLMs with some Qwen 3 models
+Figure 5.23: Comparing the percentage of correct predictions overall for OpenAi’s LLMs with some Qwen 3 models
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -3581,7 +3666,7 @@ Figure 5.22: Comparing the percentage of correct predictions overall for OpenAi�
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-numeric-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-numeric-gpt-1.png" alt="Comparing the percentage of correct numeric predictions for OpenAi's LLMs with some Qwen 3 models" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 5.23: Comparing the percentage of correct numeric predictions for OpenAi’s LLMs with some Qwen 3 models
+Figure 5.24: Comparing the percentage of correct numeric predictions for OpenAi’s LLMs with some Qwen 3 models
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -3600,7 +3685,7 @@ Figure 5.23: Comparing the percentage of correct numeric predictions for OpenAi�
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-f1-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-f1-gpt-1.png" alt="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values." width="100%" height="90%" keepaspectratio />
 <p class="caption">
-Figure 5.24: Comparing the F1 score for predicting the missingness of a value for OpenAi’s LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.
+Figure 5.25: Comparing the F1 score for predicting the missingness of a value for OpenAi’s LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -3612,7 +3697,7 @@ Figure 5.24: Comparing the F1 score for predicting the missingness of a value fo
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-prediction-count-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-prediction-count-gpt-1.png" alt="Showing the number of predictions OpenAI's models made." width="100%" />
 <p class="caption">
-Figure 5.25: Showing the number of predictions OpenAI’s models made.
+Figure 5.26: Showing the number of predictions OpenAI’s models made.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -4047,14 +4132,14 @@ Instruct.</p>
 <div class="figure"><span style="display:block;" id="fig:compare-real-table-extraction-by-context-type"></span>
 <img src="_main_files/figure-html/compare-real-table-extraction-by-context-type-1.png" alt="Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-contect learning" width="100%" />
 <p class="caption">
-Figure 5.26: Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-contect learning
+Figure 5.27: Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-contect learning
 </p>
 </div>
 <p>Table
 <a href="results.html#tab:comparing-extraction-performance-synth-context-learning-respecting-units-table">5.18</a>
 shows, that synthetic data can be used for in-context learning in a task
 where the currency units given for a table or specific
-columns<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>. Except for Llama 3.1 all models achieved much
+columns<a href="#fn30" class="footnote-ref" id="fnref30"><sup>30</sup></a>. Except for Llama 3.1 all models achieved much
 better numeric extraction results for tables where currencies are given
 for all columns. The model also achieved better for cases where there
 was only a single column with units, even though there have been no
@@ -4133,7 +4218,7 @@ numeric values (both).</p>
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-confidence-lm-synth-context"></span>
 <img src="_main_files/figure-html/table-extraction-llm-confidence-lm-synth-context-1.png" alt="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning." width="100%" />
 <p class="caption">
-Figure 5.27: Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning.
+Figure 5.28: Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning.
 </p>
 </div>
 <div id="hypotheses-3" class="section level5 hasAnchor" number="5.2.2.3.1">
@@ -4228,35 +4313,37 @@ instead. Because Qwen was showing the same wrong prediction for one
 the page shows <strong>Aktiva</strong> and <strong>Passiva</strong> simultaneously and was not
 correct codified. This was not the only time, where a mistake in the
 gold truth was found, by examining potential <a href="glossary.html#acronyms_LLM">LLM</a> mistakes.<a href="results.html#fnref18" class="footnote-back">↩︎</a></p></li>
-<li id="fn19"><p>classify framework in needs special models with
+<li id="fn19"><p>Thus, a human has in average to check four pages and
+select the correct <strong>Passiva</strong> page among them.<a href="results.html#fnref19" class="footnote-back">↩︎</a></p></li>
+<li id="fn20"><p>classify framework in needs special models with
 pooling capability. Would have been interesting but time was limited
-and would have needed new special models in most cases<a href="results.html#fnref19" class="footnote-back">↩︎</a></p></li>
-<li id="fn20"><p>A comparison of the numeric values over all methods
-can be found in section <a href="results.html#comparing-table-extraction-methods">5.2.3</a>.<a href="results.html#fnref20" class="footnote-back">↩︎</a></p></li>
-<li id="fn21"><p>The row <em>Geleistete Anzahlungen</em> can be found in two
+and would have needed new special models in most cases<a href="results.html#fnref20" class="footnote-back">↩︎</a></p></li>
+<li id="fn21"><p>A comparison of the numeric values over all methods
+can be found in section <a href="results.html#comparing-table-extraction-methods">5.2.3</a>.<a href="results.html#fnref21" class="footnote-back">↩︎</a></p></li>
+<li id="fn22"><p>The row <em>Geleistete Anzahlungen</em> can be found in two
 parts of the table and the simple approach just matches the numbers
-to the first found entry.<a href="results.html#fnref21" class="footnote-back">↩︎</a></p></li>
-<li id="fn22"><p>In this case the <a href="glossary.html#acronyms_regex">regex</a> takes the sum as the
-value for the previous year.<a href="results.html#fnref22" class="footnote-back">↩︎</a></p></li>
-<li id="fn23"><p>This can form unexpected numeric patterns or prevent
-the row names to be recognized.<a href="results.html#fnref23" class="footnote-back">↩︎</a></p></li>
-<li id="fn24"><p>The approach takes care of line breaks between words,
-but not within. This leads to unrecognized row names as well.<a href="results.html#fnref24" class="footnote-back">↩︎</a></p></li>
-<li id="fn25"><p>The models <em>deepseek-ai_DeepSeek-R1-Distill-Qwen-32B</em>
+to the first found entry.<a href="results.html#fnref22" class="footnote-back">↩︎</a></p></li>
+<li id="fn23"><p>In this case the <a href="glossary.html#acronyms_regex">regex</a> takes the sum as the
+value for the previous year.<a href="results.html#fnref23" class="footnote-back">↩︎</a></p></li>
+<li id="fn24"><p>This can form unexpected numeric patterns or prevent
+the row names to be recognized.<a href="results.html#fnref24" class="footnote-back">↩︎</a></p></li>
+<li id="fn25"><p>The approach takes care of line breaks between words,
+but not within. This leads to unrecognized row names as well.<a href="results.html#fnref25" class="footnote-back">↩︎</a></p></li>
+<li id="fn26"><p>The models <em>deepseek-ai_DeepSeek-R1-Distill-Qwen-32B</em>
 and <em>google_gemma-3n-E4B-it</em> have been tested as well but don’t get
-presented as they never performed anywhere beyond random guessing.<a href="results.html#fnref25" class="footnote-back">↩︎</a></p></li>
-<li id="fn26"><p>There is an external guidance through the provided
+presented as they never performed anywhere beyond random guessing.<a href="results.html#fnref26" class="footnote-back">↩︎</a></p></li>
+<li id="fn27"><p>There is an external guidance through the provided
 xgrammar template but it is not communicated to the model in a
-promt.<a href="results.html#fnref26" class="footnote-back">↩︎</a></p></li>
-<li id="fn27"><p>Phi4 also perfroms best with three examples. But this
-is the maximum it can process due to a limited context length.<a href="results.html#fnref27" class="footnote-back">↩︎</a></p></li>
-<li id="fn28"><p>With the static example approach there have been 24
+promt.<a href="results.html#fnref27" class="footnote-back">↩︎</a></p></li>
+<li id="fn28"><p>Phi4 also perfroms best with three examples. But this
+is the maximum it can process due to a limited context length.<a href="results.html#fnref28" class="footnote-back">↩︎</a></p></li>
+<li id="fn29"><p>With the static example approach there have been 24
 files where the resonse could not get parsed into valid <a href="glossary.html#acronyms_json">json</a>.
 With the other approaches there are one to four unparsable
-responses.<a href="results.html#fnref28" class="footnote-back">↩︎</a></p></li>
-<li id="fn29"><p>Synthetic data is used here because the
+responses.<a href="results.html#fnref29" class="footnote-back">↩︎</a></p></li>
+<li id="fn30"><p>Synthetic data is used here because the
 characterization, which real <em>Aktiva</em> table has units in which
-column, was created too late.<a href="results.html#fnref29" class="footnote-back">↩︎</a></p></li>
+column, was created too late.<a href="results.html#fnref30" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 <script>

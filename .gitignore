@@ -32,3 +32,10 @@ R/data_storage/
 benchmark_truth/synthetic_tables/aktiva_table.html
 benchmark_truth/synthetic_tables/aktiva_table.md
 jahresabschlussberichte.7z
+micha_gold_truth/
+micha_gold_truth_aktiva_only/
+
+/.luarc.json
+QThesis/*_cache/
+QThesis/
+micha_gold_truth_aktiva_only_KORRIGIERT/
