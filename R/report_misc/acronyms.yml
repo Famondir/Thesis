@@ -27,4 +27,9 @@ acronyms:
       longname: Portable Document Format
     - shortname: ACFR
       longname: Annual Comprehensive Financial Report
+    - shortname: mcc
+      longname: multi-class classification
+    - key: vllm
+      shortname: vLLM
+      longname: Virtual Large Language Model
 ---

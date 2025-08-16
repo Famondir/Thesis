@@ -671,3 +671,17 @@ g2 <- pr_df %>%
   )
 
 g1 + g2
+
+#### example usage ####
+
+library(tidyverse)
+
+df_examples <- read_csv("../benchmark_truth/real_example_count.csv")
+
+df_examples %>% 
+  rename(strategy = approach) %>% 
+  ggplot() +
+  geom_point(aes(x = n_example, y = sum, color = strategy), alpha = .5) +
+  geom_line(data = . %>% filter(strategy != "n_random_examples"), aes(x = n_example, y = sum, color = strategy)) +
+  geom_line(data = . %>% filter(strategy == "n_random_examples"), aes(x = n_example, y = sum, color = strategy), linetype = "dashed") +
+  facet_grid(~classification)

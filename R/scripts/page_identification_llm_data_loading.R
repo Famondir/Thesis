@@ -177,7 +177,8 @@ recalc_mectrics_multiclass <- function(df) {
     
     # print(name_split)
     
-    predictions <- fromJSON(json_data$results)
+    predictions <- fromJSON(json_data$results) %>% 
+      filter(filepath %in% df_labels$filepath)
     classification_type <- str_split(name_split[2], '_')[[1]][3]
     
     results <- recalc_mectrics(predictions, classification_type) %>% 
@@ -215,8 +216,8 @@ norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/ru
     model_name = model_name %>% str_replace("/", "_")
   ) %>% filter(str_detect(filename, "binary"))
 norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml")))
-norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
-  add_column(n_examples = list(c(5,7), c(5), c(7,9), c(11,13))) %>% unnest(n_examples)
+norm_factors_many_examples <- norm_factors %>% filter(str_ends(filename, "examples.yaml")) %>% 
+  add_column(n_examples = list(c(5,7), c(5), c(11,13), c(7,9))) %>% unnest(n_examples)
 
 df_binary_few_examples <- df_binary %>% filter(n_examples <= 3 | is.na(n_examples)) %>% 
   left_join(norm_factors_few_examples, by = c("model" = "model_name")) %>% mutate(
@@ -257,7 +258,8 @@ df_binary <- bind_rows(
     
     # print(name_split)
     
-    predictions <- fromJSON(json_data$results)
+    predictions <- fromJSON(json_data$results) %>% 
+      filter(filepath %in% df_labels$filepath)
     # classification_type <- str_split(name_split[2], '_')[[1]][3]
     
     results <- recalc_mectrics_multiclass(predictions) %>% as_tibble() %>% 
@@ -312,5 +314,20 @@ df_multi <- bind_rows(
   df_multi_many_examples
 )
 
-list(df_binary = df_binary, df_multi = df_multi) %>% 
+#### load database ####
+
+library(jsonlite)
+
+df_page_identification_database_t <- jsonlite::read_json("/home/simon/Documents/data_science/remote_thesis_backup/all_pages_classified.json") %>% 
+  as_tibble(.name_repair = "universal")
+df_page_identification_database <- df_page_identification_database_t %>% t() %>% 
+  as_tibble() %>% setNames(c("filepath", "page", "text", "company", "type")) %>% 
+  mutate(filepath = str_replace(filepath, "/pvc", ".."))
+
+#### save results ####
+
+list(
+  df_binary = df_binary, df_multi = df_multi, 
+  df_page_identification_database = df_page_identification_database
+  ) %>% 
   saveRDS("data_storage/page_identification_llm.rds")

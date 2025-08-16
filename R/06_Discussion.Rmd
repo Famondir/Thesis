@@ -40,3 +40,4 @@ in company document next / previous year more helpful than years further away?
 
 building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 
+predictions for barrierefreie documents of WBM empty

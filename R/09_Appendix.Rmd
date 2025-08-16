@@ -271,6 +271,505 @@ specific_prompt = {"role": "user", "content": f"The assets and liabilities are p
     ]
 ```
 
+### Classification {#classification-prompts}
+
+binary classification prompt factory
+
+```{python, eval=FALSE}
+messages = [{"role": "system", "content": "[Role and Context]: You are a helpful assistant that can classify texts extracted from PDFs."}]
+
+if law_context:
+    if classification_type == "GuV":
+        messages.append({"role": "system", "content": f"You know the laws about how to structure the 'Gewinn- und Verlustrechnung' (profit and loss statement) table:' \n\n'''\n{hgb_guv}\n'''."})
+    elif classification_type == "Aktiva":
+        messages.append({"role": "system", "content": f"You know the laws about how to structure the 'Aktiva' (assets) table for a 'Bilanz' (balance sheet):' \n\n'''\n{hgb_aktiva}\n'''."})
+    elif classification_type == "Passiva":
+        messages.append({"role": "system", "content": f"You know the laws about how to structure the 'Passiva' (liabilities) table for a 'Bilanz' (balance sheet):' \n\n'''\n{hgb_passiva}\n'''."})
+    else:
+        raise ValueError(f"Unknown classification type: {classification_type}. Expected 'GuV', 'Aktiva', or 'Passiva'.")
+
+if random_examples:
+    system_messages = self.__get_random_example_message(classification_type, **kwargs)
+    for msg in system_messages:
+        messages.append({"role": "system", "content": msg})
+
+if rag_examples:
+    system_messages = self.__get_rag_example_message(text, classification_type, **kwargs)
+    for msg in system_messages:
+        messages.append({"role": "system", "content": msg})
+
+if top_n_rag_examples:
+    system_messages = self.__get_top_n_rag_example_message(text, classification_type, **kwargs)
+    for msg in system_messages:
+        messages.append({"role": "system", "content": msg})
+
+messages.append({"role": "user", "content": f"[Task]: Decide if the given text contains {phrase_dict[classification_type]}.\n\n[Rule]: Answer with 'yes' if it does. Otherwise answer with 'no'.\n\n[Text]: Here is the text to classify: \n\n'''\n{text}\n'''"})
+return messages
+```
+
+example for binary classification with 1 random example with Qwen 3
+
+```{verbatim}
+<|im_start|>system
+/no_think [Role and Context]: You are a helpful assistant that can classify texts extracted from PDFs.<|im_end|>
+<|im_start|>system
+You know this example for a \'Gewinn- und Verlustrechnung\' (profit and loss statement) table and for this example you should answer with "no":
+
+\'\'\'
+28
+2023
+EUR
+2022
+EUR
+EUR EUR
+1. Umsatzerlöse 1.315.073,26 1.507.621,05
+2. Sonstige betriebliche Erträge 562.644,72 631.803,96
+3. Materialaufwand -388.989,26 -98.471,89
+4. Abschreibungen -447.356,00 -460.923,00
+5. Sonstige betriebliche Aufwendungen -907.414,53 -2.304.390,53
+6. Sonstige Zinsen und ähnliche Erträge 95.260,94 -2.533,45
+7. Ergebnis nach Steuern 229.219,13 -726.893,86
+8. Sonstige Steuern -857.535,62 -879.289,10
+9. Jahresfehlbetrag -628.316,49 -1.606.182,96
+Gewinn- und Verlustrechnung
+für die Zeit vom 01. Januar bis 31. Dezember 2023
+\'\'\'.<|im_end|>
+<|im_start|>system
+You know this example for a \'Aktiva\' (assets) table and for this example you should answer with "yes":
+
+\'\'\'
+BEN Berlin Energie und Netzholding GmbH (vormals: Berlin Energie Rekom 2 GmbH)
+Berlin
+Bilanz zum 31.12.2021
+Aktivseite 31.12.2021 31.12.2020 31.12.2021 31.12.2020
+T€ T€ T€ T€
+A. Anlagevermögen A. Eigenkapital
+imv I. Immaterielle Vermögensgegenstände 0,8 - ek I. Gezeichnetes Kapital 25,0 25,0
+bga II. Sachanlagen 73,1 - kr II. Kapitalrücklage 6,9 6,9
+III. Finanzanlagen 2.094.146,0 - vv III. Verlustvortrag - 6,9 - 6,9
+IV. Jahresüberschuss 1.326,7 -
+ 2.094.219,9 -
+ 1.351,7 25,0
+B. Umlaufvermögen sor
+unf I. Forderungen und sonstige B. Rückstellungen
+ Vermögensgegenstände Sonstige Rückstellungen 265,1 6,7
+Forderungen gegen verbundene
+Unternehmen 423,1 - anzC. Verbindlichkeiten
+1. Verbindlichkeiten gegenüber
+fll II. Guthaben bei Kreditinstituten 166.662,0 39,2 vll Kreditinstituten 2.180.051,3 -
+2. Verbindlichkeiten aus
+ 167.085,1 39,2 Lieferungen und Leistungen 91,9 1,9
+3. Verbindlichkeiten gegenüber
+ verbundenen Unternehmen 81.286,7 -
+C. Rechnungsabgrenzungsposten 2.471,2 - vvu 4. Verbindlichkeiten gegenüber
+ Gesellschaftern 713,9 5,6
+5. Sonstige Verbindlichkeiten 15,6 -
+ 2.262.159,4 7,5
+ 2.263.776,2 39,2 2.263.776,2 39,2
+Passivseite
+ 21-006917
+\'\'\'.<|im_end|>
+<|im_start|>system
+You know this example for a \'Passiva\' (liabilities) table and for this example you should answer with "no":
+
+\'\'\'
+4 
+ Bilanz Elektrizitätsverteilung 
+Aktiva 31.12.2022
+T€
+Anlagevermögen
+imv Immaterielle Vermögensgegenstände -
+bga Sachanlagen -
+Finanzanlagen -
+ -
+Umlaufvermögen
+unf Forderungen und sonstige Vermögensgegenstände 329,6
+davon Verrechnungsposten gegenüber anderen Aktivitäten 289,9
+fll Guthaben bei Kreditinstituten -
+ 329,6
+Rechnungsabgrenzungsposten 17,9
+ 347,6
+Passiva 31.12.2022
+T€
+Eigenkapital
+ek Gezeichnetes Kapital -
+kr Kapitalrücklage -
+vv Gewinnrücklage/Verlustvortrag -
+Jahresüberschuss 0,1
+ 0,1
+Rückstellungen
+Sonstige Rückstellungen 258,4
+Verbindlichkeiten
+anz Verbindlichkeiten gegenüber Kreditinstituten -
+vll Verbindlichkeiten aus Lieferungen und Leistungen 89,0
+Verbindlichkeiten gegenüber Gesellschaftern -
+Sonstige Verbindlichkeiten -
+ 89,0
+ 347,6
+\'\'\'.<|im_end|>
+<|im_start|>system
+You know this example for a text that does not suit the categories of interest and for this example you should answer with "no":
+
+\'\'\'
+Bericht des 
+Aufsichtsrates
+Sehr geehrte Damen, 
+sehr geehrte Herren,
+mit diesem Bericht informieren wir über unsere Tätigkeit im Geschäftsjahr 2016 
+und das Ergebnis der Prüfung des Jahresabschlusses. Die uns nach Gesetz, Satzung 
+und Geschäftsordnung obliegenden Kontroll- und Beratungsaufgaben haben 
+wir verantwortungsvoll und mit der gebührenden Sorgfalt wahrgenommen. Dabei 
+haben wir den Vorstand bei der Leitung der GESOBAU beratend begleitet, seine 
+Tätigkeit überwacht und waren in alle für die Gesellschaft grundlegend bedeutenden 
+Entscheidungen unmittelbar eingebunden. Der Vorstand ist seinen Informations\x02pflichten uneingeschränkt nachgekommen und hat uns regelmäßig sowohl schrift\x02lich als auch mündlich informiert. Dies geschah zeitnah und umfassend zu allen 
+Aspekten der Unternehmensplanung, dem Verlauf der Geschäfte, der strategischen 
+Weiterentwicklung sowie der aktuellen Lage des Unternehmens. Planabweichungen 
+beim Geschäftsverlauf wurden uns im Einzelnen erläutert und mit schlüssigen 
+Argumenten begründet. Der Vorstand stimmte die strategische Ausrichtung des 
+Unternehmens vertrauensvoll mit uns ab. Die für das Unternehmen bedeutenden 
+Geschäftsvorgänge haben wir auf der Basis der Berichte des Vorstandes ausführlich 
+erörtert und seinen Beschlussvorschlägen nach gründlicher Prüfung und Beratung 
+zugestimmt.
+Sitzungen
+Im Berichtsjahr fanden vier turnusgemäße und eine außerordentliche Sitzung statt. 
+Die Sitzungen des Aufsichtsrates sind von einem intensiven und offenen Austausch 
+geprägt. Ein Mitglied des Aufsichtsrates hat im abgelaufenen Geschäftsjahr an 
+weniger als der Hälfte der Sitzungen teilgenommen. Aufgrund besonderer Eilbe\x02dürftigkeit erfolgten in Abstimmung mit der Vorsitzenden des Aufsichtsrates vier 
+Beschlussfassungen im Umlaufverfahren.
+Die Mitglieder des Aufsichtsrates bereiten sich auf anstehende Beschlüsse regelmäßig 
+auch anhand von Unterlagen vor, die der Vorstand vorab zur Verfügung stellt. Dabei 
+wurden sie von den jeweils zuständigen Ausschüssen unterstützt. Die Aufsichtsrats\x02sitzungen werden zudem von den Arbeitnehmervertretern in Gesprächen mit dem 
+Vorstand vorbereitet.
+Information durch den Vorstand
+Über die wichtigsten Indikatoren der Geschäftsentwicklung und bestehende Risiken 
+unterrichtet der Vorstand den Aufsichtsrat anhand schriftlicher Quartalsberichte. 
+Zwischen den Sitzungsterminen des Aufsichtsrates und seiner Ausschüsse wurde 
+die Aufsichtsratsvorsitzende ausführlich unterrichtet. Hierbei wurde die Strategie 
+des Unternehmens besprochen, wie auch die aktuelle Geschäftsentwicklung und 
+-lage, das Risikomanagement, Fragen der Compliance sowie wesentliche Einzel\x02themen und bevorstehende bedeutsame Entscheidungen erörtert.
+16 Perspektiven Bericht des Aufsichtsrates
+\'\'\'.<|im_end|>
+<|im_start|>user
+[Task]: Decide if the given text contains a \'Aktiva\' (assets) table.
+
+[Rule]: Answer with \'yes\' if it does. Otherwise answer with \'no\'.
+
+[Text]: Here is the text to classify: 
+
+\'\'\'
+22 Amt für Statistik Berlin-Brandenburg | Geschäftsbericht 2014
+Amt für Statistik Berlin-Brandenburg Anstalt des öffentlichen Rechts, Potsdam
+Bilanz zum 31. Dezember 2014
+A K T I V S E I T E 31.12.2014 Vorjahr 
+EUR EUR TEUR 
+A. ANLAGEVERMÖGEN 
+I. Immaterielle Vermögensgegenstände 
+1. Entgeltlich erworbene Konzessionen, gewerbliche 
+Schutzrechte und ähnliche Rechte und Werte 
+sowie Lizenzen an solchen Rechten und Werten 81.480,00 146
+II. Sachanlagen
+1. Grundstücke, grundstücksgleiche Rechte und Bauten 
+einschließlich der Bauten auf fremden Grundstücken 68.386,00 93
+2. Andere Anlagen, Betriebs- und Geschäftsausstattung 140.186,00 174 
+208.572,00 267
+III. Finanzanlagen 
+1. Wertpapiere des Anlagevermögens 2.000.000,00 2.000 
+2.000.000,00 2.000 
+2.290.052,00 2.413
+B. UMLAUFVERMÖGEN 
+I. Forderungen und sonstige Vermögensgegenstände 
+1. Forderungen aus Lieferungen und Leistungen 36.617,86 14 
+2. Sonstige Vermögensgegenstände 297.982,42 267 
+334.600,28 281 
+II. Kassenbestand, Bundesbankguthaben, Guthaben bei 
+Kreditinstituten und Schecks 5.560.638,85 7.783
+5.895.239,13 8.064
+C. RECHNUNGSABGRENZUNGSPOSTEN 216.321,49 213
+8.401.612,62 10.690 
+Bestätigungsvermerk 
+des Abschlussprüfers
+Anhang
+\'\'\'<|im_end|>
+<|im_start|>assistant
+```
+
+multi-class classification prompt factory
+
+```{python, eval=FALSE}
+messages = [
+  {"role": "system", "content": "[Role and Context]: You are a helpful assistant that can classify texts extracted from PDFs."},
+]
+
+if law_context:
+  messages.append({"role": "system", "content": f"You know the laws about how to structure the 'Gewinn- und Verlustrechnung' (profit and loss statement) table:' \n\n'''\n{hgb_guv}\n'''."})
+  messages.append({"role": "system", "content": f"You also know the laws about how to structure the 'Aktiva' (assets) and 'Passiva' (liabilities) table for a 'Bilanz' (balance sheet):' \n\n'''\n{hgb_bilanz}\n'''."})
+
+if random_examples:
+  system_messages = self.__get_random_example_message(**kwargs)
+  for msg in system_messages:
+      messages.append({"role": "system", "content": msg})
+
+if rag_examples:
+  system_messages = self.__get_rag_example_message(text, **kwargs)
+  for msg in system_messages:
+      messages.append({"role": "system", "content": msg})
+
+if top_n_rag_examples:
+  system_messages = self.__get_top_n_rag_example_message(text, **kwargs)
+  for msg in system_messages:
+      messages.append({"role": "system", "content": msg})
+
+messages.append({"role": "user", "content": f"""
+[Task]: Decide of what type the given text is. You can differentiate between four types of pages: 'Aktiva', 'GuV', 'Passiva' and 'other'.\n\n
+[Rules]:\n
+  1) If the text contains a 'Gewinn- und Verlustrechnung' (profit and loss statement) table, answer with 'GuV'.\n\n
+  2) If the text contains an 'Aktiva' (assets) table, answer with 'Aktiva'.\n\n
+  3) If the text contains a 'Passiva' (liabilities) table, answer with 'Passiva'.\n\n
+  4) If the text contains something else, answer with 'other'.\n\n
+[Text]: Here is the text to classify: \n\n'''\n{text}\n'''
+"""})
+```
+
+example for multi-class classification with 1 rag example with Qwen 3
+
+```{verbatim}
+<|im_start|>system
+/no_think [Role and Context]: You are a helpful assistant that can classify texts extracted from PDFs.<|im_end|>
+<|im_start|>system
+You know this example for a \'Gewinn- und Verlustrechnung\' (profit and loss statement) table and for this example you should answer with "GuV":
+
+"""
+74
+Gewinn- und Verlustrechnung für die Zeit vom 01.01.2014 bis 31.12.2014
+Aufwendungen in TEUR Vorjahr
+1. Zinsaufwendungen 302.081 314.077
+2. Provisionsaufwendungen 714 656
+4. Allgemeine Verwaltungsaufwendungen
+a) Personalaufwand
+ aa) Löhne und Gehälter
+ ab) Soziale Abgaben und Aufwendungen
+ für Altersversorgung und für Unterstützung
+ darunter: für Altersversorgung
+b) andere Verwaltungsaufwendungen
+ 
+39.535
+9.009
+2.417
+48.544
+31.161
+79.705
+39.310
+11.020
+4.651
+50.330
+24.983
+75.313
+5. Abschreibungen und Wertberichtigungen auf immaterielle
+Anlagewerte und Sachanlagen 3.647 3.707
+6. Sonstige betriebliche Aufwendungen 25.803 26.412
+7. Abschreibungen und Wertberichtigungen auf Forderungen und 
+bestimmte Wertpapiere sowie Zuführungen zu 
+Rückstellungen im Kreditgeschäft 25.366 14.666
+8. Abschreibungen und Wertberichtigungen auf Beteiligungen,
+Anteile an verbundenen Unternehmen
+und wie Anlagevermögen behandelte Wertpapiere 421 0
+9. Aufwendungen aus Verlustübernahme 1.268 0
+13. Sonstige Steuern, soweit nicht unter Posten 6 ausgewiesen 65 80
+15. Jahresüberschuss 25.863 36.897
+Summe der Aufwendungen 464.933 471.808
+Jahresüberschuss 25.863 36.897
+Gewinnvortrag aus dem Vorjahr 0 0
+Bilanzgewinn 25.863 36.897
+An unsere Geschäftspartner | Grußwort der Vorsitzenden des Verwaltungsrats | Bericht des Verwaltungsrats
+Wohnungsbauförderung | Wirtschaftsförderung | Beteiligungen | Immobilien- und Stadtentwicklung | Personalbericht | Nachhaltigkeit 
+Lagebericht | Jahresabschluss | Anhang | Bestätigungsvermerk | Corporate-Governance-Bericht | Organigramm
+""". (The L2 distance of this example text is: 0.562)<|im_end|>
+<|im_start|>system
+You know this example for a \'Aktiva\' (assets) table and for this example you should answer with "Aktiva":
+
+"""
+52 Gruppenbilanz
+Gruppenbilanz zum 31. Dezember 2016
+A K T I V A 31. 12. 2016 31. 12. 2015
+€ € €
+A. ANLAGEVERMÖGEN
+I. Immaterielle Vermögensgegenstände
+Entgeltlich erworbene Konzessionen, gewerbliche 
+Schutzrechte und ähnliche Rechte 122.148,00 185.602,00
+II. Sachanlagen
+1. Anlageimmobilien 3.423.064.255,69 3.338.758.481,04
+2. übrige Grundstücke und Bauten 4.143.376,87 1.087.406,00
+3. technische Anlagen und Maschinen 120.700,00 149.667,00
+4. andere Anlagen, Betriebs- und Geschäftsausstattung 5.143.477,51 4.555.161,48
+5. geleistete Anzahlungen und Anlagen im Bau 1.007.468,36 180.543,58
+3.433.479.278,43 3.344.731.259,10
+III. Finanzanlagen
+1. Anteile an verbundenen Unternehmen 1.026.647,27 1.027.646,27
+2. Ausleihungen an verbundene Unternehmen 157.645,00 214.395,00
+3. Beteiligungen 284.138,88 40.073,02
+4. sonstige Ausleihungen 120.966,91 120.966,91
+1.589.398,06 1.403.081,20
+3.435.190.824,49 3.346.319.942,30
+B. UMLAUFVERMÖGEN
+I. Vorräte
+1. unfertige Leistungen 48.642.315,18 52.057.422,25
+2. andere Vorräte 13.053,63 21.315,99
+48.655.368,81 52.078.738,24
+II. Forderungen und sonstige Vermögensgegenstände
+1. Forderungen aus Lieferungen und Leistungen 32.107.301,91 35.679.035,16
+2. Forderungen gegen verbundene Unternehmen 74.457,55 554.130,28
+3. Forderungen gegen Unternehmen, 
+mit denen ein Beteiligungsverhältnis besteht 108.647,73 23.698,71
+4. sonstige Vermögensgegenstände 100.560.866,41 100.896.144,88
+132.851.273,60 137.153.009,03
+III. Wertpapiere
+sonstige Wertpapiere 1.700,00 1.700,00
+IV. Kassenbestand, Guthaben bei Kreditinstituten 893.140.123,18 689.887.519,98
+1.074.648.465,59 879.120.967,25
+C. RECHNUNGSABGRENZUNGSPOSTEN 9.245.284,80 9.917.197,12
+D. AKTIVER UNTERSCHIEDSBETRAG AUS DER 
+VERMÖGENSVERRECHNUNG 68.523,69 0,00
+4.519.153.098,57 4.235.358.106,67
+ 
+""". (The L2 distance of this example text is: 0.421)<|im_end|>
+<|im_start|>system
+You know this example for a \'Passiva\' (liabilities) table and for this example you should answer with "Passiva":
+
+"""
+Anlage 1
+BEN Berlin Energie und Netzholding GmbH
+Berlin
+Bilanz zum 31.12.2023
+Aktivseite 31.12.2023 31.12.2022 31.12.2023 31.12.2022
+T€ T€ T€ T€
+A. Anlagevermögen A. Eigenkapital
+imv I. Immaterielle Vermögensgegenstände 58,0 20,2 ek I. Gezeichnetes Kapital 25,0 25,0bga II. Sachanlagen 106,7 70,7 kr II. Kapitalrücklage 6,9 6,9
+III. Finanzanlagen 2.194.146,0 2.094.146,0 vv III. Gewinnrücklage/Verlustvortrag 41.023,4 1.319,8
+IV. Jahresüberschuss 51.158,5 39.703,6
+ 2.194.310,6 2.094.236,9
+ 92.213,8 41.055,3
+B. Umlaufvermögen sor
+unf I. Forderungen und sonstige B. Rückstellungen
+ Vermögensgegenstände Sonstige Rückstellungen 4.759,3 460,0
+1. Forderungen aus Lieferungen und Leistungen 73,1 70,72. Forderungen gegen verbundene C. Verbindlichkeiten Unternehmen 96.998,2 60.960,4 anz 1. Verbindlichkeiten gegenüber 3. Sonstige Vermögensgegenstände 988,6 923,3 Kreditinstituten 2.317.498,9 2.148.050,6
+fll II. Guthaben bei Kreditinstituten 226.047,2 160.535,8 vll 2. Verbindlichkeiten aus
+ Lieferungen und Leistungen 272,0 158,4
+ 324.107,1 222.490,2 3. Verbindlichkeiten gegenüber 
+ verbundenen Unternehmen 104.704,9 128.407,54. Verbindlichkeiten gegenüber 
+C. Rechnungsabgrenzungsposten 1.969,9 2.207,9 vvu Gesellschaftern 695,8 706,1
+5. Sonstige Verbindlichkeiten 242,9 97,1
+ 2.423.414,4 2.277.419,7
+ 2.520.387,6 2.318.935,0 2.520.387,6 2.318.935,0
+Passivseite
+3
+""". (The L2 distance of this example text is: 0.481)<|im_end|>
+<|im_start|>system
+You know this example for a text that does not suit the categories of interest and for this example you should answer with "other":
+
+"""
+46 Konzernbilanz
+Konzernbilanz zum 31. Dezember 2013
+A K T I V A 31. 12. 2013 31. 12. 2012
+€ € €
+A. ANLAGEVERMÖGEN
+I. Immaterielle Vermögensgegenstände
+Konzessionen, gewerbliche Schutzrechte und ähnliche 
+Rechte
+344.384,00 461.417,00
+II. Sachanlagen
+1. Grundstücke und Bauten 1.242.921,00 1.272.566,00
+2. Technische Anlagen und Maschinen 122.769,00 62.405,00
+3. Andere Anlagen, Betriebs- und Geschäftsausstattung 2.339.362,51 1.562.893,45
+4. Geleistete Anzahlungen 704,76 33.483,89
+3.705.757,27 2.931.348,34
+III. Finanzanlagen
+1. Anteile an verbundenen Unternehmen 3.201.349,87 3.201.436,42
+2. Ausleihungen an verbundene Unternehmen 217.680,00 223.395,00
+3. Beteiligungen 42.171.545,24 54.585.174,81
+4. Sonstige Ausleihungen 76.015.926,17 99.994.824,65
+121.606.501,28 158.004.830,88
+125.656.642,55 161.397.596,22
+B. UMLAUFVERMÖGEN
+I. Vorräte
+1. Unfertige Leistungen 12.885.172,94 8.843.369,97
+2. Zum Verkauf bestimmte Grundstücke und Gebäude 139.000,00 139.002,00
+3. Andere Vorräte 61.319,05 93.039,06
+13.085.491,99 9.075.411,03
+II. Forderungen und sonstige Vermögensgegenstände
+1. Forderungen aus Lieferungen und Leistungen 8.666.340,95 12.099.596,63
+2. Forderungen gegen verbundene Unternehmen 1.409.363,51 7.573.168,86
+3. Forderungen gegen Unternehmen, 
+mit denen ein Beteiligungsverhältnis besteht
+555.093,06 1.651.573,06
+4. Sonstige Vermögensgegenstände 345.991.815,13 163.003.969,98
+356.622.612,65 184.328.308,53
+III. Wertpapiere
+Sonstige Wertpapiere 52.252.850,00 59.329.212,00
+IV. Kassenbestand, Guthaben bei Kreditinstituten 152.594.976,48 248.363.122,67
+574.555.931,12 501.096.054,23
+C. RECHNUNGSABGRENZUNGSPOSTEN 7.545.702,82 7.957.871,65
+707.758.276,49 670.451.522,10
+Treuhandvermögen 1.943.915.141,66 1.953.309.522,69
+""". (The L2 distance of this example text is: 0.434)<|im_end|>
+<|im_start|>user
+
+[Task]: Decide of what type the given text is. You can differentiate between four types of pages: \'Aktiva\', \'GuV\', \'Passiva\' and \'other\'.
+
+
+[Rules]:
+
+1) If the text contains a \'Gewinn- und Verlustrechnung\' (profit and loss statement) table, answer with \'GuV\'.
+
+
+2) If the text contains an \'Aktiva\' (assets) table, answer with \'Aktiva\'.
+
+
+3) If the text contains a \'Passiva\' (liabilities) table, answer with \'Passiva\'.
+
+
+4) If the text contains something else, answer with \'other\'.
+
+
+[Text]: Here is the text to classify: 
+
+\'\'\'
+22 Amt für Statistik Berlin-Brandenburg | Geschäftsbericht 2014
+Amt für Statistik Berlin-Brandenburg Anstalt des öffentlichen Rechts, Potsdam
+Bilanz zum 31. Dezember 2014
+A K T I V S E I T E 31.12.2014 Vorjahr 
+EUR EUR TEUR 
+A. ANLAGEVERMÖGEN 
+I. Immaterielle Vermögensgegenstände 
+1. Entgeltlich erworbene Konzessionen, gewerbliche 
+Schutzrechte und ähnliche Rechte und Werte 
+sowie Lizenzen an solchen Rechten und Werten 81.480,00 146
+II. Sachanlagen
+1. Grundstücke, grundstücksgleiche Rechte und Bauten 
+einschließlich der Bauten auf fremden Grundstücken 68.386,00 93
+2. Andere Anlagen, Betriebs- und Geschäftsausstattung 140.186,00 174 
+208.572,00 267
+III. Finanzanlagen 
+1. Wertpapiere des Anlagevermögens 2.000.000,00 2.000 
+2.000.000,00 2.000 
+2.290.052,00 2.413
+B. UMLAUFVERMÖGEN 
+I. Forderungen und sonstige Vermögensgegenstände 
+1. Forderungen aus Lieferungen und Leistungen 36.617,86 14 
+2. Sonstige Vermögensgegenstände 297.982,42 267 
+334.600,28 281 
+II. Kassenbestand, Bundesbankguthaben, Guthaben bei 
+Kreditinstituten und Schecks 5.560.638,85 7.783
+5.895.239,13 8.064
+C. RECHNUNGSABGRENZUNGSPOSTEN 216.321,49 213
+8.401.612,62 10.690 
+Bestätigungsvermerk 
+des Abschlussprüfers
+Anhang
+\'\'\'
+        <|im_end|>
+<|im_start|>assistant
+```
+
 ## Regular expressions {#regex-page-identification-code}
 
 Here one can find the three regular expressions used for the benchmarks presented in section \@ref(regex-page-identification).
@@ -338,6 +837,15 @@ regex_patterns_3 = {
 }
 ```
 
+## Tables
+
+### Classification
+
+```{r comparing-actual-number-of-in-context-examples, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_classification_n_examples %>%
+  render_table(alignment="llrrrr", caption="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n_examples.", ref = opts_current$get("label"))
+```
+
 ## Figures
 
 ### Page identification
@@ -374,6 +882,65 @@ balanced_df_toc_benchmark %>% ggplot() +
   # theme(
   #   legend.position = "bottom"
   # )
+```
+
+#### Classification
+
+Binary classification F1 score over runtime limited to 60 minutes
+
+```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_binary %>% filter(classification_type == "Aktiva") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(xlim = c(0, 60))
+```
+
+Binary classification F1 score over runtime unlimited
+
+```{r binary-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
+df_binary %>% filter(classification_type == "Aktiva") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes")
 ```
 
 ### Table extraction
@@ -532,47 +1099,6 @@ p2 <- df_temp %>% filter(str_detect(model_family, "Qwen") | model_family == "mic
 
 p1 /
   p2
-```
-
-```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
-design = "
-ABCD##W
-EFGHI#x
-JKL####
-MNOPQRS
-TUV####
-"
-
-model_by_size <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
-  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
-  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
-  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
-  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
-  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
-  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
-  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
-  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
-  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
-  )
-
-df_binary %>% filter(classification_type == "Aktiva") %>% 
-  filter(loop == 0) %>% filter(model %in% model_by_size) %>% 
-  mutate(norm_runtime = norm_runtime/60) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>% 
-  # left_join(model_letters, by = "model") %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
-  # ggplot(aes(x = norm_runtime, y = recall)) +
-  # ggplot(aes(x = norm_runtime, y = precision)) +
-  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
-  scale_shape(na.value = 15, guide = "legend") +
-  geom_text(aes(label = n_examples)) +
-  # facet_grid(classification_type~model) +
-  ggh4x::facet_manual(~factor(model, levels = model_by_size), design = design) +
-  theme(legend.position = "bottom") +
-  guides(
-    color = guide_legend(nrow = 1),
-    shape = guide_legend(nrow = 1)
-  )
 ```
 
 ```{r comparing-table-extraction-performance-among-real-and-synth-aktiva-data, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the table extraction performance among real and synthetic Aktiva tables", cache=cache_large_figures}

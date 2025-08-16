@@ -100,13 +100,15 @@ compared and summarized. Subsection \@ref() proposes an efficient
 combination of approaches to solve the task of this thesis and discusses
 its limitations.
 
+##### Dataset describtion
+
 Figure \@ref(fig:document-base-page-identification) shows how the
-document base for most of the tasks in this section is
-composed[^05_results-3]. Overall `r num_documents` annual reports from
-`r num_companies` companies are used. For this thesis the tables of
-interest are those that show **Aktiva**, **Passiva** and **GuV**. Among
-the `r total_pages_no_ocr` pages `r num_tables` tables have to be
-identified on `r num_target_pages` pages. Figure
+document base for the tasks in this section is composed[^05_results-3].
+Overall `r num_documents` annual reports from `r num_companies`
+companies are used. For this thesis the tables of interest are those
+that show **Aktiva**, **Passiva** and **GuV**. Among the
+`r total_pages_no_ocr` pages `r num_tables` tables have to be identified
+on `r num_target_pages` pages. Figure
 \@ref(fig:document-base-page-identification) also gives an impression on
 how many pages the documents have. The documents of *IBB* tend to be
 longer. The documents of *Amt für Statistik Berlin-Brandenburg* tend to
@@ -588,7 +590,7 @@ mean_ranges %>%
   render_table(alignment="lrrrr", caption="Comparing the mean and median page range sizes.", ref = opts_current$get("label"))
 ```
 
-```{r page-identification-toc-range-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparint the predicted page range sizes. The red vertical line shows the mean and the green one shows the median of these sizes."}
+```{r page-identification-toc-range-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparint the predicted page range sizes. The red vertical line shows the mean and the green one shows the median of these sizes.", fig.height=4}
 next_page_df_toc_benchmark %>% 
   # mutate(range = range-1) %>% 
   ggplot() +
@@ -606,7 +608,7 @@ A linear regression of the correlation between minimal page distance and
 logistic probability shows that is has a similar slope for all
 approaches and target types.
 
-```{r page-identification-toc-range-logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the minimal distance of the predicted page range to the actual page number overthe logprobs of the models response confidence."}
+```{r page-identification-toc-range-logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the minimal distance of the predicted page range to the actual page number overthe logprobs of the models response confidence.", fig.height=4}
 next_page_df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
   distance_confidence_plot() +
   facet_grid(type~benchmark_type) +
@@ -666,6 +668,7 @@ df_binary <- temp_list$df_binary
 df_multi <- temp_list$df_multi
 
 method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
+
 method_familiy_colors <- c(
   "zero_shot" = "#e41a1c", 
   "law_context" = "#377eb8", 
@@ -674,89 +677,263 @@ method_familiy_colors <- c(
   'n_rag_examples' = "#ff7f00"
   )
 
-df_binary <- df_binary %>% filter(!str_detect(model, "gemma") || str_detect(model, "0-9-1")) %>% 
+model_by_size_classification <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
+  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
+  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
+  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
+  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
+  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
+  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
+  )
+
+df_binary <- df_binary %>% filter(model %in% model_by_size_classification) %>% 
   mutate(
   n_examples = as.numeric(n_examples),
   n_examples = if_else(method_family == "zero_shot", 0, n_examples),
   n_examples = if_else(method_family == "law_context", 1, n_examples),
   method_family = factor(method_family, levels = method_families)
-)
+) %>% ungroup() # %>% 
+  # mutate(
+  #   model = str_replace(model, "_vllm", ""),
+  #   model_family = sub("_.*", "", model),
+  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  # )
 
 binary_task <- list()
 binary_task$n_models <- df_binary$model %>% unique() %>% length()
 binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
 binary_task$n_method_families <- df_binary$method_family %>% unique() %>% length()
-```
 
-structured outputs forcing to answer with a *yes* or *no* for binary
-task or with *Aktiva*, *Passiva*, *GuV* or *other* for multi
-classification task
-
-top n accuracy
-
-out of company vs in compnay rag
-
-#### Binary classification
-
-Could be more efficient to predict "is any of interest" and then which
-type, because dataset is highly imbalanced.
-
-`r  binary_task$n_models` models from `r binary_task$n_model_families`
-haven been benchmarked among `r binary_task$n_method_families` methods
-
-Most models have been used up to 3 examples for the context.
-
-The best combination of model and method for each method family is
-presented in the following table. It is clear that the Google Gemma
-models are performing worst.[^05_results-10] Surprisingly Mistral 2410
-is the best performing model for all three prediction tasks even though
-it only has 8B parameters.
-
-[^05_results-10]: This is not due to a temporary technical problems
-    caused by a bug in the transformers version shipped with the vllm
-    0-9-2 image. Those problems have been overcome. The performance
-    stays bad.
-
-```{r table-metrics-llm-page-identification-binary, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
-df_binary %>% 
+top_performer_binary <- df_binary %>% 
   filter(is.finite(f1_score), loop == 0) %>% 
   filter(n_examples <= 3 | is.na(n_examples)) %>%
   group_by(model_family, classification_type) %>% 
-  filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
-  # mutate(
-  #   n = n()
-  # ) %>% filter(n > 1)
-  arrange(desc(f1_score)) %>% # head(10) %>% 
+  slice_max(n = 1, f1_score) %>% 
+  arrange(desc(f1_score)) %>% 
   select(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) %>%
   mutate(
     f1_score = round(f1_score, 2),
     norm_runtime = round(norm_runtime, 0),
   ) %>% rename(
     "runtime in s" = norm_runtime,
-  ) %>% 
-  render_table()
+  )
+
+top_performer_binary_median <- top_performer_binary %>% group_by(classification_type) %>% summarise(median = median(f1_score))
+top_performer_binary_median_guv <- top_performer_binary_median %>% filter(classification_type == "GuV") %>% pull(median)
+top_performer_binary_median_aktiva <- top_performer_binary_median %>% filter(classification_type == "Aktiva") %>% pull(median)
+top_performer_binary_median_passiva <- top_performer_binary_median %>% filter(classification_type == "Passiva") %>% pull(median)
+
+df_multi <- df_multi %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(
+  n_examples = as.numeric(n_examples),
+  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
+  n_examples = if_else(method_family == "law_context", 1, n_examples),
+  method_family = factor(method_family, levels = method_families)
+) %>% ungroup() #%>%
+  # mutate(
+  #   model = str_replace(model, "_vllm", ""),
+  #   model_family = sub("_.*", "", model),
+  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  # )
 ```
 
-It is interesting that the predictions do not get better by providing
-more and more examples. Especially for the n-rag-example approach we
-find a significant drop in the F1 score if the examples pages come from
-different companies annual reports. This is caused by a sever recall
-drop. But also for the n-ranom-example approach we see this for the
-prediction of class Passiva.
+The third approach we present in this section, uses pretrained
+\acr{LLM}s to classify, if a given text extract is including any of the
+target tables. Two classification approaches are presented.
 
-Recall better with examples from same company. Precision better without.
+On the one hand, a binary classification is used three times, to
+predict, if the text extract is including an **Aktiva**, **Passiva** or
+**GuV** table, once at a time. In this case the \acr{LLM} is forced to
+answer with either *yes* or *no*. On the other hand, the \acr{LLM}
+performed a \\acr{mcc]. For the \acr{mcc} the \acr{LLM} is forced to
+answer *Aktiva*, *Passiva*, *GuV* or *other*. The prompts can be found
+in appendix in section \@ref(classification-prompts).
 
-We can also see that the prediction performance is
-stable.[^05_results-11]
+The different classification tasks are combined with different prompting
+strategies. A zero shot approach is setting the baseline. In a second
+approach the excerpt of the relevant law is provided with the context.
+Additionally, three few shot approaches are used.
 
-[^05_results-11]: Earlier experiments on a subset of the pages have been
+In the few shot approaches text examples and a correct classification
+for the text examples are provided. Figure
+\@ref(fig:comparing-actual-number-of-in-context-examples-plot) shows how
+many examples the \acr{LLM} gets provided, depending on the
+classification type and chosen parameter *n_example*[^05_results-10].
+For both approaches three example selection strategies are implemented.
+First, random examples for each page type get sampled from the truth
+dataset. Second, a vector database provides the entries that are closest
+to the target text for each page type. Third, the vector database just
+provides the texts that are closest to the target text without
+considering the page type of the examples returned.
+
+[^05_results-10]: See also Table
+    \@ref(tab:comparing-actual-number-of-in-context-examples).
+
+For the binary classification task the \acr{LLM} is provided with more
+examples for the target type than for other types. Thus, the number of
+examples and tokens is reduced. This should reduce the runtime as well.
+On the same time the \acr{LLM} should get enough information about the
+structure and contents of the target class and some information how it
+differs from other big tables or general text pages.
+
+For the \acr{mcc} the same amount of every possible class is provided.
+Thus, the relation between the parameter *n_examples* and the number of
+tokens to process is stronger for the *n_random_examples* and
+*n_rag_examples* strategies.
+
+```{r comparing-actual-number-of-in-context-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n-examples. The slope for the top-n-rag-examples strategy is the same for both approaches. The line for the strategies n-random-examples and n-rag-examples is equal within each approach."}
+df_classification_n_examples <- read_csv("../benchmark_truth/real_example_count.csv")
+
+df_classification_n_examples %>% 
+  rename(strategy = approach) %>% 
+  ggplot() +
+  geom_point(aes(x = n_example, y = sum, color = strategy), alpha = .5) +
+  geom_line(data = . %>% filter(strategy != "n_random_examples"), aes(x = n_example, y = sum, color = strategy)) +
+  geom_line(data = . %>% filter(strategy == "n_random_examples"), aes(x = n_example, y = sum, color = strategy), linetype = "dashed") +
+  facet_grid(~classification)
+```
+
+Table \@ref(tab:page-identification-llm-overview) shows, which models
+have been used in the classification benchmarks. Overall
+`r binary_task$n_models` models from `r binary_task$n_model_families`
+model families have been tested. Prerequirement for a model to be tested
+is, that it can be used with the \acr{vllm} library, accessed via
+hugging face and fits into the combined VRAM of 8 nvidia B200 graphic
+cards (1.536 TB). The models cover a wide range of (active) parameter
+sizes. Especially for the Qwen family many models of different parameter
+sizes are used in the benchmark, to investigate if there is a clear
+minimum amount of parameters needed, to solve the classification task.
+
+The results of the benchmarks have been logged as \acr{json} files
+totaling in 2.1 GB of data for the final results.
+
+```{r page-identification-llm-overview, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
+df_binary %>% 
+  mutate(
+   model = str_replace(model, "_vllm", ""),
+   model_family = sub("_.*", "", model),
+   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  ) %>% filter(model %in% model_by_size_classification) %>% select(model_family, model, parameter_count) %>% unique() %>% arrange(tolower(model_family), parameter_count) %>% 
+  render_table(alignment="llr", caption="Overview of benchmarked LLMs for the classification tasks.", ref = opts_current$get("label"))
+```
+
+To do:
+
+-   compare out of company vs in company rag
+
+#### Binary classification
+
+Table \@ref(tab:table-metrics-llm-page-identification-binary) shows the
+best performing combination of model family and prompting method for
+each classification target type. The classification of **GuV** tables
+works best and is solved almost perfectly. The F1 score for **Aktiva**
+and **Passiva** are 0.07 lower for the top performing model. The median
+F1 score of **GuV** is `r top_performer_binary_median_guv` 0.1 higher
+than the median F1 score for **Aktiva**
+(`r top_performer_binary_median_aktiva`) and 0.2 higher than the median
+F1 score for **Passiva**
+(`r round(top_performer_binary_median_passiva, 2)`).
+
+Mistral 8B Instruct 2410 is performing best for the binary
+classification task for each target type. Llama-4-Scout-17B-16E-Instruct
+is performing second best for **Aktiva** and **GuV** and is close to the
+second best for **Passiva** as well. The runtime of Mistral 8B Instruct
+2410 is four times lower than the runtime of
+Llama-4-Scout-17B-16E-Instruct. In addition, the time to load
+Llama-4-Scout-17B-16E-Instruct into the VRAM is much
+longer[^05_results-11], because it has a total of 109B parameters. It
+was surprising that Googles gemma models perform so bad[^05_results-12].
+
+[^05_results-11]: It takes around 30 minutes to setup a vllm instance
+    with Llama-4 Scout compared to 4:30 minutes setuptime for Mistral 8B
+    2410.
+
+[^05_results-12]: This is not due to a temporary technical problems
+    caused by a bug in the transformers version shipped with the vllm
+    0-9-2 image. Those problems have been overcome. The performance
+    stays bad.
+
+```{r table-metrics-llm-page-identification-binary, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
+top_performer_binary %>% 
+  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
+```
+
+Figure \@ref(fig:binary-classification-result-mistral-plot) shows, the
+classification performance for Mistral 8B 2410 in detail. It shows the
+F1 score for each target type over the models runtime. It shows the
+results for the different prompting strategies (*method_families*) with
+differently colored shapes. The *zero_shot* strategy performs worst with
+a F1 score below 0.6. Next come the *law_context* and
+*top_n_rag_examples* strategy. Above those the *n_random_examples* and
+finally the *n_rag_examples* strategy perform best.
+
+The shape is giving information, if the example proveded to the
+\acr{LLM} are selected from other companies than the target table comes
+from only, or if they can also be selected from documents of the same
+company. This is only relevant for strategies that get the examples
+picked by the documents vector embedding distances. The \acr{LLM}
+performs better[^05_results-13], if examples from documents of the same
+company can be used. If this is not permitted, the *n_random_example*
+approach performs better than the *n_rag_example* for the classification
+of **GuV** and **Passiva** tables.
+
+[^05_results-13]: It has a better F1 score, when examples from the same
+    company are permitted. The recall is better with examples from same
+    company. The precision is better without. The improvement in the
+    recall is stronger.
+
+The number inside of the shapes is referring to the *n_examples*
+function parameter. Most models got benchmarked with an *n_examples*
+value of up to three. The actual number of examples provided to the
+models is depending on the method family / example selection strategy
+and can be looked up in Table
+\@ref(tab:comparing-actual-number-of-in-context-examples).
+
+The best performing model, Mistral 8B 2410, was provided with mode
+examples to investigate the effect of a richer context. The predictions
+do not get better by providing more and more examples. Figure
+\@ref(fig:binary-classification-result-mistral-plot) shows, that the
+improvements get smaller naturally going from three to five examples
+while approaching an F1 score of 1.0.
+
+But for the *n_rag_example* strategy we find a significant drop in the
+F1 score, if we set the *n_examples* to five[^05_results-14] and
+examples pages come from annual reports of other companies. This is
+caused by a sever recall drop. For the *n_random_example* strategy we
+see a small drop with the F1 score for the class **Passiva** as well.
+Taking into account that the runtime also almost is twice as high, this
+is very inefficient.
+
+[^05_results-14]: In this case five examples for the target table type
+    and two examples for each other type are provided, totaling at
+    twelve examples.
+
+Figure \@ref(fig:binary-classification-result-mistral-plot) also shows,
+that the results are stable[^05_results-15]. Running the benchmark three
+times shows similar results in the F1 score for each strategy. This is
+reflected by closely overlapping shapes of the same color with the same
+number within.
+
+[^05_results-15]: Earlier experiments on a subset of the pages have been
     run five times indicating stable results. Running the experiments up
     to tree times in this very task indicate this as well.
 
-```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
+```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410."}
 df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) %>% 
   filter(n_examples <= 5 | is.na(n_examples)) %>% 
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
@@ -766,79 +943,160 @@ df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 3) 
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
-  )
+  ) +
+  labs(x = "normalized runtime in minutes")
 ```
 
--   f1
--   multiple models
--   best model detail (different methods / settings)
+Figure
+\@ref(fig:binary-classification-result-mistral-many-random-examples-plot)
+shows the experiments for Ministral-8B-Instruct-2410 with *n_examples*
+greater or equal three. This time the actual number of examples provided
+to the \acr{LLM} are shown in the shapes to increase the comparability
+among the different strategies. Additionally, it shows results for the
+*top_n_rag_example* strategy with *n_examples* up to 13. The F1 score of
+the *top_n_rag_example* strategy stays lower than the F1 score of the
+*n_rag_examples* strategy, even though there are more examples used.
+This is mainly caused by lower precision scores, probably because there
+are no contrasting examples provided.
 
-The experiments for the best performing model,
-Ministral-8B-Instruct-2410, have been extended by methods with even more
-examples. Especially for the top-n-rag-example approach to get a better
-comparable picture based on the real number of examples / context
-length.
-
-```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-df_binary %>% filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
+```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
+df_binary %>% left_join(df_classification_n_examples, by = c(
+  "method_family" = "approach", 
+  "n_examples" = "n_example", 
+  "classifier_type" = "classification"
+  )) %>% rename(sum_examples = sum) %>% 
+  filter(model == "mistralai_Ministral-8B-Instruct-2410", loop < 2) %>% 
   filter(n_examples > 1 | is.na(n_examples)) %>% 
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   scale_color_manual(values = method_familiy_colors) +
-  geom_text(aes(label = n_examples)) +
+  geom_text(aes(label = sum_examples)) +
   facet_grid(model~classification_type) +
   # theme(legend.position = "bottom") +
   guides(
     color = guide_legend(ncol = 1, title.position = "top"),
     shape = guide_legend(ncol = 1, title.position = "top")
-  )
+  ) +
+  labs(x = "normalized runtime in minutes")
 ```
 
-```{r comparing-actual-number-of-in-context-examples, echo=echo_flag, warning=warning_flag, message=message_flag}
-read_csv("../benchmark_truth/real_example_count.csv") %>% kbl()
-```
+Figure \@ref(fig:binary-classification-performance-over-runtime) and
+Figure
+\@ref(fig:binary-classification-performance-over-runtime-full-time)
+shows the F1 performance over normalized rundtime for all benchmarked
+models. Comparing Mistral-8B-Instruct-2410 with
+Mistral-124B-Instruct-2411 shows that one can spend over tenfold amount
+of computation power without getting better results.
 
-Predictions very accurate. Confidence not always 1. Wrong predictions
-with often with medium confidence. If Aktiva and Passiva on same page
-more often Aktiva predicted. Confidence for no displayed as 1-confidence
-to represent confidence for yes (binary classification).
+It also shows, that with Qwen 2.5 it needs at least the 3B parameter
+model to achieve good results. Comparing the 32B and 72B parameter
+models shows, that th performance does not increase anymore, but starts
+to decrease. For Qwen 3 it shows, that only the newer mix of experts
+models give reasonable results.
 
-```{r confidence-match-plot-mistral-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-df_filtered <- df_binary %>% filter(classification_type == "Aktiva") %>% 
+The mix of expert models show good performance for the Llama 4 family as
+well and reduce the compute time compared with the 72B models of LLama
+3. But for LLama 4 Maverick the performance drops using the
+*n_rag_examples* strategy with three *n_examples*. The performance of
+Llama 3.1 70B was higher than the performance of Llama 3.3 70B.
+
+Summary:
+
+Neither do newer generations always improve the performance for the
+binary classification task, nor do more parameters always improve or at
+least show stable performance.
+
+##### Confidence
+
+```{r confidence-match-plot-mistral-binary-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_filtered <- df_binary %>% filter(
+  classification_type == "Aktiva", n_examples<=3
+  ) %>%
   arrange(desc(f1_score))
+
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+
 df_flipped_score <- df_temp %>% 
   mutate(
     confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
     is_aktiva = str_detect(type, "Aktiva")
   )
+
 model_name_best_f1_aktiva <- df_filtered[1, "model"]
 method__best_f1_aktiva <- df_filtered[1, "method"]
+```
 
+I investigate the relation between the reported confidence for an answer
+and its correctness, to check if it is possible to inform humans in the
+loop about results they should double check and which results they can
+trust. Figure \@ref(fig:confidence-match-plot-mistral-binary) shows the
+distribution of reported confidence score for the binary classification
+with target type **Aktiva** for all tables types grouped by their
+correctness for Mistral-8B-Instruct-2410. The \acr{LLM} just returns one
+prediction and its confidence[^05_results-16]. The abscissa shows
+$confidence = exp(logprob)$, if the answer is *yes* and
+$confidence = 1-exp(logprob)$ if the answer is *no*.
+
+[^05_results-16]: The model could be forced to return multiple answers,
+    but it was not. The confidence score is given as log probability.
+    The exponential function was applied to show the results on the more
+    common scale of 0 to 1.
+
+One can see that the predictions are very accurate making just
+`r sum(df_temp$match==FALSE)` mistakes for `r length(df_temp$match)`
+predictions. The reported confidence for answer *yes* is showing a wide
+spread from around 0.25 to 1.0. This is true for the answer *no* as
+well. Most wrong decisions are made for responses that have a reported
+confidence in the range from 0.25 to 0.75. But there are more correct
+answers in this range as well. It never misclassifies **GuV** or
+**Passiva**[^05_results-17] as **Aktiva**. But it with shows some not
+recalled **Aktiva** tables and is predicting some of the pages of
+majority class, with not further described content and structure, as
+**Aktiva**.
+
+[^05_results-17]: There was a single prediction where \acr{LLM} predicts
+    **Aktiva** with high confidence, when the truth is **Passiva**
+    instead. Because Qwen was showing the same wrong prediction for one
+    **Passiva** table, I double checked the ground truth. I found, that
+    the page shows **Aktiva** and **Passiva** simultaneously and was not
+    correct codified. This was not the only time, where a mistake in the
+    gold truth was found, by examining potential \acr{LLM} mistakes.
+
+```{r confidence-match-plot-mistral-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Mistral-8B-Instruct-2410."}
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
   geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
   labs(title = model_name_best_f1_aktiva,
-       subtitle = method__best_f1_aktiva)
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim=c(0,1))
 ```
 
-Qwen returns always high confidence even if it is wrong.
-
-```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
+```{r confidence-match-plot-qwen-binary-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
   arrange(desc(f1_score))
+
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+
 df_flipped_score <- df_temp %>% 
   mutate(
     confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
     is_aktiva = str_detect(type, "Aktiva")
   )
+
 model_name_best_f1_aktiva <- df_filtered[1, "model"]
 method__best_f1_aktiva <- df_filtered[1, "method"]
+```
 
+This is different for models of most other model families. Figure
+\@ref(fig:confidence-match-plot-qwen-binary) shows, that
+`r model_name_best_f1_aktiva` returns always high confidence scores,
+even when it is wrong. The model shows perfect recall but its precision
+is worse than the precision of the Mistral model.
+
+```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct."}
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
@@ -848,236 +1106,199 @@ df_flipped_score %>%
        subtitle = method__best_f1_aktiva)
 ```
 
--   IBB other law
--   degewo only one where no ocr is needed
+<!-- mistral: recall IBB and Netzholding big range meta & mistral: very high -->
 
-mistral: recall IBB and Netzholding big range meta & mistral: very high
-precision for Amt für Statistik BBB \<- lowest average pagecount (29.3)
-but IBB has more pages than berlinovo but better precision. No
-information about which company / report the page is from
+<!-- precision for Amt für Statistik BBB \<- lowest average pagecount (29.3) -->
+
+<!-- but IBB has more pages than berlinovo but better precision. No -->
+
+<!-- information about which company / report the page is from -->
 
 ```{r performance-based-on-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-no_ocr_needed <- read_csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv") %>% select(filepath) %>% 
-  unique() %>% mutate(filepath = str_replace(filepath, "..", "/pvc")) %>% .[[1]]
+# no_ocr_needed <- read_csv("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv") %>% select(filepath) %>% 
+#   unique() %>% mutate(filepath = str_replace(filepath, "..", "/pvc")) %>% .[[1]]
+# 
+# l <- list()
+# 
+# for (t in c('Aktiva', 'Passiva', 'GuV')) {
+#   df_filtered <- df_binary %>% filter(classification_type == t) %>% 
+#     arrange(desc(f1_score)) %>% select(model, method, predictions, model_family, method_family)
+#   df_temp <- df_filtered %>% unnest(predictions) %>% filter(filepath %in% no_ocr_needed)
+#   
+#   df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model,model_family, method, method_family) %>% reframe(
+#     n = n()
+#   ) %>% complete(company, predicted_type, match, model,model_family, method, method_family,fill=list(n=0)) %>% 
+#     mutate(
+#       metric = if_else(predicted_type == t & match, "true_positive", ''),
+#       metric = if_else(predicted_type == t & !match, "false_positive", metric),
+#       metric = if_else(predicted_type != t & !match, "false_negative", metric),
+#       metric = if_else(predicted_type != t & match, "true_negative", metric),
+#     ) %>% select(-predicted_type, -match) %>% 
+#     pivot_wider(names_from = metric, values_from = n) %>% 
+#     mutate(
+#       precision = true_positive/(true_positive+false_positive),
+#       recall = true_positive/(true_positive+false_negative),
+#       f1_score = 2*precision*recall/(precision+recall),
+#       classification_type = t
+#     )
+#   
+#   l[t] <- list(df_f1_by_company)
+# }
+# 
+# df_f1_by_company <- bind_rows(l)
+# 
+# df_f1_by_company %>% 
+#   filter(!model_family %in% c('microsoft', 'tiiuae')) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(x = company, y = f1_score)) +
+#   # geom_jitter(aes(x = company, y = f1_score, color = model), alpha = .4) +
+#   facet_grid(classification_type~model_family) +
+#   scale_x_discrete(guide = guide_axis(angle = 30))
+```
 
-l <- list()
+```{r def-micro-pr-function, echo=echo_flag, warning=warning_flag, message=message_flag}
+library(yardstick)
 
-for (t in c('Aktiva', 'Passiva', 'GuV')) {
-  df_filtered <- df_binary %>% filter(classification_type == t) %>% 
-    arrange(desc(f1_score)) %>% select(model, method, predictions, model_family, method_family)
-  df_temp <- df_filtered %>% unnest(predictions) %>% filter(filepath %in% no_ocr_needed)
+calc_micro_f1 <- function(df, model_name, method_name) {
+  l_temp <- list()
+  # browser()
   
-  df_f1_by_company <- df_temp %>% group_by(company, predicted_type, match, model,model_family, method, method_family) %>% reframe(
-    n = n()
-  ) %>% complete(company, predicted_type, match, model,model_family, method, method_family,fill=list(n=0)) %>% 
-    mutate(
-      metric = if_else(predicted_type == t & match, "true_positive", ''),
-      metric = if_else(predicted_type == t & !match, "false_positive", metric),
-      metric = if_else(predicted_type != t & !match, "false_negative", metric),
-      metric = if_else(predicted_type != t & match, "true_negative", metric),
-    ) %>% select(-predicted_type, -match) %>% 
-    pivot_wider(names_from = metric, values_from = n) %>% 
-    mutate(
-      precision = true_positive/(true_positive+false_positive),
-      recall = true_positive/(true_positive+false_negative),
-      f1_score = 2*precision*recall/(precision+recall),
-      classification_type = t
-    )
+  for (target in c('Aktiva', 'GuV', 'Passiva')) {
+    # t <- "Aktiva"
+    # df_filtered <- df %>% filter(
+    #   classification_type == t,
+    #   n_examples <= 3,
+    #   loop == 0) %>% 
+    #   arrange(desc(f1_score))
+    # model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
+    # method_best_f1_aktiva <- df_filtered[model_rank, "method"]
+    
+    df_filtered <- df %>%
+      filter(
+        classification_type == target,
+        model == model_name,
+        method == method_name,
+        loop == 0
+      ) %>% 
+      arrange(desc(f1_score))
+    
+    df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+    
+    df_flipped_score <- df_temp %>% 
+      mutate(
+        confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+        target = target
+      )
+    l_temp[target] <- list(df_flipped_score)
+  }
   
-  l[t] <- list(df_f1_by_company)
+  list(df = bind_rows(l_temp), model = model_name, method = method_name)
 }
 
-df_f1_by_company <- bind_rows(l)
-
-df_f1_by_company %>% 
-  filter(!model_family %in% c('microsoft', 'tiiuae')) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = company, y = f1_score)) +
-  # geom_jitter(aes(x = company, y = f1_score, color = model), alpha = .4) +
-  facet_grid(classification_type~model_family) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
-```
-
-```{r report-count-by-company-tables, echo=echo_flag, warning=warning_flag, message=message_flag}
-n_reports_by_company_no_ocr <- df_temp %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
-n_reports_by_company <- df_filtered %>% unnest(predictions) %>% select(company, filepath) %>% unique() %>% group_by(company) %>% reframe(n = n())
-
-n_reports_by_company_no_ocr %>% kbl()
-n_reports_by_company %>% kbl()
-```
-
--   Performance makes a jump at a critical parameter number (3B) then
-    slow increase (compare Qwen 2.5)
--   Changes unsystematic with new models (see Mistral, Qwen 3 old vs
-    llama 4)
-
-PR curves for all classes look very alike- showing micro average curve
-
-```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-model_rank <- 1
-l_temp <- list()
-
-for (target in c('Aktiva', 'GuV', 'Passiva')) {
-  t <- "Aktiva"
-  df_filtered <- df_binary %>% filter(classification_type == t,
-      loop == 0) %>% 
-    arrange(desc(f1_score))
-  model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
-  method__best_f1_aktiva <- df_filtered[model_rank, "method"]
+plot_pr_double_curve <- function(l) {
+  selected_type <- "Aktiva"
+  df_temp2 <- l$df %>% filter(target == selected_type) %>% 
+    mutate(type = if_else(type == selected_type, type, "no")) %>% 
+    mutate(type = factor(type))
+  # pr_obj <- pr.curve(scores.class0 = df_temp2$confidence_score[df_temp2$match == 1],
+  #                    scores.class1 = df_temp2$confidence_score[df_temp2$match == 0],
+  #                    curve = TRUE)
   
-  df_filtered <- df_binary %>% 
-    filter(
-      classification_type == target,
-      model == model_name_best_f1_aktiva,
-      method == method__best_f1_aktiva,
-      loop == 0
-    ) %>% 
-    arrange(desc(f1_score))
-  df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
-  df_flipped_score <- df_temp %>% 
-    mutate(
-      confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
-      target = target
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
+      subtitle = str_c(l$model, " with ", l$method),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
     )
-  l_temp[target] <- list(df_flipped_score)
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  g1 + g2 + plot_annotation(caption = paste0('Best F1 score ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3)))
 }
-
-df_temp2 <- bind_rows(l_temp) # %>% filter(target == "Passiva")
-# plot(pr_obj, color = "orange", main = "Precision-Recall Curve")
-
-pr_obj <- pr.curve(scores.class0 = df_temp2$confidence_score[df_temp2$match == 1],
-                   scores.class1 = df_temp2$confidence_score[df_temp2$match == 0],
-                   curve = TRUE)
-
-# Precision-Recall Curve with ggplot2
-
-pr_df <- tibble(
-  recall = pr_obj$curve[, 1],
-  precision = pr_obj$curve[, 2],
-  threshold = pr_obj$curve[, 3]
-) %>%
-  mutate(f1 = 2 * precision * recall / (precision + recall))
-
-pr_auc <- round(pr_obj$auc.integral, 3)
-
-g1 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision)) +
-  geom_line(aes(color = threshold), size = 1.2) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
-    subtitle = str_c(model_name_best_f1_aktiva, " with ", method__best_f1_aktiva),
-    x = "Recall",
-    y = "Precision"
-  ) +
-  coord_cartesian(ylim = c(0,1)) +
-  theme(
-    legend.position = "bottom"
-  )
-
-g2 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision, color = f1)) +
-  geom_line(size = 1.2) +
-  scale_color_viridis_c(option = "viridis") +
-  labs(
-    # title = "Precision-Recall Curve colored by F1 score",
-    x = "Recall",
-    y = NULL,
-    color = "F1 score"
-  ) +
-  coord_cartesian(ylim = c(0,1))+
-  theme(
-    legend.position = "bottom"
-  )
-
-g1 + g2
 ```
 
-```{r micro-pr-curve-llm-binary-300, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-l_temp <- list()
+Figure \@ref(fig:micro-pr-curve-llm-binary-1) shows the
+precision-recall-curve for the best performing model twice. On the left
+plot the line color represents the threshold score one could use to
+decide when to accept a response as it is. On the right plot the line
+color is showing the F1 score that results with a chosen threshold. The
+precision recall curves for all target classes look identical. Thus, a
+combined micro average curve is presented. For an almost perfect model
+there is nothing one can adjust. The curve shown in Figure
+\@ref(fig:micro-pr-curve-llm-binary-qwen-1-5b) is more interesting.
+Here, one can decide if the F1 score or the recall score is more
+important for the workflow one wants to implement.
 
-for (target in c('Aktiva', 'GuV', 'Passiva')) {
-  t <- "Aktiva"
-  df_filtered <- df_binary %>% filter(classification_type == t,
-      loop == 0) %>% 
-    arrange(desc(f1_score))
-  model_rank <- as.integer(nrow(df_filtered)*0.8)
-  
-  model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
-  method__best_f1_aktiva <- df_filtered[model_rank, "method"]
-  
-  df_filtered <- df_binary %>% 
-    filter(
-      classification_type == target,
-      model == model_name_best_f1_aktiva,
-      method == method__best_f1_aktiva,
-      loop == 0
-    ) %>% 
-    arrange(desc(f1_score))
-  df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
-  df_flipped_score <- df_temp %>% 
-    mutate(
-      confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
-      target = target
-    )
-  l_temp[target] <- list(df_flipped_score)
-}
+```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for the best performing model."}
+model <- "mistralai_Ministral-8B-Instruct-2410"
+method <- "3_rag_examples"
 
-df_temp2 <- bind_rows(l_temp) # %>% filter(target == "Passiva")
-# plot(pr_obj, color = "orange", main = "Precision-Recall Curve")
+df_temp_mistral <- df_binary %>% calc_micro_f1(model, method)
+p_aktiva <- df_temp_mistral %>% plot_pr_double_curve("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_mistral %>% plot_pr_double_curve("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_mistral %>% plot_pr_double_curve("GuV", x_stuff = TRUE)
 
-pr_obj <- pr.curve(scores.class0 = df_temp2$confidence_score[df_temp2$match == 1],
-                   scores.class1 = df_temp2$confidence_score[df_temp2$match == 0],
-                   curve = TRUE)
-
-# Precision-Recall Curve with ggplot2
-
-pr_df <- tibble(
-  recall = pr_obj$curve[, 1],
-  precision = pr_obj$curve[, 2],
-  threshold = pr_obj$curve[, 3]
-) %>%
-  mutate(f1 = 2 * precision * recall / (precision + recall))
-
-pr_auc <- round(pr_obj$auc.integral, 3)
-
-g1 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision)) +
-  geom_line(aes(color = threshold), size = 1.2) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
-    subtitle = str_c(model_name_best_f1_aktiva, " with ", method__best_f1_aktiva),
-    x = "Recall",
-    y = "Precision"
-  ) +
-  coord_cartesian(ylim = c(0,1)) +
-  theme(
-    legend.position = "bottom"
-  )
-
-g2 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision, color = f1)) +
-  geom_line(size = 1.2) +
-  scale_color_viridis_c(option = "viridis") +
-  labs(
-    # title = "Precision-Recall Curve colored by F1 score",
-    x = "Recall",
-    y = NULL,
-    color = "F1 score"
-  ) +
-  coord_cartesian(ylim = c(0,1))+
-  theme(
-    legend.position = "bottom"
-  )
-
-g1 + g2
+p_aktiva / p_passiva / p_guv +
+  plot_annotation(title = str_c(model, " with ", method))
 ```
 
-#### Multi classification
+```{r micro-pr-curve-llm-binary-qwen-1-5b, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=4, fig.cap="Showing the precsion-recall-curve for a ."}
+df_temp_qwen <- df_binary %>% calc_micro_f1("Qwen_Qwen2.5-1.5B-Instruct", "1_rag_examples")
+df_temp_qwen %>% plot_pr_double_curve("Passiva")
+```
 
-bigger models are better with the multi classification task
-Llama-4-Scout almost perfect F1 for all classes
+Discussion:
+
+-   Could be more efficient to predict "is any of interest" and then
+    which type, because dataset is highly imbalanced.
+
+-   Why takes n_rag_examples so much longer?
+
+-   **Aktiva** and **Passiva** sometimes on the same page and more
+    similar than **GuV**?
+
+-   Recall = 1 for human in the loop (looking at selection of pages that
+    could be target and none else, if the number of wrong pages are few
+    =\> what says F1 with recall 1?)
+
+-   Confidence range to error rate
+
+#### Multi-class classification
+
+bigger models are better with the \\acr{mcc} task Llama-4-Scout almost
+perfect F1 for all classes
 
 Llama-4-Scout runs fast but needs long to load because it has 109B in
 total with 17B actives Gemma performs much better than with binary
@@ -1157,12 +1378,13 @@ df_selected %>%
     "meta-llama_Llama-4-Scout-17B-16E-Instruct"
     # "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8"
   )) %>% 
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
   geom_text(aes(label = n_examples)) +
   facet_grid(model~metric_type) +
-  scale_color_manual(values = method_familiy_colors) #+
+  scale_color_manual(values = method_familiy_colors) +
+  labs(x = "normalized runtime in minutes") #+
   # theme(legend.position = "bottom") +
   # guides(
   #   color = guide_legend(ncol = 1, title.position = "top"),
@@ -1173,9 +1395,9 @@ df_selected %>%
 
 Most of the time pretty confident most problems with class "other" If
 Aktiva and Passiva on same page it predicts Aktiva. Also one Passiva
-missclassified as Aktiva No flipped confidence [^05_results-12]
+missclassified as Aktiva No flipped confidence [^05_results-18]
 
-[^05_results-12]: classify framework in needs special models with
+[^05_results-18]: classify framework in needs special models with
     pooling capability. Would have been interesting but time was limited
     and would have needed new special models in most cases
 
@@ -1663,33 +1885,33 @@ synth_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(
 
 The baseline for the table extraction task is set by an approach using
 regular expressions on the text extract. The approach performs much
-better[^05_results-13] on the synthetic dataset compared to the real
+better[^05_results-19] on the synthetic dataset compared to the real
 dataset (see Figure \@ref(fig:table-extraction-regex-performance)). Even
 though, it does not perform perfectly and its performance is more
 consistent on the text extracted with pymupdf compared to pdfium. Some
 possible explanations are:
 
-[^05_results-13]: A comparison of the numeric values over all methods
+[^05_results-19]: A comparison of the numeric values over all methods
     can be found in section \@ref(comparing-table-extraction-methods).
 
--   a duplicated row name[^05_results-14]
+-   a duplicated row name[^05_results-20]
 -   numeric columns extracted separated from row names by extraction
     libraries
--   sums in the same row as the single values[^05_results-15]
--   with pdfium: missing white space[^05_results-16]
--   with pdfium: random line breaks[^05_results-17]
+-   sums in the same row as the single values[^05_results-21]
+-   with pdfium: missing white space[^05_results-22]
+-   with pdfium: random line breaks[^05_results-23]
 
-[^05_results-14]: The row *Geleistete Anzahlungen* can be found in two
+[^05_results-20]: The row *Geleistete Anzahlungen* can be found in two
     parts of the table and the simple approach just matches the numbers
     to the first found entry.
 
-[^05_results-15]: In this case the \acr{regex} takes the sum as the
+[^05_results-21]: In this case the \acr{regex} takes the sum as the
     value for the previous year.
 
-[^05_results-16]: This can form unexpected numeric patterns or prevent
+[^05_results-22]: This can form unexpected numeric patterns or prevent
     the row names to be recognized.
 
-[^05_results-17]: The approach takes care of line breaks between words,
+[^05_results-23]: The approach takes care of line breaks between words,
     but not within. This leads to unrecognized row names as well.
 
 You can find some examples for incorrect extracted texts in section
@@ -1980,25 +2202,25 @@ super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero
 
 For the table extraction task
 `r length(unique(df_real_table_extraction$model))+2` open source models
-have been benchmarked[^05_results-18]. The results are presented in
+have been benchmarked[^05_results-24]. The results are presented in
 Figure \@ref(fig:table-extraction-llm-performance-total-overview),
 \@ref(fig:table-extraction-llm-performance-numeric-overview) and
 \@ref(fig:table-extraction-llm-f1-overview)).
 
-[^05_results-18]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
+[^05_results-24]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
     and *google_gemma-3n-E4B-it* have been tested as well but don't get
     presented as they never performed anywhere beyond random guessing.
 
 Most models need a context learning approach to beat the performance of
 the regular expression approach at total and numeric correctness rate
 and F1 score. Only `r nrow(zero_shot_stars)` models perform better
-without any guidance[^05_results-19] (see Table
+without any guidance[^05_results-25] (see Table
 \@ref(tab:zero-and-synth-performing-models-tab)).
 `r nrow(static_example_stars)` models achieved an performance better as
 the regex baseline using the approach to learn with a fixed example from
 the synthetic dataset.
 
-[^05_results-19]: There is an external guidance through the provided
+[^05_results-25]: There is an external guidance through the provided
     xgrammar template but it is not communicated to the model in a
     promt.
 
@@ -2020,9 +2242,9 @@ Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the mean
 performance for the best model-method approach for each model family.
 Most of the top performing model-method combinations rely on the maximum
 number of examples provided. Only the Llama-3 and Falcon3 model perform
-best with three examples[^05_results-20].
+best with three examples[^05_results-26].
 
-[^05_results-20]: Phi4 also perfroms best with three examples. But this
+[^05_results-26]: Phi4 also perfroms best with three examples. But this
     is the maximum it can process due to a limited context length.
 
 ```{r zero-and-synth-performing-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -2357,10 +2579,10 @@ grammar. Running gpt-5-chat resulted in the error informing that a
 approach worked flawless. Running gpt-oss-20b with the vllm offline
 inference framework was possible and the new harmony output format could
 be processed after minor code changes for most
-approaches[^05_results-21]. With a gpt-oss-120b instance hosted on Azure
+approaches[^05_results-27]. With a gpt-oss-120b instance hosted on Azure
 the guided decoding worked flawless.
 
-[^05_results-21]: With the static example approach there have been 24
+[^05_results-27]: With the static example approach there have been 24
     files where the resonse could not get parsed into valid \acr{json}.
     With the other approaches there are one to four unparsable
     responses.
@@ -2713,7 +2935,7 @@ Table
 \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table)
 shows, that synthetic data can be used for in-context learning in a task
 where the currency units given for a table or specific
-columns[^05_results-22]. Except for Llama 3.1 all models achieved much
+columns[^05_results-28]. Except for Llama 3.1 all models achieved much
 better numeric extraction results for tables where currencies are given
 for all columns. The model also achieved better for cases where there
 was only a single column with units, even though there have been no
@@ -2723,7 +2945,7 @@ performance for tables where no units are given for all models but Llama
 4 Schout. This decrease was highest for Qwen 3 and also higher than 10 %
 for Mistral Large.
 
-[^05_results-22]: Synthetic data is used here because the
+[^05_results-28]: Synthetic data is used here because the
     characterization, which real *Aktiva* table has units in which
     column, was created too late.
 

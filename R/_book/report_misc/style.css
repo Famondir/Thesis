@@ -18,6 +18,7 @@
 .page-inner .figure,
 .page-inner div.datatables,
 .page-inner div.references,
+.page-inner div.sourceCode,
 .page-inner table {
   max-width: 800px;
   margin-left: auto;
