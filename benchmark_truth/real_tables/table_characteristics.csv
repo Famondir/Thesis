@@ -1,7 +1,7 @@
 company,filename,T_in_year,T_in_previous_year,sum_same_line,spacer,n_columns,vorjahr,passiva_same_page,header_span,enumeration,vis_seperated_cols,vis_seperated_rows,sum_in_header,year_missing,geschaeftsjahr
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2016_BBB.pdf,0,0,0," ",3,1,0,1,1,0,0,0,0,0
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2017_BBB.pdf,0,0,0," ",3,1,0,1,1,0,0,0,0,0
-Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2018_BBB.pdf,0,0,0," ",3,2,0,1,1,0,0,0,0,0
+Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2018_BBB.pdf,0,0,0," ",3,1,0,1,1,0,0,0,0,0
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2019_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2020_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2021_BBB.pdf,0,0,0," ",3,0,0,1,1,0,0,0,0,0
@@ -9,7 +9,7 @@ Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2022_BBB.pdf,0,0,0
 Amt für Statistik Berlin-Brandenburg,AP_Geschaeftsbericht_DE_2023_BBB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
 Berliner Bäder Betriebe,2018_Geschaeftsbericht_BBB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
 Berliner Stadtgüter,BSG-Geschaeftsbericht-2021-druck.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
-Berliner Wasserbetriebe,2020_geschaeftsbericht-berliner-wasserbetriebe.pdf,0,0,0,".",3,0,0,0,1,1,1,0,0
+Berliner Wasserbetriebe,2020_geschaeftsbericht-berliner-wasserbetriebe.pdf,0,0,0,".",3,0,0,0,1,1,1,0,0,0
 Berliner Werstätten für Menschen mit Behinderung,Endgultiger Bericht JAP 2022 BWB.pdf,0,0,0,".",3,0,0,1,1,0,0,0,0,0
 Berlinovo,berlinovo_gb2018_s.pdf,0,0,0,".",2,0,0,0,1,1,1,0,0,0
 Berlinwasser Holding,2022-geschaeftsbericht-bwh.pdf,0,1,0,".",3,0,0,0,1,1,1,0,0,0
