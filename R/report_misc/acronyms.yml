@@ -34,4 +34,6 @@ acronyms:
       longname: Virtual Large Language Model
     - shortname: AUC
       longname: area under the curve
+    - shortname: TF-IDF
+      longname: Frequency-Inverse Document Frequency
 ---

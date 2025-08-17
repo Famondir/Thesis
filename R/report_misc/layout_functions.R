@@ -29,6 +29,9 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom =
       cat("<table>",paste0("<caption>", "(#tab:", ref, ")", caption, "</caption>"),"</table>", sep ="\n")
     }
     
+    df <- df %>% mutate(across(where(is.character), ~str_replace_all(., "_", "_<wbr>"))) %>% 
+      setNames(str_replace_all(colnames(.), "_", " "))
+    
     # Set column alignment for DT
     if (!is.null(alignment)) {
       dt_align <- get_dt_align(alignment)

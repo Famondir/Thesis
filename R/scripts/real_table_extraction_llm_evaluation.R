@@ -107,7 +107,8 @@ model_by_size <- c(
 
 method_order <- c("top_n_rag_examples", "n_random_examples", "top_n_rag_examples_out_of_sample", "static_example", "zero_shot" )
 
-bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+# bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+df %>% 
   filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
   # select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family, method_family)) %>% 
   filter(model %in% model_by_size) %>%
@@ -142,7 +143,8 @@ bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>%
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .)
 
-bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) %>% 
+# bind_rows(df, df_azure %>% filter(!str_detect(model, "azure"))) 
+df %>% 
   filter(out_of_company != TRUE) %>% 
   select(c(model, method, percentage_correct_numeric, percentage_correct_total, model_family)) %>% 
   filter(model %in% model_by_size) %>% 

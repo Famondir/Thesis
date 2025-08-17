@@ -748,6 +748,22 @@ df_multi <- df_multi %>%
   #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
   #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
   # )
+
+top_performer_multu <- df_multi %>% 
+  unnest(metrics) %>% 
+  filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
+  filter(is.finite(f1_score), loop == 0) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>%
+  group_by(model_family, metric_type) %>% 
+  slice_max(n = 1, f1_score) %>% 
+  arrange(desc(f1_score)) %>% # head(10) %>% 
+  select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
+  mutate(
+    f1_score = round(f1_score, 2),
+    norm_runtime = round(norm_runtime, 0),
+  ) %>% rename(
+    "runtime in s" = norm_runtime,
+  )
 ```
 
 The third approach we present in this section, uses pretrained
@@ -871,7 +887,7 @@ was surprising that Googles gemma models perform so bad[^05_results-12].
 
 ```{r table-metrics-llm-page-identification-binary, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
 top_performer_binary %>% 
-  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
+  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the binary classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
 ```
 
 Figure \@ref(fig:binary-classification-result-mistral-plot) shows, the
@@ -1112,10 +1128,10 @@ df_flipped_score %>%
        subtitle = method__best_f1_aktiva)
 ```
 
-```{r def-micro-pr-function, echo=echo_flag, warning=warning_flag, message=message_flag}
+```{r def-micro-pr-function-binary, echo=echo_flag, warning=warning_flag, message=message_flag}
 library(yardstick)
 
-calc_micro_f1 <- function(df, model_name, method_name) {
+calc_flipped_conf_all_types <- function(df, model_name, method_name) {
   l_temp <- list()
   # browser()
   
@@ -1218,19 +1234,6 @@ plot_pr_double_curve <- function(l, selected_type, x_stuff = FALSE) {
     'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
     'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
 }
-
-
-model <- "Ministral-8B-Instruct-2410"
-method <- "3_rag_examples"
-
-df_temp_mistral <- df_binary %>% calc_micro_f1(model, method)
-p_aktiva <- df_temp_mistral %>% plot_pr_double_curve("Aktiva", x_stuff = FALSE)
-p_passiva <- df_temp_mistral %>% plot_pr_double_curve("Passiva", x_stuff = FALSE)
-p_guv <- df_temp_mistral %>% plot_pr_double_curve("GuV", x_stuff = TRUE)
-
-wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
-  plot_layout(heights = c(2, 2, 3)) +
-  plot_annotation(title = str_c(model, " with ", method))
 ```
 
 Figure \@ref(fig:micro-pr-curve-llm-binary-1) shows the
@@ -1262,7 +1265,7 @@ is guaranteed and the F1 score is just a little lower.
 model <- "Ministral-8B-Instruct-2410"
 method <- "3_rag_examples"
 
-df_temp_mistral <- df_binary %>% calc_micro_f1(model, method)
+df_temp_mistral <- df_binary %>% calc_flipped_conf_all_types(model, method)
 p_aktiva <- df_temp_mistral %>% plot_pr_double_curve("Aktiva", x_stuff = FALSE)
 p_passiva <- df_temp_mistral %>% plot_pr_double_curve("Passiva", x_stuff = FALSE)
 p_guv <- df_temp_mistral %>% plot_pr_double_curve("GuV", x_stuff = TRUE)
@@ -1272,7 +1275,7 @@ wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
   plot_annotation(title = str_c(model, " with ", method))
 ```
 
-Figure \@ref(fig:table-dientification-llm-confidence) summarizes the
+Figure \@ref(fig:table-identification-llm-confidence) summarizes the
 relation between reported confidence and correctness of the
 classification for all target types and compares it among the best
 performing model-strategy combinations for Ministral-8B-Instruct-2410
@@ -1282,36 +1285,36 @@ This separation is worse for Qwen3-8B and worst for target type
 **Passiva**.
 
 Figure \@ref(fig:table-identification-llm-confidence-lm) shows, that for
-Ministral-8B values with a confidence of 0.7 and more a human don't has
+Ministral-8B values with a confidence of 0.7 and more, a human don't has
 to double check the classification for target type **GuV**. This
 interval is smallest for **Passiva** where only confidences above 0.9
-can be fully trusted. These empirical intervals will probably get
-smaller, once more data is evaluated. If one is less strict and accepts
-misclassifiaction rates of 1 % the found interval for **Passiva** starts
-at 0.8 and is probably less depended on the sample evaluated.
+can be fully trusted. These empirical intervals might shrink, once more
+data is evaluated. If one is less strict and accepts misclassifiaction
+rates of 1 % the found interval for **Passiva** starts at 0.8 and is
+probably less depended on the sample evaluated. The percentage of
+predictions that can be trusted without risk is greater than 93 % even
+for target type **Passiva**.
 
-For Qwen3-8B we find almost no range without any misclassification. One
-could build an application that is not asking for a human intervention
-for reported confidences over 0.9 and then give the possibility to
-change the page to extract information from later on. Anyhow, only a few
-predictions for both models have such a high confidence score. Thus, a
-human will double check the selected pages in most cases.
+For Qwen3-8B we find almost no range without any wrong classifications.
+For **GuV** this range includes 35 % of all predictions. The ranges that
+allow for 1 % of wrong classifications cover 57 % of all predictions at
+least.
 
-```{r table-dientification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
-confidence_vs_truth <- df_binary %>% 
+```{r table-identification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+confidence_vs_truth_binary <- df_binary %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B")) %>% 
   group_by(method, model) %>% mutate(
     mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
-  ) %>% group_by(model) %>% 
+  ) %>% group_by(model, classification_type) %>% 
   arrange(desc(mean_f1)) %>% 
-  slice_max(mean_f1, n = 1, with_ties = TRUE) %>% 
+  slice_max(mean_f1, n = 1, with_ties = FALSE) %>% 
   select(-filepath) %>% 
   unnest(predictions) %>% mutate(
     match = factor(match, levels = c(F, T)),
     # truth_NA = factor(truth_NA, levels = c(F, T))
   )
 
-confidence_vs_truth %>% ggplot() +
+confidence_vs_truth_binary %>% ggplot() +
   geom_boxplot(
     aes(x = match, y = confidence_score, fill = classification_type), 
     position = position_dodge2(preserve = "single")) +
@@ -1321,13 +1324,13 @@ confidence_vs_truth %>% ggplot() +
 ```
 
 ```{r table-identification-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals"}
-confidence_vs_truth %>% rename(confidence = confidence_score) %>% 
+confidence_vs_truth_binary %>% rename(confidence = confidence_score) %>% 
   mutate(
     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
     conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
   ) %>%
   group_by(conf_center, classification_type, model) %>%
-  summarize(
+  summarise(
     n_true = sum(match == TRUE, na.rm = TRUE),
     n_false = sum(match == FALSE, na.rm = TRUE),
     total = n_true + n_false,
@@ -1335,21 +1338,37 @@ confidence_vs_truth %>% rename(confidence = confidence_score) %>%
     chance_zero = chance_false == 0,
     chance_below_1 = chance_false < 1,
     chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
-    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more")),
-    .groups = "drop"
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(classification_type, model) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
   ) %>%
-  ggplot(aes(x = conf_center, y = chance_false, color = chance_low#, fill = chance_low
-             )) +
-  geom_col(alpha = 0.7) +
-  # geom_hline(yintercept = 1, linetype = "dashed") +
-  # geom_smooth(method = "lm", se = TRUE) +
-  scale_color_manual(values = c("green", "yellow", "red")) +
-  scale_fill_manual(values = c("green", "yellow", "red")) +
-  labs(x = "Confidence Interval", y = "Chance False (%)", color = "mistake rate") +
+  ggplot() +
+  geom_col(aes(x = conf_center, y = perc, color = chance_low, fill = chance_false_interval), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
   coord_cartesian(
-    # ylim = c(0, 100), 
+    ylim = c(0, 100), 
     xlim = c(0,1)
-    ) +
+  ) +
   facet_grid(classification_type ~ model)
 
 ```
@@ -1372,58 +1391,34 @@ Discussion:
 
 #### Multi-class classification
 
-bigger models are better with the \\acr{mcc} task Llama-4-Scout almost
-perfect F1 for all classes
+Table \@ref(tab:table-metrics-llm-page-identification-multi) shows that
+Llama-4-Scout solves the \acr{mcc} task almost perfect for all classes.
+Mistral-Large-Instruct-2411 performs second best. In contrast to the
+binary classification task no order is visible, what class was easiest
+to predict. Googles gemma models perform much better in the \acr{mcc}
+task with F1 scores of 0.89 instead of 0.58 for the binary
+classification task.
 
-Llama-4-Scout runs fast but needs long to load because it has 109B in
-total with 17B actives Gemma performs much better than with binary
-classification
-
-drop with Qwen-14B
+Table
+\@ref(tab:table-metrics-llm-page-identification-multi-small-models)
+shows that the smaller models do perform good, too. Ministral-8B
+performs good but is around tenfold faster than Mistral-Large and
+Llama-4 Scout. For the larger models the *n_rag_examples* strategy is
+performing best. For the smaller models the *top_n_rag_examples*
+strategy is performing good as well and is faster because of shorter
+contexts.
 
 ```{r table-metrics-llm-page-identification-multi, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
-df_multi %>% 
-  unnest(metrics) %>% 
-  filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
-  filter(is.finite(f1_score), loop == 0) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>%
-  group_by(model_family, metric_type) %>% 
-  filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
-  arrange(desc(f1_score)) %>% # head(10) %>% 
-  select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
-  mutate(
-    f1_score = round(f1_score, 2),
-    norm_runtime = round(norm_runtime, 0),
-  ) %>% rename(
-    "runtime in s" = norm_runtime,
-  ) %>% 
-  render_table()
+top_performer_multu %>% render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the multi-class classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
 
-# df_multi %>% 
-#   unnest(metrics) %>% 
-#   filter(metric_type %in% c("micro_minorities")) %>% 
-#   filter(is.finite(f1_score), loop == 0) %>% 
-#   filter(n_examples <= 3 | is.na(n_examples)) %>%
-#   group_by(model_family, metric_type) %>% 
-#   filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
-#   arrange(desc(f1_score)) %>% # head(10) %>% 
-#   select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
-#   mutate(
-#     f1_score = round(f1_score, 2),
-#     norm_runtime = round(norm_runtime, 0),
-#   ) %>% rename(
-#     "runtime in s" = norm_runtime,
-#   ) 
 ```
-
-Mistral-8B-2410 almost as good as Mistral-123B-2411 but much faster
 
 ```{r table-metrics-llm-page-identification-multi-small-models, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
 df_multi %>% 
   unnest(metrics) %>% 
   filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
   filter(is.finite(f1_score), loop == 0) %>% 
-  filter(parameter_count<15) %>% 
+  filter(parameter_count<17) %>% 
   filter(n_examples <= 3 | is.na(n_examples)) %>%
   group_by(model_family, metric_type) %>% 
   filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
@@ -1435,15 +1430,42 @@ df_multi %>%
   ) %>% rename(
     "runtime in s" = norm_runtime,
   ) %>% 
-  render_table()
+  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the multi-class classification tasks focussing on models with less than 17B parameters. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
 ```
 
-Mistral-2410 reaches good performance already with few examples and can
-work with law-context approach but more examples don't realy help any
-further
+Figure
+\@ref(fig:performance-over-runtime-multi-classification-mistral-vs-llama-scout)
+shows, the micro averaged F1 score for the three minority classes over
+the normalized runtime for two models. It shows the results for the
+different prompting strategies (*method_families*) with differently
+colored shapes.
 
-```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "Aktiva")
+The shape is giving information, if the examples provided to the
+\acr{LLM}, are exclusively selected from other companies than the target
+table comes from, or if they can also be selected from documents of the
+same company. This is only relevant for strategies that get the examples
+picked by the documents vector embedding distances (*top_n_rag_examples*
+and *n_rag_examples*). The \acr{LLM} performs better, if examples from
+documents of the same company can be used.
+
+The number inside of the shapes is referring to the *n_examples*
+function parameter. Most models got benchmarked with an *n_examples*
+value of up to three. The actual number of examples provided to the
+models is depending on the method family / example selection strategy
+and can be looked up in Table
+\@ref(tab:comparing-actual-number-of-in-context-examples).
+
+*n_rag_examples* better for Llama 4 Scout than *n_random_examples* ; For
+Ministral it is depending on the *out_of_company* setting
+
+On can see, that Ministral–8B 2410 reaches a good performance already
+with few examples, but only if *out_of_company* is false. It performs
+moderate with the *law-context* strategy and *zero_shot*, too. Adding
+more examples does not improve the performance. Best with
+*top_n_rag_examples*
+
+```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
+df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities")
 
 df_selected %>% 
   filter(model %in% c(
@@ -1452,7 +1474,10 @@ df_selected %>%
     # "Mistral-Small-3.1-24B-Instruct-2503",
     "Llama-4-Scout-17B-16E-Instruct"
     # "Llama-4-Maverick-17B-128E-Instruct-FP8"
-  )) %>% 
+  ),
+  loop == 0,
+  n_examples <= 9
+  ) %>% 
   ggplot(aes(x = norm_runtime/60, y = f1_score)) +
   geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
   scale_shape(na.value = 15, guide = "legend") +
@@ -1468,15 +1493,25 @@ df_selected %>%
   # scale_x_discrete(guide = guide_axis(angle = 30))
 ```
 
-Most of the time pretty confident most problems with class "other" If
-Aktiva and Passiva on same page it predicts Aktiva. Also one Passiva
-missclassified as Aktiva No flipped confidence [^05_results-19]
+##### Confidence
 
-[^05_results-19]: classify framework in needs special models with
-    pooling capability. Would have been interesting but time was limited
-    and would have needed new special models in most cases
+Figure \@ref(fig:confidence-match-plot-llama-multi) shows the reported
+confidence scores for the predictions for the best performing
+model-strategy combination, Llama 4 Scout with *3_rag_examples*. It is
+confident for most correct predictions and only misclassifies some of
+the pages with unknown characteristics. The target types are all
+recognized correct. All confidences are greater than 0.5. Probably
+because there is no case where the confidences for all possible classes
+is below 0.5 and there always is a most probable class. It would have
+been interesting to use the classification framework of \acr{vllm} to
+get predictions for all competing classes. But this requires special
+trained models with pooling capability[^05_results-19].
 
-```{r confidence-match-plot-mistral-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
+[^05_results-19]: It might be possible to request the n most probable
+    answers to get confidence scores for all different predictions. But
+    this was not investigated.
+
+```{r confidence-match-plot-llama-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the reported confidence scores for all predictions of Llama 4 Scout grouped by the true target type. Errors have only been made within the majority class."}
 df_filtered <- df_selected %>%
   arrange(desc(f1_score))
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -1494,161 +1529,317 @@ df_flipped_score %>%
   geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
   labs(title = model_name_best_f1_aktiva,
-       subtitle = method__best_f1_aktiva)
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim = c(0,1))
 ```
 
-Microsoft phi 4 and Falcon 3 only ran with one and two examples because
-their context window is smaller.
+Figure \@ref(fig:confidence-match-plot-mistral-multi) shows the reported
+confidence scores for the predictions for the best performing
+model-strategy combination among the small models limited to
+*n_examples* with n smaller five[^05_results-20],
+Ministral-8B-Instruct-2410 with *3_rag_examples*. One can see there are
+some wrong classifications for the minority classes as well. Especially,
+the **Passiva** target type is often classified as *other*. This is
+problematic for a smooth workflow (see discussion chapter?)
 
--   f1
--   multiple models
--   best model detail (different methods / settings)
+[^05_results-20]: The best performance results with
+    *top_11_rag_examples* but the plot was less interesting and its F1
+    score was not listed in Table
+    \@ref(tab:table-metrics-llm-page-identification-multi-small-models).
 
-```{r micro-pr-curve-llm-multi-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-model_rank <- 1
-
-df_selected <- df_multi %>% unnest(metrics)
+```{r confidence-match-plot-mistral-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the reported confidence scores for all predictions of Ministral 8B grouped by the true target type. Errors have only been made within the majority class."}
 df_filtered <- df_selected %>% filter(
-  metric_type == "micro_minorities"
-) %>% 
+  model == "Ministral-8B-Instruct-2410", 
+  method == "3_rag_examples"
+  ) %>% 
   arrange(desc(f1_score))
-df_temp <- df_filtered[model_rank,"predictions"][[1]][[1]] %>% as_tibble()
-
-model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
-method__best_f1_aktiva <- df_filtered[model_rank, "method"]
-
-pr_obj <- pr.curve(scores.class0 = df_temp$confidence_score[df_temp$match == 1],
-                   scores.class1 = df_temp$confidence_score[df_temp$match == 0],
-                   curve = TRUE)
-
-# plot(pr_obj, color = "orange", main = "Precision-Recall Curve")
-
-# Precision-Recall Curve with ggplot2
-
-pr_df <- tibble(
-  recall = pr_obj$curve[, 1],
-  precision = pr_obj$curve[, 2],
-  threshold = pr_obj$curve[, 3]
-) %>%
-  mutate(f1 = 2 * precision * recall / (precision + recall))
-
-pr_auc <- round(pr_obj$auc.integral, 3)
-
-g1 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision)) +
-  geom_line(aes(color = threshold), size = 1.2) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
-    subtitle = str_c(model_name_best_f1_aktiva, " with ", method__best_f1_aktiva),
-    x = "Recall",
-    y = "Precision"
-  ) +
-  coord_cartesian(ylim = c(0,1)) +
-  theme(
-    legend.position = "bottom"
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
   )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
 
-g2 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision, color = f1)) +
-  geom_line(size = 1.2) +
-  scale_color_viridis_c(option = "viridis") +
-  labs(
-    # title = "Precision-Recall Curve colored by F1 score",
-    x = "Recall",
-    y = NULL,
-    color = "F1 score"
-  ) +
-  coord_cartesian(ylim = c(0,1))+
-  theme(
-    legend.position = "bottom"
-  )
-
-g1 + g2
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim = c(0,1))
 ```
 
-```{r micro-pr-curve-llm-multi-300, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-df_selected <- df_multi %>% unnest(metrics)
-df_filtered <- df_selected %>% filter(
-  metric_type == "micro_minorities",
-      loop == 0
-) %>% 
-  arrange(desc(f1_score))
-model_rank <- as.integer(nrow(df_filtered)*0.8)
+```{r def-micro-pr-function-multi, echo=echo_flag, warning=warning_flag, message=message_flag}
+plot_pr_double_curve_multi <- function(df, selected_type, x_stuff = FALSE) {
+  df_temp2 <- df %>% 
+    filter(loop == 0) %>% select(-filepath) %>% unnest(predictions) %>% 
+    select(type, predicted_type, confidence_score) %>% 
+    mutate(
+      type = if_else(type == selected_type, type, "no"),
+      predicted_type = if_else(predicted_type == selected_type, predicted_type, "no")
+      ) %>% 
+    mutate(type = factor(type, levels = c(selected_type, "no"))) %>% 
+    mutate(
+      confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score)
+    )
 
-model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
-method__best_f1_aktiva <- df_filtered[model_rank, "method"]
+  
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% filter(threshold<=1) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1_row_high_recall <- pr_df %>% 
+    filter(recall > 0.999, precision > 0.1) %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_F1_high_recall <- best_F1_row_high_recall %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  best_threshold_high_recall <- best_F1_row_high_recall  %>% pull(threshold)
+  best_precision_high_recall <- best_F1_row_high_recall  %>% pull(precision)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      subtitle = paste0("Precision-Recall Curve for ", selected_type, " (AUC = ", pr_auc, ")"),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
+    )
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  if (x_stuff == FALSE) {
+    g1 <- g1 + guides(color = FALSE) +
+      labs(x = element_blank())
+    
+    g2 <- g2 + guides(color = FALSE) +
+      labs(x = element_blank())
+  }
+  
+  combined_plot <- g1 + g2
+  combined_plot + plot_annotation(caption = paste0(
+    'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
+    'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
+}
+```
 
-df_temp <- df_filtered[model_rank,"predictions"][[1]][[1]] %>% as_tibble()
+Figure \@ref(fig:micro-pr-curve-llm-multi-ministral) shows the
+precision-recall-curve for Ministral-8B-Instruct-2410 with
+*3_rag_examples* twice for each target type. On the left plots the line
+color represents the threshold score one could use to decide when to
+accept a response as it is. On the right plots the line color is showing
+the F1 score that results with a chosen threshold.
 
-pr_obj <- pr.curve(scores.class0 = df_temp$confidence_score[df_temp$match == 1],
-                   scores.class1 = df_temp$confidence_score[df_temp$match == 0],
-                   curve = TRUE)
+The \acr{AUC} is highest for **GuV** again. But for the multi-class
+classification **Passiva** shows the lowest \acr{AUC}, not **Aktiva** as
+it was in the binary classification task. The precision-recall-curve for
+**Aktiva** and \*\*Passiva\*+ show a "step" in the area of high recall.
+This has a strong effect on the threshold one should choose, if one
+wants to guarantee a high recall. The corresponding precision values of
+0.2 and 0.13 mean that a human has to check five to eight pages in
+average to get a correct classified page of type **Aktiva** and
+**Passiva**.
 
-# plot(pr_obj, color = "orange", main = "Precision-Recall Curve")
+The corresponding plot for the best performing model,
+Llama-4-Scout-17B-16E-Instruct, can be found in Figure
+\@ref(fig:micro-pr-curve-llm-multi-llama-scout). Here the
+precision-recall-curve for **Passiva** and **GuV** is almost perfect.
+Just the single prediction for **Aktiva** wit a lower confidence shows
+an influence on the precision-recall-curve.
 
-# Precision-Recall Curve with ggplot2
+```{r micro-pr-curve-llm-multi-ministral, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for Ministral-8B-Instruct-2410."}
+model_name <- "Ministral-8B-Instruct-2410"
+method_name <- "3_rag_examples"
 
-pr_df <- tibble(
-  recall = pr_obj$curve[, 1],
-  precision = pr_obj$curve[, 2],
-  threshold = pr_obj$curve[, 3]
-) %>%
-  mutate(f1 = 2 * precision * recall / (precision + recall))
+df_temp_mistral_multi <- df_multi %>% 
+  filter(
+    model == model_name,
+    method == method_name
+  ) # %>% unnest(metrics) # %>% calc_micro_f1(model, method)
+p_aktiva <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("GuV", x_stuff = TRUE)
+# p_other <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("other", x_stuff = TRUE)
 
-pr_auc <- round(pr_obj$auc.integral, 3)
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model, " with ", method))
+```
 
-g1 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision)) +
-  geom_line(aes(color = threshold), size = 1.2) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
-    subtitle = str_c(model_name_best_f1_aktiva, " with ", method__best_f1_aktiva),
-    x = "Recall",
-    y = "Precision"
+Figure \@ref(fig:table-dientification-llm-confidence-multi) summarizes
+the relation between reported confidence and correctness of the
+classification for all target types and compares it among the best
+performing model-strategy combinations for
+Llama-4-Scout-17B-16E-Instruct, Ministral-8B-Instruct-2410 and Qwen3-8B.
+It seems, as the reported confidence for correct and incorrect
+classifications are separable in most cases for Mistral-8B. For Llama 4
+Scout this seems not true for the target type **GuV**. For Qwen3-8B
+there is almost no separation at all.
+
+Figure \@ref(fig:table-identification-llm-confidence-lm-multi) shows,
+that there is almost no area, where the empirical rate of wrong
+classifications is zero[^05_results-21]. Only for Ministral-8B we find
+intervals, where a human don't has to double check the classification
+for target types **Aktiva** and **GuV**. These intervals include 90 % of
+all predictions. If error rates of 1 % are accepted almost all
+predictions by Llama Scout 4 and about 96 % of the predictions by
+Ministral-8B are included in the corresponding intervals. For Qwen3-8B
+we find no interval without an error rate below 1 %.
+
+[^05_results-21]: The size of intervals has been narrowed down to 0.1 %
+    and still there was no range without wrong classification for Llama
+    4 Scout.
+
+```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+confidence_vs_truth_multi <- df_multi %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", "Qwen3-8B")) %>% 
+  unnest(metrics) %>% 
+  group_by(method, model, metric_type) %>% mutate(
+    mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
+  ) %>% group_by(model, metric_type) %>% 
+  arrange(desc(mean_f1)) %>% 
+  slice_max(mean_f1, n = 1, with_ties = FALSE) %>% 
+  select(-filepath) %>% 
+  unnest(predictions) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    # truth_NA = factor(truth_NA, levels = c(F, T))
+  ) %>% filter(metric_type %in% c("Aktiva", "Passiva", "GuV"))
+
+confidence_vs_truth_multi %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence_score, fill = metric_type), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_grid(~ model)
+```
+
+```{r table-identification-llm-confidence-lm-multi, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals for the multi-class classification task."}
+confidence_vs_truth_multi %>% rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, metric_type, model) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(metric_type, model) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  ) %>%
+  ggplot() +
+  geom_col(aes(x = conf_center, y = perc, color = chance_low, fill = chance_false_interval), alpha = 1) +
+  geom_text(
+    aes(x = conf_center, y = perc, label = round(perc, 0)), 
+    position = position_stack(vjust = 1), vjust = -0.6, 
+    size = 3, color = "black"
   ) +
-  coord_cartesian(ylim = c(0,1)) +
-  theme(
-    legend.position = "bottom"
-  )
-
-g2 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision, color = f1)) +
-  geom_line(size = 1.2) +
-  scale_color_viridis_c(option = "viridis") +
+  scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
   labs(
-    # title = "Precision-Recall Curve colored by F1 score",
-    x = "Recall",
-    y = NULL,
-    color = "F1 score"
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
   ) +
-  coord_cartesian(ylim = c(0,1))+
-  theme(
-    legend.position = "bottom"
-  )
+  facet_grid(metric_type ~ model)
 
-g1 + g2
 ```
 
 ### Term frequency based classifier {#tf-classifier}
 
-RandomForest performs much better than a logistic regression Better
-results with \* undersampling \* training on all types simultaniousely
+The fourth approach uses term frequencies for a key word list and the
+number of floats to rank pages. The approach is inspired by
+\acr{TF-IDF} - a technique commonly used for information retrieval. It
+is similar to the baseline approach, because it uses a key word list and
+regular expressions to count terms and floats. But it is more flexible
+because the works in the key word list are not mandatory. This makes the
+approach robust against issues in the text extracts for single key
+words.
 
-#### Two predictors
+The key word list is generated removing the stop words from the law
+about **Aktiva**, **Passiva** and **GuV**. The key words from the
+\acr{regex} approach are added, e.g. *GuV* and *Gewinn- und
+Verlustrechnung*. Since real life representations of those target types
+never contain all entries, it is not possible to include most of those
+words in a strict \acr{regex} search as presented in the first approach.
 
-Term frequency of nouns of the law about Aktiva Float freqency (floats
-divided by word count)
+This approach sums the counts of each word from the key word list per
+page in a first variable. In a second variable it counts the number of
+floats on each page. These two variables are then divided by the number
+of words found on the page. These densities are used to rank all pages
+from a single document. This is done with a unique key word list for
+each target type.
 
-#### Four predictors
+A random forest is trained to determine which density should be weighted
+to what amount. Because of the imbalanced data set undersampling is used
+when the training data set is created[^05_results-22]. A single random
+forest is trained because the density of floats and specific words is
+assumed to be similar. The actual type of the page is not taken into
+account. The model just knows if the page is a page of any target type,
+based on the term and float density. This trippels the data points of
+the target class.
 
-Count of integers Count of dates
+[^05_results-22]: The random forest build with undersampling performs
+    much better as a classifier, that is trained using n oversamples
+    train dataset.
 
--   top 1
--   top k
+This single random forest performs much better than random forests that
+are trained using the dataset for each target type separatly. The
+performance is tested on all data points not included in the
+undersampled train dataset. Thus the test dataset is again highly
+imbalanced.
 
-low precision llm linked to position of correct page? numeric frequency?
+The random forest performs a binary classification task. But instead of
+the actual classifications, the predicted scores are used to rank the
+pages. Instead of precision or recall the metric used for the evaluation
+is top k accuracy. It is of interest which value of k is required to get
+a recall of 100 %.
+
+The code can be found at:
+"benchmark_jobs/page_identification/term_frequency.ipynb"
 
 ```{python random-forest-2-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
 import pandas as pd
@@ -1706,43 +1897,19 @@ df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].r
 df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
 ```
 
-```{r top-n-accuracy-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag}
-df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
-  mutate(data_split = 'test', n_predictors = 2)
-df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
-  mutate(data_split = 'train', n_predictors = 2)
-df_4_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_test.csv") %>% 
-  mutate(data_split = 'test', n_predictors = 4)
-df_4_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_train.csv") %>% 
-  mutate(data_split = 'train', n_predictors = 4)
+-   top 1
+-   top k
 
-df_rf_results <- bind_rows(
-  df_2_predictors_train, df_2_predictors_test,
-  df_4_predictors_train, df_4_predictors_test
-  )
+low precision llm linked to position of correct page? numeric frequency?
 
-max_rank = df_rf_results %>% filter(is_truth == 1) %>% pull(rank) %>% max()
-results <- map_dfr(1:max_rank, function(i_rank) {
-  df_rf_results %>% 
-    filter(is_truth == 1) %>% 
-    group_by(type, data_split, n_predictors) %>% 
-    mutate(le = if_else(rank <= i_rank, 1, 0)) %>% 
-    summarise(mean = mean(le), .groups = "drop") %>% 
-    mutate(i_rank = i_rank)
-})
+Figure \@ref(fig:forest-map-tf-2-predictors) shows how the test data
+points are distributed in the two dimensional value map for the random
+forest with two predictors. The target pages have a *float_frequncy*
+between 0.2 and 0.5 and pages with a *term_frequency* value over 0.07
+get classified as target. One target page shows a lower *term_frequency*
+and thus does not get ranked correct. (recall, precision?)
 
-results %>% ggplot() +
-  geom_col(aes(x = i_rank, y = mean)) +
-  facet_nested(type ~ data_split + n_predictors) +
-  labs(
-    x = "rank",
-    y = "top n accuracy",
-    # title = "Top n accuracy for different ranks, data splits and number of predictors"
-  )
-
-```
-
-```{python forest-map-tf-2-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-2preds.sav'), results='hold'}
+```{python forest-map-tf-2-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-2preds.sav'), results='hold', fig.cap="Classification map showing which score a data point gets based on its term and float frequency and which type the data points in the test dataset actually have."}
 import shap
 import pickle
 import pandas as pd
@@ -1789,6 +1956,56 @@ ax.set_ylabel("float_frequency")
 ax.set_title(f"RandomForestClassifier (accuracy={score:.2f})")
 plt.legend()
 plt.show()
+```
+
+A second random forest is trained supplementing the two predictors *term
+density* and *float density* with two additional predictors: *date
+count* and *integer count*. Figure
+\@ref(fig:top-n-accuracy-term-frequency) shows the top n accuracy for
+both random forests. On the left side the top n accuracy on the
+imbalanced test dataset is shown. On the right side the performance on
+the train dataset.
+
+Both random forests perform similar on the train dataset. The random
+forest with four predictors reaches perfect recall faster for **Aktiva**
+on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the
+random forest with four predictors. With the random forest with two
+predictors it needs $n = 7$.
+
+```{r top-n-accuracy-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Comparing the top n accuracy on training and test dataset among the random forest with two and four predictors."}
+df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
+  mutate(data_split = 'test', n_predictors = 2)
+df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
+  mutate(data_split = 'train', n_predictors = 2)
+df_4_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_test.csv") %>% 
+  mutate(data_split = 'test', n_predictors = 4)
+df_4_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_train.csv") %>% 
+  mutate(data_split = 'train', n_predictors = 4)
+
+df_rf_results <- bind_rows(
+  df_2_predictors_train, df_2_predictors_test,
+  df_4_predictors_train, df_4_predictors_test
+  )
+
+max_rank = df_rf_results %>% filter(is_truth == 1) %>% pull(rank) %>% max()
+results <- map_dfr(1:max_rank, function(i_rank) {
+  df_rf_results %>% 
+    filter(is_truth == 1) %>% 
+    group_by(type, data_split, n_predictors) %>% 
+    mutate(le = if_else(rank <= i_rank, 1, 0)) %>% 
+    summarise(mean = mean(le), .groups = "drop") %>% 
+    mutate(i_rank = i_rank)
+})
+
+results %>% ggplot() +
+  geom_col(aes(x = i_rank, y = mean)) +
+  facet_nested(type ~ data_split + n_predictors) +
+  labs(
+    x = "rank",
+    y = "top n accuracy",
+    # title = "Top n accuracy for different ranks, data splits and number of predictors"
+  )
+
 ```
 
 ```{python random-forest-4-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
@@ -1851,7 +2068,13 @@ df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].r
 df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
 ```
 
-```{python shap-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-preds.sav')}
+Figure \@ref(fig:shap-tf-4-predictors) shows that the two additional
+predictors *date_count* and *integer_count* have little importance. But
+since it is computationally cheap to determine their value and the
+effiency of a random forest classifier, there is little reason not to
+use them.
+
+```{python shap-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-preds.sav'), fig.cap="Beeswarm plot of SHAP importance values for the four predictors of the second random forest classifier."}
 import shap
 import pickle
 import pandas as pd
@@ -1874,58 +2097,115 @@ shap_values = explainer.shap_values(df_test_split[predictors].values)
 shap.summary_plot(shap_values[:,:,1], df_test_split[predictors].values, feature_names=predictors)
 ```
 
-```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%"}
-df_temp <- df_rf_results %>% filter(n_predictors == 4, data_split == "test")
-pr_obj <- pr.curve(scores.class0 = df_temp$score[df_temp$is_truth == 1],
-           scores.class1 = df_temp$score[df_temp$is_truth == 0],
-           curve = TRUE)
+Fianlly, figure \@ref(fig:micro-pr-curve-tf-4-predictors) shows the
+precision-recall-curves for the term frequency approach for all three
+target types. The \acr{AUC} for all types is below 0.5. The precision
+and F1 score stay below 0.5 as well. A high recall can be maintained for
+all types for threshold values up to at least 0.72.
 
-# Precision-Recall Curve with ggplot2
+```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the precsion-recall-curve for the random forest with four predictors.", fig.height=8}
+plot_pr_double_curve_tf <- function(df, selected_type, x_stuff = FALSE) {
+  df_temp2 <- df %>% filter(
+    n_predictors == 4, data_split == "test",
+    type == selected_type
+  ) %>% 
+    rename(
+      confidence_score = score
+    ) %>% 
+    mutate(
+      type = factor(is_truth, levels = c(1, 0))
+    )
+  
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% filter(threshold<=1) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1_row_high_recall <- pr_df %>% 
+    filter(recall > 0.999, precision > 0.1) %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_F1_high_recall <- best_F1_row_high_recall %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  best_threshold_high_recall <- best_F1_row_high_recall  %>% pull(threshold)
+  best_precision_high_recall <- best_F1_row_high_recall  %>% pull(precision)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      subtitle = paste0("Precision-Recall Curve for ", selected_type, " (AUC = ", pr_auc, ")"),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1), xlim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
+    )
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1), xlim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  if (x_stuff == FALSE) {
+    g1 <- g1 + guides(color = FALSE) +
+      labs(x = element_blank())
+    
+    g2 <- g2 + guides(color = FALSE) +
+      labs(x = element_blank())
+  }
+  
+  combined_plot <- g1 + g2
+  combined_plot + plot_annotation(caption = paste0(
+    'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
+    'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
+}
 
-pr_df <- tibble(
-  recall = pr_obj$curve[, 1],
-  precision = pr_obj$curve[, 2],
-  threshold = pr_obj$curve[, 3]
-) %>%
-  mutate(f1 = 2 * precision * recall / (precision + recall))
+df_temp <- df_rf_results
 
-pr_auc <- round(pr_obj$auc.integral, 3)
+p_aktiva <- df_temp %>% plot_pr_double_curve_tf("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp %>% plot_pr_double_curve_tf("Passiva", x_stuff = FALSE)
+p_guv <- df_temp %>% plot_pr_double_curve_tf("GuV", x_stuff = TRUE)
+# p_other <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("other", x_stuff = TRUE)
 
-g1 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision)) +
-  geom_line(aes(color = threshold), size = 1.2) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(
-    title = str_c("Precision-Recall Curve (AUC = ", pr_auc, ")"),
-    x = "Recall",
-    y = "Precision"
-  ) +
-  coord_cartesian(ylim = c(0,1)) +
-  theme(
-    legend.position = "bottom"
-  )
-
-g2 <- pr_df %>%
-  ggplot(aes(x = recall, y = precision, color = f1)) +
-  geom_line(size = 1.2) +
-  scale_color_viridis_c(option = "viridis") +
-  labs(
-    # title = "Precision-Recall Curve colored by F1 score",
-    x = "Recall",
-    # y = "Precision",
-    color = "F1 score"
-  ) +
-  coord_cartesian(ylim = c(0,1))+
-  theme(
-    legend.position = "bottom"
-  )
-
-g1 + g2
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model, " with ", method))
 ```
 
 ### Comparison {#comparison-page-identification}
 
 #### Prediction performance
+
+Baseline:
+
+-   Aktiva = R: 0.997, P: 0.132, F1: 0.233
+
+-   Passiva = R: 0.993, P: 0.130, F1: 0.230
+
+-   GuV = Recall: 1, precision: 0.210, F1: 0.350
+
+TOC (machine readable)
+
+-   Aktiva = R: 0., P: 0., F1: 0.
+
+-   Passiva = R: 0. P: 0., F1: 0.
+
+-   GuV = R: 0., P: 0., F1: 0.
 
 F1 scores for llms are much higher
 
@@ -1934,6 +2214,14 @@ F1 scores for llms are much higher
 Multiclassification more effective than three times single
 classification Combine term frequency with llm approach to limit page
 range
+
+-   all need text extract
+
+-   training
+
+-   runtime \* watts
+
+-   screen watts
 
 ## Table extraction {#table-extraction-introduction}
 
@@ -1960,33 +2248,33 @@ synth_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(
 
 The baseline for the table extraction task is set by an approach using
 regular expressions on the text extract. The approach performs much
-better[^05_results-20] on the synthetic dataset compared to the real
+better[^05_results-23] on the synthetic dataset compared to the real
 dataset (see Figure \@ref(fig:table-extraction-regex-performance)). Even
 though, it does not perform perfectly and its performance is more
 consistent on the text extracted with pymupdf compared to pdfium. Some
 possible explanations are:
 
-[^05_results-20]: A comparison of the numeric values over all methods
+[^05_results-23]: A comparison of the numeric values over all methods
     can be found in section \@ref(comparing-table-extraction-methods).
 
--   a duplicated row name[^05_results-21]
+-   a duplicated row name[^05_results-24]
 -   numeric columns extracted separated from row names by extraction
     libraries
--   sums in the same row as the single values[^05_results-22]
--   with pdfium: missing white space[^05_results-23]
--   with pdfium: random line breaks[^05_results-24]
+-   sums in the same row as the single values[^05_results-25]
+-   with pdfium: missing white space[^05_results-26]
+-   with pdfium: random line breaks[^05_results-27]
 
-[^05_results-21]: The row *Geleistete Anzahlungen* can be found in two
+[^05_results-24]: The row *Geleistete Anzahlungen* can be found in two
     parts of the table and the simple approach just matches the numbers
     to the first found entry.
 
-[^05_results-22]: In this case the \acr{regex} takes the sum as the
+[^05_results-25]: In this case the \acr{regex} takes the sum as the
     value for the previous year.
 
-[^05_results-23]: This can form unexpected numeric patterns or prevent
+[^05_results-26]: This can form unexpected numeric patterns or prevent
     the row names to be recognized.
 
-[^05_results-24]: The approach takes care of line breaks between words,
+[^05_results-27]: The approach takes care of line breaks between words,
     but not within. This leads to unrecognized row names as well.
 
 You can find some examples for incorrect extracted texts in section
@@ -2277,25 +2565,25 @@ super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero
 
 For the table extraction task
 `r length(unique(df_real_table_extraction$model))+2` open source models
-have been benchmarked[^05_results-25]. The results are presented in
+have been benchmarked[^05_results-28]. The results are presented in
 Figure \@ref(fig:table-extraction-llm-performance-total-overview),
 \@ref(fig:table-extraction-llm-performance-numeric-overview) and
 \@ref(fig:table-extraction-llm-f1-overview)).
 
-[^05_results-25]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
+[^05_results-28]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
     and *google_gemma-3n-E4B-it* have been tested as well but don't get
     presented as they never performed anywhere beyond random guessing.
 
 Most models need a context learning approach to beat the performance of
 the regular expression approach at total and numeric correctness rate
 and F1 score. Only `r nrow(zero_shot_stars)` models perform better
-without any guidance[^05_results-26] (see Table
+without any guidance[^05_results-29] (see Table
 \@ref(tab:zero-and-synth-performing-models-tab)).
 `r nrow(static_example_stars)` models achieved an performance better as
 the regex baseline using the approach to learn with a fixed example from
 the synthetic dataset.
 
-[^05_results-26]: There is an external guidance through the provided
+[^05_results-29]: There is an external guidance through the provided
     xgrammar template but it is not communicated to the model in a
     promt.
 
@@ -2317,9 +2605,9 @@ Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the mean
 performance for the best model-method approach for each model family.
 Most of the top performing model-method combinations rely on the maximum
 number of examples provided. Only the Llama-3 and Falcon3 model perform
-best with three examples[^05_results-27].
+best with three examples[^05_results-30].
 
-[^05_results-27]: Phi4 also perfroms best with three examples. But this
+[^05_results-30]: Phi4 also perfroms best with three examples. But this
     is the maximum it can process due to a limited context length.
 
 ```{r zero-and-synth-performing-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -2654,10 +2942,10 @@ grammar. Running gpt-5-chat resulted in the error informing that a
 approach worked flawless. Running gpt-oss-20b with the vllm offline
 inference framework was possible and the new harmony output format could
 be processed after minor code changes for most
-approaches[^05_results-28]. With a gpt-oss-120b instance hosted on Azure
+approaches[^05_results-31]. With a gpt-oss-120b instance hosted on Azure
 the guided decoding worked flawless.
 
-[^05_results-28]: With the static example approach there have been 24
+[^05_results-31]: With the static example approach there have been 24
     files where the resonse could not get parsed into valid \acr{json}.
     With the other approaches there are one to four unparsable
     responses.
@@ -3010,7 +3298,7 @@ Table
 \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table)
 shows, that synthetic data can be used for in-context learning in a task
 where the currency units given for a table or specific
-columns[^05_results-29]. Except for Llama 3.1 all models achieved much
+columns[^05_results-32]. Except for Llama 3.1 all models achieved much
 better numeric extraction results for tables where currencies are given
 for all columns. The model also achieved better for cases where there
 was only a single column with units, even though there have been no
@@ -3020,7 +3308,7 @@ performance for tables where no units are given for all models but Llama
 4 Schout. This decrease was highest for Qwen 3 and also higher than 10 %
 for Mistral Large.
 
-[^05_results-29]: Synthetic data is used here because the
+[^05_results-32]: Synthetic data is used here because the
     characterization, which real *Aktiva* table has units in which
     column, was created too late.
 

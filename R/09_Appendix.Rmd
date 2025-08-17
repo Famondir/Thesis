@@ -886,6 +886,8 @@ balanced_df_toc_benchmark %>% ggplot() +
 
 #### Classification
 
+##### Binary
+
 Binary classification F1 score over runtime limited to 60 minutes
 
 ```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
@@ -941,6 +943,91 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
     shape = guide_legend(nrow = 1)
   ) +
   labs(x = "normalized runtime in minutes")
+```
+
+##### Multi-class classification
+
+Multi-class classification micro minorites F1 score over runtime limited to 60 minutes
+
+```{r multi-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(xlim = c(0, 60))
+```
+
+Multi-class classification micro minorites F1 score over runtime
+
+```{r multi-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes")
+```
+
+```{r micro-pr-curve-llm-multi-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct."}
+model_name <- "Llama-4-Scout-17B-16E-Instruct"
+method_name <- "3_rag_examples"
+
+df_temp_llama_multi <- df_multi %>% 
+  filter(
+    model == model_name,
+    method == method_name
+  ) # %>% unnest(metrics) # %>% calc_micro_f1(model, method)
+p_aktiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_llama_multi %>% plot_pr_double_curve_multi("GuV", x_stuff = TRUE)
+
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model, " with ", method))
 ```
 
 ### Table extraction

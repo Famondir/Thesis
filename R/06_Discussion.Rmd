@@ -1,43 +1,51 @@
 # Discussion
+
 \ChapFrame
 
 ## Limitations
 
 ### table extraction
 
-* found mistakes in gold standard with the llm results; mistakes found by human double check
-* new lines / splitted lines
-* test synthetic hypothesis with pymupdf extract
+-   found mistakes in gold standard with the llm results; mistakes found by human double check
+-   new lines / splitted lines
+-   test synthetic hypothesis with pymupdf extract
+-   2.4 % wrong gold standard creation
 
 #### Regex baseline
 
-* synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
+-   synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
 
 ### classification
 
-* Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
-* predictor: n_big_tables (tf or llm relevant?)
+-   Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
+-   predictor: n_big_tables (tf or llm relevant?)
+-   Why it is important to have a good recall (or top n accuracy)
+-   bad performance for Maverick with more models relied to FP8 model version?
+
+One could build an application that is not asking for a human intervention for reported confidences over 0.9 and then give the possibility to change the page to extract information from later on.
+
+For humans: Easily identifiable if page has a big table with numbers but not so easy to spot the Aktiva / Passiva label.
 
 ## Not covered
 
-* OCR
-* fine-tuning
-* using something smaller (e.g. LSTMs) instead LLMs
-* building application, UX design (ref Ambacher 2024)
-* table extraction (either VLLMs or classic approaches <-- tried tabula but was not successful (because of missing visual traits)?)
+-   OCR
+-   fine-tuning
+-   using something smaller (e.g. LSTMs) instead LLMs
+-   building application, UX design (ref Ambacher 2024)
+-   table extraction (either VLLMs or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?)
 
 in company document next / previous year more helpful than years further away?
 
 ## Outlook
 
-* ensemble from multiple models or are errors systematic? (e.g. Wohnungsbaugenossenschaften splitting some rows in multiple and none is picked?)
-* check for halluzination vs wrong placed / repeated numbers
-* no perfect score even with synthetic data
-* flexible extraction (name something, find it, get it)
-* 
+-   ensemble from multiple models or are errors systematic? (e.g. Wohnungsbaugenossenschaften splitting some rows in multiple and none is picked?)
+-   check for halluzination vs wrong placed / repeated numbers
+-   no perfect score even with synthetic data
+-   flexible extraction (name something, find it, get it)
+-   
 
 ### Table extraction
 
 building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 
-predictions for barrierefreie documents of WBM empty
+predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
