@@ -325,4 +325,80 @@ g1 + g2
 
 ######
 
+filepathes_toc_mr <- next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  pull(filepath) %>% unique()
 
+next_page_df_toc_benchmark_combi <- next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  bind_rows(
+    next_page_df_toc_benchmark %>% 
+      filter(benchmark_type == "200 lines", 
+             !filepath %in% filepathes_toc_mr
+             ))
+
+next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  group_by(type) %>% 
+  reframe(
+    n_correct = sum(in_range),
+    n_tried = n()
+    ) %>% 
+  left_join(
+      data_unnested %>% group_by(type) %>% summarise(n_total = n())    
+    ) %>% mutate(
+      precision_like = n_correct/n_tried,
+      recall = n_correct/n_total
+    )
+
+next_page_df_toc_benchmark_combi %>% group_by(type) %>% 
+  reframe(
+    n_correct = sum(in_range),
+    n_tried = n()
+    ) %>% 
+  left_join(
+    data_unnested %>% group_by(type) %>% summarise(n_total = n())    
+  ) %>% mutate(
+    precision_like = n_correct/n_tried,
+    recall = n_correct/n_total
+  )
+
+##### top k accuracy ####
+
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+(top_k_results <- df_binary %>%
+  filter(model == "gemma-3-27b-it-0-9-1", method == "zero_shot") %>%
+  group_by(classification_type) %>%
+  slice_max(n = 1, f1_score, with_ties = FALSE) %>%
+  select(-filepath) %>%
+  unnest(predictions) %>%
+  select(match, confidence_score, classification_type, filepath, predicted_type) %>%
+    mutate(confidence_score = if_else(predicted_type == classification_type, confidence_score, 1-confidence_score)) %>% 
+  # filter(predicted_type == classification_type) %>% 
+  group_by(classification_type, filepath) %>%
+  arrange(desc(confidence_score), .by_group = TRUE) %>%
+  mutate(rank = row_number()) %>%
+  ungroup() %>%
+  group_by(classification_type, filepath) %>%
+  arrange(rank, .by_group = TRUE) %>%
+  mutate(
+    cum_match = cumsum(match == TRUE)
+  ) %>%
+  ungroup() %>%
+  group_by(classification_type, rank) %>%
+  summarise(
+    top_k_recall = mean(cum_match >= 1),
+    .groups = "drop"
+  ) %>%
+  filter(rank <= 5, 
+         #classification_type == "Passiva"
+         )
+  )
+
+# If you want a wide format (k as columns):
+top_k_wide <- top_k_results %>%
+  pivot_wider(names_from = rank, values_from = top_k_acc, names_prefix = "top_")
+top_k_wide

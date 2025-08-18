@@ -320,3 +320,45 @@ min_n_entries_max_correct <- df_toc_benchmark_mr_degration_next_page %>%
   filter(correct) %>% group_by(n_entries) %>% 
   summarise(sum = sum(value)) %>% filter(sum == max(sum)) %>% 
   pull(n_entries) %>% max() %>% as.character() %>% as.integer()
+
+#### final performance chapter ####
+
+filepathes_toc_mr <- next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  pull(filepath) %>% unique()
+
+next_page_df_toc_benchmark_combi <- next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  bind_rows(
+    next_page_df_toc_benchmark %>% 
+      filter(benchmark_type == "200 lines", 
+             !filepath %in% filepathes_toc_mr
+      ))
+
+next_page_df_toc_benchmark %>% 
+  filter(benchmark_type == "machine readable") %>% 
+  group_by(type) %>% 
+  reframe(
+    n_correct = sum(in_range),
+    n_tried = n()
+  ) %>% 
+  left_join(
+    data_unnested %>% group_by(type) %>% summarise(n_total = n())    
+  ) %>% mutate(
+    precision_like = n_correct/n_tried,
+    recall = n_correct/n_total,
+    F1_like = 2*precision_like*recall/(recall+precision_like)
+  )
+
+next_page_df_toc_benchmark_combi %>% group_by(type) %>% 
+  reframe(
+    n_correct = sum(in_range),
+    n_tried = n()
+  ) %>% 
+  left_join(
+    data_unnested %>% group_by(type) %>% summarise(n_total = n())    
+  ) %>% mutate(
+    precision_like = n_correct/n_tried,
+    recall = n_correct/n_total,
+    F1_like = 2*precision_like*recall/(recall+precision_like)
+  )

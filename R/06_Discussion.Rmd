@@ -20,7 +20,7 @@
 -   Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
 -   predictor: n_big_tables (tf or llm relevant?)
 -   Why it is important to have a good recall (or top n accuracy)
--   bad performance for Maverick with more models relied to FP8 model version?
+-   bad performance for Maverick with more models relied to FP8 model version? No. Same reults with FP16
 
 One could build an application that is not asking for a human intervention for reported confidences over 0.9 and then give the possibility to change the page to extract information from later on.
 

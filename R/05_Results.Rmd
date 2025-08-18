@@ -2191,21 +2191,37 @@ wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
 
 #### Prediction performance
 
-Baseline:
+Baseline (exhaustive, high recall):
 
 -   Aktiva = R: 0.997, P: 0.132, F1: 0.233
 
--   Passiva = R: 0.993, P: 0.130, F1: 0.230
-
 -   GuV = Recall: 1, precision: 0.210, F1: 0.350
 
-TOC (machine readable)
+-   Passiva = R: 0.993, P: 0.130, F1: 0.230
+
+TOC (machine readable, higher precision)
+
+-   Aktiva = R: 0.256, P: 0.600, F1: 0.359
+
+-   GuV = R: 0.245, P: 0.446, F1: 0.316
+
+-   Passiva = R: 0.210, P: 0.500, F1: 0.296
+
+TOC (combi, higher recall)
+
+-   Aktiva = R: 0.268, P: 0.338, F1: 0.299
+
+-   GuV = R: 0.363, P: 0.378, F1: 0.370
+
+-   Passiva = R: 0.222, P: 0.281, F1: 0.248
+
+TOC (combi, higher recall)
 
 -   Aktiva = R: 0., P: 0., F1: 0.
 
--   Passiva = R: 0. P: 0., F1: 0.
-
 -   GuV = R: 0., P: 0., F1: 0.
+
+-   Passiva = R: 0., P: 0., F1: 0.
 
 F1 scores for llms are much higher
 
