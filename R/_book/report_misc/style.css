@@ -56,6 +56,10 @@ h5 span.header-section-number, h6 span.header-section-number {
   display: none;
 }
 
+h5, h6, h5+p, h6+p {
+  display: inline;
+}
+
 .book .book-body .page-wrapper .page-inner section.normal ol, .book .book-body .page-wrapper .page-inner section.normal ul {
     margin: auto;
 }

@@ -370,7 +370,7 @@ library(tidyr)
 library(purrr)
 
 (top_k_results <- df_binary %>%
-  filter(model == "gemma-3-27b-it-0-9-1", method == "zero_shot") %>%
+  filter(model == "Ministral-8B-Instruct-2410", method == "3_rag_examples") %>%
   group_by(classification_type) %>%
   slice_max(n = 1, f1_score, with_ties = FALSE) %>%
   select(-filepath) %>%
@@ -400,5 +400,40 @@ library(purrr)
 
 # If you want a wide format (k as columns):
 top_k_wide <- top_k_results %>%
-  pivot_wider(names_from = rank, values_from = top_k_acc, names_prefix = "top_")
+  pivot_wider(names_from = rank, values_from = top_k_recall, names_prefix = "top_")
 top_k_wide
+
+
+
+
+(top_k_results <- df_multi %>%
+    unnest(metrics) %>% 
+    filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
+    filter(model == "Ministral-8B-Instruct-2410", method == "3_rag_examples") %>%
+    mutate(classification_type = metric_type) %>% 
+    group_by(classification_type) %>%
+    slice_max(n = 1, f1_score, with_ties = FALSE) %>%
+    select(-filepath) %>%
+    unnest(predictions) %>%
+    select(match, confidence_score, classification_type, filepath, predicted_type) %>%
+    mutate(confidence_score = if_else(predicted_type == classification_type, confidence_score, 1-confidence_score)) %>% 
+    # filter(predicted_type == classification_type) %>% 
+    group_by(classification_type, filepath) %>%
+    arrange(desc(confidence_score), .by_group = TRUE) %>%
+    mutate(rank = row_number()) %>%
+    ungroup() %>%
+    group_by(classification_type, filepath) %>%
+    arrange(rank, .by_group = TRUE) %>%
+    mutate(
+      cum_match = cumsum(match == TRUE)
+    ) %>%
+    ungroup() %>%
+    group_by(classification_type, rank) %>%
+    summarise(
+      top_k_recall = mean(cum_match >= 1),
+      .groups = "drop"
+    ) %>%
+    filter(rank <= 5, 
+           #classification_type == "Passiva"
+    )
+)

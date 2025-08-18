@@ -1690,7 +1690,7 @@ wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
   plot_annotation(title = str_c(model, " with ", method))
 ```
 
-Figure \@ref(fig:table-dientification-llm-confidence-multi) summarizes
+Figure \@ref(fig:table-identification-llm-confidence-multi) summarizes
 the relation between reported confidence and correctness of the
 classification for all target types and compares it among the best
 performing model-strategy combinations for
@@ -1835,8 +1835,8 @@ imbalanced.
 The random forest performs a binary classification task. But instead of
 the actual classifications, the predicted scores are used to rank the
 pages. Instead of precision or recall the metric used for the evaluation
-is top k accuracy. It is of interest which value of k is required to get
-a recall of 100 %.
+is top k recall. It is of interest which value of k is required to get a
+recall of 100 %.
 
 The code can be found at:
 "benchmark_jobs/page_identification/term_frequency.ipynb"
@@ -1961,10 +1961,10 @@ plt.show()
 A second random forest is trained supplementing the two predictors *term
 density* and *float density* with two additional predictors: *date
 count* and *integer count*. Figure
-\@ref(fig:top-n-accuracy-term-frequency) shows the top n accuracy for
-both random forests. On the left side the top n accuracy on the
-imbalanced test dataset is shown. On the right side the performance on
-the train dataset.
+\@ref(fig:top-n-recall-term-frequency) shows the top n recall for both
+random forests. On the left side the top n recall on the imbalanced test
+dataset is shown. On the right side the performance on the train
+dataset.
 
 Both random forests perform similar on the train dataset. The random
 forest with four predictors reaches perfect recall faster for **Aktiva**
@@ -1972,7 +1972,7 @@ on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the
 random forest with four predictors. With the random forest with two
 predictors it needs $n = 7$.
 
-```{r top-n-accuracy-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Comparing the top n accuracy on training and test dataset among the random forest with two and four predictors."}
+```{r top-n-recall-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Comparing the top n recall on training and test dataset among the random forest with two and four predictors."}
 df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
   mutate(data_split = 'test', n_predictors = 2)
 df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
@@ -2002,8 +2002,8 @@ results %>% ggplot() +
   facet_nested(type ~ data_split + n_predictors) +
   labs(
     x = "rank",
-    y = "top n accuracy",
-    # title = "Top n accuracy for different ranks, data splits and number of predictors"
+    y = "top n recall",
+    # title = "Top n recall for different ranks, data splits and number of predictors"
   )
 
 ```
@@ -2189,64 +2189,182 @@ wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
 
 ### Comparison {#comparison-page-identification}
 
-#### Prediction performance
+```{r load-page-identification-comapison-data, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_page_identification_comparing_performance <- readODS::read_ods("data_storage/page_identification_summary.ods", sheet = 1)
+df_page_identification_comparing_efficiency <- readODS::read_ods("data_storage/page_identification_summary.ods", sheet = 2)
 
-Baseline (exhaustive, high recall):
+df_df_page_identification_comparing_performance_formatted <- df_page_identification_comparing_performance %>% 
+  mutate(
+    across(
+      c(precision, recall, F1, `top 1 recall`),
+      ~ifelse(      
+        . == max(., na.rm = TRUE),
+        paste0("**", round(., 3), "**"),
+        round(., 3)
+        )
+      )) %>% 
+  mutate(`k for full recall` = ifelse(      
+        `k for full recall` == min(`k for full recall`, na.rm = TRUE),
+        paste0("**", round(`k for full recall`, 3), "**"),
+        round(`k for full recall`, 3)
+        ))
+```
 
--   Aktiva = R: 0.997, P: 0.132, F1: 0.233
+In this subsection we summarize the performnce and efficiency for all
+four presented approaches and compare it with the the results a human
+may achieve with manual labour.
 
--   GuV = Recall: 1, precision: 0.210, F1: 0.350
+##### Prediction performance
 
--   Passiva = R: 0.993, P: 0.130, F1: 0.230
+Table \@ref(tab:page-identification-performance-overview-all) shows the
+best performance of achieved by the four presented approaches. The best
+F1 score is reached by Llama 4 Scout for the target types **Akiva** and
+**Passiva** in the multi-class classification approach. For **GuV** the
+best F1 score (0.985) is found with Ministral-8B-Instruct in the binary
+classification approach. Llama 4 Scout reaches a F1 score of 0.971 for
+target type **GuV** and multi-class classification.
 
-TOC (machine readable, higher precision)
+In the dataset preparation for the table extraction task (see section
+\@ref(table-extraction-introduction) 107 **Aktiva** pages have been
+selected. In this manual process we made two mistakes, accidently
+selecting one **Passiva** and one **GuV** page. Thus the human baseline
+to compete with is 0.981. Thus, Llama 4 Scout is more precise than us.
 
--   Aktiva = R: 0.256, P: 0.600, F1: 0.359
+Furthermore, Llama 4 Scout reached a recall of 1.0 for all target types.
+This means, the results can be used downstream, even though the
+precision is not always perfect. The pages classified as target can be
+double checked by a human, without missing any page.
 
--   GuV = R: 0.245, P: 0.446, F1: 0.316
+The other approaches' performance is way worse. Only the term-frequency
+approach's results could be used downstream, because we find a recall of
+1.0. Table
+\@ref(tab:page-identification-performance-overview-top-k-recall) shows
+the results of the top k recall for the term-frequency and \acr{LLM}
+approaches. The \acr{LLM}s always rate the correct **GuV** page highest.
+With Llama Scout 4 we find all target pages within the first two ranked
+pages. For the term-frequency approach a human sometimes has to check up
+to five pages.
 
--   Passiva = R: 0.210, P: 0.500, F1: 0.296
+```{r page-identification-performance-overview-all, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+ df_df_page_identification_comparing_performance_formatted %>% 
+   select(-c(`top 1 recall`, `k for full recall`)) %>% 
+  render_table(
+    alignment = "lllrrr",
+    caption = "Comparing page identification perfromance among all four approaches.",
+    ref = opts_current$get("label"))
+```
 
-TOC (combi, higher recall)
+```{r page-identification-performance-overview-top-k-recall, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+ df_df_page_identification_comparing_performance_formatted %>% 
+   select(-c(precision, recall, F1)) %>% 
+   filter(!is.na(`top 1 recall`)) %>% 
+  render_table(
+    alignment = "lllrr",
+    caption = "Comparing the top k recall for the term-frequency and LLM approaches.",
+    ref = opts_current$get("label"))
+```
 
--   Aktiva = R: 0.268, P: 0.338, F1: 0.299
+##### Energy usage and runtime
 
--   GuV = R: 0.363, P: 0.378, F1: 0.370
+Table \@ref(tab:page-identification-efficiency-overview-all) shows the
+runtime in seconds per document, estimated energy consumption in Joule
+per document and costs in CENTS **per 1000 documents**. The runtime for
+the \acr{LLM}s was normalized to seconds on a nvidia B200 and thus the
+TDP of 700 W is used to calculate the energy consumption. For the other
+approaches, running on my laptop (see section \@ref(local-machine)) a
+TDP of 28 Watts is used. For manual work by a human additional 60 W are
+added for the screen used. It is assumed that the \acr{LLM} is hosted
+locally.
 
--   Passiva = R: 0.222, P: 0.281, F1: 0.248
+Table \@ref(tab:page-identification-efficiency-overview-all) shows, that
+the regular expression approach is fastest and consumes least energy.
+Nevertheless, since the results are not sufficient another approach has
+to be chosen if the amount of manual labor should be reduced for the
+human inn the loop.
 
-TOC (combi, higher recall)
+Second place regarding all these criteria is the term-frequency
+approach, which guarantees a perfect recall, while reducing the number
+of pages to investigate to five per target type. This is similar to the
+number of pages a human has to investigate to find the \acr{TOC} of the
+document. And it is a reduction to 7.4 % of the average 67 pages the
+documents in this dataset have. The costs are still negligible.
 
--   Aktiva = R: 0., P: 0., F1: 0.
+The \acr{LLM} approaches have the highest runtime and energy
+consumption. This is the case, because they process every page with very
+computational demanding algorithms. The fastest and least energy
+consuming strategy is to use a small model as Ministral-8B-Instruct for
+the multi-class approach. This is more effective than running three
+binary classifications. An alternative approach could be to binary
+predict if the page is of any target type and then perform a
+classification, which type exactly the page is of. But the results of
+the multi-class strategy are good enough as well. In both strategies the
+k required for perfect recall is three, using the Ministral-8B-Instruct
+model[^05_results-23].
 
--   GuV = R: 0., P: 0., F1: 0.
+[^05_results-23]: Potentially smaller fine tuned models can solve the
+    task even more efficient.
 
--   Passiva = R: 0., P: 0., F1: 0.
+For the \acr{TOC} approach \acr{LLM}s are used as well, but they process
+far less of the documents pages. This can be achieved for the good
+performing classification strategies by combining the term-frequency
+approach with the \acr{LLM} approach.
 
-F1 scores for llms are much higher
+The manual approach is the slowest. For the benchmark ten random
+documents were processed by us. We used the \acr{TOC} and the search
+function to find key words like **Aktiva** or **Bilanz**. Anyhow, its
+almost as fast as the multi-classification using Llama 4 Scout. But it
+requires eight times less energy. Comparing it to Ministral-8B-Instruct
+it take three times longer but consumes less then half of the energy.
 
-#### Energy usage and runtime
+Not taken into account fo this comparison are factors like
 
-Multiclassification more effective than three times single
-classification Combine term frequency with llm approach to limit page
-range
+-   costs to buy and maintain hardware (i.e. a GPU cluster).
 
--   all need text extract
+-   higher costs per runtime if the \acr{LLM} compute is purchased from
+    cloud providers. CLOUD: price if LLM is in the cloud \<-- print
+    tokens used
 
--   training
+-   payment and insurance to pay for a human (e.g . student coworker).
 
--   runtime \* watts
+-   the training time and energy consumption for training either
 
--   screen watts
+    -   a \acr{LLM} (probably done by the \acr{LLM} provider).
+
+    -   a human (growing up, getting educated).
+
+-   the energy consumed with the food humans eat.
+
+Since all approaches but the manual identification need the text
+extract, this runtime and energy consumption are also not listed (but
+low).
+
+```{r page-identification-efficiency-overview-all, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+df_page_identification_comparing_efficiency %>% filter(!drop == 1) %>% 
+  select(approach, strategy, `runtime per document in s`, `energy in J`, `costs in CENTS per 1000 documents`) %>%
+  mutate(
+    across(
+      where(is.numeric),
+      ~ifelse(      
+        . == min(., na.rm = TRUE),
+        paste0("**", round(., 3), "**"),
+        round(., 3)
+        )
+      )) %>% 
+  render_table(
+    alignment = "llrrr",
+    caption = "Comparing page identification efficiency among all four approaches.",
+    ref = opts_current$get("label"))
+```
 
 ## Table extraction {#table-extraction-introduction}
 
 \ChapFrame
 
-The second task to solve is: extract the data from the document.
+The second research question asks, how \acr{LLM}s can be used, to
+effectively extract specific information from a financial report.
 
-Which tasks have there been? Which models have been used for which
-ttask? What data has been used?
+Which tasks have there been? Which models have been used for which task?
+What data has been used?
 
 ### Baseline: Regex
 
@@ -2264,33 +2382,33 @@ synth_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(
 
 The baseline for the table extraction task is set by an approach using
 regular expressions on the text extract. The approach performs much
-better[^05_results-23] on the synthetic dataset compared to the real
+better[^05_results-24] on the synthetic dataset compared to the real
 dataset (see Figure \@ref(fig:table-extraction-regex-performance)). Even
 though, it does not perform perfectly and its performance is more
 consistent on the text extracted with pymupdf compared to pdfium. Some
 possible explanations are:
 
-[^05_results-23]: A comparison of the numeric values over all methods
+[^05_results-24]: A comparison of the numeric values over all methods
     can be found in section \@ref(comparing-table-extraction-methods).
 
--   a duplicated row name[^05_results-24]
+-   a duplicated row name[^05_results-25]
 -   numeric columns extracted separated from row names by extraction
     libraries
--   sums in the same row as the single values[^05_results-25]
--   with pdfium: missing white space[^05_results-26]
--   with pdfium: random line breaks[^05_results-27]
+-   sums in the same row as the single values[^05_results-26]
+-   with pdfium: missing white space[^05_results-27]
+-   with pdfium: random line breaks[^05_results-28]
 
-[^05_results-24]: The row *Geleistete Anzahlungen* can be found in two
+[^05_results-25]: The row *Geleistete Anzahlungen* can be found in two
     parts of the table and the simple approach just matches the numbers
     to the first found entry.
 
-[^05_results-25]: In this case the \acr{regex} takes the sum as the
+[^05_results-26]: In this case the \acr{regex} takes the sum as the
     value for the previous year.
 
-[^05_results-26]: This can form unexpected numeric patterns or prevent
+[^05_results-27]: This can form unexpected numeric patterns or prevent
     the row names to be recognized.
 
-[^05_results-27]: The approach takes care of line breaks between words,
+[^05_results-28]: The approach takes care of line breaks between words,
     but not within. This leads to unrecognized row names as well.
 
 You can find some examples for incorrect extracted texts in section
@@ -2581,25 +2699,25 @@ super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero
 
 For the table extraction task
 `r length(unique(df_real_table_extraction$model))+2` open source models
-have been benchmarked[^05_results-28]. The results are presented in
+have been benchmarked[^05_results-29]. The results are presented in
 Figure \@ref(fig:table-extraction-llm-performance-total-overview),
 \@ref(fig:table-extraction-llm-performance-numeric-overview) and
 \@ref(fig:table-extraction-llm-f1-overview)).
 
-[^05_results-28]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
+[^05_results-29]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
     and *google_gemma-3n-E4B-it* have been tested as well but don't get
     presented as they never performed anywhere beyond random guessing.
 
 Most models need a context learning approach to beat the performance of
 the regular expression approach at total and numeric correctness rate
 and F1 score. Only `r nrow(zero_shot_stars)` models perform better
-without any guidance[^05_results-29] (see Table
+without any guidance[^05_results-30] (see Table
 \@ref(tab:zero-and-synth-performing-models-tab)).
 `r nrow(static_example_stars)` models achieved an performance better as
 the regex baseline using the approach to learn with a fixed example from
 the synthetic dataset.
 
-[^05_results-29]: There is an external guidance through the provided
+[^05_results-30]: There is an external guidance through the provided
     xgrammar template but it is not communicated to the model in a
     promt.
 
@@ -2621,9 +2739,9 @@ Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the mean
 performance for the best model-method approach for each model family.
 Most of the top performing model-method combinations rely on the maximum
 number of examples provided. Only the Llama-3 and Falcon3 model perform
-best with three examples[^05_results-30].
+best with three examples[^05_results-31].
 
-[^05_results-30]: Phi4 also perfroms best with three examples. But this
+[^05_results-31]: Phi4 also perfroms best with three examples. But this
     is the maximum it can process due to a limited context length.
 
 ```{r zero-and-synth-performing-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -2958,10 +3076,10 @@ grammar. Running gpt-5-chat resulted in the error informing that a
 approach worked flawless. Running gpt-oss-20b with the vllm offline
 inference framework was possible and the new harmony output format could
 be processed after minor code changes for most
-approaches[^05_results-31]. With a gpt-oss-120b instance hosted on Azure
+approaches[^05_results-32]. With a gpt-oss-120b instance hosted on Azure
 the guided decoding worked flawless.
 
-[^05_results-31]: With the static example approach there have been 24
+[^05_results-32]: With the static example approach there have been 24
     files where the resonse could not get parsed into valid \acr{json}.
     With the other approaches there are one to four unparsable
     responses.
@@ -3314,7 +3432,7 @@ Table
 \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table)
 shows, that synthetic data can be used for in-context learning in a task
 where the currency units given for a table or specific
-columns[^05_results-32]. Except for Llama 3.1 all models achieved much
+columns[^05_results-33]. Except for Llama 3.1 all models achieved much
 better numeric extraction results for tables where currencies are given
 for all columns. The model also achieved better for cases where there
 was only a single column with units, even though there have been no
@@ -3324,7 +3442,7 @@ performance for tables where no units are given for all models but Llama
 4 Schout. This decrease was highest for Qwen 3 and also higher than 10 %
 for Mistral Large.
 
-[^05_results-32]: Synthetic data is used here because the
+[^05_results-33]: Synthetic data is used here because the
     characterization, which real *Aktiva* table has units in which
     column, was created too late.
 
