@@ -2,6 +2,32 @@
 
 \ChapFrame
 
+## Interpretations
+
+#### Table extraction
+
+##### Regular expression approach
+
+Some possible explanations for the different performance on the extracted texts are:
+
+-   a duplicated row name[^06_discussion-1]
+-   numeric columns extracted separated from row names by extraction libraries
+-   sums in the same row as the single values[^06_discussion-2]
+-   with pdfium: missing white space[^06_discussion-3]
+-   with pdfium: random line breaks[^06_discussion-4]
+
+[^06_discussion-1]: The row *Geleistete Anzahlungen* can be found in two parts of the table and the simple approach just matches the numbers to the first found entry.
+
+[^06_discussion-2]: In this case the \acr{regex} takes the sum as the value for the previous year.
+
+[^06_discussion-3]: This can form unexpected numeric patterns or prevent the row names to be recognized.
+
+[^06_discussion-4]: The approach takes care of line breaks between words, but not within. This leads to unrecognized row names as well.
+
+You can find some examples for incorrect extracted texts in section \@ref(regex-extraction-mistakes).
+
+The random line breaks result in some missed row names which is reflected by the bigger spread for NA precision with *pdfium* on the synthetic dataset (see Figure \@ref(fig:table-extraction-regex-performance) B). Nevertheless, the NA precision for the majority of the cases is perfect. This is different with the real dataset. The NA precision is found to be at only `r df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_precision) %>% mean() %>% round(2)`.
+
 ## Limitations
 
 ### table extraction

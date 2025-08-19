@@ -63,13 +63,19 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
     percentage_correct_numeric = correct_numeric/(correct_numeric + incorrect_numeric),
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
   ) %>% mutate(
-    filepath = if_else(filepath == "../../benchmark_truth/real_tables/Tempelhof Projekt GmbH __TP_Geschaeftsbericht_2020.xlsx", "../../benchmark_truth/real_tables/Tempelhof Projekt GmbH__TP_Geschaeftsbericht_2020.xlsx", filepath)
+    filepath = if_else(filepath == "../../benchmark_truth/real_tables/Tempelhof Projekt GmbH __TP_Geschaeftsbericht_2020.xlsx", "../../benchmark_truth/real_tables/Tempelhof Projekt GmbH__TP_Geschaeftsbericht_2020.xlsx", filepath),
+    filepath = str_replace(filepath, "benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH __", "benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH__")
   )
 
 units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% mutate(
   filepath = paste0('../../benchmark_truth/real_tables/', company, '__', str_replace(filename, '.pdf', '.xlsx')),
   T_EUR = (T_in_year + T_in_previous_year)>0
-) %>% select(filepath, T_EUR)
+) %>% select(filepath, T_EUR) %>% bind_rows(
+  read_csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% mutate(
+    filepath = paste0('../../benchmark_truth/real_tables_extended/', company, '__', str_replace(filename, '.pdf$', '.csv')),
+    T_EUR = (T_in_year + T_in_previous_year)>0
+  ) %>% select(filepath, T_EUR)
+)
 
 df <- df %>% left_join(units_real_tables)
 

@@ -13,6 +13,8 @@ json_files_table_extraction_llm <- list.files(
 
 meta_list_llm <- list()
 
+error_list <- c()
+
 # Loop through each .json file
 for (file in json_files_table_extraction_llm) {
   # print(file)
@@ -34,7 +36,14 @@ for (file in json_files_table_extraction_llm) {
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
-  results <-  json_data$results %>% as_tibble() %>% rowwise() %>%  
+  results <-  json_data$results %>% as_tibble()
+  
+  if (nrow(results) == 0) {
+    error_list <-  c(error_list, file)
+    next
+  }
+  
+  results <-  results %>% rowwise() %>%  
     mutate(
       model = name_split[1], 
       method = name_split[method_index],
@@ -76,7 +85,7 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
     n_examples = if_else(method_family == "zero_shot", 0, n_examples),
     n_examples = if_else(method_family == "static_example", 1, n_examples)
   ) %>% mutate(
-    filepath = if_else(filepath == "/pvc/benchmark_truth/real_tables/Tempelhof Projekt GmbH __TP_Geschaeftsbericht_2020.pdf", "/pvc/benchmark_truth/real_tables/Tempelhof Projekt GmbH__TP_Geschaeftsbericht_2020.pdf", filepath)
+    filepath = str_replace(filepath, "/pvc/benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH __", "/pvc/benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH__")
   )
 
 df %>%
@@ -152,7 +161,7 @@ df %>%
 #### Synth Context ####
 
 json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/real_tables/",
+  "../benchmark_results/table_extraction/llm/final/real_tables_more_examples/",
   pattern = "\\.json$",
   full.names = TRUE
 ) %>%
@@ -160,6 +169,7 @@ json_files_table_extraction_llm <- list.files(
   .[grepl("synth", .)]
 
 meta_list_llm <- list()
+error_list <- c()
 
 # Loop through each .json file
 for (file in json_files_table_extraction_llm) {
@@ -181,7 +191,14 @@ for (file in json_files_table_extraction_llm) {
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "ignore"))-1
   # print(name_split)
   
-  results <-  json_data$results %>% as_tibble() %>% rowwise() %>%  
+  results <-  json_data$results %>% as_tibble()
+  
+  if (nrow(results) == 0) {
+    error_list <-  c(error_list, file)
+    next
+  }
+  
+  results <-  results %>% rowwise() %>%  
     mutate(
       model = name_split[1], 
       method = name_split[method_index],
@@ -224,16 +241,16 @@ df_synth <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) 
     n_examples = if_else(method_family == "zero_shot", 0, n_examples),
     n_examples = if_else(method_family == "static_example", 1, n_examples)
   ) %>% mutate(
-    filepath = if_else(filepath == "/pvc/benchmark_truth/real_tables/Tempelhof Projekt GmbH __TP_Geschaeftsbericht_2020.pdf", "/pvc/benchmark_truth/real_tables/Tempelhof Projekt GmbH__TP_Geschaeftsbericht_2020.pdf", filepath)
+    filepath = str_replace(filepath, "/pvc/benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH __", "/pvc/benchmark_truth/real_tables_extended/Tempelhof Projekt GmbH__")
   )
 
 df_synth %>% 
-  saveRDS("data_storage/real_table_extraction_synth.rds")
+  saveRDS("data_storage/real_table_extraction_extended_synth.rds")
 
 #### Azure ####
 
 json_files_table_extraction_llm <- list.files(
-  "../benchmark_results/table_extraction/llm/final/real_tables/openai/",
+  "../benchmark_results/table_extraction/llm/final/real_tables_more_examples/openai/",
   pattern = "\\.json$",
   full.names = TRUE
 ) %>%
@@ -251,19 +268,19 @@ for (file in json_files_table_extraction_llm) {
   file_content <- gsub("\\bNaN\\b", "null", file_content)
   file_content <- gsub("\\bInfinity\\b", "null", file_content)
   # Remove incomplete last JSON entry and close the list if file ends early
-  if (!grepl("\\]$", file_content[length(file_content)])) {
-    # Find the last complete JSON object (ends with "},")
-    last_complete <- max(grep('\\.pdf', file_content))
-    file_content <- c(file_content[1:last_complete], "}]")
-  }
+  # if (!grepl("\\]$", file_content[length(file_content)])) {
+  #   # Find the last complete JSON object (ends with "},")
+  #   last_complete <- max(grep('\\.pdf', file_content))
+  #   file_content <- c(file_content[1:last_complete], "}]")
+  # }
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
   name_split = (basename(file) %>% str_split("__"))[[1]]
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
-  results <- json_data %>% as_tibble() %>% filter(!json_error)
-  errors <- json_data %>% as_tibble() %>% filter(json_error)
+  results <- json_data$results %>% as_tibble() %>% filter(!json_error)
+  errors <- json_data$results %>% as_tibble() %>% filter(json_error)
   
   if (nrow(results) > 0) {
     results <- results %>% rowwise() %>%  
@@ -275,6 +292,7 @@ for (file in json_files_table_extraction_llm) {
         method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
         loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
         predictions = list(fromJSON(df_joined) %>% as_tibble()),
+        runtime = json_data$runtime,
         request_tokens = list(json_data$request_tokens)
       ) %>% select(-df_joined)
     
@@ -381,13 +399,15 @@ df_azure <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) 
 #   ggplot() +
 #   geom_line(aes(x = numeric, y = value, color = name))
 
-df_azure %>% filter(model %in% c(
-  "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1", 
-  "openai_gpt-oss-20b", "gpt-oss-120b_azure", "gpt-5-mini_azure"
-  )) %>% mutate(
+df_azure %>% 
+  # filter(model %in% c(
+  #   "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1", 
+  #   "openai_gpt-oss-20b", "gpt-oss-120b_azure", "gpt-5-mini_azure"
+  # )) %>% 
+  mutate(
     model = str_remove(model, "_azure")
   ) %>% 
-  saveRDS("data_storage/real_table_extraction_azure.rds")
+  saveRDS("data_storage/real_table_extraction_extended_azure.rds")
 
 df_errors %>% 
-  saveRDS("data_storage/real_table_extraction_azure_errors.rds")
+  saveRDS("data_storage/real_table_extraction_extended_azure_errors.rds")

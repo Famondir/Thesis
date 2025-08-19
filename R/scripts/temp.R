@@ -1,3 +1,40 @@
+df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_extended_synth.rds") %>% 
+  filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
+  mutate(model = gsub("^[^_]+_", "", model))
+
+df_real_table_extraction_extended <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %>% 
+  filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
+  mutate(model = gsub("^[^_]+_", "", model))
+
+units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characteristics_more_examples.csv") %>% mutate(
+  filepath = paste0('/pvc/benchmark_truth/real_tables/', company, '__', filename),
+  T_EUR = (T_in_year + T_in_previous_year)>0,
+  T_EUR_both = (T_in_year + T_in_previous_year)>1
+) %>% select(filepath, T_EUR, T_EUR_both)
+
+df_real_table_extraction_synth <- df_real_table_extraction_synth %>% left_join(units_real_tables)
+
+df_overview <- bind_rows(df_real_table_extraction_extended) %>% 
+  filter(out_of_company != TRUE | is.na(out_of_company), n_examples <= 3, n_examples != 2) %>% 
+  filter(model %in% model_by_size) %>%
+  mutate(
+    model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  )
+
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+
+####
+
 confidence_vs_truth_multi <- df_multi %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", "Qwen3-8B")) %>% 
   unnest(metrics) %>% 
@@ -437,3 +474,13 @@ top_k_wide
            #classification_type == "Passiva"
     )
 )
+
+####
+
+# df_empty <- readRDS("data_storage/table_extraction_regex.rds") %>% slice_head(n=1) %>% 
+#   pull(predictions) %>% .[[1]]
+# df_empty$year_result <- NA
+# df_empty$previous_year_result <- NA
+# df_empty
+
+

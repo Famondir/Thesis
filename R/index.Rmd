@@ -89,9 +89,10 @@ source("report_misc/helper_functions.R")
 echo_flag <- knitr::is_html_output() ? NA : FALSE
 message_flag = FALSE
 warning_flag = FALSE
-cache_large_figures = TRUE
+cache_large_figures = F
 ```
 
+\setDefaultLayout
 \pagenumbering{gobble}
 \pagestyle{empty}
 

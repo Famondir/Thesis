@@ -848,6 +848,31 @@ df_classification_n_examples %>%
 
 ## Figures
 
+NA predicting
+
+```{r display-extraction-metrics-full-NA, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Displaying the performance metrics a LLMs response would have if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables."}
+metrics <- list()
+
+for (i in 1:29) {
+  # print(i)
+  precision <- 2*(29-i)/58
+  recall <- 1
+  F1 <- 2*precision*recall/(precision+recall)
+  metrics[[i]] <- c(i = i, perc_correct_num = 0, F1 = F1, perc_correct_total = (58-2*i)/58)
+}
+
+metrics %>% tibble() %>% unnest_wider(".") %>% 
+  pivot_longer(-i, names_to = "metric") %>% 
+  ggplot() +
+  geom_line(aes(x = 2*i, y = value, color = metric)) +
+  geom_vline(xintercept = 10, linetype ="dashed") +
+  geom_vline(xintercept = 40, linetype ="dashed") +
+  labs(
+    x = "number of numeric values in ground truth",
+    y = "metric score"
+  )
+```
+
 ### Page identification
 
 #### Regex baseline
@@ -1100,13 +1125,12 @@ df_real_table_extraction_synth_respect_units %>%
   )
 ```
 
-\clearpage
 \setAELandscapeLayout
 
 ```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_total_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1118,7 +1142,7 @@ df_overview %>%
 ```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1130,7 +1154,7 @@ df_overview %>%
 ```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=cache_large_figures}
 df_overview %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1155,7 +1179,7 @@ df_temp <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %
 
 p1 <- df_temp %>% filter(!str_detect(model_family, "Qwen"), model_family != "microsoft") %>% ggplot() +
   geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family)) +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
   geom_jitter(
     aes(x = examples_from_same_company, y = percentage_correct_total),
     shape = 4, height = 0.005, alpha = .5
@@ -1171,7 +1195,7 @@ p1 <- df_temp %>% filter(!str_detect(model_family, "Qwen"), model_family != "mic
 
 p2 <- df_temp %>% filter(str_detect(model_family, "Qwen") | model_family == "microsoft") %>% ggplot() +
   geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family), show.legend = T) +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
   geom_jitter(
     aes(x = examples_from_same_company, y = percentage_correct_total),
     shape = 4, height = 0.005, alpha = .5
@@ -1202,7 +1226,7 @@ df_overview_synth %>% mutate(target_data = "synth") %>%
         ) %>% select(-request_tokens)
     ) %>% filter(as.numeric(n_examples) != 1) %>% 
   ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = target_data, y = percentage_correct_total, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ model_family+model) +
@@ -1214,7 +1238,7 @@ df_overview_synth %>% mutate(target_data = "synth") %>%
 ```{r synth-table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
 df_overview_synth %>% 
   ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1226,7 +1250,7 @@ df_overview_synth %>%
 ```{r synth-table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
 df_overview_synth %>% 
   ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = synth_table_extraction_regex_num_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1238,7 +1262,7 @@ df_overview_synth %>%
 ```{r synth-table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
 df_overview_synth %>% 
   ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_hline(yintercept = synth_table_extraction_regex_NA_F1_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -1247,17 +1271,14 @@ df_overview_synth %>%
   )
 ```
 
-\clearpage
 \setAEPortraitLayout
 
 12sdgsdgj
 
-\clearpage
 \setASLandscapeLayout
 
-Landscape
+Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape 
 
-\clearpage
 \setDefaultLayout
 
 ## Annual Comprehensive Financial Report Balance Sheet
@@ -1268,11 +1289,7 @@ knitr::include_graphics("./images/acfr23_balance.pdf")
 
 ## Extraction framework flow chart
 
-```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Flowchart of the extraction framework")}
-knitr::include_graphics("./images/extraction_framework_flow_chart.png")
-```
-
-![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){width="100%"}
+![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){#extraction-framework-flow-chart width="100%"}
 
 ## Table extraction with regular expressions {#regex-extraction-mistakes}
 

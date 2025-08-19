@@ -3,22 +3,22 @@ start_time <- Sys.time()
 library(tidyverse)
 source("report_misc/helper_functions.R")
 
-units_real_tables <- read_csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% mutate(
-  filepath = paste0('/pvc/benchmark_truth/real_tables/', company, '__', filename),
+units_real_tables <- read_csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% mutate(
+  filepath = paste0('/pvc/benchmark_truth/real_tables_extended/', company, '__', filename),
   T_EUR = (T_in_year + T_in_previous_year)>0,
   T_EUR_both = (T_in_year + T_in_previous_year)>1
 ) %>% select(filepath, T_EUR, T_EUR_both)
 
 #### Final ####
 
-df_synth <- readRDS("data_storage/real_table_extraction_synth.rds")
+df_synth <- readRDS("data_storage/real_table_extraction_extended_synth.rds")
 df <- df_synth %>% left_join(units_real_tables)
 
 ##### regression #####
 
-table_characteristics <- read.csv("../benchmark_truth/real_tables/table_characteristics.csv") %>% 
+table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% 
   mutate(
-    filepath = paste0("/pvc/benchmark_truth/real_tables/", company, "__", filename)
+    filepath = paste0("/pvc/benchmark_truth/real_tables_extended/", company, "__", filename)
   ) %>% as_tibble()
 
 norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
@@ -50,7 +50,7 @@ df_characteristics <- df_characteristics %>% filter(n_examples <= 5) %>%
     respect_units = !ignore_units,
   )
 
-#### h2o final modelin ####
+#### h2o final modeling ####
 
 ##### percentage_correct_total #####
 
@@ -94,7 +94,7 @@ formula_perc_numeric_pdf = percentage_correct_total ~
   # unit_in_first_cell:input_format +
   # log10_unit_multiplier +
   # log10_unit_multiplier:input_format +
-  enumeration +
+  # enumeration +
   # shuffle_rows +
   # text_around +
   # many_line_breaks +
@@ -105,7 +105,9 @@ formula_perc_numeric_pdf = percentage_correct_total ~
   # spacer +
   vorjahr +
   vis_seperated_cols +
-  vis_seperated_rows
+  vis_seperated_rows +
+  sum_in_header +
+  unit_first_cell
 
 df_modeling_perc_numeric_pdf <- df2 %>% select(all.vars(formula_perc_numeric_pdf)) %>% 
   mutate(across(where(is.character), as.factor))
@@ -263,7 +265,7 @@ formula_NA_F1_pdf = NA_F1 ~
   # unit_in_first_cell:input_format +
   # log10_unit_multiplier +
   # log10_unit_multiplier:input_format +
-  enumeration +
+  # enumeration +
   # shuffle_rows +
   # text_around +
   # many_line_breaks +
@@ -274,7 +276,9 @@ formula_NA_F1_pdf = NA_F1 ~
   # spacer +
   vorjahr +
   vis_seperated_cols +
-  vis_seperated_rows
+  vis_seperated_rows +
+  sum_in_header +
+  unit_first_cell
 
 # df_modeling_NA_F1_pdf <- df2 %>% 
 #   # filter(input_format == "pdf") %>% 
@@ -408,7 +412,7 @@ formula_confidence_pdf = confidence ~
   # unit_in_first_cell:input_format +
   # log10_unit_multiplier +
   # log10_unit_multiplier:input_format +
-  enumeration +
+  #enumeration +
   # shuffle_rows +
   # text_around +
   # many_line_breaks +
@@ -422,7 +426,9 @@ formula_confidence_pdf = confidence ~
   vis_seperated_rows +
   label_length +
   label +
-  missing
+  missing +
+  sum_in_header +
+  unit_first_cell
 
 # df_modeling_confidence_pdf <- df2 %>% 
 #   # filter(input_format == "pdf") %>% 
@@ -566,7 +572,7 @@ formula_binomial_pdf = match ~
   # unit_in_first_cell:input_format +
   # log10_unit_multiplier +
   # log10_unit_multiplier:input_format +
-  enumeration +
+  # enumeration +
   # shuffle_rows +
   # text_around +
   # many_line_breaks +
@@ -581,7 +587,9 @@ formula_binomial_pdf = match ~
   label_length +
   label +
   missing +
-  confidence
+  confidence +
+  sum_in_header +
+  unit_first_cell
 
 # df_modeling_binomial_pdf <- df2 %>%
 #   # filter(input_format == "pdf") %>%
@@ -730,4 +738,4 @@ list(
       # xgb = shp_xgb_NA_F1
     )
   )
-) %>% saveRDS(paste0("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_",sample_size,"_shap_",test_sample_size,"_NA_recoded.rds"))
+) %>% saveRDS(paste0("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_",sample_size,"_shap_",test_sample_size,"_NA_recoded_extended.rds"))

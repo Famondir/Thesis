@@ -15,7 +15,7 @@ styled_waterfall <- function(shap, row_id = 1, xlim = c(-0.15,1.05), ylim = c(0,
 
 #### real tables regex ####
 
-results <- readRDS("data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
 
 ##### numeric #####
 
@@ -85,7 +85,7 @@ shap %>% styled_waterfall(row_id = idx_lowest[length(idx_lowest)])
 shap %>% styled_waterfall(row_id = idx_lowest[1], xlim = c(-0.25, 1.05))
 shap %>% sv_force(row_id = idx_lowest[1])
 shap %>% sv_dependence(setdiff(colnames(.$X), "label"))
-shap %>% sv_dependence(colnames(.$X), "label", color_var = "extraction_backend")
+shap %>% sv_dependence(setdiff(colnames(.$X), "label"), color_var = "extraction_backend")
 shap %>% sv_dependence("label", color_var = "missing") +
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_x_discrete(labels = function(x) {

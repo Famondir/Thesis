@@ -176,7 +176,6 @@
   footskip=25pt,
   marginparwidth=20mm,
   marginparsep=1pt,
-  includeheadfoot,
   twoside
 ]{geometry}
 
@@ -184,6 +183,7 @@
 \edef\hmm{\pdfpagewidth=\the\pdfpagewidth \pdfpageheight=\the\pdfpageheight\relax}
 
 \newcommand{\setDefaultLayout}{
+  \clearpage  
   \restoregeometry
   \hmm
   \renewcommand{\headrulewidth}{0.4pt}
@@ -192,44 +192,116 @@
 }
 
 \newcommand{\setASLandscapeLayout}{
-  \restoregeometry
-  \hmm
+  % \restoregeometry
+  % \hmm  
+  \clearpage
   \pdfpagewidth=297mm
   \pdfpageheight=210mm
-  \setlength\paperheight{\pdfpageheight}
-  \setlength\paperwidth{\pdfpagewidth}
-  \setlength{\textwidth}{26cm}
+  \newgeometry{
+    paperwidth=297mm,
+    paperheight=210mm,
+    left=2cm,
+    top=2cm,
+    textwidth=26cm,
+    textheight=17cm,
+    twoside=false
+  }
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
   \setlength{\headwidth}{\textwidth}
-  \setlength{\textheight}{17cm}
-  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=true}
 }
 
 \newcommand{\setAELandscapeLayout}{
-  \restoregeometry
-  \hmm
+  % \restoregeometry
+  % \hmm  
+  \clearpage
   \pdfpagewidth=420mm
   \pdfpageheight=297mm
-  \setlength\paperheight{\pdfpageheight}
-  \setlength\paperwidth{\pdfpagewidth}
-  \setlength{\textwidth}{38cm}
+  \newgeometry{
+    paperwidth=420mm,
+    paperheight=297mm,
+    left=2cm,
+    top=2cm,
+    textwidth=38cm,
+    textheight=26cm,
+    twoside=false
+  }
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
   \setlength{\headwidth}{\textwidth}
-  \setlength{\textheight}{26cm}
-  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
 }
 
 \newcommand{\setAEPortraitLayout}{
-  \restoregeometry
-  \hmm
+  % \restoregeometry
+  % \hmm  
+  \clearpage
   \pdfpagewidth=297mm
   \pdfpageheight=420mm
-  \setlength\paperheight{\pdfpageheight}
-  \setlength\paperwidth{\pdfpagewidth}
-  \setlength{\textwidth}{26cm}
+  \newgeometry{
+    paperwidth=297mm,
+    paperheight=420mm,
+    left=2cm,
+    top=2cm,
+    textwidth=26cm,
+    textheight=38cm,
+    twoside=false
+  }
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
   \setlength{\headwidth}{\textwidth}
-  \setlength{\textheight}{38cm}
-  \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
 }
 \makeatother
+
+% \makeatletter
+% \edef\hmm{\pdfpagewidth=\the\pdfpagewidth \pdfpageheight=\the\pdfpageheight\relax}
+
+% \newcommand{\setDefaultLayout}{
+%   \restoregeometry
+%   \hmm
+%   \renewcommand{\headrulewidth}{0.4pt}
+%   \renewcommand{\footrulewidth}{0.4pt}
+%   \setlength{\headwidth}{\textwidth}
+% }
+
+% \newcommand{\setASLandscapeLayout}{
+%   \restoregeometry
+%   \hmm
+%   \pdfpagewidth=297mm
+%   \pdfpageheight=210mm
+%   \setlength\paperheight{\pdfpageheight}
+%   \setlength\paperwidth{\pdfpagewidth}
+%   \setlength{\textwidth}{26cm}
+%   \setlength{\headwidth}{\textwidth}
+%   \setlength{\textheight}{17cm}
+%   \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=true}
+% }
+
+% \newcommand{\setAELandscapeLayout}{
+%   \restoregeometry
+%   \hmm
+%   \pdfpagewidth=420mm
+%   \pdfpageheight=297mm
+%   \setlength\paperheight{\pdfpageheight}
+%   \setlength\paperwidth{\pdfpagewidth}
+%   \setlength{\textwidth}{38cm}
+%   \setlength{\headwidth}{\textwidth}
+%   \setlength{\textheight}{26cm}
+%   \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
+% }
+
+% \newcommand{\setAEPortraitLayout}{
+%   \restoregeometry
+%   \hmm
+%   \pdfpagewidth=297mm
+%   \pdfpageheight=420mm
+%   \setlength\paperheight{\pdfpageheight}
+%   \setlength\paperwidth{\pdfpagewidth}
+%   \setlength{\textwidth}{26cm}
+%   \setlength{\headwidth}{\textwidth}
+%   \setlength{\textheight}{38cm}
+%   \newgeometry{left=2cm, top=2cm, textwidth=\textwidth, textheight=\textheight, twoside=false}
+% }
+% \makeatother
 
 % \setDefaultLayout
 

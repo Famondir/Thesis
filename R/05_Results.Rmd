@@ -2324,6 +2324,10 @@ Not taken into account fo this comparison are factors like
     cloud providers. CLOUD: price if LLM is in the cloud \<-- print
     tokens used
 
+    -   four classes (3 random examples): 11 k tokens
+
+    -   binary (3 random examples): 6.5 k tokens
+
 -   payment and insurance to pay for a human (e.g . student coworker).
 
 -   the training time and energy consumption for training either
@@ -2360,112 +2364,193 @@ df_page_identification_comparing_efficiency %>% filter(!drop == 1) %>%
 
 \ChapFrame
 
-The second research question asks, how \acr{LLM}s can be used, to
-effectively extract specific information from a financial report.
+```{r table-extraction-preps, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/real_table_extraction_llm.rds')}
+old_doc_base <- readRDS("data_storage/real_table_extraction_llm.rds") %>% select(filepath) %>% unique()
+new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %>% select(filepath) %>% unique() %>% mutate(filepath = str_replace(filepath, "a__f", "af")) %>% filter(!str_detect(filepath, "MEAB GmbH"))
+```
 
-Which tasks have there been? Which models have been used for which task?
-What data has been used?
+The second research question asks, how \acr{LLM}s can be used, to
+effectively extract specific information from a financial report. The
+task for this thesis is to extract the numeric values for the assets
+(*Aktiva*) table, which is part of the balance sheet (*Bilanz*).
+Hereafter, the German term **Aktiva** will be used. We are limiting the
+scope even further than in subsection
+\@ref(page-identification-introduction), because it takes more time to
+manually create the first reference dataset.
+
+##### Structured output
+
+We are using a strict schema for the extraction process that is derived
+from the legal text [@hgb_handelsgesetzbuch_2025, §266]. Actually, there
+are three types of verbosity, that are defined in the law. Smaller
+companies are permitted to create less detailed balance sheets. Our
+schema is created based on the most detailed level. This is the form
+most often found in the document base[^05_results-24].
+
+[^05_results-24]: Unfortunately, well known companies as BVG and BSR
+    publish a less detailed form. Thus, their documents are not included
+    in the document base for this task.
+
+Using a strict schema has advantages has advantages for processing the
+results in downstream tasks - i.e. for adding the results to a
+relational database. It is also easier to compare the results with a
+ground truth if the names of all rows and their order is fixed. The
+schema is defined as \acr{ebnf}-grammar and passed as an argument to
+\acr{vllm}.
+
+##### Gound truth dataset
+
+For the manual information extraction we need up to 12 minutes per
+table. The maximum amount of values to copy and format (or type
+manually) among the tables used is 40. In addition to this manual
+process conceptional process can be necessary, because the values have
+to matched to the strict grammar. Sometimes we have to decide that there
+is no row a value fits in or there are multiple values that have to get
+summed up in order to calculate the value that fits in the predefined
+schema.
+
+This manual work was done for `r old_doc_base %>% nrow()` documents. For
+every company that published the detailed form of balance sheets a
+single document was included. Additionally documents were included for
+*Amt für Statistik und Brandenburg* to check, if a context learning
+approach is benefiting from documents from the same company. Later, the
+predictions of the \acr{LLM}s were used, to create additional
+`r new_doc_base %>% nrow()` ground truth tables. The old ground truth
+tables were checked in this this iteration and an error rate of 2.4 %
+was detected. Figure \@ref(fig:table-extraction-doc-base) shows how many
+**Aktiva** tables are used for all tasks in this subsection, that use
+real data instead of synthetic data.
+
+To overcome the limited amount of real data and to allow the systematic
+investigation of potential predictors for the extraction performance,
+even if their occurrence is very unbalanced within the real data,
+synthetic **Aktiva** tables were created (see subsection
+\@ref(synthetic-table-extraction)).
+
+```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents."}
+new_doc_base %>% rowwise() %>% 
+  mutate(
+    .before = 1, 
+    company = str_match(filepath, "/pvc/benchmark_truth/real_tables_extended/(.*)__")[2],
+    initial_doc_base = str_remove(filepath, "_extended") %in% old_doc_base$filepath
+    ) %>% ggplot() +
+  geom_bar(aes(x = company, fill = initial_doc_base)) +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "top"
+  )
+```
 
 ### Baseline: Regex
 
 ```{r table-extraction-regex-data-loading, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
-df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds")
+df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
+  filter(table_type != "real_tables") %>% mutate(
+    table_type = str_remove(table_type, "_extended")
+  )
 
-real_table_extraction_regex_total_performance_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_total) %>% mean()
-real_table_extraction_regex_num_performance_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_numeric) %>% mean(na.rm = TRUE)
-real_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_F1) %>% mean()
+real_table_extraction_regex_total_performance_median <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_total) %>% median()
+real_table_extraction_regex_num_performance_median <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_numeric) %>% median(na.rm = TRUE)
+real_table_extraction_regex_NA_F1_median <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_F1) %>% median()
 
-synth_table_extraction_regex_total_performance_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_total) %>% mean()
-synth_table_extraction_regex_num_performance_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_numeric) %>% mean(na.rm = TRUE)
-synth_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(NA_F1) %>% mean(na.rm = TRUE)
+synth_table_extraction_regex_total_performance_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_total) %>% median()
+synth_table_extraction_regex_num_performance_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_numeric) %>% median(na.rm = TRUE)
+synth_table_extraction_regex_NA_F1_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(NA_F1) %>% median(na.rm = TRUE)
 ```
 
 The baseline for the table extraction task is set by an approach using
-regular expressions on the text extract. The approach performs much
-better[^05_results-24] on the synthetic dataset compared to the real
-dataset (see Figure \@ref(fig:table-extraction-regex-performance)). Even
-though, it does not perform perfectly and its performance is more
-consistent on the text extracted with pymupdf compared to pdfium. Some
-possible explanations are:
+regular expressions on the text extract. Figure
+\@ref(fig:table-extraction-regex-performance) shows the performance of
+this approach. In the first row (A) the percentage of correct predicted
+numeric values and the percentage of total correct responses is shown.
+The second row (B) shows the precision, recall and F1 score for
+identifying a value as missing and thus predicting *null*. The
+percentage of total correct responses is calculated as
 
-[^05_results-24]: A comparison of the numeric values over all methods
+$$
+percentage\_correct\_total = \frac{n_{correct\_numeric} + n_{missing\_true\_positive}}{n_{total\_entries}}
+$$
+
+with $n_{total\_entries} = 58$ . This implies that the correct
+prediction of missing values has more influence for tables, that have
+only a few numeric values in the ground truth. The minimal number of
+numeric values in a tables is ten. Figure
+\@ref(fig:display-extraction-metrics-full-NA) shows, that the percentage
+of total correct responses is not a sufficient metric, because responses
+that only predicted *null* can have a high score if there are only a few
+numeric values in the ground truth table.
+
+##### Figure description
+
+In each frame there are two groups of two box-plots. The left group is
+showing the performance on real **Aktiva** tables. The right group shows
+the performance on synthetic **Aktiva** tables. Within the group the
+green (left) box shows the performance on text extracted with the
+*pdfium* library. The peach colored (right) box shows the performance on
+text extracted with the *pymupdf* library.
+
+Figure \@ref(fig:\@ref(fig:table-extraction-regex-performance)) shows,
+that the \acr{regex} approach performs better[^05_results-25] on the
+synthetic tables compared to the real tables. Even though, the
+performance is not perfect and more consistent on the text extracted
+with *pymupdf* compared to *pdfium*. In contrast, the used text
+extraction library has no noticeable influence on the real **Aktiva**
+tables.
+
+[^05_results-25]: A comparison of the numeric values over all methods
     can be found in section \@ref(comparing-table-extraction-methods).
 
--   a duplicated row name[^05_results-25]
--   numeric columns extracted separated from row names by extraction
-    libraries
--   sums in the same row as the single values[^05_results-26]
--   with pdfium: missing white space[^05_results-27]
--   with pdfium: random line breaks[^05_results-28]
+The performance for the \acr{regex} based table extraction is much
+better than the \acr{regex} based page identification performance. The
+median performance of the \acr{regex} approaches will be reflected by a
+dashed line in the box-plots in subsequent sections.
 
-[^05_results-25]: The row *Geleistete Anzahlungen* can be found in two
-    parts of the table and the simple approach just matches the numbers
-    to the first found entry.
-
-[^05_results-26]: In this case the \acr{regex} takes the sum as the
-    value for the previous year.
-
-[^05_results-27]: This can form unexpected numeric patterns or prevent
-    the row names to be recognized.
-
-[^05_results-28]: The approach takes care of line breaks between words,
-    but not within. This leads to unrecognized row names as well.
-
-You can find some examples for incorrect extracted texts in section
-\@ref(regex-extraction-mistakes).
-
-On the real dataset the approach shows a wider spread for the percentage
-of correct extracted numeric values as well as a considerable number of
-annual reports where the extraction did not work at all. Interestingly,
-the used text extraction library has no noticeable influence on the real
-dataset.
-
-```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Performance overall and on numeric value extraction with regular expressions. Showing single scores for *percentage correct numeric* on real tables to explain wide boxes."}
-df_table_extraction_regex %>%
+```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Performance overall and on numeric value extraction with regular expressions."}
+p1 <- df_table_extraction_regex %>%
   select(c(table_type, percentage_correct_numeric, percentage_correct_total, T_EUR, extraction_backend)) %>% 
   pivot_longer(cols = -c(table_type, T_EUR, extraction_backend)) %>% 
   ggplot() +
-  geom_point(
-    data= . %>% filter(table_type == "real_tables", name == "percentage_correct_numeric"),
-    aes(x = table_type, y = value, alpha = extraction_backend), color = "#264DEB",
-    shape = 4, position=position_jitterdodge(dodge.width=0.9, jitter.width = 0.2, jitter.height = 0.005)
-  ) +
+  # geom_point(
+  #   data= . %>% filter(table_type == "real_tables", name == "percentage_correct_numeric"),
+  #   aes(x = table_type, y = value, alpha = extraction_backend), color = "#264DEB",
+  #   shape = 4, position=position_jitterdodge(dodge.width=0.9, jitter.width = 0.2, jitter.height = 0.005)
+  # ) +
   geom_boxplot(aes(x = table_type, y = value, fill = extraction_backend), alpha = .3) +
   # geom_jitter(data= . %>% filter(table_type == "real_tables"), aes(x = table_type, y = value, color = T_EUR), alpha = .8, height = 0, shape = 4) +
   # facet_wrap(~name, ncol = 1) +
   scale_alpha_manual(values = c(1, 1), guide = "none") +
   scale_fill_manual(values = c("#94EB1F", "orange")) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_grid(~name)
-```
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  facet_grid(~name) +
+  theme(
+    axis.title.x = element_blank()
+  )
 
-The random line breaks result in some missed row names which is
-reflected by the bigger spread for NA precision with pdfium on the
-synthetic dataset (see Figure \@ref(fig:table-extraction-regex-NA)).
-Nevertheless, the NA precision for the majority of the cases is perfect.
-This is different with the real dataset. The NA precision is found to be
-at only
-`r df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_precision) %>% mean() %>% round(2)`.
-
-```{r table-extraction-regex-NA, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Performance on classification for missing values with regular expressions"}
-# NAs for F1 are valid if there is not thinning
-df_table_extraction_regex %>% select(c(table_type, NA_precision, NA_recall, NA_F1, T_EUR, extraction_backend)) %>% 
+p2 <- df_table_extraction_regex %>% select(c(table_type, NA_precision, NA_recall, NA_F1, T_EUR, extraction_backend)) %>% 
   pivot_longer(cols = -c(table_type, T_EUR, extraction_backend)) %>% 
   ggplot() +
   geom_boxplot(aes(x = table_type, y = value, fill = extraction_backend), alpha = .3) +
   scale_alpha_manual(values = c(1, 1)) +
 scale_fill_manual(values = c("#94EB1F", "orange")) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
   facet_grid(~name)
+
+design <- "ac \n bb"
+
+p1 + p2 + guide_area() + 
+  plot_layout(
+    design = design, 
+    guides = "collect", 
+    widths = c(2, 1)
+  ) + plot_annotation(tag_levels = 'A')
 ```
 
 ##### Hypotheses
 
 The formulated hypotheses have been evaluated visually using the
-dependence and beeswarm plots from the shapviz library based on the
-\acr{SHAP} values calculated with a random forest.
-
-###### Real dataset
+dependence and beeswarm plots from the *shapviz* library based on the
+\acr{SHAP} values calculated for a random forest.
 
 ```{r real-table-extraction-regex-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds')}
 results <- readRDS("data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
@@ -2495,39 +2580,6 @@ real_table_extraction_regex_shap_plot <- (p1a | p1b) /
   (p2a | p2b) /
   (p3a | p3b)
 ```
-
-There are multiple hypotheses that don't get supported by the visual
-results (see Figure \@ref(fig:real-table-extraction-regex-shap-plot)).
-The pretty surprising results are:
-
-1.  The visual separation of columns or rows has an effect on the text
-    processing.
-2.  It seems to have a positive effect on F1 and numeric correctness
-    rate if the Passiva table is on the same page, even though it has no
-    influence on the single predictions.
-
-But one has to keep in mind that the number of data points on the
-aggregated values for the test set of the real dataset is only
-`r shap_num$X %>% nrow()`. So these findings are not strongly supporting
-any interpretation at all. Furthermore, the found effects are not very
-large - most below 5 %. Only the hypothesis for a positive influence of
-a missing of a value for the binomial prediction gets solid support with
-a mean absolute \acr{SHAP} value of over
-`r floor((shap_binom %>% sv_importance(kind = "no") %>% .['missing'])*100)`
-%. To get reliable results more tables have to be included which would
-require additional manual encoding.
-
-```{r hypotheses-and-results-real-table-extraction-regex-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag}
-htmltools::includeHTML(
-  textConnection(
-    xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html") %>%
-      xml2::xml_find_first("//table") %>%
-      as.character()
-  )
-)
-```
-
-###### Synthetic dataset
 
 ```{r synth-table-extraction-regex-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds')}
 results <- readRDS("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
@@ -2566,32 +2618,69 @@ synth_table_extraction_regex_shap_plot <- (p1a | p1b) /
 synth_table_extraction_regex_shap_num_details_plot <- p1c | p1d
 ```
 
-Interpreting the visual results for the \acr{SHAP} analysis on the
-synthetic dataset brought some interesting insides into the question
-under which condition the two PDF extraction libraries perform
-differently. These results can be treated as reliable since the model
-has been trained with 50_000 rows and the \acr{SHAP} values have been
-calculated on 2_000 rows each.
+###### Real dataset
 
-Very interestingly the number of columns is having an opposite effect
-for the two libraries (see Figure
+There are multiple hypotheses that don't get supported by the visual
+results (see Figure \@ref(fig:real-table-extraction-regex-shap-plot)).
+We find, that it is worth mentioning, that
+
+-   the visual separation of columns,
+
+-   presenting sums in the rows with higher hierarchy row labels and
+
+-   having T€ in the previous year column
+
+have a negative effect on the F1 score. The mean \acr{SHAP} values for
+these observations are almost 0.03 and higher (on a scale that ranges
+from 0 to 1). The distribution for *T_in_previous_year* and
+*vis_separated_cols* are quite balanced. The findings for the balanced
+chracteristics can be seen as a reason to change the corresponding
+hypotheses for future investigations.
+
+The hypothesis about a positive influence of a missing of a value for
+the binomial prediction gets solid support with a mean absolute
+\acr{SHAP} value of over
+`r floor((shap_binom %>% sv_importance(kind = "no") %>% .['missing'])*100)`
+%.
+
+```{r hypotheses-and-results-real-table-extraction-regex-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag}
+htmltools::includeHTML(
+  textConnection(
+    xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html") %>%
+      xml2::xml_find_first("//table") %>%
+      as.character()
+  )
+)
+```
+
+###### Synthetic dataset
+
+The visual results for the \acr{SHAP} analysis on the synthetic dataset
+brought some insides into the question, under which condition the two
+PDF extraction libraries perform differently. These results can be
+treated as reliable since the model has been trained with 24_576 table
+extracts and the \acr{SHAP} values have been calculated on 2_000
+examples each.
+
+The number of columns is having an opposite effect for the two libraries
+(see Figure
 \@ref(fig:synth-table-extraction-regex-shap-num-details-plot) A).
-Besides that often only pdfium struggled with some of the table
-characteristics while pymupdf is not influenced by them (for an example
-with header_span see Figure
-\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) B).
+Overall the effect is positive. So more colums give better results.
 
-It might be worth noting that the row for *Anteile an verbundenen
+Besides that we find, that *pdfium* is struggling with some of the table
+characteristics while *pymupdf* is not influenced by them. Figure
+\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) B shows
+this exemplary for the characteristic *header_span*.
+
+It might be worth noting, that the row for *Anteile an verbundenen
 Unternehmen* was rated to have a clear negative effect on the chance to
 extract the correct value.
 
-Since there has no synthetic data created where also the Passiva table
-is present the result found with the real dataset can't be investigated
-further. Also the question if visual separation is having an effect was
-not studied, even though, creating such additional synthetic data would
-be very easy with the current generation process and could be done in
-future work. It would be interesting if the visual separation is cause
-for the maleous text extractions of pdfium as well.
+The question, if visual separation of columns is having an effect, as
+found for the real data, is not studied here, because in the synthetic
+tables all columns are visually separated. But this could be
+investigated in future work. It is possible, that the visual separation
+is cause for the faulty text extractions of *pdfium*.
 
 ```{r hypotheses-and-results-synth-table-extraction-regex-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 if (knitr::is_latex_output()) {
@@ -2620,13 +2709,13 @@ synth_table_extraction_regex_shap_num_details_plot +
 
 ### Extraction with LLMs
 
-```{r loading-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_synth.rds", "data_storage/real_table_extraction_azure.rds"))}
-df_real_table_extraction <- readRDS("data_storage/real_table_extraction_llm.rds") %>% 
+```{r loading-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_extended_llm.rds", "data_storage/real_table_extraction_extended_synth.rds", "data_storage/real_table_extraction_extended_azure.rds"))}
+df_real_table_extraction <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %>% 
   filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
   mutate(model = gsub("^[^_]+_", "", model))
-df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_synth.rds") %>% 
+df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_extended_synth.rds") %>% 
   mutate(model = gsub("^[^_]+_", "", model))
-df_real_table_extraction_azure <- readRDS("data_storage/real_table_extraction_azure.rds") %>% 
+df_real_table_extraction_azure <- readRDS("data_storage/real_table_extraction_extended_azure.rds") %>% 
   mutate(model = gsub("^[^_]+_", "", model))
 
 model_by_size <- c(
@@ -2634,7 +2723,7 @@ model_by_size <- c(
   "gemma-3-12b-it", "gemma-3-27b-it", 
   "Llama-3.1-8B-Instruct", "Llama-3.1-70B-Instruct", "Llama-3.3-70B-Instruct",
   "Llama-4-Scout-17B-16E-Instruct", "Llama-4-Maverick-17B-128E-Instruct-FP8",
-  "Mistral-8B-Instruct-2410", "Mistral-Small-3.1-24B-Instruct-2503",
+  "Ministral-8B-Instruct-2410", "Mistral-Small-3.1-24B-Instruct-2503",
   "Mistral-Large-Instruct-2411", "Qwen2.5-0.5B-Instruct",
   "Qwen2.5-1.5B-Instruct", "Qwen2.5-3B-Instruct", "Qwen2.5-7B-Instruct",
   "Qwen2.5-14B-Instruct", "Qwen2.5-32B-Instruct", "Qwen2.5-72B-Instruct",
@@ -2678,46 +2767,57 @@ df_real_table_extraction_synth <- df_real_table_extraction_synth %>% left_join(u
 # real
 
 zero_shot_stars <- df_real_table_extraction %>% filter(method == "zero_shot") %>% group_by(model) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% filter(mean_total>real_table_extraction_regex_total_performance_mean, mean_num>real_table_extraction_regex_num_performance_mean, mean_F1>real_table_extraction_regex_NA_F1_mean)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% filter(median_total>real_table_extraction_regex_total_performance_median, median_num>real_table_extraction_regex_num_performance_median, median_F1>real_table_extraction_regex_NA_F1_median)
 
 static_example_stars <- df_real_table_extraction %>% filter(method == "static_example") %>% group_by(model) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% filter(mean_total>real_table_extraction_regex_total_performance_mean, mean_num>real_table_extraction_regex_num_performance_mean, mean_F1>real_table_extraction_regex_NA_F1_mean)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% filter(median_total>real_table_extraction_regex_total_performance_median, median_num>real_table_extraction_regex_num_performance_median, median_F1>real_table_extraction_regex_NA_F1_median)
 
 underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero_shot', 'static_example')) %>% group_by(model, method) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(mean_total<real_table_extraction_regex_total_performance_mean, mean_num<real_table_extraction_regex_num_performance_mean, mean_F1<real_table_extraction_regex_NA_F1_mean)) %>% arrange(mean_total) %>% slice_head(n = 1)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(median_total<real_table_extraction_regex_total_performance_median, median_num<real_table_extraction_regex_num_performance_median, median_F1<real_table_extraction_regex_NA_F1_median)) %>% arrange(median_total) %>% slice_head(n = 1)
 
 super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero_shot', 'static_example'), n_examples>1) %>% group_by(model, method) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(mean_total<real_table_extraction_regex_total_performance_mean, mean_num<real_table_extraction_regex_num_performance_mean, mean_F1<real_table_extraction_regex_NA_F1_mean)) %>% arrange(mean_total) %>% slice_head(n = 1)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(median_total<real_table_extraction_regex_total_performance_median, median_num<real_table_extraction_regex_num_performance_median, median_F1<real_table_extraction_regex_NA_F1_median)) %>% arrange(median_total) %>% slice_head(n = 1)
 ```
+
+This section presents the results for the table extraction task
+performed with \acr{LLM}s on **Aktiva** tables. Subsection
+\@ref(real-table-extraction-results) compraes the performance of open
+source models on real tables. It also compares those results with the
+table extraction performance achieved with models by OpenAI. Subsection
+\@ref(synthetic-table-extraction) presents the results on synthetic
+**Aktiva** tables. Subsection \@ref(real-table-extraction-synth-context)
+shows a hybrid approach, where synthetic tables are used for the
+in-context learning, to extract real **Aktiva** tables. Finally, we
+summarize the results for all approaches in subsection
+\@ref(comparing-table-extraction-methods).
 
 -   confidence usable to head for user checks?
 -   not handled new entries
 -   five examples bring not much more, but a little
--   random forest / SHAP
 
-#### Real tables only
+#### Real tables {#real-table-extraction-results}
 
 For the table extraction task
 `r length(unique(df_real_table_extraction$model))+2` open source models
-have been benchmarked[^05_results-29]. The results are presented in
+have been benchmarked[^05_results-26]. The results are presented in
 Figure \@ref(fig:table-extraction-llm-performance-total-overview),
 \@ref(fig:table-extraction-llm-performance-numeric-overview) and
 \@ref(fig:table-extraction-llm-f1-overview)).
 
-[^05_results-29]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
+[^05_results-26]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
     and *google_gemma-3n-E4B-it* have been tested as well but don't get
     presented as they never performed anywhere beyond random guessing.
 
 Most models need a context learning approach to beat the performance of
 the regular expression approach at total and numeric correctness rate
 and F1 score. Only `r nrow(zero_shot_stars)` models perform better
-without any guidance[^05_results-30] (see Table
+without any guidance[^05_results-27] (see Table
 \@ref(tab:zero-and-synth-performing-models-tab)).
 `r nrow(static_example_stars)` models achieved an performance better as
 the regex baseline using the approach to learn with a fixed example from
 the synthetic dataset.
 
-[^05_results-30]: There is an external guidance through the provided
+[^05_results-27]: There is an external guidance through the provided
     xgrammar template but it is not communicated to the model in a
     promt.
 
@@ -2735,17 +2835,17 @@ With one and three examples the performance within one model family is
 positive correlated with the number of parameters the models have. Once
 the 4B parameters are passed the improvements get less and less getting
 closer to a perfect performance but never reaching it on all documents.
-Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the mean
-performance for the best model-method approach for each model family.
-Most of the top performing model-method combinations rely on the maximum
-number of examples provided. Only the Llama-3 and Falcon3 model perform
-best with three examples[^05_results-31].
+Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the
+median performance for the best model-method approach for each model
+family. Most of the top performing model-method combinations rely on the
+maximum number of examples provided. Only the Llama-3 and Falcon3 model
+perform best with three examples[^05_results-28].
 
-[^05_results-31]: Phi4 also perfroms best with three examples. But this
+[^05_results-28]: Phi4 also perfroms best with three examples. But this
     is the maximum it can process due to a limited context length.
 
 ```{r zero-and-synth-performing-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
-zero_shot_stars %>% full_join(static_example_stars, join_by(model), suffix = c("_zero_shot", "_static_example")) %>% select(model, starts_with("mean_total")) %>% 
+zero_shot_stars %>% full_join(static_example_stars, join_by(model), suffix = c("_zero_shot", "_static_example")) %>% select(model, starts_with("median_total")) %>% 
 mutate_if(
     is.numeric, 
     ~ifelse(
@@ -2761,7 +2861,7 @@ mutate_if(
 ```
 
 ```{r super-underperforming-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
-super_underperformer %>% select(model, method, mean_total) %>% ungroup() %>% # mutate(model = str_replace_all(model, "_", " ")) %>% 
+super_underperformer %>% select(model, method, median_total) %>% ungroup() %>% # mutate(model = str_replace_all(model, "_", " ")) %>% 
 mutate_if(
     is.numeric, 
     ~ifelse(
@@ -2772,24 +2872,24 @@ mutate_if(
   ) %>% 
   render_table(
     alignment = "llr",
-    caption = "Comparing table extraction performance with real 'Aktiva' dataset for models that worse than the regex baselin with 3 or 5 examples for in-context learning",
+    caption = "Comparing table extraction performance with real 'Aktiva' dataset for models that perform worse than the regex baselin with 3 or 5 examples for in-context learning",
     ref = opts_current$get("label"), dom="t")
 ```
 
 ```{r table-metrics-llm-real-table-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
-df_real_table_extraction %>% group_by(model, method) %>% mutate(mean_total = mean(percentage_correct_total, na.rm = TRUE)) %>%
-  arrange(desc(mean_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
-  select(model_family, model, method_family, n_examples, mean_total) %>% arrange(desc(mean_total)) %>% 
-  mutate(mean_total = round(mean_total, 3)) %>% 
-  render_table(caption = "Comparing best mean table extraction performance with real 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
+df_real_table_extraction %>% group_by(model, method) %>% mutate(median_total = median(percentage_correct_total, na.rm = TRUE)) %>%
+  arrange(desc(median_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
+  select(model_family, model, method_family, n_examples, median_total) %>% arrange(desc(median_total)) %>% 
+  mutate(median_total = round(median_total, 3)) %>% 
+  render_table(caption = "Comparing best median table extraction performance with real 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
 ```
 
 ```{r table-metrics-llm-real-table-extraction-small, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
-df_real_table_extraction %>% group_by(model, method) %>% filter(parameter_count<17) %>% mutate(mean_total = mean(percentage_correct_total, na.rm = TRUE)) %>%
-  arrange(desc(mean_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
-  select(model_family, model, method_family, n_examples, mean_total) %>% arrange(desc(mean_total)) %>% 
-  mutate(mean_total = round(mean_total, 3)) %>% 
-  render_table(caption = "Comparing best mean table extraction performance with real 'Aktiva' dataset for each model family for models with less than 17B parameters", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
+df_real_table_extraction %>% group_by(model, method) %>% filter(parameter_count<17) %>% mutate(median_total = median(percentage_correct_total, na.rm = TRUE)) %>%
+  arrange(desc(median_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
+  select(model_family, model, method_family, n_examples, median_total) %>% arrange(desc(median_total)) %>% 
+  mutate(median_total = round(median_total, 3)) %>% 
+  render_table(caption = "Comparing best median table extraction performance with real 'Aktiva' dataset for each model family for models with less than 17B parameters", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
 ```
 
 Based on a small sample of
@@ -2827,10 +2927,10 @@ reported by Qwen 3.
 confidence_vs_truth <- df_real_table_extraction %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B")) %>% 
   group_by(method, model) %>% mutate(
-    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+    median_percentage_correct_total = median(percentage_correct_total, na.rm=TRUE), .before = 1
     ) %>% group_by(model) %>% 
-  arrange(desc(mean_percentage_correct_total)) %>% 
-  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  arrange(desc(median_percentage_correct_total)) %>% 
+  slice_max(median_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
   mutate(predictions_processed = map(predictions, ~{
     .x %>% 
       select(-"_merge") %>% 
@@ -3076,22 +3176,22 @@ grammar. Running gpt-5-chat resulted in the error informing that a
 approach worked flawless. Running gpt-oss-20b with the vllm offline
 inference framework was possible and the new harmony output format could
 be processed after minor code changes for most
-approaches[^05_results-32]. With a gpt-oss-120b instance hosted on Azure
+approaches[^05_results-29]. With a gpt-oss-120b instance hosted on Azure
 the guided decoding worked flawless.
 
-[^05_results-32]: With the static example approach there have been 24
+[^05_results-29]: With the static example approach there have been 24
     files where the resonse could not get parsed into valid \acr{json}.
     With the other approaches there are one to four unparsable
     responses.
 
 ```{r table-extraction-llm-performance-total-gpt-ranking, echo=echo_flag, warning=warning_flag, message=message_flag}
-df_overview_gpt %>% group_by(model, method) %>% summarise(mean_percentage_correct_total = mean(percentage_correct_total)) %>% arrange(desc(mean_percentage_correct_total)) %>% slice_head(n = 1) %>% ungroup() %>% arrange(desc(mean_percentage_correct_total)) %>% mutate(mean_percentage_correct_total = round(mean_percentage_correct_total, 2)) %>% rename("mean correct total" = mean_percentage_correct_total) %>% kbl()
+df_overview_gpt %>% group_by(model, method) %>% summarise(median_percentage_correct_total = median(percentage_correct_total)) %>% arrange(desc(median_percentage_correct_total)) %>% slice_head(n = 1) %>% ungroup() %>% arrange(desc(median_percentage_correct_total)) %>% mutate(median_percentage_correct_total = round(median_percentage_correct_total, 2)) %>% rename("median correct total" = median_percentage_correct_total) %>% kbl()
 ```
 
 ```{r table-extraction-llm-performance-total-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=10, fig.cap="Comparing the percentage of correct predictions overall for OpenAi's LLMs with some Qwen 3 models"}
 df_overview_gpt %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_total_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_total_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
   # geom_jitter(aes(x = model, y = percentage_correct_total)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
@@ -3104,7 +3204,7 @@ df_overview_gpt %>%
 ```{r table-extraction-llm-performance-numeric-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=10, fig.cap="Comparing the percentage of correct numeric predictions for OpenAi's LLMs with some Qwen 3 models"}
 df_overview_gpt %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_num_performance_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
@@ -3117,7 +3217,7 @@ df_overview_gpt %>%
 df_overview_gpt %>% 
   mutate(NA_F1 = if_else(is.na(NA_F1), 0, NA_F1)) %>% 
   ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_mean, linetype = "dashed") +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
   geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
   geom_jitter(data = df_overview_gpt %>% filter(is.na(NA_F1)), aes(x = model, y = 0), height = 0, color = "green", alpha = .5, shape = 4) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
@@ -3140,7 +3240,7 @@ costs_azure <- read_csv("../CostManagement_master-thesis_2025.csv")
 token_prop <- df_real_table_extraction %>% group_by(model, method, n_examples) %>% summarize(
     request_tokens_total = sum(request_tokens[[1]])) %>% 
     group_by(method, n_examples) %>% 
-    summarize(mean = mean(request_tokens_total, na.rm = TRUE)) %>% mutate(five_examples = n_examples == 5) %>% group_by(five_examples) %>% summarise(sum = sum(mean))
+    summarize(median = median(request_tokens_total, na.rm = TRUE)) %>% mutate(five_examples = n_examples == 5) %>% group_by(five_examples) %>% summarise(sum = sum(median))
 
 five_ex_tokens <- token_prop %>% filter(five_examples == TRUE) %>% pull(sum)
 other_tokens <- token_prop %>% filter(five_examples == FALSE) %>% pull(sum)
@@ -3159,7 +3259,7 @@ costs_azure %>% mutate(
   ) %>% kbl()
 ```
 
-#### Synthetic tables only
+#### Synthetic tables {#synthetic-table-extraction}
 
 ```{r loading-synth-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/synth_table_extraction_llm.rds")), cache.lazy = FALSE}
 df_synth_table_extraction <- readRDS("data_storage/synth_table_extraction_llm.rds") %>% 
@@ -3204,35 +3304,35 @@ df_overview_synth <- df_synth_table_extraction %>%
 # synth
 
 zero_shot_stars_synth <- df_synth_table_extraction %>% filter(method == "zero_shot") %>% group_by(model) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% filter(mean_total>synth_table_extraction_regex_total_performance_mean, mean_num>synth_table_extraction_regex_num_performance_mean, mean_F1>synth_table_extraction_regex_NA_F1_mean)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% filter(median_total>synth_table_extraction_regex_total_performance_median, median_num>synth_table_extraction_regex_num_performance_median, median_F1>synth_table_extraction_regex_NA_F1_median)
 
 static_example_stars_synth <- df_synth_table_extraction %>% filter(method == "static_example") %>% group_by(model) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% filter(mean_total>synth_table_extraction_regex_total_performance_mean, mean_num>synth_table_extraction_regex_num_performance_mean, mean_F1>synth_table_extraction_regex_NA_F1_mean)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% filter(median_total>synth_table_extraction_regex_total_performance_median, median_num>synth_table_extraction_regex_num_performance_median, median_F1>synth_table_extraction_regex_NA_F1_median)
 
 underperformer_synth <- df_synth_table_extraction %>% filter(!method %in% c('zero_shot', 'static_example')) %>% group_by(model, method) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% filter(any(mean_total<synth_table_extraction_regex_total_performance_mean, mean_num<synth_table_extraction_regex_num_performance_mean, mean_F1<synth_table_extraction_regex_NA_F1_mean)) %>% arrange(mean_total) %>% slice_head(n = 1)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% filter(any(median_total<synth_table_extraction_regex_total_performance_median, median_num<synth_table_extraction_regex_num_performance_median, median_F1<synth_table_extraction_regex_NA_F1_median)) %>% arrange(median_total) %>% slice_head(n = 1)
 
 super_underperformer_synth <- df_synth_table_extraction %>% filter(!method %in% c('zero_shot', 'static_example'), n_examples>1) %>% group_by(model, method) %>% 
-  reframe(mean_total = mean(percentage_correct_total, na.rm = TRUE), mean_num = mean(percentage_correct_numeric, na.rm = TRUE), mean_F1 = mean(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(mean_total<synth_table_extraction_regex_total_performance_mean, mean_num<synth_table_extraction_regex_num_performance_mean, mean_F1<synth_table_extraction_regex_NA_F1_mean)) %>% arrange(mean_total) %>% slice_head(n = 1)
+  reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(median_total<synth_table_extraction_regex_total_performance_median, median_num<synth_table_extraction_regex_num_performance_median, median_F1<synth_table_extraction_regex_NA_F1_median)) %>% arrange(median_total) %>% slice_head(n = 1)
 
-df_synth_top_performance <- df_synth_table_extraction %>% group_by(model, method) %>% mutate(mean_total = mean(percentage_correct_total, na.rm = TRUE)) %>%
-  arrange(desc(mean_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
-  select(model_family, model, method_family, n_examples, mean_total) %>% arrange(desc(mean_total)) %>% 
-  mutate(mean_total = round(mean_total, 3))
+df_synth_top_performance <- df_synth_table_extraction %>% group_by(model, method) %>% mutate(median_total = median(percentage_correct_total, na.rm = TRUE)) %>%
+  arrange(desc(median_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
+  select(model_family, model, method_family, n_examples, median_total) %>% arrange(desc(median_total)) %>% 
+  mutate(median_total = round(median_total, 3))
 
-df_synth_top_performance_small <- df_synth_table_extraction %>% group_by(model, method) %>% filter(parameter_count < 17) %>% mutate(mean_total = mean(percentage_correct_total, na.rm = TRUE)) %>%
-  arrange(desc(mean_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
-  select(model_family, model, method_family, n_examples, mean_total) %>% arrange(desc(mean_total)) %>% 
-  mutate(mean_total = round(mean_total, 3))
+df_synth_top_performance_small <- df_synth_table_extraction %>% group_by(model, method) %>% filter(parameter_count < 17) %>% mutate(median_total = median(percentage_correct_total, na.rm = TRUE)) %>%
+  arrange(desc(median_total)) %>% group_by(model_family) %>% slice_head(n = 1) %>% 
+  select(model_family, model, method_family, n_examples, median_total) %>% arrange(desc(median_total)) %>% 
+  mutate(median_total = round(median_total, 3))
 
-n_better_as_regex <- df_synth_table_extraction %>% group_by(model, method) %>% summarise(mean_total = mean(percentage_correct_total, na.rm = TRUE)) %>%
-  arrange(desc(mean_total))  %>% 
+n_better_as_regex <- df_synth_table_extraction %>% group_by(model, method) %>% summarise(median_total = median(percentage_correct_total, na.rm = TRUE)) %>%
+  arrange(desc(median_total))  %>% 
   mutate(
-    better_than_regex =  mean_total>synth_table_extraction_regex_total_performance_mean
+    better_than_regex =  median_total>synth_table_extraction_regex_total_performance_median
   ) %>% group_by(better_than_regex) %>% summarise(n())
 
 n_better_as_regex_families <- df_synth_top_performance %>% mutate(
-    better_than_regex =  mean_total>synth_table_extraction_regex_total_performance_mean
+    better_than_regex =  median_total>synth_table_extraction_regex_total_performance_median
 ) %>% group_by(better_than_regex) %>% summarise(n())
 ```
 
@@ -3241,7 +3341,7 @@ shows that for `r deframe(n_better_as_regex_families)['TRUE']` from
 `r nrow(n_better_as_regex_families)` model families there is at least
 one model-method combination that performed better than the regex
 baseline. For the synthetic table extraction task the baseline is
-`r synth_table_extraction_regex_total_performance_mean`.
+`r synth_table_extraction_regex_total_performance_median`.
 
 Only `r deframe(n_better_as_regex)['TRUE']` from
 `r nrow(n_better_as_regex)` model-method combinations performed better
@@ -3258,25 +3358,25 @@ sum of all experiment results (factor 14) with random forest?
 ```{r table-metrics-llm-real-table-extraction-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_synth_top_performance %>% 
   mutate(
-    mean_total = if_else(
-      mean_total>synth_table_extraction_regex_total_performance_mean,
-      paste0("**", mean_total, "**"),
-      as.character(mean_total)
+    median_total = if_else(
+      median_total>synth_table_extraction_regex_total_performance_median,
+      paste0("**", median_total, "**"),
+      as.character(median_total)
       )
   ) %>% 
-  render_table(caption = "Comparing best mean table extraction performance with synthetic 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
+  render_table(caption = "Comparing best median table extraction performance with synthetic 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
 ```
 
 ```{r table-metrics-llm-real-table-extraction-synth-context-small, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_synth_top_performance_small %>% 
   mutate(
-    mean_total = if_else(
-      mean_total>synth_table_extraction_regex_total_performance_mean,
-      paste0("**", mean_total, "**"),
-      as.character(mean_total)
+    median_total = if_else(
+      median_total>synth_table_extraction_regex_total_performance_median,
+      paste0("**", median_total, "**"),
+      as.character(median_total)
       )
   ) %>% 
-  render_table(caption = "Comparing best mean table extraction performance with synthetic 'Aktiva' dataset for each model family for models with less than 17B parameters", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
+  render_table(caption = "Comparing best median table extraction performance with synthetic 'Aktiva' dataset for each model family for models with less than 17B parameters", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
 ```
 
 ###### Hypotheses
@@ -3303,17 +3403,17 @@ LLama 4 Maverick again problem with five examples
 
 Positive column count effect (different for real data)
 
-#### Extract from real tables with synthetic content
+#### Hybrid approach {#real-table-extraction-synth-context}
 
 ```{r preparing-synth-context-learning-data, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_synth.rds"))}
-best_models_with_examples <- df_real_table_extraction_synth %>% filter(str_detect(method_family, "n_")) %>% group_by(model, method) %>% summarise(mean_synth = mean(percentage_correct_total)) %>% arrange(desc(mean_synth)) %>% slice_head(n = 1) %>% ungroup() %>% arrange(desc(mean_synth)) %>% left_join(
-  df_real_table_extraction %>% group_by(model, method) %>% summarise(mean_real = mean(percentage_correct_total))) %>% 
+best_models_with_examples <- df_real_table_extraction_synth %>% filter(str_detect(method_family, "n_")) %>% group_by(model, method) %>% summarise(median_synth = median(percentage_correct_total)) %>% arrange(desc(median_synth)) %>% slice_head(n = 1) %>% ungroup() %>% arrange(desc(median_synth)) %>% left_join(
+  df_real_table_extraction %>% group_by(model, method) %>% summarise(median_real = median(percentage_correct_total))) %>% 
   left_join(
-    df_real_table_extraction %>% group_by(model, method) %>% summarise(mean_zero_shot = mean(percentage_correct_total)) %>% filter(method == "zero_shot") %>% select(-method)
+    df_real_table_extraction %>% group_by(model, method) %>% summarise(median_zero_shot = median(percentage_correct_total)) %>% filter(method == "zero_shot") %>% select(-method)
   ) %>% 
   mutate_if(is.numeric, ~round(., 3))
 
-best_mistral <- df_real_table_extraction_synth %>% filter(model_family == "mistralai") %>% group_by(model, method) %>% summarise(mean_synth = mean(percentage_correct_total)) %>% arrange(desc(mean_synth)) %>% slice_head(n = 1) %>% pull(mean_synth)
+best_mistral <- df_real_table_extraction_synth %>% filter(model_family == "mistralai") %>% group_by(model, method) %>% summarise(median_synth = median(percentage_correct_total)) %>% arrange(desc(median_synth)) %>% slice_head(n = 1) %>% pull(median_synth)
 
 df_real_table_extraction_synth_respect_units <- df_real_table_extraction_synth %>% 
   mutate(n_col_T_EUR = T_EUR_both + T_EUR) %>% 
@@ -3327,11 +3427,11 @@ confidence_vs_truth <- df_real_table_extraction_synth %>%
   filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B")) %>% 
   group_by(method, model) %>% mutate(
-    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1,
+    median_percentage_correct_total = median(percentage_correct_total, na.rm=TRUE), .before = 1,
     respect_units = !ignore_units
   ) %>% group_by(respect_units, model) %>% 
-  arrange(desc(mean_percentage_correct_total)) %>% 
-  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  arrange(desc(median_percentage_correct_total)) %>% 
+  slice_max(median_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
   mutate(predictions_processed = map(predictions, ~{
     .x %>% 
       select(-"_merge") %>% 
@@ -3432,7 +3532,7 @@ Table
 \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table)
 shows, that synthetic data can be used for in-context learning in a task
 where the currency units given for a table or specific
-columns[^05_results-33]. Except for Llama 3.1 all models achieved much
+columns[^05_results-30]. Except for Llama 3.1 all models achieved much
 better numeric extraction results for tables where currencies are given
 for all columns. The model also achieved better for cases where there
 was only a single column with units, even though there have been no
@@ -3442,7 +3542,7 @@ performance for tables where no units are given for all models but Llama
 4 Schout. This decrease was highest for Qwen 3 and also higher than 10 %
 for Mistral Large.
 
-[^05_results-33]: Synthetic data is used here because the
+[^05_results-30]: Synthetic data is used here because the
     characterization, which real *Aktiva* table has units in which
     column, was created too late.
 
@@ -3456,7 +3556,7 @@ missing data for rare classes.
 Confidence with both tasks (respect or ignore units) the same.
 
 ```{r comparing-extraction-performance-synth-context-learning-respecting-units-table, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
-df_real_table_extraction_synth_respect_units %>% filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% group_by(model, method, method_family, respect_units, n_col_T_EUR) %>% reframe(mean_num = mean(percentage_correct_numeric)) %>% pivot_wider(names_from = respect_units, values_from = mean_num, names_prefix = "units_") %>% mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% pivot_wider(names_from = n_col_T_EUR, values_from = delta, names_prefix = "n_cols_T_EUR_") %>% group_by(model) %>% summarise_if(is.numeric, mean) %>% mutate(across(is.numeric, ~round(., 2))) %>% mutate_if(
+df_real_table_extraction_synth_respect_units %>% filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% group_by(model, method, method_family, respect_units, n_col_T_EUR) %>% reframe(median_num = median(percentage_correct_numeric)) %>% pivot_wider(names_from = respect_units, values_from = median_num, names_prefix = "units_") %>% mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% pivot_wider(names_from = n_col_T_EUR, values_from = delta, names_prefix = "n_cols_T_EUR_") %>% group_by(model) %>% summarise_if(is.numeric, median) %>% mutate(across(is.numeric, ~round(., 2))) %>% mutate_if(
     is.numeric, 
     ~ifelse(
       . == min(., na.rm = TRUE),
@@ -3471,7 +3571,7 @@ df_real_table_extraction_synth_respect_units %>% filter(method_family %in% c("to
 ```
 
 ```{r comparing-extraction-performance-synth-context-learning-respecting-units-histogram, echo=echo_flag, warning=warning_flag, message=message_flag}
-# df_real_table_extraction_synth_respect_units %>% group_by(model, method, respect_units, n_col_T_EUR) %>% reframe(mean_num = mean(percentage_correct_numeric)) %>% pivot_wider(names_from = respect_units, values_from = mean_num, names_prefix = "units_") %>% mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% ggplot() + geom_histogram(aes(x = delta)) + facet_grid(model~n_col_T_EUR)
+# df_real_table_extraction_synth_respect_units %>% group_by(model, method, respect_units, n_col_T_EUR) %>% reframe(median_num = median(percentage_correct_numeric)) %>% pivot_wider(names_from = respect_units, values_from = median_num, names_prefix = "units_") %>% mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% ggplot() + geom_histogram(aes(x = delta)) + facet_grid(model~n_col_T_EUR)
 ```
 
 ```{r table-extraction-llm-confidence-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing confidence for reported values in the table extraction perfromance for real Aktiva extraction task with synthetic examples for in-context learning for two models."}
@@ -3485,7 +3585,7 @@ df_real_table_extraction_synth_respect_units %>% filter(method_family %in% c("to
 ```
 
 ```{r table-extraction-llm-confidence-synth-context-table, results='asis'}
-confidence_vs_truth %>% group_by(model, method, method_family, respect_units, predicted_NA) %>% reframe(mean_conf = mean(confidence)) %>% pivot_wider(names_from = respect_units, values_from = mean_conf, names_prefix = "mean_conf_units_") %>% # mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% pivot_wider(names_from = n_col_T_EUR, values_from = delta, names_prefix = "n_cols_T_EUR_") %>% group_by(model) %>% summarise_if(is.numeric, mean) %>% 
+confidence_vs_truth %>% group_by(model, method, method_family, respect_units, predicted_NA) %>% reframe(median_conf = median(confidence)) %>% pivot_wider(names_from = respect_units, values_from = median_conf, names_prefix = "median_conf_units_") %>% # mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% pivot_wider(names_from = n_col_T_EUR, values_from = delta, names_prefix = "n_cols_T_EUR_") %>% group_by(model) %>% summarise_if(is.numeric, median) %>% 
   mutate(across(is.numeric, ~round(., 2))) %>% 
   render_table(
     alignment = "lllrr",
@@ -3517,3 +3617,5 @@ in-context examples. (Needing more für random examples thanwith
 top-n-rad approach). Especially Llama 3 models show wider performance
 spread even with three examples
 \@ref(fig:comparing-table-extraction-performance-among-real-and-synth-aktiva-data)
+
+runtime
