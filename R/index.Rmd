@@ -89,7 +89,7 @@ source("report_misc/helper_functions.R")
 echo_flag <- knitr::is_html_output() ? NA : FALSE
 message_flag = FALSE
 warning_flag = FALSE
-cache_large_figures = F
+cache_large_figures = TRUE
 ```
 
 \setDefaultLayout
@@ -102,9 +102,11 @@ cache_large_figures = F
 
 Content of this thesis is a benchmark on information extraction from PDFs. The focus are annual reports of German companies. Special characteristic of the task is handling hierarchies in tables with financial data to prepare the data for import into a relational database.
 
-The benchmark is composed of three sub tasks and the performance of different open source large language models is tested with different prompting approaches and compared to alternative methods.
+The benchmark is composed of two sub tasks and the performance of different open source large language models is tested with different prompting approaches and compared to alternative methods.
 
 This can be seen as a reimplementation study of "Extracting Financial Data from Unstructured Sources: Leveraging Large Language Models" - a paper published by @li_extracting_2023. The key differences are the application on German documents using open source large language models.
+
+We show, that also smaller open source \acr{LLM}s can be used to identify the pages that contain the information of interest and to extract it. Based on these findings we sketch a process, how humans can use \acr{LLM}s to extract information from financial reports.
 
 ## Zusammenfassung {.unlisted .unnumbered}
 
@@ -140,6 +142,11 @@ Missed:
 \pagenumbering{roman}
 \setcounter{page}{1}
 \tableofcontents
+
+\large\bfseries
+\addthumbsoverviewtocontents{section}{Thumb marks overview}
+\thumbsoverviewback{Table of Thumbs}
+\normalsize\mdseries
 
 \cleardoublepage
 \pagenumbering{arabic}

@@ -5,7 +5,7 @@ source("report_misc/helper_functions.R")
 
 df  <- readRDS("data_storage/synth_table_extraction_llm.rds")
 
-norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
   mutate(
     model_name = model_name %>% str_replace("/", "_")
   ) # %>% filter(str_detect(filename, "multi"))

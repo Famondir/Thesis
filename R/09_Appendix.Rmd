@@ -3,7 +3,6 @@
 
 # Appendix
 
-\setcounter{chapshift}{0}
 \ChapFrame
 
 ## Local machine {#local-machine}
@@ -837,450 +836,6 @@ regex_patterns_3 = {
 }
 ```
 
-## Tables
-
-### Classification
-
-```{r comparing-actual-number-of-in-context-examples, echo=echo_flag, warning=warning_flag, message=message_flag}
-df_classification_n_examples %>%
-  render_table(alignment="llrrrr", caption="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n_examples.", ref = opts_current$get("label"))
-```
-
-## Figures
-
-NA predicting
-
-```{r display-extraction-metrics-full-NA, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Displaying the performance metrics a LLMs response would have if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables."}
-metrics <- list()
-
-for (i in 1:29) {
-  # print(i)
-  precision <- 2*(29-i)/58
-  recall <- 1
-  F1 <- 2*precision*recall/(precision+recall)
-  metrics[[i]] <- c(i = i, perc_correct_num = 0, F1 = F1, perc_correct_total = (58-2*i)/58)
-}
-
-metrics %>% tibble() %>% unnest_wider(".") %>% 
-  pivot_longer(-i, names_to = "metric") %>% 
-  ggplot() +
-  geom_line(aes(x = 2*i, y = value, color = metric)) +
-  geom_vline(xintercept = 10, linetype ="dashed") +
-  geom_vline(xintercept = 40, linetype ="dashed") +
-  labs(
-    x = "number of numeric values in ground truth",
-    y = "metric score"
-  )
-```
-
-### Page identification
-
-#### Regex baseline
-
-```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", cache=cache_large_figures}
-metrics_plot_regex_page_identification
-```
-
-```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach", cache=cache_large_figures}
-real_table_extraction_regex_shap_plot
-```
-
-#### TOC understanding
-
-```{r page-identification-toc-analysis-balanced, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
-balanced_df_toc_benchmark %>% ggplot() +
-  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
-  geom_text(
-    data = balanced_df_toc_benchmark %>% filter(in_range == TRUE),
-    aes(x = type, label = paste0(round(perc_correct, 2), "")),
-    stat = "count",
-    vjust = 1.2,
-    color = "white"
-  ) +
-  geom_text(
-    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
-    stat = "count",
-    vjust = 1.5,
-    color = "white"
-  ) +
-  facet_wrap(~benchmark_type, nrow = 1) # +
-  # theme(
-  #   legend.position = "bottom"
-  # )
-```
-
-#### Classification
-
-##### Binary
-
-Binary classification F1 score over runtime limited to 60 minutes
-
-```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
-design = "
-ABCD##X
-EFGHI#Y
-JKL####
-MNOPQRS
-TUVW###
-"
-
-df_binary %>% filter(classification_type == "Aktiva") %>% 
-  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
-  mutate(norm_runtime = norm_runtime/60) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>% 
-  # left_join(model_letters, by = "model") %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
-  # ggplot(aes(x = norm_runtime, y = recall)) +
-  # ggplot(aes(x = norm_runtime, y = precision)) +
-  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
-  scale_shape(na.value = 15, guide = "legend") +
-  geom_text(aes(label = n_examples)) +
-  # facet_grid(classification_type~model) +
-  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
-  theme(legend.position = "bottom") +
-  guides(
-    color = guide_legend(nrow = 1),
-    shape = guide_legend(nrow = 1)
-  ) +
-  labs(x = "normalized runtime in minutes") +
-  coord_cartesian(xlim = c(0, 60))
-```
-
-Binary classification F1 score over runtime unlimited
-
-```{r binary-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
-df_binary %>% filter(classification_type == "Aktiva") %>% 
-  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
-  mutate(norm_runtime = norm_runtime/60) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>% 
-  # left_join(model_letters, by = "model") %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
-  # ggplot(aes(x = norm_runtime, y = recall)) +
-  # ggplot(aes(x = norm_runtime, y = precision)) +
-  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
-  scale_shape(na.value = 15, guide = "legend") +
-  geom_text(aes(label = n_examples)) +
-  # facet_grid(classification_type~model) +
-  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
-  theme(legend.position = "bottom") +
-  guides(
-    color = guide_legend(nrow = 1),
-    shape = guide_legend(nrow = 1)
-  ) +
-  labs(x = "normalized runtime in minutes")
-```
-
-##### Multi-class classification
-
-Multi-class classification micro minorites F1 score over runtime limited to 60 minutes
-
-```{r multi-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
-design = "
-ABCD##X
-EFGHI#Y
-JKL####
-MNOPQRS
-TUVW###
-"
-
-df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
-  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
-  mutate(norm_runtime = norm_runtime/60) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>% 
-  # left_join(model_letters, by = "model") %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
-  # ggplot(aes(x = norm_runtime, y = recall)) +
-  # ggplot(aes(x = norm_runtime, y = precision)) +
-  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
-  scale_shape(na.value = 15, guide = "legend") +
-  geom_text(aes(label = n_examples)) +
-  # facet_grid(classification_type~model) +
-  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
-  theme(legend.position = "bottom") +
-  guides(
-    color = guide_legend(nrow = 1),
-    shape = guide_legend(nrow = 1)
-  ) +
-  labs(x = "normalized runtime in minutes") +
-  coord_cartesian(xlim = c(0, 60))
-```
-
-Multi-class classification micro minorites F1 score over runtime
-
-```{r multi-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
-design = "
-ABCD##X
-EFGHI#Y
-JKL####
-MNOPQRS
-TUVW###
-"
-
-df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
-  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
-  mutate(norm_runtime = norm_runtime/60) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>% 
-  # left_join(model_letters, by = "model") %>%
-  ggplot(aes(x = norm_runtime, y = f1_score)) +
-  # ggplot(aes(x = norm_runtime, y = recall)) +
-  # ggplot(aes(x = norm_runtime, y = precision)) +
-  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
-  scale_shape(na.value = 15, guide = "legend") +
-  geom_text(aes(label = n_examples)) +
-  # facet_grid(classification_type~model) +
-  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
-  theme(legend.position = "bottom") +
-  guides(
-    color = guide_legend(nrow = 1),
-    shape = guide_legend(nrow = 1)
-  ) +
-  labs(x = "normalized runtime in minutes")
-```
-
-```{r micro-pr-curve-llm-multi-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct."}
-model_name <- "Llama-4-Scout-17B-16E-Instruct"
-method_name <- "3_rag_examples"
-
-df_temp_llama_multi <- df_multi %>% 
-  filter(
-    model == model_name,
-    method == method_name
-  ) # %>% unnest(metrics) # %>% calc_micro_f1(model, method)
-p_aktiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Aktiva", x_stuff = FALSE)
-p_passiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Passiva", x_stuff = FALSE)
-p_guv <- df_temp_llama_multi %>% plot_pr_double_curve_multi("GuV", x_stuff = TRUE)
-
-wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
-  plot_layout(heights = c(2, 2, 3)) +
-  plot_annotation(title = str_c(model, " with ", method))
-```
-
-### Table extraction
-
-```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=16, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs", cache=cache_large_figures}
-for (i in 1:4) {
-  real_table_extraction_llm_shap_plot[[i]] <- real_table_extraction_llm_shap_plot[[i]] + plot_layout(tag_level = 'new')
-}
-  
-real_table_extraction_llm_shap_plot + plot_annotation(tag_levels = c('A', '1'), tag_sep = '.') +
-  plot_annotation(
-  title = 'The surprising truth about mtcars',
-  subtitle = 'These 3 plots will reveal yet-untold secrets about our beloved data-set',
-  caption = 'Disclaimer: None of these plots are insightful'
-) & theme(plot.title = element_text(size = 22))
-```
-
-```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach", cache=cache_large_figures}
-synth_table_extraction_regex_shap_plot
-```
-
-```{r compare-effect-of-respecting-units-on-overall-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
-df_real_table_extraction_synth_respect_units %>% 
-  ggplot() +
-  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_total), alpha = .3) +
-  geom_jitter(
-    data = . %>% filter(n_col_T_EUR > 0), 
-    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
-    height = 0, alpha = .5, width = 0.3
-    ) +
-  scale_fill_manual(values = c("blue", "orange")) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family+n_examples~model+respect_units) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r compare-effect-of-respecting-units-on-numeric-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
-df_real_table_extraction_synth_respect_units %>% 
-  ggplot() +
-  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_numeric), alpha = .3) +
-  geom_jitter(
-    data = . %>% filter(n_col_T_EUR > 0), 
-    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_numeric), 
-    height = 0, alpha = .5, width = 0.3
-    ) +
-  scale_fill_manual(values = c("blue", "orange")) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family+n_examples~model+respect_units) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r compare-effect-of-respecting-units-on-NA-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
-df_real_table_extraction_synth_respect_units %>% 
-  ggplot() +
-  geom_boxplot(aes(x = 1, fill=respect_units, y = NA_F1), alpha = .3) +
-  geom_jitter(
-    data = . %>% filter(n_col_T_EUR > 0), 
-    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = NA_F1), 
-    height = 0, alpha = .5, width = 0.3
-    ) +
-  scale_fill_manual(values = c("blue", "orange")) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family+n_examples~model+respect_units) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-\setAELandscapeLayout
-
-```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=cache_large_figures}
-df_overview %>% 
-  ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_total_performance_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=cache_large_figures}
-df_overview %>% 
-  ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_num_performance_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=cache_large_figures}
-df_overview %>% 
-  ggplot() +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the overall extraction performance depending on the condition if examples from the same company can be used (only for Amt für Statistik Berlin-Brandenburg).", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds")), cache=cache_large_figures}
-model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-oss-20b", "gpt-oss-120b", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
-
-df_temp <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
-  filter(str_detect(filepath, "Statistik"), method_family == "top_n_rag_examples") %>% 
-  filter(model %in% model_selection) %>%
-  mutate(
-    model = factor(model, levels = model_selection),
-    model_family = factor(model_family),
-    method_family = factor(method_family, levels = method_order),
-    n_examples = fct_rev(ordered(paste("n =", n_examples))),
-    examples_from_same_company = !out_of_company
-  )
-
-p1 <- df_temp %>% filter(!str_detect(model_family, "Qwen"), model_family != "microsoft") %>% ggplot() +
-  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family)) +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
-  geom_jitter(
-    aes(x = examples_from_same_company, y = percentage_correct_total),
-    shape = 4, height = 0.005, alpha = .5
-    ) +
-  # scale_x_discrete(guide = guide_axis(angle = 30)) +
-  scale_fill_discrete(guide = "none", drop = FALSE) +
-  facet_nested(method_family + n_examples ~ model_family + model) +
-  theme(
-    legend.position = "bottom",
-    axis.title.x = element_blank()
-  ) +
-  coord_cartesian(ylim = c(0, 1))
-
-p2 <- df_temp %>% filter(str_detect(model_family, "Qwen") | model_family == "microsoft") %>% ggplot() +
-  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family), show.legend = T) +
-  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
-  geom_jitter(
-    aes(x = examples_from_same_company, y = percentage_correct_total),
-    shape = 4, height = 0.005, alpha = .5
-    ) +
-  # scale_x_discrete(guide = guide_axis(angle = 30)) +
-  scale_fill_discrete(drop = FALSE) +
-  facet_nested(method_family + n_examples ~ model_family + model) +
-  theme(
-    legend.position = "bottom"
-  ) +
-  coord_cartesian(ylim = c(0, 1))
-
-p1 /
-  p2
-```
-
-```{r comparing-table-extraction-performance-among-real-and-synth-aktiva-data, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the table extraction performance among real and synthetic Aktiva tables", cache=cache_large_figures}
-df_overview_synth %>% mutate(target_data = "synth") %>% 
-  bind_rows(
-    df_overview %>% filter(model %in% df_overview_synth$model) %>% 
-      mutate(
-        target_data = "real", 
-        n_examples = factor(
-          n_examples, 
-          levels = levels(df_overview_synth$n_examples), 
-          ordered = TRUE
-          )
-        ) %>% select(-request_tokens)
-    ) %>% filter(as.numeric(n_examples) != 1) %>% 
-  ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
-  geom_boxplot(aes(x = target_data, y = percentage_correct_total, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ model_family+model) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r synth-table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
-df_overview_synth %>% 
-  ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r synth-table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
-df_overview_synth %>% 
-  ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_num_performance_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-```{r synth-table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
-df_overview_synth %>% 
-  ggplot() +
-  geom_hline(yintercept = synth_table_extraction_regex_NA_F1_median, linetype = "dashed") +
-  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) +
-  facet_nested(method_family + n_examples ~ .) +
-  theme(
-    legend.position = "bottom"
-  )
-```
-
-\setAEPortraitLayout
-
-12sdgsdgj
-
-\setASLandscapeLayout
-
-Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape 
-
-\setDefaultLayout
-
 ## Annual Comprehensive Financial Report Balance Sheet
 
 ```{r acfr23-balance-sheet, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap=c("Example balance sheet pagefom Californias Annual Comprehensive Financial Report 2023"), class.chunk='pdf-embed'}
@@ -1289,7 +844,11 @@ knitr::include_graphics("./images/acfr23_balance.pdf")
 
 ## Extraction framework flow chart
 
-![Flowchart of the extraction framework of @li_extracting_2023](images/extraction_framework_flow_chart.png){#extraction-framework-flow-chart width="100%"}
+(ref:flow-chart-caption) Flowchart of the extraction framework of @li_extracting_2023
+
+```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="(ref:flow-chart-caption)"}
+knitr::include_graphics("./images/extraction_framework_flow_chart.png")
+```
 
 ## Table extraction with regular expressions {#regex-extraction-mistakes}
 
@@ -1664,3 +1223,555 @@ Vorjahr
 
 151,61
 ```
+
+# Tables
+
+### Classification
+
+```{r comparing-actual-number-of-in-context-examples, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_classification_n_examples %>%
+  render_table(alignment="llrrrr", caption="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n_examples.", ref = opts_current$get("label"))
+```
+
+### Table extraction
+
+#### Hybrid approach
+
+```{r comparing-extraction-performance-real-and-synth-context-learning-median, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+median_models_with_examples %>% 
+  mutate(
+    delta_real_synth = median_real-median_synth,
+    delta_rate_real_synth = (delta_real_synth)/(1-median_synth),
+    delta_synth_zero = median_synth-median_zero_shot,
+    delta_rate_synth_zero = (delta_synth_zero)/(1-median_zero_shot)
+    ) %>% 
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", round(., 3), "**"),
+      round(., 3)
+    )
+  ) %>% select(
+    model, # method, 
+    median_real, median_synth, median_zero_shot, 
+    # delta_real_synth, delta_synth_zero, 
+    delta_rate_real_synth, delta_rate_synth_zero
+    ) %>% 
+  render_table(
+    alignment = "lrrrrr",
+    caption = "Comparing extraction performance for real Aktiva extraction task with synthetic and real examples for in-context learning with a zero shot approach averaged over all methods",
+    ref = opts_current$get("label"), dom="t")
+```
+
+# Figures
+
+NA predicting
+
+```{r display-extraction-metrics-full-NA, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Displaying the performance metrics a LLMs response would have if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables."}
+metrics <- list()
+
+for (i in 1:29) {
+  # print(i)
+  precision <- 2*(29-i)/58
+  recall <- 1
+  F1 <- 2*precision*recall/(precision+recall)
+  metrics[[i]] <- c(i = i, perc_correct_num = 0, F1 = F1, perc_correct_total = (58-2*i)/58)
+}
+
+metrics %>% tibble() %>% unnest_wider(".") %>% 
+  pivot_longer(-i, names_to = "metric") %>% 
+  ggplot() +
+  geom_line(aes(x = 2*i, y = value, color = metric)) +
+  geom_vline(xintercept = 10, linetype ="dashed") +
+  geom_vline(xintercept = 40, linetype ="dashed") +
+  labs(
+    x = "number of numeric values in ground truth",
+    y = "metric score"
+  )
+```
+
+## Page identification
+
+### Regex baseline
+
+```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", fig.cap="Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", cache=cache_large_figures}
+metrics_plot_regex_page_identification
+```
+
+```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach", cache=cache_large_figures}
+real_table_extraction_regex_shap_plot
+```
+
+### TOC understanding
+
+```{r page-identification-toc-analysis-balanced, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+balanced_df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
+  geom_text(
+    data = balanced_df_toc_benchmark %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1) # +
+  # theme(
+  #   legend.position = "bottom"
+  # )
+```
+
+### Classification
+
+#### Binary
+
+Binary classification F1 score over runtime limited to 60 minutes
+
+```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_binary %>% filter(classification_type == "Aktiva") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(xlim = c(0, 60))
+```
+
+Binary classification F1 score over runtime unlimited
+
+```{r binary-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
+df_binary %>% filter(classification_type == "Aktiva") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes")
+```
+
+##### Multi-class classification
+
+Multi-class classification micro minorites F1 score over runtime limited to 60 minutes
+
+```{r multi-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(xlim = c(0, 60))
+```
+
+Multi-class classification micro minorites F1 score over runtime
+
+```{r multi-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
+design = "
+ABCD##X
+EFGHI#Y
+JKL####
+MNOPQRS
+TUVW###
+"
+
+df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>% 
+  filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
+  mutate(norm_runtime = norm_runtime/60) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>% 
+  # left_join(model_letters, by = "model") %>%
+  ggplot(aes(x = norm_runtime, y = f1_score)) +
+  # ggplot(aes(x = norm_runtime, y = recall)) +
+  # ggplot(aes(x = norm_runtime, y = precision)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  # facet_grid(classification_type~model) +
+  ggh4x::facet_manual(~factor(model, levels = model_by_size_classification), design = design) +
+  theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(nrow = 1),
+    shape = guide_legend(nrow = 1)
+  ) +
+  labs(x = "normalized runtime in minutes")
+```
+
+```{r micro-pr-curve-llm-multi-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct."}
+model_name <- "Llama-4-Scout-17B-16E-Instruct"
+method_name <- "3_rag_examples"
+
+df_temp_llama_multi <- df_multi %>% 
+  filter(
+    model == model_name,
+    method == method_name
+  ) # %>% unnest(metrics) # %>% calc_micro_f1(model, method)
+p_aktiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_llama_multi %>% plot_pr_double_curve_multi("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_llama_multi %>% plot_pr_double_curve_multi("GuV", x_stuff = TRUE)
+
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model, " with ", method))
+```
+
+## Table extraction
+
+```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=16, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs", cache=cache_large_figures}
+for (i in 1:4) {
+  real_table_extraction_llm_shap_plot[[i]] <- real_table_extraction_llm_shap_plot[[i]] + plot_layout(tag_level = 'new')
+}
+  
+real_table_extraction_llm_shap_plot + plot_annotation(tag_levels = c('A', '1'), tag_sep = '.') +
+  plot_annotation(
+  title = 'The surprising truth about mtcars',
+  subtitle = 'These 3 plots will reveal yet-untold secrets about our beloved data-set',
+  caption = 'Disclaimer: None of these plots are insightful'
+) & theme(plot.title = element_text(size = 22))
+```
+
+```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach", cache=cache_large_figures}
+synth_table_extraction_regex_shap_plot
+```
+
+```{r compare-effect-of-respecting-units-on-overall-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_total), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_total), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r compare-effect-of-respecting-units-on-numeric-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_numeric), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = percentage_correct_numeric), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r compare-effect-of-respecting-units-on-NA-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, fig.cap="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+df_real_table_extraction_synth_respect_units %>% 
+  ggplot() +
+  geom_boxplot(aes(x = 1, fill=respect_units, y = NA_F1), alpha = .3) +
+  geom_jitter(
+    data = . %>% filter(n_col_T_EUR > 0), 
+    aes(x = 1, group=respect_units, color = factor(n_col_T_EUR), y = NA_F1), 
+    height = 0, alpha = .5, width = 0.3
+    ) +
+  scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model+respect_units) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+\setAELandscapeLayout
+\stopthumb
+
+```{r table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables", cache=cache_large_figures}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_total_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables", cache=cache_large_figures}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables", cache=cache_large_figures}
+df_overview %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the overall extraction performance depending on the condition if examples from the same company can be used.", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds")), cache=cache_large_figures}
+model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-5-nano", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
+
+df_temp <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
+  filter(
+    # str_detect(filepath, "Statistik"), 
+    method_family == "top_n_rag_examples",
+    n_examples != 2,
+    ) %>% 
+  filter(model %in% model_selection) %>%
+  mutate(
+    model = factor(model, levels = model_selection),
+    model_family = factor(model_family),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples))),
+    examples_from_same_company = !out_of_company
+  )
+
+p1 <- df_temp %>% filter(!str_detect(model_family, "Qwen"), model_family != "microsoft", model_family != "tiiuae") %>% ggplot() +
+  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family)) +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
+  # geom_jitter(
+  #   aes(x = examples_from_same_company, y = percentage_correct_total),
+  #   shape = 4, height = 0.005, alpha = .5
+  #   ) +
+  # scale_x_discrete(guide = guide_axis(angle = 30)) +
+  scale_fill_discrete(guide = "none", drop = FALSE) +
+  facet_nested(method_family + n_examples ~ model_family + model) +
+  theme(
+    legend.position = "bottom",
+    # axis.title.x = element_blank()
+  ) +
+  coord_cartesian(ylim = c(0, 1))
+
+p2 <- df_temp %>% filter(
+  str_detect(model_family, "Qwen") | model_family == "microsoft" | model_family == "tiiuae") %>% ggplot() +
+  geom_boxplot(aes(x = examples_from_same_company, y = percentage_correct_total, fill = model_family), show.legend = T) +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
+  # geom_jitter(
+  #   aes(x = examples_from_same_company, y = percentage_correct_total),
+  #   shape = 4, height = 0.005, alpha = .5
+  #   ) +
+  # scale_x_discrete(guide = guide_axis(angle = 30)) +
+  scale_fill_discrete(drop = FALSE) +
+  facet_nested(method_family + n_examples ~ model_family + model) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  coord_cartesian(ylim = c(0, 1))
+
+p1 /
+  p2
+```
+
+```{r comparing-table-extraction-performance-among-real-and-synth-aktiva-data, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Comparing the table extraction performance among real and synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% mutate(target_data = "synth") %>% 
+  bind_rows(
+    df_overview %>% filter(model %in% df_overview_synth$model) %>% 
+      mutate(
+        target_data = "real", 
+        n_examples = factor(
+          n_examples, 
+          levels = levels(df_overview_synth$n_examples), 
+          ordered = TRUE
+          )
+        ) %>% select(-request_tokens)
+    ) %>% filter(as.numeric(n_examples) != 1) %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = target_data, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ model_family+model) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+### Synthetic tables
+
+```{r synth-table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_total_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r synth-table-extraction-llm-performance-numeric-overview, echo=echo_flag, warning=warning_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_num_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r synth-table-extraction-llm-f1-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, fig.cap="F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
+df_overview_synth %>% 
+  ggplot() +
+  geom_hline(yintercept = synth_table_extraction_regex_NA_F1_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+### Real tables
+
+#### OpenAI models
+
+```{r table-extraction-llm-performance-total-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=10, fig.cap="Comparing the percentage of correct predictions overall for OpenAi's LLMs with some Qwen 3 models"}
+df_overview_gpt %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_total_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_total, fill = model_family)) +
+  # geom_jitter(aes(x = model, y = percentage_correct_total)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    axis.title.x = element_blank()
+  )
+```
+
+```{r table-extraction-llm-performance-numeric-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=10, fig.cap="Comparing the percentage of correct numeric predictions for OpenAi's LLMs with some Qwen 3 models"}
+df_overview_gpt %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_num_performance_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = percentage_correct_numeric, fill = model_family)) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    axis.title.x = element_blank()
+  )
+```
+
+```{r table-extraction-llm-f1-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="90%", out.extra='keepaspectratio', fig.height=10, , fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values."}
+df_overview_gpt %>% 
+  mutate(NA_F1 = if_else(is.na(NA_F1), 0, NA_F1)) %>% 
+  ggplot() +
+  geom_hline(yintercept = real_table_extraction_regex_NA_F1_median, linetype = "dashed") +
+  geom_boxplot(aes(x = model, y = NA_F1, fill = model_family)) +
+  geom_jitter(data = df_overview_gpt %>% filter(is.na(NA_F1)), aes(x = model, y = 0), height = 0, color = "green", alpha = .5, shape = 4) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family + n_examples ~ .) +
+  theme(
+    axis.title.x = element_blank()
+  )
+```
+### Hybrid approach
+
+```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, fig.cap="Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-contect learning"}
+bind_rows(
+  df_real_table_extraction_synth %>% mutate(context = "synth"), 
+  df_real_table_extraction %>% mutate(context = "real")
+  ) %>% 
+  filter(model %in% best_models_with_examples$model) %>% 
+  filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  mutate(
+    # model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(fill=context, y = percentage_correct_total), alpha = .5) +
+  # scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model)
+```
+
+
+# Layout testing
+
+\setAEPortraitLayout
+
+12sdgsdgj
+
+\setASLandscapeLayout
+
+Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape Landscape
+
+\setDefaultLayout
+\continuethumb
+
+Hello

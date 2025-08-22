@@ -12,7 +12,6 @@ json_files_table_extraction_llm <- list.files(
   .[!grepl("synth", .)]
 
 meta_list_llm <- list()
-
 error_list <- c()
 
 # Loop through each .json file
@@ -32,7 +31,7 @@ for (file in json_files_table_extraction_llm) {
   json_data <- fromJSON(paste(file_content, collapse = "\n"))
   
   name_split = (basename(file) %>% str_split("__"))[[1]]
-  if (str_detect(name_split[1], "gpt-oss")) next
+  # if (str_detect(name_split[1], "gpt-oss")) next
   method_index = which(str_starts((basename(file) %>% str_split("__"))[[1]], "loop"))-1
   # print(name_split)
   
@@ -43,6 +42,14 @@ for (file in json_files_table_extraction_llm) {
     next
   }
   
+  # for (idx in 1:nrow(results)) {
+  #   print(idx)
+  #   # try()
+  #   fromJSON(results$df_joined[[idx]])
+  # }
+  # 
+  # results$df_joined[[16]]
+  
   results <-  results %>% rowwise() %>%  
     mutate(
       model = name_split[1], 
@@ -51,7 +58,7 @@ for (file in json_files_table_extraction_llm) {
       out_of_company = if_else(str_detect(method, "rag"), str_detect(basename(file), "out_of_sample") == TRUE, NA),
       method_family = str_replace(str_replace(method, '\\d+', 'n'), '_out_of_sample', ''),
       loop = as.numeric((basename(file) %>% str_match("loop_(.)(_queued)?\\.json"))[2]),
-      predictions = list(fromJSON(df_joined) %>% as_tibble()),
+      predictions = list(try(fromJSON(df_joined)) %>% as_tibble()),
       request_tokens = list(json_data$request_tokens),
       runtime = json_data$runtime
     ) %>% select(-df_joined)
@@ -75,6 +82,7 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
   ) %>% mutate(
     model = str_replace(model, "_vllm", ""),
+    method = str_replace(method, '_out_of_sample', ''),
     model_family = sub("_.*", "", model),
     model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
     model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
@@ -90,73 +98,6 @@ df <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) %>%
 
 df %>%
   saveRDS("data_storage/real_table_extraction_extended_llm.rds")
-
-# # with NAs
-# extract_wrong_values <- function(df) {
-#   df %>% mutate(
-#     mistake_year = (year_truth != year_result) | (is.na(year_truth) & !is.na(year_result)) | (is.na(year_result) & !is.na(year_truth)),
-#     mistake_year = if_else(is.na(mistake_year), FALSE, mistake_year),
-#     mistake_previous_year =(previous_year_truth != previous_year_result) | (is.na(previous_year_truth) & !is.na(previous_year_result)) | (is.na(previous_year_result) & !is.na(previous_year_truth)),
-#     mistake_previous_year = if_else(is.na(mistake_previous_year), FALSE, mistake_previous_year)
-#   ) %>% select(
-#     year_truth, year_result, 
-#     previous_year_truth, previous_year_result,
-#     mistake_year, mistake_previous_year
-#   ) %>% 
-#     filter(mistake_year | mistake_previous_year)  
-# }
-# 
-# # only floats
-# extract_wrong_floats <- function(df) {
-#   df %>% mutate(
-#     mistake_year = (year_truth != year_result),
-#     mistake_previous_year =(previous_year_truth != previous_year_result)
-#   ) %>% select(
-#     year_truth, year_result, 
-#     previous_year_truth, previous_year_result,
-#     mistake_year, mistake_previous_year
-#   ) %>% 
-#     filter(mistake_year | mistake_previous_year)
-# }
-# 
-# relative_float_diff <- df %>% 
-#   mutate(wrong_floats = map(predictions, extract_wrong_floats)) %>%
-#   select(filepath, wrong_floats, model, method) %>% 
-#   rowwise() %>% mutate(n_wrong_floats = nrow(wrong_floats)) %>% 
-#   filter(n_wrong_floats>0) %>% 
-#   unnest(wrong_floats) %>% 
-#   mutate(
-#     ratio_this_year = year_result/year_truth,
-#     ratio_previous_year = previous_year_result/previous_year_truth
-#   ) %>% pivot_longer(
-#     cols = c(ratio_this_year, ratio_previous_year),
-#     names_to = "year_type",
-#     values_to = "ratio",
-#     names_prefix = "ratio_"
-#   ) %>% unique()
-# 
-# # relative_float_diff %>% saveRDS("data_storage/relative_float_diff_with_mistakes.rds")
-# 
-# # checked (log 10 ratio and differing truth log 10)
-# integer_multiplier <- relative_float_diff %>% 
-#   filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1, 
-#          as.integer(log(year_truth, base = 10)) != as.integer(log(previous_year_truth, base = 10))
-#   ) %>% unique()
-# 
-# # checked (log 10 ratio)
-# integer_multiplier <- relative_float_diff %>% 
-#   filter(log(ratio, base = 10) == as.integer(log(ratio, base = 10)), ratio != 1
-#   ) %>% unique()
-# 
-# # unchecked (random ratio)
-# integer_multiplier <- relative_float_diff %>% 
-#   filter(!(log(ratio, base = 10) == as.integer(log(ratio, base = 10)))
-#   ) %>% unique()
-# 
-# 
-# paths <- dir("../manual_download/", full.names=TRUE, recursive=TRUE)
-# n_mistakes_identified <- tibble(change_date = file.info(paths)$ctime) %>% 
-#   filter(change_date > as.POSIXct("2025-07-23")) %>% nrow()
 
 #### Synth Context ####
 
@@ -231,6 +172,7 @@ df_synth <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) 
     percentage_correct_total = (correct_numeric + NA_true_positive)/total_entries
   ) %>% mutate(
     model = str_replace(model, "_vllm", ""),
+    method = str_replace(method, '_out_of_sample', ''),
     model_family = sub("_.*", "", model),
     model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
     model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
@@ -334,70 +276,13 @@ df_azure <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values")) 
   ) %>% mutate(
     model_family = "chat-gpt"
   ) %>% mutate(
-    model = str_replace(model, "_vllm", "")
+    model = str_replace(model, "_vllm", ""),
+    method = str_replace(method, '_out_of_sample', '')
   ) %>% mutate(
     n_examples = as.numeric(n_examples),
     n_examples = if_else(method_family == "zero_shot", 0, n_examples),
     n_examples = if_else(method_family == "static_example", 1, n_examples)
   )
-
-# calc_metrics_all <- function(df) {
-#   # browser()
-#   df %>% nest(year = c(year_truth, year_result), previous_year = c(previous_year_truth, previous_year_result)) %>% pivot_longer(
-#     cols = c(year, previous_year)
-#   ) %>% unnest_wider(value) %>% mutate(
-#     truth = if_else(name == "year", year_truth, previous_year_truth),
-#     result = if_else(name == "year", year_result, previous_year_result)
-#   ) %>% select(-contains("year")) %>% transmute(
-#     true_positive = is.na(truth) & is.na(result),
-#     true_negative = !is.na(truth) & !is.na(result),
-#     false_positive = !is.na(truth) & is.na(result),
-#     false_negative = is.na(truth) & !is.na(result),
-#     both = `_merge` == "both",
-#     numeric = !is.na(truth),
-#     numeric_correct = truth == result,
-#     n_row = 1
-#   ) %>% summarise_all(~sum(., na.rm=TRUE)) %>% mutate(
-#     new_recall = if_else(true_positive+false_negative>0, (true_positive/(true_positive+false_negative)), 0),
-#     new_precision = if_else(true_positive+false_positive>0, (true_positive/(true_positive+false_positive)), 0),
-#     new_F1 = if_else((new_precision + new_recall) > 0, (2 * new_precision * new_recall)/(new_precision + new_recall), 0),
-#     numeric_incorrect = numeric - numeric_correct,
-#     new_percentage_correct_numeric = numeric_correct/(numeric_correct + numeric_incorrect),
-#     new_percentage_correct_total = (numeric_correct + true_positive)/n_row
-#   )
-#   # df %>% filter(`_merge` == "both") %>% nrow()
-# }
-# 
-# df_temp <- df_azure %>% filter(model == "gpt-4.1-nano_azure") %>% 
-#   mutate(
-#   new_values = map(predictions, calc_metrics_all),
-#   .before = 1
-# ) %>% unnest_wider(new_values) %>% select(method,
-#   NA_recall, new_recall, NA_precision, new_precision, NA_F1, new_F1, both,
-#   percentage_correct_numeric, new_percentage_correct_numeric,
-#   percentage_correct_total, new_percentage_correct_total, numeric
-#   )
-# 
-# df_temp %>% pull(both) %>% hist()
-# 
-# df_null <- df_azure %>% filter(model == "gpt-4.1-nano_azure") %>% pull(predictions) %>% .[[1]] %>% mutate(
-#   year_truth = NA,
-#   previous_year_truth = NA
-# )
-# 
-# null_list <- list()
-# 
-# for (i in 1:29) {
-#   df_dummy <- df_null
-#   df_dummy$year_truth = c(rep(1, i), rep(NA, 29-i))
-#   df_dummy$previous_year_truth = c(rep(1, i), rep(NA, 29-i))
-#   null_list[[i]] <- df_dummy %>% calc_metrics_all()
-# }
-# 
-# bind_rows(null_list) %>% saveRDS("data_storage/null_scores.rds")
-# bind_rows(null_list) %>% pivot_longer(c(new_percentage_correct_total, new_percentage_correct_numeric, new_F1)) %>% 
-#   ggplot() +
-#   geom_line(aes(x = numeric, y = value, color = name))
 
 df_azure %>% 
   # filter(model %in% c(

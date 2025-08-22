@@ -116,6 +116,20 @@ h5, h6, h5+p, h6+p {
   height: 1150px;
 }
 
+div.sourceCode span {
+  text-wrap: auto;
+}
+
+div.datatables {
+  margin-bottom: 2em;
+}
+
+div.paragraph-start {
+    margin-block: 0.85em;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
 /* Dropdown filter container */
 /* .filter-container {
   margin-bottom: 10px;

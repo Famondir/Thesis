@@ -100,7 +100,7 @@ shap %>% sv_dependence("header_span")
 
 #### real tables lmm ####
 
-results <- readRDS("data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
 
 ##### numeric #####
 

@@ -1,5 +1,5 @@
 # References {-}
-\ChapFrame
+\addthumb{References and glossary}{\Huge{\textbf{8}}}{white}{gray}
 
 <div id="refs"></div>
 

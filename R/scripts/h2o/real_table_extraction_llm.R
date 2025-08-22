@@ -21,7 +21,7 @@ table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table
     filepath = paste0("/pvc/benchmark_truth/real_tables_extended/", company, "__", filename)
   ) %>% as_tibble()
 
-norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
   mutate(
     model_name = model_name %>% str_replace("/", "_")
   ) %>% filter(!str_detect(filename, "multi"))
@@ -40,15 +40,15 @@ df_characteristics <- df %>% rowwise() %>% mutate(
   #   model, method,
   #   mean_tokens
   # ) %>% 
-  left_join(table_characteristics, by = "filepath") %>% ungroup()
-
-df_characteristics <- df_characteristics %>% filter(n_examples <= 5) %>% 
+  left_join(table_characteristics, by = "filepath") %>% 
+  ungroup() %>% filter(n_examples <= 5) %>% 
   left_join(
     norm_factors_few_examples %>% select(model_name, parameter_count), 
     by = c("model" = "model_name")
   ) %>% mutate(
     n_columns = as.factor(n_columns)
-  )
+  )  %>% 
+  filter(!str_detect(model, "oss"))
 
 #### h2o final modelin ####
 

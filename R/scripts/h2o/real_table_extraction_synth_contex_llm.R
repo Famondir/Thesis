@@ -21,13 +21,13 @@ table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table
     filepath = paste0("/pvc/benchmark_truth/real_tables_extended/", company, "__", filename)
   ) %>% as_tibble()
 
-norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
   mutate(
     model_name = model_name %>% str_replace("/", "_")
   ) %>% filter(str_detect(filename, "multi"))
 norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
-norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
-  add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
+# norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
+#   add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
 
 df_characteristics <- df %>% rowwise() %>% mutate(
   mean_tokens = mean(request_tokens[[1]])
@@ -40,9 +40,8 @@ df_characteristics <- df %>% rowwise() %>% mutate(
   #   model, method,
   #   mean_tokens
   # ) %>% 
-  left_join(table_characteristics, by = "filepath") %>% ungroup()
-
-df_characteristics <- df_characteristics %>% filter(n_examples <= 5) %>% 
+  left_join(table_characteristics, by = "filepath") %>% 
+  ungroup() %>% filter(n_examples <= 5) %>% 
   left_join(
     norm_factors_few_examples %>% select(model_name, parameter_count), 
     by = c("model" = "model_name")
