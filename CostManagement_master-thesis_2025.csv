@@ -1,9 +1,16 @@
-Meter,Cost,Currency
-gpt 4.1 Inp glbl Tokens,3.531417834,EUR
-gpt 4.1 Outp glbl Tokens,2.705630338,EUR
-gpt 4.1 mini Inp glbl Tokens,1.227614964,EUR
-gpt 4.1 mini Outp glbl Tokens,0.70812026,EUR
-gpt 4.1 nano Inp glbl Tokens,0.314838999,EUR
-gpt 4.1 nano Outp glbl Tokens,0.146605056,EUR
-gpt-oss-120B Outp glbl Tokens,0.854748362,EUR
-gpt-oss-120B Inp glbl Tokens,0.416422651,EUR
+Model,Meter,Cost,Currency
+gpt 4.1 Inp glbl Tokens,Input,16.3591338685181,EUR
+gpt 4.1 Outp glbl Tokens,Output,10.3513438923845,EUR
+GPT 5 Mini outpt Glbl 1M Tokens,Output,10.2789429377305,EUR
+GPT 5 Nano outpt Glbl 1M Tokens,Output,6.98914471685832,EUR
+gpt 4.1 mini Inp glbl Tokens,Input,3.46624118029941,EUR
+gpt 4.1 mini Outp glbl Tokens,Output,2.01625411152094,EUR
+GPT 5 Mini Inpt Glbl 1M Tokens,Input,1.83377977869386,EUR
+gpt 4.1 cached Inp glbl Tokens,Input,1.71029550878716,EUR
+GPT 5 Nano Inpt Glbl 1M Tokens,Input,0.389518941201996,EUR
+gpt 4.1 mini cached Inp glbl Tokens,Input,0.285604686482968,EUR
+GPT 5 Mini cchd Inpt Glbl 1M Tokens,Input,0.10287767411586,EUR
+gpt 4.1 nano Inp glbl Tokens,Input,0.073275851594706,EUR
+gpt 4.1 nano Outp glbl Tokens,Output,0.0591500108483402,EUR
+GPT 5 Nano cchd Inpt Glbl 1M Tokens,Input,0.019049199392493,EUR
+gpt 4.1 nano cached Inp glbl Tokens,Input,0.0119612931221523,EUR

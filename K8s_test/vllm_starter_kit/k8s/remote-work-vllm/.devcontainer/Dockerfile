@@ -1,8 +1,8 @@
 # FROM ubuntu:24.04
 # FROM vllm/vllm-openai:latest
 # FROM vllm/vllm-openai:v0.9.1
-FROM vllm/vllm-openai:v0.10.0
-# FROM vllm/vllm-openai:gptoss
+# FROM vllm/vllm-openai:v0.10.0
+FROM vllm/vllm-openai:gptoss
 
 ENV TERM=xterm
 

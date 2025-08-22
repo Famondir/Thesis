@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: llama4-maverick-402b-multi-job-final-few-examples
+    name: llama4-maverick-402b-multi-job-final-few-examples-fp16
 spec:
   backoffLimit: 0
   template:
@@ -11,10 +11,10 @@ spec:
     spec:
       containers:
       - name: llama4-maverick-402b-multi-job-final-few-examples
-        image: registry.datexis.com/s92818/remote-work-vllm:latest
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1:latest
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --batched --model_name meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 --n_loops 1 --tensor_parallel_size 8"
+          "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier four_classes --batched --model_name meta-llama/Llama-4-Maverick-17B-128E-Instruct --n_loops 1 --tensor_parallel_size 8"
         ]
         resources:
           requests:

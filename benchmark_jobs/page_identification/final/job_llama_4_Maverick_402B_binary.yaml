@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: llama4-maverick-402b-binary-job-final-few-examples
-        image: registry.datexis.com/s92818/remote-work-vllm:latest
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1:latest
         command: ["/bin/sh", "-c"]
         args: [
           "python3 -u /pvc/thesis_benchmarks/final_page_identification_benchmark_vllm.py --classifier binary --batched --model_name meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 --n_loops 1 --tensor_parallel_size 8"
