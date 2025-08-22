@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: mistral-2410-8b-real-table-extraction-synth-context-final-job2
+    name: gemma-27b-real-table-extraction-synth-context-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: mistral-2410-8b-real-table-extraction-synth-context-final-job
+        app: gemma-27b-table-extraction-vllm-batched-jobreal-job
     spec:
-      # priorityClassName: unimportant
+      priorityClassName: unimportant
       containers:
-      - name: mistral-2410-8b-real-table-extraction-synth-context-final-job
-        image: registry.datexis.com/s92818/remote-work-vllm-0-10-0:latest
+      - name: gemma-27b-table-extraction-vllm-batched-jobreal--job
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_extended_with_synth_context_benchmark_vllm.py --model_name mistralai/Ministral-8B-Instruct-2410 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_with_synth_context_benchmark_vllm.py --model_name google/gemma-3-27b-it --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
         ]
         resources:
           requests:
@@ -45,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: a100
+        gpu: h200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:

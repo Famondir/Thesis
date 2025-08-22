@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: gpt-oss-20b-real-table-extraction-final-job2
+    name: gpt-oss-20b-real-table-extraction-final-job3
 spec:
   backoffLimit: 0
   template:
@@ -21,9 +21,9 @@ spec:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "2"
+              nvidia.com/gpu: "1"
           limits:
-            nvidia.com/gpu: "2"
+            nvidia.com/gpu: "1"
             memory: 128Gi
             cpu: "32"
         env:

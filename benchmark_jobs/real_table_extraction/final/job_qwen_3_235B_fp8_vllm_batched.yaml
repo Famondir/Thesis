@@ -1,29 +1,29 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: mistral-2410-8b-real-table-extraction-synth-context-final-job2
+    name: qwen3-real-235b-fp8-table-extraction-final-job
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: mistral-2410-8b-real-table-extraction-synth-context-final-job
+        app: qwen3-real-235b-table-extraction-vllm-batched-job
     spec:
-      # priorityClassName: unimportant
+      priorityClassName: unimportant
       containers:
-      - name: mistral-2410-8b-real-table-extraction-synth-context-final-job
-        image: registry.datexis.com/s92818/remote-work-vllm-0-10-0:latest
+      - name: qwen3-real-235b-table-extraction-vllm-batched-job
+        image: registry.datexis.com/s92818/remote-work-vllm-latest-working
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_extended_with_synth_context_benchmark_vllm.py --model_name mistralai/Ministral-8B-Instruct-2410 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_vllm.py --model_name Qwen/Qwen3-235B-A22B-Instruct-2507-FP8 --no_think --n_loops 1 --batched --tensor_parallel_size 4"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "2"
+              nvidia.com/gpu: "4"
           limits:
-            nvidia.com/gpu: "2"
+            nvidia.com/gpu: "4"
             memory: 128Gi
             cpu: "32"
         env:
@@ -45,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: a100
+        gpu: h200
       imagePullSecrets:
         - name: private-registry-auth
       volumes:

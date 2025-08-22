@@ -45,7 +45,7 @@ spec:
             mountPath: /dev/shm
       nodeSelector:
         # kubernetes.io/hostname: cl-worker29
-        gpu: h200
+        gpu: h100
       imagePullSecrets:
         - name: private-registry-auth
       volumes:

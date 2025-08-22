@@ -1,29 +1,28 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: mistral-2410-8b-real-table-extraction-synth-context-final-job2
+    name: gpt-oss-120b-azure-real-table-extraction-final-job2
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: mistral-2410-8b-real-table-extraction-synth-context-final-job
+        app: gpt-oss-120b-real-table-extraction-final-job
     spec:
-      # priorityClassName: unimportant
       containers:
-      - name: mistral-2410-8b-real-table-extraction-synth-context-final-job
-        image: registry.datexis.com/s92818/remote-work-vllm-0-10-0:latest
+      - name: gpt-oss-120b-real-table-extraction-final-job
+        image: registry.datexis.com/s92818/remote-work-vllm-latest-working
         command: ["/bin/sh", "-c"]
         args: [
-          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_extended_with_synth_context_benchmark_vllm.py --model_name mistralai/Ministral-8B-Instruct-2410 --combine_system_prompts --n_loops 1 --batched --tensor_parallel_size 2"
+          "python3 -u /pvc/thesis_benchmarks/final_real_table_extraction_benchmark_openai.py --model_name gpt-oss-120b --n_loops 1"
         ]
         resources:
           requests:
               cpu: "2"
               memory: "32Gi"
-              nvidia.com/gpu: "2"
+              nvidia.com/gpu: "0"
           limits:
-            nvidia.com/gpu: "2"
+            nvidia.com/gpu: "0"
             memory: 128Gi
             cpu: "32"
         env:
