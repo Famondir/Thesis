@@ -19,6 +19,8 @@
 .page-inner div.datatables,
 .page-inner div.references,
 .page-inner div.sourceCode,
+.page-inner div.paragraph-start,
+.page-inner div.references,
 .page-inner table {
   max-width: 800px;
   margin-left: auto;
@@ -126,8 +128,8 @@ div.datatables {
 
 div.paragraph-start {
     margin-block: 0.85em;
-    margin-left: 3px;
-    margin-right: 3px;
+    /* margin-left: 3px;
+    margin-right: 3px; */
 }
 
 /* Dropdown filter container */
@@ -169,4 +171,11 @@ div.paragraph-start {
   font-style: italic;
   color: #555;
   font-size: 12px;
+}
+
+#lightbox-image {
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
 }

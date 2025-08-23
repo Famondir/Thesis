@@ -36,6 +36,7 @@ The random line breaks result in some missed row names which is reflected by the
 -   new lines / splitted lines
 -   test synthetic hypothesis with pymupdf extract
 -   2.4 % wrong gold standard creation
+-   confidence intervals based on company (know which formats are tricky)
 
 #### Regex baseline
 
@@ -58,7 +59,7 @@ For humans: Easily identifiable if page has a big table with numbers but not so 
 -   fine-tuning
 -   using something smaller (e.g. LSTMs) instead LLMs
 -   building application, UX design (ref Ambacher 2024)
--   table extraction (either VLLMs or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?)
+-   table extraction (either VLLMs or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders
 
 in company document next / previous year more helpful than years further away?
 

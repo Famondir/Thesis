@@ -1,3 +1,6 @@
+
+#####
+
 df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_extended_synth.rds") %>% 
   filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
   mutate(model = gsub("^[^_]+_", "", model))

@@ -64,7 +64,9 @@ shap %>% sv_importance(show_numbers = TRUE)
 shap %>% sv_importance(kind = "beeswarm")
 
 shap %>% sv_dependence("n_columns", color_var = "sum_same_line")
-# shap %>% sv_dependence("vis_seperated_cols")
+shap %>% sv_dependence("vis_seperated_cols")
+shap %>% sv_dependence("sum_same_line", "T_in_previous_year")
+shap %>% sv_dependence("T_in_previous_year")
 
 ##### binomial #####
 
@@ -212,11 +214,12 @@ shap %>% sv_importance(kind = "beeswarm", max_display = 25)
 
 shap %>% styled_waterfall(row_id = idx_lowest[1])
 shap %>% sv_dependence("parameter_count", color_var = "model_family")
+shap %>% sv_dependence("model_family", color_var = "parameter_count")
 shap %>% sv_dependence("method_family")
 
 #### real tables lmm synth context ####
 
-results <- readRDS("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
 
 ##### numeric #####
 
@@ -236,6 +239,9 @@ shap %>% sv_force(row_id = idx_lowest[1])
 shap %>% sv_dependence(colnames(.$X))
 shap %>% sv_importance(show_numbers = TRUE)
 shap %>% sv_importance(kind = "beeswarm")
+
+shap %>% sv_dependence("method_family")
+shap %>% sv_dependence("n_examples")
 
 ##### NA_F1 #####
 
@@ -332,6 +338,7 @@ shap %>% sv_importance(kind = "beeswarm")
 
 shap %>% styled_waterfall(row_id = idx_lowest[1])
 shap %>% sv_dependence("extraction_backend")
+shap %>% sv_dependence(colnames(.$X), "extraction_backend")
 # shap %>% sv_dependence("thin")
 shap %>% sv_dependence("header_span", color_var = "extraction_backend")
 
@@ -409,8 +416,10 @@ shap %>% sv_dependence("method_family")
 shap %>% sv_importance(show_numbers = TRUE)
 shap %>% sv_importance(kind = "beeswarm", max_display = 30)
 
+shap %>% sv_dependence("year_as", color_var = "method_family")
 shap %>% sv_dependence(colnames(.$X), color_var = "input_format")
 shap %>% sv_dependence(colnames(.$X), color_var = "respect_units")
+shap %>% sv_dependence("model_family", color_var = "input_format")
 
 ##### NA_F1 #####
 

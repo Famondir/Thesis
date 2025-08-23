@@ -383,16 +383,27 @@ div.csl-indent {
 <li class="chapter" data-level="10.1.3" data-path="figures.html"><a href="figures.html#classification-2"><i class="fa fa-check"></i><b>10.1.3</b> Classification</a>
 <ul>
 <li class="chapter" data-level="10.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>10.1.3.1</b> Binary</a></li>
+<li class="chapter" data-level="10.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-1"><i class="fa fa-check"></i><b>10.1.3.2</b> Multi-class classification</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="10.2" data-path="figures.html"><a href="figures.html#table-extraction-4"><i class="fa fa-check"></i><b>10.2</b> Table extraction</a>
 <ul>
-<li class="chapter" data-level="10.2.1" data-path="figures.html"><a href="figures.html#synthetic-tables"><i class="fa fa-check"></i><b>10.2.1</b> Synthetic tables</a></li>
-<li class="chapter" data-level="10.2.2" data-path="figures.html"><a href="figures.html#real-tables"><i class="fa fa-check"></i><b>10.2.2</b> Real tables</a>
+<li class="chapter" data-level="10.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>10.2.1</b> Regex approach</a>
 <ul>
-<li class="chapter" data-level="10.2.2.1" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>10.2.2.1</b> OpenAI models</a></li>
+<li class="chapter" data-level="10.2.1.1" data-path="figures.html"><a href="figures.html#real-tables"><i class="fa fa-check"></i><b>10.2.1.1</b> Real tables</a></li>
+<li class="chapter" data-level="10.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables"><i class="fa fa-check"></i><b>10.2.1.2</b> Synthetic tables</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2.3" data-path="figures.html"><a href="figures.html#hybrid-approach-1"><i class="fa fa-check"></i><b>10.2.3</b> Hybrid approach</a></li>
+<li class="chapter" data-level="10.2.2" data-path="figures.html"><a href="figures.html#real-tables-1"><i class="fa fa-check"></i><b>10.2.2</b> Real tables</a>
+<ul>
+<li class="chapter" data-level="10.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>10.2.2.1</b> Examples from same company</a></li>
+<li class="chapter" data-level="10.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>10.2.2.2</b> OpenAI models</a></li>
+<li class="chapter" data-level="10.2.2.3" data-path="figures.html"><a href="figures.html#hypotheses-5"><i class="fa fa-check"></i><b>10.2.2.3</b> Hypotheses</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-1"><i class="fa fa-check"></i><b>10.2.3</b> Synthetic tables</a>
+<ul>
+<li class="chapter" data-level="10.2.3.1" data-path="figures.html"><a href="figures.html#confidence-5"><i class="fa fa-check"></i><b>10.2.3.1</b> Confidence</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-1"><i class="fa fa-check"></i><b>10.2.4</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="11" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>11</b> Layout testing</a></li>
@@ -443,6 +454,7 @@ div.csl-indent {
 <li>new lines / splitted lines</li>
 <li>test synthetic hypothesis with pymupdf extract</li>
 <li>2.4 % wrong gold standard creation</li>
+<li>confidence intervals based on company (know which formats are tricky)</li>
 </ul>
 <div id="regex-baseline" class="section level4 hasAnchor" number="6.2.1.1">
 <h4><span class="header-section-number">6.2.1.1</span> Regex baseline<a href="discussion.html#regex-baseline" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -470,7 +482,7 @@ div.csl-indent {
 <li>fine-tuning</li>
 <li>using something smaller (e.g. LSTMs) instead LLMs</li>
 <li>building application, UX design (ref Ambacher 2024)</li>
-<li>table extraction (either VLLMs or classic approaches &lt;– tried tabula but was not successful (because of missing visual traits)?)</li>
+<li>table extraction (either VLLMs or classic approaches &lt;– tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders</li>
 </ul>
 <p>in company document next / previous year more helpful than years further away?</p>
 </div>
@@ -521,8 +533,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add an image element to the lightbox
   const lightboxImage = document.createElement("img");
   lightboxImage.id = "lightbox-image";
-  lightboxImage.style.maxWidth = "90%";
-  lightboxImage.style.maxHeight = "90%";
+  // lightboxImage.style.maxWidth = "90%";
+  // lightboxImage.style.maxHeight = "90%";
   lightbox.appendChild(lightboxImage);
 
   // Close lightbox on click

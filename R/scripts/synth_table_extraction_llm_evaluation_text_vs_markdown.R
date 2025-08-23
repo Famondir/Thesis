@@ -1,6 +1,204 @@
 library(tidyverse)
 source("report_misc/helper_functions.R")
 
+#### synth table confidence qwen3 235 b ####
+
+df_synth_table_extraction <- readRDS("data_storage/synth_table_extraction_llm.rds") %>%
+  # sample_frac(size = .05) %>% 
+  filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
+  mutate(
+    model = gsub("^[^_]+_", "", model)
+  )
+
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_synth_table_extraction.csv") %>% 
+  mutate(
+    model_name = model_name %>% str_replace("/", "_")
+  )
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
+
+df_synth_table_extraction <- df_synth_table_extraction %>% left_join(
+  norm_factors_few_examples %>% mutate(model_name = gsub("^[^_]+_", "", model_name)) %>% select(model_name, parameter_count, normalization_factor),
+  by = c("model" = "model_name")
+) %>% mutate(
+  normalized_runtime = normalization_factor * runtime
+)
+
+confidence_vs_truth_synth_by_format <- df_synth_table_extraction %>% 
+  mutate(model = if_else(model == "Qwen3-235B-A22B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8", model)) %>% 
+  # filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B", "Qwen3-235B-A22B-Instruct-2507-FP8")) %>% 
+  group_by(method, model, loop) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1,
+    respect_units = !ignore_units
+  ) %>% group_by(respect_units, model, filepath, input_format) %>% 
+  # arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = FALSE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_intervals_synth_by_format <- confidence_vs_truth_synth_by_format %>% #rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, predicted_NA, model, respect_units, input_format) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(predicted_NA, model, respect_units, input_format) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  )
+
+confidence_intervals_synth_by_format %>%
+  ggplot() +
+  geom_col(aes(
+    x = conf_center, y = perc, 
+    color = chance_low, 
+    fill = chance_false_interval
+  ), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop = FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_nested(paste("respect units:", respect_units)+paste("predicted NA:", predicted_NA) ~ model+input_format)
+
+confidence_intervals_synth_by_format %>% saveRDS("data_storage/confidence_intervals_synth_by_format.rds")
+
+confidence_vs_truth_synth <- df_synth_table_extraction %>% 
+  mutate(model = if_else(model == "Qwen3-235B-A22B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8", model)) %>% 
+  # filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B", "Qwen3-235B-A22B-Instruct-2507-FP8")) %>% 
+  group_by(method, model, loop) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1,
+    respect_units = !ignore_units
+  ) %>% group_by(respect_units, model, filepath) %>% 
+  # arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = FALSE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_intervals_synth <- confidence_vs_truth_synth %>% #rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, predicted_NA, model, respect_units) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(predicted_NA, model, respect_units) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  )
+
+confidence_intervals_synth %>% saveRDS("data_storage/confidence_intervals_synth.rds")
+
+#### old ####
+
 df  <- readRDS("data_storage/synth_table_extraction_llm.rds")
 
 norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors.csv") %>% 

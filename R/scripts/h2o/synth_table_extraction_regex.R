@@ -47,7 +47,7 @@ df_characteristics <- df %>% mutate(
   ) %>%
   select(-multiplier) %>% 
   mutate(
-    n_columns = as.character(n_columns)
+    n_columns = as.character(as.numeric(n_columns)-1)
   ) %>% mutate(
     many_line_breaks = if_else(max_line_length == 50, TRUE, FALSE),
     log10_unit_multiplier = log10(unit_multiplier)

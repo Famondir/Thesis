@@ -24,7 +24,7 @@ table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table
 norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
   mutate(
     model_name = model_name %>% str_replace("/", "_")
-  ) %>% filter(str_detect(filename, "multi"))
+  ) # %>% filter(str_detect(filename, "multi"))
 norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
 # norm_factors_many_examples <- norm_factors %>% filter(!(str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml"))) %>% 
 #   add_column(n_examples = list(c(7,9,11,13), c(5))) %>% unnest(n_examples)
@@ -47,6 +47,8 @@ df_characteristics <- df %>% rowwise() %>% mutate(
     by = c("model" = "model_name")
   ) %>% mutate(
     respect_units = !ignore_units,
+  ) %>% mutate(
+    n_columns = as.factor(n_columns)
   )
 
 #### h2o final modeling ####

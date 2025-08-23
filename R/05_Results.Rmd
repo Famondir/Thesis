@@ -139,7 +139,7 @@ df_targets_no_ocr %>% render_table(
   )
 ```
 
-```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used.", results='asis'}
+```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used.", results='asis'}
 df_pages %>% group_by(company) %>% mutate(
   docs_per_company = n(), pages_per_company = sum(pages)
   ) %>% 
@@ -309,7 +309,7 @@ if (knitr::is_html_output()) {
 }
 ```
 
-```{r display-metrics-plot-regex-page-identification-details, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=8, out.width="100%", fig.cap="Comparing the performance among different companies."}
+```{r display-metrics-plot-regex-page-identification-details, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=8, out.width="100%", dev=std_dev, fig.cap="Comparing the performance among different companies."}
 metrics_by_company_and_type %>% 
     select(company, n_files, method, precision, recall, classification_type) %>%
     pivot_longer(cols=c(precision, recall), names_to = "metric") %>% 
@@ -401,7 +401,7 @@ checked in detail.]
 -   `r n_found_toc_200_lines` strings that should represent a table of
     contents among the first 200 lines.
 
-```{r page-identification-toc-histogram, echo=echo_flag, warning=warning_flag, message=message_flag, fig.width=8, fig.height=3, out.width="80%", fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
+```{r page-identification-toc-histogram, echo=echo_flag, warning=warning_flag, message=message_flag, fig.width=8, fig.height=3, out.width="80%", dev=std_dev, fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
 df_num_lines %>% 
   filter(filepath %in% df_targets_no_ocr$filepath) %>% # filter documents that would need ocr preprocessing
   ggplot() +
@@ -475,7 +475,7 @@ predicts the same end page for **Passiva** as for **Aktiva** in
 all approaches included the information, that **Aktiva** and **Passiva**
 are on separate pages.
 
-```{r page-identification-toc-analysis, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of found TOC and amount of correct and incorrect predicted page ranges"}
+```{r page-identification-toc-analysis, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing number of found TOC and amount of correct and incorrect predicted page ranges"}
 df_toc_benchmark %>% ggplot() +
   geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
   geom_text(
@@ -518,7 +518,7 @@ more successful, to explicit tell the \acr{LLM} that the liabilities
 table is often on the page, after the assets table.
 :::
 
-```{r page-identification-toc-analysis-next-page, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+```{r page-identification-toc-analysis-next-page, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
 next_page_df_toc_benchmark %>% ggplot() +
   geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
   geom_text(
@@ -602,7 +602,7 @@ mean_ranges %>%
   render_table(alignment="lrrrr", caption="Comparing the mean and median page range sizes.", ref = opts_current$get("label"))
 ```
 
-```{r page-identification-toc-range-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparint the predicted page range sizes. The red vertical line shows the mean and the green one shows the median of these sizes.", fig.height=4}
+```{r page-identification-toc-range-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparint the predicted page range sizes. The red vertical line shows the mean and the green one shows the median of these sizes.", fig.height=4}
 next_page_df_toc_benchmark %>% 
   # mutate(range = range-1) %>% 
   ggplot() +
@@ -620,7 +620,7 @@ A linear regression of the correlation between minimal page distance and
 logistic probability shows that is has a similar slope for all
 approaches and target types.
 
-```{r page-identification-toc-range-logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the minimal distance of the predicted page range to the actual page number overthe logprobs of the models response confidence.", fig.height=4}
+```{r page-identification-toc-range-logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the minimal distance of the predicted page range to the actual page number overthe logprobs of the models response confidence.", fig.height=4}
 next_page_df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
   distance_confidence_plot() +
   facet_grid(type~benchmark_type) +
@@ -656,7 +656,7 @@ one-dimensional working \acr{LLM}.
     line, while it is just mentiones once in the beginning of the
     markdown formatted tables.
 
-```{r page-identification-toc-mr-degration, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Showing the amount of correct and incorrect predicted page ranges (bars) and the percentage of correct predictions (black line)."}
+```{r page-identification-toc-mr-degration, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the amount of correct and incorrect predicted page ranges (bars) and the percentage of correct predictions (black line)."}
 df_toc_benchmark_mr_degration_next_page %>% 
   ggplot() +
   geom_col(aes(x = n_entries, y = value, fill = correct)) +
@@ -824,7 +824,7 @@ Thus, the relation between the parameter *n_examples* and the number of
 tokens to process is stronger for the *n_random_examples* and
 *n_rag_examples* strategies.
 
-```{r comparing-actual-number-of-in-context-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n-examples. The slope for the top-n-rag-examples strategy is the same for both approaches. The line for the strategies n-random-examples and n-rag-examples is equal within each approach."}
+```{r comparing-actual-number-of-in-context-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n-examples. The slope for the top-n-rag-examples strategy is the same for both approaches. The line for the strategies n-random-examples and n-rag-examples is equal within each approach."}
 df_classification_n_examples <- read_csv("../benchmark_truth/real_example_count.csv")
 
 df_classification_n_examples %>% 
@@ -964,7 +964,7 @@ number within.
     run five times indicating stable results. Running the experiments up
     to tree times in this very task indicate this as well.
 
-```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410."}
+```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410."}
 df_binary %>% filter(model == "Ministral-8B-Instruct-2410", loop < 3) %>% 
   filter(n_examples <= 5 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime/60, y = f1_score)) +
@@ -993,7 +993,7 @@ the *top_n_rag_example* strategy stays lower than the F1 score of the
 This is mainly caused by lower precision scores, probably because there
 are no contrasting examples provided.
 
-```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
+```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
 df_binary %>% left_join(df_classification_n_examples, by = c(
   "method_family" = "approach", 
   "n_examples" = "n_example", 
@@ -1101,7 +1101,7 @@ majority class, with not further described content and structure, as
     correct codified. This was not the only time, where a mistake in the
     gold truth was found, by examining potential \acr{LLM} mistakes.
 
-```{r confidence-match-plot-mistral-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Mistral-8B-Instruct-2410."}
+```{r confidence-match-plot-mistral-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Mistral-8B-Instruct-2410."}
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
@@ -1134,7 +1134,7 @@ This is different for models of most other model families. Figure
 even when it is wrong. The model shows perfect recall but its precision
 is worse than the precision of the Mistral model.
 
-```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct."}
+```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct."}
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
@@ -1277,7 +1277,7 @@ reaches the top right corner. The highest F1 score is found with a
 threshold value of .56. With a threshold value of 0.5 a very high recall
 is guaranteed and the F1 score is just a little lower.
 
-```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for the best performing model."}
+```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for the best performing model."}
 model <- "Ministral-8B-Instruct-2410"
 method <- "3_rag_examples"
 
@@ -1316,7 +1316,7 @@ For **GuV** this range includes 35 % of all predictions. The ranges that
 allow for 1 % of wrong classifications cover 57 % of all predictions at
 least.
 
-```{r table-identification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+```{r table-identification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
 confidence_vs_truth_binary <- df_binary %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B")) %>% 
   group_by(method, model) %>% mutate(
@@ -1339,7 +1339,7 @@ confidence_vs_truth_binary %>% ggplot() +
   facet_nested(~ model + classification_type)
 ```
 
-```{r table-identification-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals"}
+```{r table-identification-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals"}
 confidence_vs_truth_binary %>% rename(confidence = confidence_score) %>% 
   mutate(
     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
@@ -1376,7 +1376,7 @@ confidence_vs_truth_binary %>% rename(confidence = confidence_score) %>%
   #   size = 3, color = "black"
   # ) +
   scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
-  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 
     y = "Percentage of predictions", 
@@ -1480,7 +1480,7 @@ moderate with the *law-context* strategy and *zero_shot*, too. Adding
 more examples does not improve the performance. Best with
 *top_n_rag_examples*
 
-```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
+```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities")
 
 df_selected %>% 
@@ -1529,7 +1529,7 @@ trained models with pooling capability[^05_results-19].
     answers to get confidence scores for all different predictions. But
     this was not investigated.
 
-```{r confidence-match-plot-llama-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the reported confidence scores for all predictions of Llama 4 Scout grouped by the true target type. Errors have only been made within the majority class."}
+```{r confidence-match-plot-llama-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the reported confidence scores for all predictions of Llama 4 Scout grouped by the true target type. Errors have only been made within the majority class."}
 df_filtered <- df_selected %>%
   arrange(desc(f1_score))
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -1565,7 +1565,7 @@ problematic for a smooth workflow (see discussion chapter?)
     score was not listed in Table
     \@ref(tab:table-metrics-llm-page-identification-multi-small-models).
 
-```{r confidence-match-plot-mistral-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the reported confidence scores for all predictions of Ministral 8B grouped by the true target type. Errors have only been made within the majority class."}
+```{r confidence-match-plot-mistral-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the reported confidence scores for all predictions of Ministral 8B grouped by the true target type. Errors have only been made within the majority class."}
 df_filtered <- df_selected %>% filter(
   model == "Ministral-8B-Instruct-2410", 
   method == "3_rag_examples"
@@ -1689,7 +1689,7 @@ precision-recall-curve for **Passiva** and **GuV** is almost perfect.
 Just the single prediction for **Aktiva** wit a lower confidence shows
 an influence on the precision-recall-curve.
 
-```{r micro-pr-curve-llm-multi-ministral, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, fig.cap="Showing the precsion-recall-curve for Ministral-8B-Instruct-2410."}
+```{r micro-pr-curve-llm-multi-ministral, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for Ministral-8B-Instruct-2410."}
 model_name <- "Ministral-8B-Instruct-2410"
 method_name <- "3_rag_examples"
 
@@ -1732,7 +1732,7 @@ we find no interval without an error rate below 1 %.
     and still there was no range without wrong classification for Llama
     4 Scout.
 
-```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
 confidence_vs_truth_multi <- df_multi %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", "Qwen3-8B")) %>% 
   unnest(metrics) %>% 
@@ -1756,7 +1756,7 @@ confidence_vs_truth_multi %>% ggplot() +
   facet_grid(~ model)
 ```
 
-```{r table-identification-llm-confidence-lm-multi, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals for the multi-class classification task."}
+```{r table-identification-llm-confidence-lm-multi, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals for the multi-class classification task."}
 confidence_vs_truth_multi %>% rename(confidence = confidence_score) %>% 
   mutate(
     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
@@ -1793,7 +1793,7 @@ confidence_vs_truth_multi %>% rename(confidence = confidence_score) %>%
   #   size = 3, color = "black"
   # ) +
   scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
-  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 
     y = "Percentage of predictions", 
@@ -1990,7 +1990,7 @@ on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the
 random forest with four predictors. With the random forest with two
 predictors it needs $n = 7$.
 
-```{r top-n-recall-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="Comparing the top n recall on training and test dataset among the random forest with two and four predictors."}
+```{r top-n-recall-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Comparing the top n recall on training and test dataset among the random forest with two and four predictors."}
 df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
   mutate(data_split = 'test', n_predictors = 2)
 df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
@@ -2121,7 +2121,7 @@ target types. The \acr{AUC} for all types is below 0.5. The precision
 and F1 score stay below 0.5 as well. A high recall can be maintained for
 all types for threshold values up to at least 0.72.
 
-```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the precsion-recall-curve for the random forest with four predictors.", fig.height=8}
+```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the precsion-recall-curve for the random forest with four predictors.", fig.height=8}
 plot_pr_double_curve_tf <- function(df, selected_type, x_stuff = FALSE) {
   df_temp2 <- df %>% filter(
     n_predictors == 4, data_split == "test",
@@ -2456,7 +2456,7 @@ even if their occurrence is very unbalanced within the real data,
 synthetic **Aktiva** tables were created (see subsection
 \@ref(synthetic-table-extraction)).
 
-```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents."}
+```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents."}
 new_doc_base %>% rowwise() %>% 
   mutate(
     .before = 1, 
@@ -2486,6 +2486,21 @@ real_table_extraction_regex_NA_F1_median <- df_table_extraction_regex %>% filter
 synth_table_extraction_regex_total_performance_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_total) %>% median()
 synth_table_extraction_regex_num_performance_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_numeric) %>% median(na.rm = TRUE)
 synth_table_extraction_regex_NA_F1_median <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(NA_F1) %>% median(na.rm = TRUE)
+
+real_table_extraction_regex_total_performance_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_total) %>% mean()
+real_table_extraction_regex_num_performance_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(percentage_correct_numeric) %>% mean(na.rm = TRUE)
+real_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_F1) %>% mean()
+
+synth_table_extraction_regex_total_performance_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_total) %>% mean()
+synth_table_extraction_regex_num_performance_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(percentage_correct_numeric) %>% mean(na.rm = TRUE)
+synth_table_extraction_regex_NA_F1_mean <- df_table_extraction_regex %>% filter(table_type == "synth_tables", extraction_backend == "pymupdf") %>% pull(NA_F1) %>% mean(na.rm = TRUE)
+
+table_extraction_regex_baseline_medians <- tribble(
+  ~measure, ~real_mean, ~real_median, ~synthetic_mean, ~synthetic_median,
+  "percentage of correct predictions total", real_table_extraction_regex_total_performance_mean, real_table_extraction_regex_total_performance_median, synth_table_extraction_regex_total_performance_mean, synth_table_extraction_regex_total_performance_median,
+  "percentage of correct numeric predictions", real_table_extraction_regex_num_performance_mean, real_table_extraction_regex_num_performance_median, synth_table_extraction_regex_num_performance_mean, synth_table_extraction_regex_num_performance_median,
+  "F1 score", real_table_extraction_regex_NA_F1_mean, real_table_extraction_regex_NA_F1_median, synth_table_extraction_regex_NA_F1_mean, synth_table_extraction_regex_NA_F1_median
+)
 ```
 
 The baseline for the table extraction task is set by an approach using
@@ -2511,7 +2526,7 @@ that only predicted *null* can have a high score if there are only a few
 numeric values in the ground truth table.
 
 ::: paragraph-start
-##### Figure description
+##### Performance
 
 In each frame there are two groups of two box-plots. The left group is
 showing the performance on real **Aktiva** tables. The right group shows
@@ -2521,7 +2536,7 @@ green (left) box shows the performance on text extracted with the
 text extracted with the *pymupdf* library.
 :::
 
-Figure \@ref(fig:\@ref(fig:table-extraction-regex-performance)) shows,
+Figure \@ref(fig:table-extraction-regex-performance) shows,
 that the \acr{regex} approach performs better[^05_results-25] on the
 synthetic tables compared to the real tables. Even though, the
 performance is not perfect and more consistent on the text extracted
@@ -2536,16 +2551,16 @@ The performance for the \acr{regex} based table extraction is much
 better than the \acr{regex} based page identification performance. The
 median performance scores of the \acr{regex} approaches will be
 reflected by a dashed line in the box-plots in subsequent sections. The
-scores are:
+scores for the real **Aktiva** table extraction are:
+    
+```{r table-extraction-regex-baseline-medians, echo=echo_flag, warning=warning_flag, message=message_flag}
+table_extraction_regex_baseline_medians %>% mutate(
+  across(is.numeric, ~round(., 3))
+) %>% kbl(caption = "Summarizing the median performance of the regex approaches for the real and synthetic table extracion task.")
+```
 
--   Median percentage of correct predictions total:
-    `r round(real_table_extraction_regex_total_performance_median, 3)`
--   Median percentage of correct numeric predictions:
-    `r round(real_table_extraction_regex_num_performance_median, 3)`
--   Median of F1 score:
-    `r round(real_table_extraction_regex_NA_F1_median, 3)`
 
-```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Performance overall and on numeric value extraction with regular expressions."}
+```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Performance overall and on numeric value extraction with regular expressions."}
 p1 <- df_table_extraction_regex %>%
   select(c(table_type, percentage_correct_numeric, percentage_correct_total, T_EUR, extraction_backend)) %>% 
   pivot_longer(cols = -c(table_type, T_EUR, extraction_backend)) %>% 
@@ -2609,6 +2624,7 @@ p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE) +
   coord_cartesian(xlim = c(0, 0.225))
 p2b <- shap_f1 %>% sv_importance(kind = "beeswarm") +
   coord_cartesian(xlim = c(-0.35, 0.35))
+shap_f1_sum_same_line <- shap_f1 %>% sv_dependence("sum_same_line", "T_in_previous_year")
 
 shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
 p3a <- shap_binom %>% sv_importance(show_numbers = TRUE) +
@@ -2637,13 +2653,14 @@ p1c <- shap_num %>% sv_dependence("extraction_backend") +
 p1d <- shap_num %>% sv_dependence("header_span", color_var = "extraction_backend") +
   labs(title = "dependence plot for header_span")
 
-
 shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
 p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE) +
   labs(title = "F1 NA") +
   coord_cartesian(xlim = c(0, 0.15))
 p2b <- shap_f1 %>% sv_importance(kind = "beeswarm") +
   coord_cartesian(xlim = c(-0.5, 0.5))
+
+shap_f1_extraction_backend <- shap_f1 %>% sv_dependence(colnames(.$X), "extraction_backend")
 
 shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
 p3a <- shap_binom %>% sv_importance(show_numbers = TRUE) +
@@ -2656,81 +2673,44 @@ synth_table_extraction_regex_shap_plot <- (p1a | p1b) /
   (p2a | p2b) /
   (p3a | p3b)
 
-synth_table_extraction_regex_shap_num_details_plot <- p1c | p1d
+synth_table_extraction_regex_shap_num_details_plot <- p1d | p1c
 ```
 
 ::: paragraph-start
 ###### Real dataset
 
-There are multiple hypotheses that don't get supported by the visual
-results (see Figure \@ref(fig:real-table-extraction-regex-shap-plot)).
-We find, that it is worth mentioning, that
+The formulated hypotheses have been evaluated visually using the
+dependence and beeswarm plots from the shapviz library based on the
+\acr{SHAP} values calculated with a random forest.
 :::
 
--   the visual separation of columns,
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-regex-table) shows in the first column the predictors included in the random forests. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for  two aggregated measures (F1 score and percentage of correct numeric predictions) and one value based measure (binomial correctness rating).
 
--   presenting sums in the rows with higher hierarchy row labels and
+Predictors that are marked with an asterisk only have five or less representatives. Thus, those results are not reliable. Bold set hypotheses show the predictors, that showed the highest mean \acr{SHAP} values. For all measures but the binomial this means the effect is at least 0.025. For the binomial measure the effect of a predictor with bold hypothesis is at least 0.05. Results with red text highlight hypotheses that are not supported by the visual evaluation.
 
--   having T€ in the previous year column
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-regex-table) shows many red results, meaning the corresponding hypothesis is getting no support. Since most of these findings show only minor effect strength we don't interpret them as strongly challenging those hypotheses. Only three findings regarding the F1 score show a strong effect and findings that do not align with our hypotheses. 
+First, it seems, that finding a sum in the same row, has a negative effect of finding any valid number there. Second, it has negative effect, if the previous year column is given as *T€*. Third, it has negative effect, if the columns are visually separated.
 
-have a negative effect on the F1 score. The mean \acr{SHAP} values for
-these observations are almost 0.03 and higher (on a scale that ranges
-from 0 to 1). The distribution for *T_in_previous_year* and
-*vis_separated_cols* are quite balanced. The findings for the balanced
-chracteristics can be seen as a reason to change the corresponding
-hypotheses for future investigations.
+see Figure \@ref(fig:real-table-extraction-regex-shap-plot)
 
-The hypothesis about a positive influence of a missing of a value for
-the binomial prediction gets solid support with a mean absolute
-\acr{SHAP} value of over
-`r floor((shap_binom %>% sv_importance(kind = "no") %>% .['missing'])*100)`
-%.
-
-```{r hypotheses-and-results-real-table-extraction-regex-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag}
-htmltools::includeHTML(
-  textConnection(
-    xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html") %>%
-      xml2::xml_find_first("//table") %>%
-      as.character()
-  )
-)
-```
-
-```{python}
-import pandas as pd
-
-df_two_header_lines = pd.read_html("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html", header = [1])
-
-```
-
-```{r}
-py$df_two_header_lines[[1]] %>% 
-  setNames(colnames(.) %>% str_remove(".\\d")) %>% 
-  kbl() %>% 
-  kable_classic() %>%
-  add_header_above(c(" " = 1, "F1" = 2, "% correct numeric" = 2, "binomial" = 2))
+```{r hypotheses-and-results-real-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the regular expression approach.")
 ```
 
 ::: paragraph-start
 ###### Synthetic dataset
 
-The visual results for the \acr{SHAP} analysis on the synthetic dataset
-brought some insides into the question, under which condition the two
-PDF extraction libraries perform differently. These results can be
-treated as reliable since the model has been trained with 24_576 table
-extracts and the \acr{SHAP} values have been calculated on 2_000
+Table \@ref(tab:hypotheses-and-results-synth-table-extraction-regex-table) shows, many red results as well, meaning the corresponding hypothesis is getting no support. We find more predictors with a strong effect compared to the real **Aktiva** table extraction task. The results are based on 24_576 extracted tables and the \acr{SHAP} values have been calculated on 2_000
 examples each.
 :::
 
-The number of columns is having an opposite effect for the two libraries
-(see Figure
-\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) A).
-Overall the effect is positive. So more colums give better results.
-
-Besides that we find, that *pdfium* is struggling with some of the table
+Contrary to our assumption, does the *extraction_backend* have a strong effect on all measures. We find, that *pdfium* is struggling with some of the table
 characteristics while *pymupdf* is not influenced by them. Figure
-\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) B shows
-this exemplary for the characteristic *header_span*.
+\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) A shows
+this exemplary for the characteristic *header_span*. An example for a erroneous text extraction with *pdfium* can be found in section \@ref(#regex-extraction-mistakes). Actually, all results that are marked with an asterisk are showing this effect if *pdfium* is used as extraction backend. This can be inspected in Figure \@ref(fig:synth-table-extraction-regex-dependence-plot-backend).
+
+Furthermore, does the number of columns is have a positive effect overall. Figure
+\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) B shows, that this effect has inverse direction for the two libraries.
 
 It might be worth noting, that the row for *Anteile an verbundenen
 Unternehmen* was rated to have a clear negative effect on the chance to
@@ -2740,29 +2720,13 @@ The question, if visual separation of columns is having an effect, as
 found for the real data, is not studied here, because in the synthetic
 tables all columns are visually separated. But this could be
 investigated in future work. It is possible, that the visual separation
-is cause for the faulty text extractions of *pdfium*.
+is causing the faulty text extractions of *pdfium*.
 
-```{r hypotheses-and-results-synth-table-extraction-regex-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
-if (knitr::is_latex_output()) {
-  # Render as kable for PDF
-  # Extract table from HTML and convert to data.frame
-  html_table <- xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_regex.html") %>%
-    xml2::xml_find_first("//table")
-  df <- rvest::html_table(html_table, fill = TRUE)
-  kable(df, format = "latex", booktabs = TRUE, longtable = TRUE)
-} else {
-  # Render as HTML for HTML output
-  htmltools::includeHTML(
-    textConnection(
-      xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_regex.html") %>%
-        xml2::xml_find_first("//table") %>%
-        as.character()
-    )
-  )
-}
+```{r hypotheses-and-results-synth-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the regular expression approach.")
 ```
 
-```{r synth-table-extraction-regex-shap-num-details-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=8, fig.height=4, fig.cap="Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data"}
+```{r synth-table-extraction-regex-shap-num-details-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=8, fig.height=4, dev=std_dev, fig.cap="Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data for the percentage of correct numeric predictions."}
 synth_table_extraction_regex_shap_num_details_plot + 
   plot_annotation(tag_levels = 'A')
 ```
@@ -2915,6 +2879,9 @@ super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero
   reframe(median_total = median(percentage_correct_total, na.rm = TRUE), median_num = median(percentage_correct_numeric, na.rm = TRUE), median_F1 = median(NA_F1, na.rm = TRUE)) %>% group_by(model) %>% filter(any(median_total<real_table_extraction_regex_total_performance_median, median_num<real_table_extraction_regex_num_performance_median, median_F1<real_table_extraction_regex_NA_F1_median)) %>% arrange(median_total) %>% slice_head(n = 1)
 ```
 
+::: paragraph-start
+##### Performance
+
 For the table extraction task
 `r length(unique(df_real_table_extraction$model))+2` open source models
 from `r length(unique(df_real_table_extraction$model_family))` model
@@ -2924,6 +2891,7 @@ performing combination of \acr{LLM} and prompting strategy for each
 model family. The results are sorted by their mean percentage of total
 correct predictions. It also shows the normalized runtime in seconds and
 the parameter number of the model.
+:::
 
 [^05_results-26]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
     and *google_gemma-3n-E4B-it* have been tested as well but don't get
@@ -3107,7 +3075,7 @@ df_overview_gpt %>% group_by(model, method) %>%
   )
 ```
 
-```{r costs-azure, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum("../CostManagement_master-thesis_2025.csv"), results='asis'}
+```{r costs-azure, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 costs_azure <- read_csv("../CostManagement_master-thesis_2025.csv")
 
 costs_azure %>% 
@@ -3192,7 +3160,7 @@ error.
 
 [^05_results-29]: Without the Harmony format 4_000 are enough.
 
-```{r table-extraction-llm-f1-gpt-slice, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="90%", out.extra='keepaspectratio', fig.height=10, , fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values."}
+```{r table-extraction-llm-f1-gpt-slice, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="90%", out.extra='keepaspectratio', fig.height=10, , dev=std_dev, fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values."}
 df_overview_gpt %>% 
   filter(as.numeric(str_remove(as.character(n_examples), "n = ")) < 5) %>% 
   mutate(NA_F1 = if_else(is.na(NA_F1), 0, NA_F1)) %>% 
@@ -3207,7 +3175,7 @@ df_overview_gpt %>%
   )
 ```
 
-```{r table-extraction-llm-prediction-count-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the number of predictions OpenAI's models made."}
+```{r table-extraction-llm-prediction-count-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of predictions OpenAI's models made."}
 df_overview_gpt %>% filter(n_predicted_values != 58) %>% 
   mutate(color_code = if_else(n_predicted_values==0, "zero", if_else(n_predicted_values > 58, "too many", "too little"))) %>% 
   ggplot() +
@@ -3215,7 +3183,7 @@ df_overview_gpt %>% filter(n_predicted_values != 58) %>%
   coord_cartesian(xlim= c(0,66))
 ```
 
-```{r table-extraction-llm-errors-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the number of predictions OpenAI's models made."}
+```{r table-extraction-llm-errors-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of predictions OpenAI's models made."}
 df_overview_gpt %>% mutate(n_pred = map_dbl(predictions, ~nrow(.)), .before = 1) %>% filter(n_pred != 29) %>% # select(model, method, n_pred, filepath) %>% 
   ggplot() +
   geom_bar(aes(x = method_family, fill = n_examples)) + 
@@ -3264,7 +3232,7 @@ bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>%
       improvement_mean = round(mean_total_TRUE - mean_total_FALSE, 2),
       improvement_median = round(median_total_TRUE - median_total_FALSE, 2)
     ) %>% select(model_family, improvement_mean, improvement_median) %>% 
-  arrange(desc(improvement_mean)) %>% 
+  arrange(desc(improvement_mean)) %>% #kbl()
   render_table(
     alignment = "lrr",
     caption = "Comparing the extraction performance when Aktiva tables from the same company can be used for in-context learning or not.",
@@ -3378,7 +3346,7 @@ model: with manual transcription the error rate is not lower. But we can
 inform the human about values that have shown a higher rate of mistakes,
 especially for the Ministral model.
 
-```{r table-extraction-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+```{r table-extraction-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
 confidence_vs_truth %>% ggplot() +
   geom_boxplot(
     aes(x = match, y = confidence, fill = truth_NA), 
@@ -3389,7 +3357,7 @@ confidence_vs_truth %>% ggplot() +
 
 ```
 
-```{r table-extraction-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals."}
+```{r table-extraction-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals."}
 confidence_intervals %>%
   ggplot() +
   geom_col(aes(
@@ -3403,7 +3371,7 @@ confidence_intervals %>%
   #   size = 3, color = "black"
   # ) +
   scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
-  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 
     y = "Percentage of predictions", 
@@ -3424,7 +3392,7 @@ dependence and beeswarm plots from the shapviz library based on the
 :::
 
 ```{r real-table-extraction-llm-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds')}
-results <- readRDS("data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds")
+results <- readRDS("data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
 
 shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
 p1a <- shap_num %>% sv_importance(show_numbers = TRUE, max_display = 25) +
@@ -3432,8 +3400,8 @@ p1a <- shap_num %>% sv_importance(show_numbers = TRUE, max_display = 25) +
   coord_cartesian(xlim = c(0, 0.12))
 p1b <- shap_num %>% sv_importance(kind = "beeswarm", max_display = 25) +
   coord_cartesian(xlim = c(-0.5, 0.35))
-p1c <- shap_num %>% sv_dependence("n_examples")
-p1d <- shap_num %>% sv_dependence("T_in_year")
+p1c <- shap_num %>% sv_dependence("T_in_year", "vis_seperated_rows")
+p1d <- shap_num %>% sv_dependence("vis_seperated_rows", "T_in_year")
 
 shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
 p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE, max_display = 25) +
@@ -3464,78 +3432,24 @@ real_table_extraction_llm_shap_plot <- (p1a | p1b) /
 real_table_extraction_llm_shap_num_details_plot <- p1c | p1d
 ```
 
-Even though the samples size of Aktiva tables did not increase, the
-available training, test and \acr{SHAP} sample size is much larger,
-because the experiment has been repeated with different models and
-methods. Thus, the interpretations based on the visual evaluation (see
-Figure \@ref(fig:real-table-extraction-llm-shap-plot))) are more
-reliable for model and method specific predictors. Since there is one
-Aktiva example for every company files were found for they might even be
-generalizable for this population. But one has to keep in mind that
-there have been more Aktiva tables for *Amt Stat BBB* which might nudge
-the results a bit.
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-llm-table) shows in the first column the predictors included in the random forests. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for  two aggregated measures (F1 score and percentage of correct numeric predictions) and two value based measures (binomial correctness rating and reported confidence for the prediction).
 
-The results assign much more influence on model and method specific
-attributes than on the table specific attributes. The importance of the
-table attributes are as low as found with the regular expresion
-approach. Only for the binomial prediction we find the predictor
-*missing* to get assigned more importance than to all model and method
-specific attributes. Same is true for the *label* that is having the
-highest influence on the reported confidence. Nevertheless, in the case
-of the binomial prediction there is half of the predictors *missing* and
-*label* importance shifted to model and method specific predictors.
+Predictors that are marked with an asterix only have five or less representatives. Thus, those results are not reliable. Bold set hypotheses show the predictors, that showed the highest mean \acr{SHAP} values. For all measures but the binomial this means the effect is at least 0.025. For the binomial measure the effect of a predictor with bold hypothesis is at least 0.05. Results with red text highlight hypotheses that are not supported by the visual evaluation.
 
-Again, multiple hypotheses don't get supported by the visual results.
-The surprising results are:
+For most measures the model and method related predictors (*model_family*, *parameter_count*, *method_family* and *n_examples*) show the strongest effects. Worth mentioning is, that *method_family* and *n_examples* show no strong effect on the reported confidence score. From the table related characteristics most strong effects show the hypothesized direction. Not predicted was the negative effect of label length on the reported confidence score. The visual separation of columns and rows shows small effects. We find no support for a negative effect of the fact that the **Passiva** table is on the same page as the **Aktiva** table.
 
-1.  In general more examples are helpful except for Llamas Maverick
-    model that performs poorly with five examples. But this effect is
-    only noticeable with the aggregated metrics nor for the case wise
-    binomial evaluation.
-2.  The number of columns has a negative effect on the performance but
-    no effect on the reported confidence.
-3.  There was no negative effect found if the *Passiva* table is on the
-    same page as the Aktiva table.
-4.  Larger models start to report less confidence again. This is not
-    unexpected for the Mistral model but was surprising for the largest
-    Qwen 3 model. (Discussion: New Generation? Aktive paramaters count?
-    Irrelevant because not well distinguishing?)
-5.  It not only influences the the performance to extract the correct
-    numeric value from a row where there are additional sums present but
-    also the F1 score.
+see Figure \@ref(fig:real-table-extraction-llm-shap-plot)
 
-Two interesting details found while inspecting the dependence plots for
-the metric *percentage_numeric_correct* are (see Figure
-\@ref(fig:real-table-extraction-llm-shap-num-details-plot) A) that the
-bad performance of LLamas Maverick with five examples is easily
-spottable and that the negative effect of *T_in_year* might be caused by
-an interaction with *vis_separated_rows* completely (see Figure
-\@ref(fig:real-table-extraction-llm-shap-num-details-plot) B). To
-investigate the second finding one would need tables where the uni is
-present in the year column and having no visual separation of the rows
-at the same time. Synthetic data potential could help to answer such
-questions.
-
-```{r hypotheses-and-results-real-table-extraction-llm-table, class.chunk="big-table", echo=echo_flag, warning=warning_flag, message=message_flag}
-htmltools::includeHTML(
-  textConnection(
-    xml2::read_html("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html") %>%
-      xml2::xml_find_first("//table") %>%
-      as.character()
-  )
-)
-```
-
-```{r real-table-extraction-llm-shap-num-details-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=8, fig.height=4, fig.cap="Showing the influence of many examples on Llama 4 Maverick (A) and interaction between *T in year* and *vis separated rows* (B)"}
-real_table_extraction_llm_shap_num_details_plot + 
-  plot_annotation(tag_levels = 'A')
+```{r hypotheses-and-results-real-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables the LLM approach.")
 ```
 
 #### Synthetic tables {#synthetic-table-extraction}
 
 ```{r loading-synth-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/synth_table_extraction_llm.rds")), cache.lazy = FALSE}
 df_synth_table_extraction <- readRDS("data_storage/synth_table_extraction_llm.rds") %>%
-  sample_frac(size = .05) %>% 
+  mutate(model = if_else(model == "Qwen3-235B-A22B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8", model)) %>% 
+  # sample_frac(size = .05) %>% 
   filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
   mutate(
     model = gsub("^[^_]+_", "", model)
@@ -3628,6 +3542,78 @@ n_synth_tables <- list.files(
 n_synth_table_extraction <- list.files(
   "../benchmark_results/table_extraction/llm/final/synth_tables/"
 ) %>% length()
+
+# confidence_vs_truth_synth <- df_synth_table_extraction %>% 
+#   # filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+#   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B", "Qwen3-235B-A22B-Instruct-2507-FP8")) %>% 
+#   group_by(method, model, loop) %>% mutate(
+#     mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1,
+#     respect_units = !ignore_units
+#   ) %>% group_by(respect_units, model, filepath) %>% 
+#   # arrange(desc(mean_percentage_correct_total)) %>% 
+#   slice_max(mean_percentage_correct_total, n = 1, with_ties = FALSE) %>% 
+#   mutate(predictions_processed = map(predictions, ~{
+#     .x %>% 
+#       select(-"_merge") %>% 
+#       mutate(
+#         match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+#         confidence = confidence_this_year,
+#         truth_NA = is.na(year_truth),
+#         predicted_NA = is.na(year_result),
+#         .before = 4
+#       ) %>% nest(
+#         tuple_year = c(match, confidence, truth_NA, predicted_NA)
+#       ) %>% 
+#       mutate(
+#         confidence = confidence_previous_year,
+#         match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+#         truth_NA = is.na(previous_year_truth),
+#         predicted_NA = is.na(previous_year_result),
+#         .before = 4
+#       ) %>% nest(
+#         tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+#       ) %>% select(
+#         -c(year_truth, previous_year_truth, year_result, previous_year_result,
+#            confidence_this_year, confidence_previous_year)
+#       ) %>% 
+#       pivot_longer(-c("E1", "E2", "E3")) %>% 
+#       unnest(cols = value) %>% mutate(
+#         match = if_else(is.na(match), FALSE, match)
+#       )
+#   })) %>% 
+#   unnest(predictions_processed) %>% mutate(
+#     match = factor(match, levels = c(F, T)),
+#     truth_NA = factor(truth_NA, levels = c(F, T))
+#   )
+# 
+# confidence_intervals_synth <- confidence_vs_truth_synth %>% #rename(confidence = confidence_score) %>% 
+#   mutate(
+#     conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+#     conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+#   ) %>%
+#   group_by(conf_center, predicted_NA, model, respect_units) %>%
+#   summarise(
+#     n_true = sum(match == TRUE, na.rm = TRUE),
+#     n_false = sum(match == FALSE, na.rm = TRUE),
+#     total = n_true + n_false,
+#     chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+#     chance_zero = chance_false == 0,
+#     chance_below_1 = chance_false < 1,
+#     chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+#     chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+#   ) %>% group_by(predicted_NA, model, respect_units) %>% mutate(
+#     perc = total/sum(total)*100
+#   ) %>% ungroup() %>% 
+#   mutate(
+#     chance_false_interval = cut(
+#       chance_false,
+#       breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+#       labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+#                  "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+#       right = FALSE,
+#       ordered_result = TRUE
+#     ),
+#   )
 ```
 
 ::: paragraph-start
@@ -3750,14 +3736,58 @@ df_synth_top_performance_small %>%
 ```
 
 ::: paragraph-start
+##### Confidence
+
+Figure \@ref(fig:table-extraction-llm-confidence-lm-synth) shows, that we do not find a high confidence interval containing a majority of the predictions with 0 % error rate. But for Qwen3-235B we find, that the error rate is below 1 %, except for predicting numeric values, while ignoring their currency units.
+:::
+
+Figure \@ref(fig:table-extraction-llm-confidence-lm-synth-grouped-by-input-format) groups the responses additonally by the *input_format* of the documents. It shows, that with HTML documents Qwen3-235B achieves 0 % error rate for the prediction of missing values and predicting numeric values, if currency units get respected.
+
+```{r table-extraction-llm-confidence-lm-synth, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task.", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/confidence_intervals_synth.rds"))}
+confidence_intervals_synth  <- readRDS("data_storage/confidence_intervals_synth.rds")
+
+confidence_intervals_synth %>%
+  ggplot() +
+  geom_col(aes(
+    x = conf_center, y = perc, 
+    color = chance_low, 
+    fill = chance_false_interval
+    ), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop = FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_nested(paste("respect units:", respect_units)+paste("predicted NA:", predicted_NA) ~ model)
+```
+
+::: paragraph-start
 ##### Hypotheses
+
+Table \@ref(tab:hypotheses-and-results-synth-table-extraction-llm-table) shows some unsupported hypotheses for predictors with strong effects. The observations suggest, that prompting the model to respect the currency units is decreasing its performance to predict the correct numeric values. This is understandable, if the task is reflected properly and we made a mistake there, when we formulated our hypothesis.
+:::
+
+If the model is not prompted to respect the currency units, it is presented with examples that just copy over the numeric values. And it gets evaluated if it copied the values correctly. If the model is prompted to respect the currency units, it is presented with examples, where the values not only get copied but also transformed. And they get evaluated if they do the transformation correct as well. Thus the task is harder, if numeric values should be respected and the effect is having a negative direction.
+
+Figure \@ref(fig:better-performance-for-value-transformation-with-html-and-md) shows that the transformation task is handled best, if the examples are provided with the *top_n_rag* strategy. It does not work with the *zero_shot* strategy. It also shows, that the performance is lower with the PDF *input_format* and that the models have difficulties, if the *unit_multiplier* is one million. This also shows a strong effect and is strongest for the PDF *input_format*. This is a general effect. We see in \@ref(fig:table-extraction-llm-confidence-lm-synth) that it can be different for single models like Qwen3-235B.
+
+old:
 
 HTML and Markdown better but expected interaction effects mostly not
 found - except: - columns help pdf - thinning least bad for pdf - pdf
 worst with numbers that have currency units (short numbers, maybe no
 1000er delimiter) - enumeration positive for pdf (and interaction with
 log10 mult)
-:::
 
 line breaks are no problem
 
@@ -3775,6 +3805,19 @@ LLama 4 Maverick again problem with five examples
 
 Positive column count effect (different for real data)
 
+```{r hypotheses-and-results-synth-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the LLM approach.", detect = ":")
+```
+
+```{r better-performance-for-value-transformation-with-html-and-md, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the percentage of correct extracted numeric values grouped by input format, method family and the fact, if currency should be respected.", fig.width=10}
+df_synth_table_extraction %>% filter(method != "static_example") %>% 
+  mutate(respect_units = !ignore_units) %>% 
+  ggplot() + 
+  geom_boxplot(aes(y = percentage_correct_numeric, x = factor(unit_multiplier), fill = input_format), alpha = .7) + 
+  facet_nested(paste("respect units:", respect_units)~method_family)
+```
+
+
 #### Hybrid approach {#real-table-extraction-synth-context}
 
 ```{r preparing-synth-context-learning-data, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_synth.rds"))}
@@ -3783,7 +3826,10 @@ best_models_with_examples <- df_real_table_extraction_synth %>%
   group_by(
     model, method
     ) %>% 
-  mutate(median_synth = median(percentage_correct_total)) %>% 
+  mutate(
+    median_synth = median(percentage_correct_total),
+    # mean_synth = mean(percentage_correct_total)
+    ) %>% 
   # arrange(desc(median_synth)) %>% 
   group_by(model) %>% 
   slice_max(n = 1, median_synth, with_ties = FALSE) %>% ungroup() %>% 
@@ -3839,7 +3885,7 @@ confidence_vs_truth_hybrid <- df_real_table_extraction_synth %>%
   group_by(method, model) %>% mutate(
     median_percentage_correct_total = median(percentage_correct_total, na.rm=TRUE), .before = 1,
     respect_units = !ignore_units
-  ) %>% group_by(respect_units, model) %>% 
+  ) %>% group_by(respect_units, model, filepath) %>% 
   arrange(desc(median_percentage_correct_total)) %>% 
   slice_max(median_percentage_correct_total, n = 1, with_ties = FALSE) %>% 
   mutate(predictions_processed = map(predictions, ~{
@@ -4006,7 +4052,7 @@ df_real_table_extraction_synth_respect_units %>%
   
 ```
 
-```{r table-extraction-llm-respecting-units-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Comparing the numeric prediction performance for the hybrid approach, based on the fact, if the LLM is prompted to respect currency units."}
+```{r table-extraction-llm-respecting-units-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the numeric prediction performance for the hybrid approach, based on the fact, if the LLM is prompted to respect currency units."}
 df_real_table_extraction_synth_respect_units %>% 
   ggplot() + 
   geom_boxplot(aes(x = model, y = percentage_correct_numeric)) +
@@ -4016,22 +4062,10 @@ df_real_table_extraction_synth_respect_units %>%
 ::: paragraph-start
 ##### Confidence
 
-Confidence with both tasks (respect or ignore units) the same.
+Figure \@ref(fig:table-extraction-llm-confidence-lm-synth-context) shows the rate of wrong predictions for given confidence intervals. Again, the confidence for predicting a missing value is higher than for predicting a numeric value. One can't see much difference, but for the best performing model Qwen3-235B the error rate for numeric values is lower, when currency units are respected (20 % vs 26 %). But the error rate is still to high to mark any numeric value as trustful.
 :::
 
-```{r table-extraction-llm-confidence-synth-context-table, results='asis'}
-confidence_vs_truth_hybrid %>% group_by(model, method, method_family, respect_units, predicted_NA) %>% reframe(median_conf = median(confidence)) %>% pivot_wider(names_from = respect_units, values_from = median_conf, names_prefix = "median_conf_units_") %>% # mutate(delta = units_FALSE - units_TRUE) %>% select(-c(units_FALSE, units_TRUE)) %>% pivot_wider(names_from = n_col_T_EUR, values_from = delta, names_prefix = "n_cols_T_EUR_") %>% group_by(model) %>% summarise_if(is.numeric, median) %>% 
-  mutate(across(is.numeric, ~round(., 2))) %>% 
-  render_table(
-    alignment = "llllrr",
-    caption = "Comparing extraction confidence for real Aktiva extraction task dependent on the promt addition to respect currency units. No difference in confidence appearent.",
-    ref = opts_current$get("label"), dom="t")
-```
-
-Risk for false NAs less with synth data for Mistral but greater for
-numeric values (both).
-
-```{r table-extraction-llm-confidence-lm-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
+```{r table-extraction-llm-confidence-lm-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
 confidence_intervals_hybrid %>%
   ggplot() +
   geom_col(aes(
@@ -4045,7 +4079,7 @@ confidence_intervals_hybrid %>%
   #   size = 3, color = "black"
   # ) +
   scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
-  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd"))) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 
     y = "Percentage of predictions", 
@@ -4060,18 +4094,102 @@ confidence_intervals_hybrid %>%
 ::: paragraph-start
 ##### Hypotheses
 
-Test
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-llm-synth-context-table) shows only one unsupported hypothesis for a predictor with a strong effect: *method_family*. Figure \@ref(fig:static-example-best-dependence-plot) shows the dependence plot for the this predictor. The prompting strategy *static_example* shows the highest \acr{SHAP} values. This is surprising, because the the *static example* is equivalent to providing a single random example.
 :::
+
+```{r real-table-extraction-llm-synth-context-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds')}
+results <- readRDS("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
+
+shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
+p1a <- shap_num %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "% numeric correct") +
+  coord_cartesian(xlim = c(0, 0.12))
+p1b <- shap_num %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+p1c <- shap_num %>% sv_dependence("method_family")
+# p1d <- shap_num %>% sv_dependence("vis_seperated_rows", "T_in_year")
+
+shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
+p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "F1 NA") +
+  coord_cartesian(xlim = c(0, 0.12))
+p2b <- shap_f1 %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
+p3a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "binomial") +
+  coord_cartesian(xlim = c(0, 0.12))
+p3b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$confidence$shap_values$rf %>% convert_shap_x()
+p4a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "confidence") +
+  coord_cartesian(xlim = c(0, 0.12))
+p4b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+real_table_extraction_llm_synth_context_shap_plot <- (p1a | p1b) /
+  (p2a | p2b) /
+  (p3a | p3b) /
+  (p4a | p4b)
+
+real_table_extraction_llm_synth_context_shap_num_details_plot <- p1c # | p1d
+```
+
+```{r hypotheses-and-results-real-table-extraction-llm-synth-context-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_synth_context_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the hybrid LLM approach.")
+```
+
+```{r static-example-best-dependence-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
+real_table_extraction_llm_synth_context_shap_num_details_plot
+```
+
 
 ### Comparison {#comparing-table-extraction-methods}
 
-Most models performe better on synth tables once they have enough
-in-context examples. (Needing more für random examples thanwith
-top-n-rad approach). Especially Llama 3 models show wider performance
-spread even with three examples
-\@ref(fig:comparing-table-extraction-performance-among-real-and-synth-aktiva-data)
+This subsection compares the results for the table extraction tasks. It will discuss the findings about performance and runtime and compare it with the results a human may achieve wit manual labor.
 
-runtime
+hypotheses
 
-Thus, excluding the setup time for the LLM, Qwen3-235B-A22B-Instruct is
-around 100 times faster than a human.
+::: paragraph-start
+##### Performance
+
+Table \@ref(tab:compare-extraction-performance) summarizes the mean percentage of correct predictions total for all approaches and both types of **Aktiva** tables. The highest baseline for the extraction tasks is set by our own manual performance. We achieve 97.6 % correct extracted values on the real **Aktiva** tables. The \acr{regex} performance on the synthetic **Aktiva** tables comes close but on real **Aktiva** tables it is far off.
+:::
+
+The mean performance of Qwen3-235B does not match our baseline on the real **Akiva** tables. But its median performance already is 100 %. The extraction performance may get higher, if the in-context learning examples show how to deal with columns that have a currency unit. But the strong performance observed right now is already based on implicit numeric transformations, since 19.2 % of all numeric values have *T€* as unit. Furthermore, both measures, percentage of correct numeric predictions (98.0 %) and F1 score (98.1 %) are not perfect yet and could be improved.
+
+On synthetic tables its mean performance is almost perfect, if currency units get respected. The 0.1 % incorrect prediction from the PDF documents could be caused by faulty text extracts by *pdfium*. With HTML documents we find 100 % correct predictions.  With Markdown documents we find 99.9 % correct predictions as well. Figure \@ref(fig:comparing-table-extraction-performance-among-real-and-synth-aktiva-data) shows, that the better performance on the synthetic tables is found for almost all models.
+
+Qwen3-8B performed best among the small models \acr{LLM}s but shows over 4 % more wrong predictions than Qwen3-235B. Using synthetic examples, results in worse performance. But it can be used to show how to handle currency units.
+
+```{r compare-extraction-performance, echo=echo_flag, warning=warning_flag, message=message_flag}
+tribble(
+  ~approach, ~strategy, ~table_type, ~percentage_correct_total,
+  "human", "manual", "real", 97.6,
+  "regex", "", "real", 68.6,
+  "llm", "Qwen3-235B, top_5_rag_examples", "real", 97.0,
+  "llm", "Qwen3-8B, top_5_rag_examples", "real", 92.7,
+  "llm", "Qwen3-235B, top_5_rag_examples, synth examples", "real", 91.8,
+  "regex", "", "synth", 96.9,
+  "llm", "Qwen3-235B, top_5_rag_examples, respect_units", "synth", 99.9,
+  "llm", "Qwen3-8B, top_5_rag_examples", "synth", 94.6,
+) %>% kbl(caption = "Comparing the mean percentage of correct predictions total among all approaches and table types.")
+```
+
+::: paragraph-start
+##### Runtime
+
+Extracting the values from all 106 tables took Qwen3-235B around six minutes. Thus, excluding the setup time for the LLM, Qwen3-235B-A22B-Instruct is
+around 100 times faster than a human. Checking the extracted values takes up to three minutes. This totals in 300 minutes prediction checking. Thus, selecting a smaller model that is finishing after 2:30 minutes is not speeding up the process a lot. Once we get a sufficient good performance with the big models the prediction checking can be dropped. This would bring th real benefit.
+:::
+
+::: paragraph-start
+##### Hypotheses
+
+The predictor that showed a strong effect in all approaches is currency unit. Reflecting this in the table extraction is a key factor to optimize the performance. For the approaches that use \acr{LLM}s most of the model and method related variables showed a strong effect. Using a versatile model and providing good learning examples is mandatory.
+:::
+
+Especially for the approaches that use synthetic tables show that the input format could also have a meaningful effect. It seems important to prevent erroneous text extraction and converting the extracted text in HTML might be helpful to eliminate last unclarities. But the question, if a perfect text extract would be as good as HTML or Markdown, is not answered yet.

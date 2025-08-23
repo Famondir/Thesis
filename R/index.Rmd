@@ -90,6 +90,7 @@ echo_flag <- knitr::is_html_output() ? NA : FALSE
 message_flag = FALSE
 warning_flag = FALSE
 cache_large_figures = TRUE
+std_dev <- knitr::is_html_output() ? 'png' : 'pdf'
 ```
 
 \setDefaultLayout

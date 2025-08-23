@@ -20,7 +20,7 @@ df_characteristics <- df %>% filter(n_examples <= 5) %>%
   ) %>% mutate(
     log10_unit_multiplier = log10(unit_multiplier),
     respect_units = !ignore_units,
-    n_columns = as.character(n_columns)
+    n_columns = as.character(as.numeric(n_columns)-1)
   )
 
 #### h2o final modelin ####
