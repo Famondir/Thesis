@@ -44,4 +44,8 @@ acronyms:
       longname: Berliner Hochschule für Technik
     - shortname: OCR
       longname: optical character recognition
+    - shortname: SSH
+      longname: secure shell
+    - shortname: HTML
+      longname: hyper text markup language
 ---

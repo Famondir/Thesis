@@ -242,8 +242,7 @@ very *simple regex* was implemented. To increase the recall to 1.0 the
 regular expression was extended[^05_results-4]. This second regex is
 called *exhaustive regex*. In a third attempt minor changes have been
 made to the *exhaustive regex* to increase the precision without
-decreasing the recall. This regular expression is called *exhausitve
-regex restricted*. The regular expressions can be found in the appendix
+decreasing the recall. This regular expression is called *exhausitve regex restricted*. The regular expressions can be found in the appendix
 (see section \@ref(regex-page-identification-code)).
 
 [^05_results-4]: The idea is that the regular expression approach is

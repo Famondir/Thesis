@@ -25,7 +25,7 @@ Research logic? Methods fit deductive. But I start with a very specific problem.
 
 (ref:reasearch-design-caption) Showing the decisions made regarding the research design. (The figure is adapted from @wohlinDecisionmakingStructureSelecting2015. The copyright for the original figure is held by Springer Science+Business Media New York 2014.)
 
-```{r reasearch-design-image, fig.cap="(ref:reasearch-design-caption)", echo=FALSE}
+```{r reasearch-design-image, fig.cap="(ref:reasearch-design-caption)", echo=FALSE, out.width="100%"}
 knitr::include_graphics("images/research_design.png")
 ```
 
@@ -82,7 +82,7 @@ Second, we report the F1 score for correctly predicting values as missing and th
 
 ### Benchmarking
 
-Comparing the different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the *zero shot* strategy.
+Comparing the performance of different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the *zero shot* strategy. Comparing the runtime or energy consumption gets possible with the \acr{GPU} benchmark data (see section \@ref(gpu-benchmark))
 
 ## Data Strategy
 
@@ -142,7 +142,7 @@ Building the term frequency random forest, we face a highly imbalanced dataset. 
 
 ## Experimental Framework
 
-### Hardware normalization
+### Hardware normalization {#gpu-benchmark}
 
 To make the runtime of different \acr{LLM}s running on different amounts and types of \acr{GPU}s comparable, we conducted a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure \@ref(fig:gpu-benchmark-plot) shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning.
 
@@ -153,8 +153,6 @@ df_gpu_benchmark <- read_csv("../benchmark_jobs/page_identification/gpu_benchmar
 
 df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_type)) + geom_line(aes(linetype = model_name)) + geom_point()
 ```
-
-We run our final experiments with the \acr{vllm} library on Python, using its batch processing capabilities. Our first test used the *transformers* library directly and did not use batch processing. Section \@ref(vllm-batch-speed) shows the runtime reduction that is achieved with the final setup.
 
 ### Error analysis
 
@@ -190,10 +188,12 @@ see section Evaluation research
 
 ### PDF extraction limitations
 
-One library warned that some PDFs have a meta tag that says they should not be extracted
-
-pdfminer informs that some pdfs should not be extracted based on their authors will (meta data field)
+Pdfminer informs that the text of some annual reports from *IBB* and *Berlinovo* should not be extracted. This information is given in a meta data field of the PDF. We use the text extract from these documents for our study anyway.
 
 ### Computational constraints
 
+The extraction with \acr{LLM}s is computationally demanding and should be run on \acr{GPU}s. To run model that yields the best results four H200 \acr{GPU}s are needed.
+
 ### Generalizability scope
+
+The approach tested here is probably using on other companies annual reports as well. To extract information that is only filling a small part of a page the framework may has to be adjusted. The page identification could be trickier with some approaches if only a single key word is searched.

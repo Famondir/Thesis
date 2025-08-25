@@ -62,6 +62,8 @@ Table \@ref(tab:display-data-text-extraction) shows, that *pdfium* and *pymupdf*
 
 Some examples for errorneous extracted texts with *pdfium* and *pdfminer* can be found in section \@ref(regex-extraction-mistakes).
 
+time to ocr 107 images with pdf2image and pytesseract: 1:28+11:41
+
 ```{r display-data-text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different Python package", ref = opts_current$get("label"), dom="t")
 ```
@@ -172,10 +174,13 @@ for (result in meta_list_llm) {
 }
 ```
 
--   yolo benchmark and table transformer
--   skip classification with llm
+#### yolo benchmark and table transformer
 
 not so important anymore
+
+#### old classification with llm
+
+took wrong identified pages as base for a table detection benchmark and n-shot base for llm classification (contrasts)
 
 ```{r metric-plots-slider, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-slider', out.width="100%", results='asis'}
 for (entry in metric_plots) {

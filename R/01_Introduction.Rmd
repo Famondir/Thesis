@@ -18,7 +18,7 @@ editor_options:
     -   next market for hyper scalers might be public administration
         with local computing clusters
 -   whom is it helping
--   why now: digital sovereignity, AI act; people want NLP AI products,
+-   why now: digital sovereignty, AI act; people want NLP AI products,
     frameworks get easier
 -   is the problem easier solvable then years ago? why?
 
@@ -32,11 +32,28 @@ knitr::include_graphics("images/beteiligungsunternehmen.png")
 
 ### Human in the loop
 
+building an application that assists in or potentially fully automates
+information extraction
+
+HITL gives feeling of control (important for change management
+processes)
+
+at which steps human needed? where feels it good? what to correct if an
+error occured?
+
+handle unknown entities?
+
+```{r, fig.cap="Showing the information extraction process in a HITL application. The fed in document and results are saved in a database, that is used for the in-context learning RAG approaches for future extractions. The results are saved in the relational company database as well, e.g. as information to present in dashboards.", out.width="100%", echo=FALSE}
+knitr::include_graphics("images/HITL_flowchart.png")
+```
+
 test \acr{HITL}
 
 human in the loop [@natarajanHumanintheloopAIintheloopAutomate2024;
 @mosqueira-reyHumanintheloopMachineLearning2023;
 @wuSurveyHumanintheloopMachine2022]
+
+long term goal: establishing exchange of machine readable information
 
 ## Objectives
 

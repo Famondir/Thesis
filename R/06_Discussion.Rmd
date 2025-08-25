@@ -59,9 +59,17 @@ For humans: Easily identifiable if page has a big table with numbers but not so 
 -   fine-tuning
 -   using something smaller (e.g. LSTMs) instead LLMs
 -   building application, UX design (ref Ambacher 2024)
--   table extraction (either VLLMs or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders
+-   table extraction (either VLLMs (visual) or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders
 
 in company document next / previous year more helpful than years further away?
+
+### Table detection / extraction
+
+Can be used to narrow down set of possible pages
+
+Can be used to focus only on the table content (measure if correct area was identified would be necessary)
+
+Vision model as baseline
 
 ## Outlook
 
@@ -69,10 +77,31 @@ in company document next / previous year more helpful than years further away?
 -   check for halluzination vs wrong placed / repeated numbers
 -   no perfect score even with synthetic data
 -   flexible extraction (name something, find it, get it)
--   
+
+### Vision Model
+
+Yolo
+
+### Docling and Co
 
 ### Table extraction
 
 building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 
 predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
+
+### Sophisticated approaches for text extraction
+
+-   docling
+
+not implemented
+
+-   Nougat
+-   maker
+-   Azure
+
+## Error analysis
+
+-   errors from wrong formatted numbers
+
+-   errors from wrong / unclear entity mapping
