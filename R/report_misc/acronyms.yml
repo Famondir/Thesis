@@ -36,4 +36,12 @@ acronyms:
       longname: area under the curve
     - shortname: TF-IDF
       longname: Frequency-Inverse Document Frequency
+    - shortname: HITL
+      longname: human-in-the-loop
+    - shortname: GPU
+      longname: graphics processing unit
+    - shortname: BHT
+      longname: Berliner Hochschule für Technik
+    - shortname: OCR
+      longname: optical character recognition
 ---

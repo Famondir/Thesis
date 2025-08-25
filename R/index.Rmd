@@ -39,7 +39,7 @@ output:
         - report_misc/code_folding.html
 css: "report_misc/style.css"
 documentclass: book
-bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
+bibliography: ["report_misc/My Library.bib"]
 biblio-style: apa
 link-citations: yes
 csl: report_misc/apa-single-spaced.csl
@@ -97,7 +97,7 @@ std_dev <- knitr::is_html_output() ? 'png' : 'pdf'
 \pagenumbering{gobble}
 \pagestyle{empty}
 
-# {.unlisted .unnumbered}
+#  {.unlisted .unnumbered}
 
 ## Abstract {.unlisted .unnumbered}
 
@@ -105,7 +105,7 @@ Content of this thesis is a benchmark on information extraction from PDFs. The f
 
 The benchmark is composed of two sub tasks and the performance of different open source large language models is tested with different prompting approaches and compared to alternative methods.
 
-This can be seen as a reimplementation study of "Extracting Financial Data from Unstructured Sources: Leveraging Large Language Models" - a paper published by @li_extracting_2023. The key differences are the application on German documents using open source large language models.
+This can be seen as a reimplementation study of "Extracting Financial Data from Unstructured Sources: Leveraging Large Language Models" - a paper published by @liExtractingFinancialData2023. The key differences are the application on German documents using open source large language models.
 
 We show, that also smaller open source \acr{LLM}s can be used to identify the pages that contain the information of interest and to extract it. Based on these findings we sketch a process, how humans can use \acr{LLM}s to extract information from financial reports.
 
@@ -115,27 +115,33 @@ Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Da
 
 ## Reading advices {.unlisted .unnumbered}
 
-The author recommends to read the thesis in its digital gitbook version instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution^[Most of the time the thesis was inspected at a third of the authors 42" screen with 4k resolution. For inspecting the large overview graphics it is a very handy tool the author recommends every data scientist or software developer.]. The more, the merrier.
+The author recommends to read the thesis in its digital gitbook version instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution[^index-1]. The more, the merrier.
 
-\huge <span style="font-size: 1.5em;">😊</span> \normalsize
+[^index-1]: Most of the time the thesis was inspected at a third of the authors 42" screen with 4k resolution. For inspecting the large overview graphics it is a very handy tool the author recommends every data scientist or software developer.
+
+\huge [😊]{style="font-size: 1.5em;"} \normalsize
 
 ## Goals and Learnings {.unlisted .unnumbered}
 
 Achieved:
 
-* thesis with bookdown
-* docker image creation
-* cluster orchestration
-* llm usage
-* guided decoding
+-   thesis with bookdown
+-   docker image creation
+-   cluster orchestration
+-   llm usage
+-   guided decoding
 
 Missed:
 
-* Administrating a k8s cluster
-* Fine tuning a model
-* using small language models
-* training a lm
-* using vllms
+-   Administrating a k8s cluster
+-   Fine tuning a model
+-   using small language models
+-   training a lm
+-   using vllms
+
+## Dedication {.unlisted .unnumbered}
+
+Micha
 
 \pagestyle{fancy}
 

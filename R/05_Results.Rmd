@@ -62,7 +62,7 @@ tables showing the assets (*Aktiva*) and liabilities (*Passiva*) of a
 company. Often these two tables are on separate pages. Hereafter, the
 German terms **Aktiva**, **Passiva** and \acr{GuV} will be used.
 
-@li_extracting_2023 describes two ways to identify the relevant pages
+@liExtractingFinancialData2023 describes two ways to identify the relevant pages
 (see Figure \@ref(fig:extraction-framework-flow-chart)). For longer
 documents they propose to use the \acr{TOC} to determine a page range
 that includes the information of interest. In addition, they develop
@@ -139,7 +139,7 @@ df_targets_no_ocr %>% render_table(
   )
 ```
 
-```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used.", results='asis'}
+```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used."}
 df_pages %>% group_by(company) %>% mutate(
   docs_per_company = n(), pages_per_company = sum(pages)
   ) %>% 
@@ -330,7 +330,7 @@ source("scripts/page_identification_toc_data_loading.R")
 ```
 
 The second approach presented in this section leverages the \acr{TOC}
-understanding capabilities of \acr{LLM}s. @li_extracting_2023 use this
+understanding capabilities of \acr{LLM}s. @liExtractingFinancialData2023 use this
 approach with long documents as a first step to determine a page range
 of interest. If the predicted page range is correct and narrow, this
 approach is more efficient than processing the whole document with a
@@ -366,7 +366,7 @@ The code can be found in:
 
 Discussion:
 
--   @li_extracting_2023 did not report any issues with this approach.
+-   @liExtractingFinancialData2023 did not report any issues with this approach.
     They use few-shot learning and Chain-of-Thought techniques to help
     the \acr{LLM} to understand the task. They ask just for one
     information at a time.
@@ -379,11 +379,11 @@ Discussion:
 ::: paragraph-start
 ##### Text based
 
-@li_extracting_2023 used the \acr{TOC} to identify the pages of
+@liExtractingFinancialData2023 used the \acr{TOC} to identify the pages of
 interest. In their approach the table of contents is extracted from the
 text. Based on their observation, that the \acr{TOC} in \acr{ACFR}s is
 found within the initial 165 lines of the converted document
-[@li_extracting_2023, p. 20], they use the first 200 lines of text.
+[@liExtractingFinancialData2023, p. 20], they use the first 200 lines of text.
 :::
 
 My initial expectation was to find the \acr{TOC} within the first five
@@ -2406,7 +2406,7 @@ manually create the first reference dataset.
 ##### Structured output
 
 We are using a strict schema for the extraction process that is derived
-from the legal text [@hgb_handelsgesetzbuch_2025, §266]. Actually, there
+from the legal text [@hgbHandelsgesetzbuchImBundesgesetzblatt2025, §266]. Actually, there
 are three types of verbosity, that are defined in the law. Smaller
 companies are permitted to create less detailed balance sheets. Our
 schema is created based on the most detailed level. This is the form
@@ -2809,6 +2809,16 @@ where to put?:
 ```{r}
 df_real_table_extraction %>% filter(!str_detect(model, "oss")) %>% 
   filter(n_examples == 3) %>% 
+  mutate(.before = 1, company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])) %>% 
+  group_by(company) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = company, y = percentage_correct_numeric)) + 
+  geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) + 
+  facet_grid(model_family ~ .)
+
+df_real_table_extraction %>% filter(str_detect(model, "235B")) %>% 
+  filter(n_examples == 5, method_family == "top_n_rag_examples") %>% 
   mutate(.before = 1, company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])) %>% 
   group_by(company) %>% 
   ggplot() +
@@ -3449,7 +3459,7 @@ create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_re
 ```{r loading-synth-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/synth_table_extraction_llm.rds")), cache.lazy = FALSE}
 df_synth_table_extraction <- readRDS("data_storage/synth_table_extraction_llm.rds") %>%
   mutate(model = if_else(model == "Qwen3-235B-A22B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8", model)) %>% 
-  # sample_frac(size = .05) %>% 
+  sample_frac(size = .05) %>% 
   filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
   mutate(
     model = gsub("^[^_]+_", "", model)

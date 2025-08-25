@@ -1,6 +1,76 @@
 # Implementation (max 5p)
+
 \ChapFrame
 
 ## Speedup with vLLM and batching
 
 ## Setup (Dockerfile and PV)
+
+## Page identification
+
+Due to the imbalanced distribution of the classes the accuracy is not a good metric to compare the performance of the different methods. The number of pages of interest is much smaller than the number of irrelevant pages. Therefore, precision, recall and F1 score are presented as well.
+
+### Baselines
+
+#### Regex based
+
+results dependend on regex pattern
+
+start with pypdf backend and simple regex developed more sophisticated regex based on missed pages
+
+took wrong identified pages as base for a table detection benchmark and n-shot base for llm classification (contrasts)
+
+some tables can't be found without previous ocr; some pages hold image of table and machine readable text
+
+##### LLM based
+
+#### Term frequency based
+
+##### VLLM based
+
+was not implemented
+
+## Table detection
+
+Can be used to narrow down set of possible pages
+
+Can be used to focus only on the table content (measure if correct area was identified would be necessary)
+
+Vision model as baseline
+
+### LLM
+
+-   table: yes/no
+-   akiva: yes/no
+-   multiclass
+
+### Vision Model
+
+Yolo
+
+### Docling and Co
+
+##### VLLM based
+
+was not implemented
+
+## Information extraction
+
+### Baselines
+
+simple regex?
+
+### Simple pipeline
+
+-   extract text (if document can't be passed directly)
+-   query LLM directly
+
+### Sophisticated approaches
+
+not implemented
+
+-   with pipelines
+-   Nougat
+-   maker
+-   Azure
+-   docling

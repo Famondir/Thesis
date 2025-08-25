@@ -1,3 +1,11 @@
+df_real_table_extraction %>% 
+  filter(str_detect(model, "235B")) %>% 
+  group_by(model, method) %>% 
+  mutate(mean_perc_total = mean(percentage_correct_total)) %>% 
+  ungroup() %>% 
+  slice_max(n=1, mean_perc_total) %>% 
+  select(method, filepath, percentage_correct_total, percentage_correct_numeric, NA_F1) %>% 
+  arrange(percentage_correct_total) %>% View()
 
 #####
 

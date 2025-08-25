@@ -7,15 +7,15 @@
 
 ## Local machine {#local-machine}
 
-One can find the specifications of the local machine used to run the less computationally demanding tasks below. It is a lightweight laptop device. Its performance cores support hyperthreading and have a clock range between 2.1 and 4.7 GHz. However, due to the flat design, there is little active cooling. Thus, thermal throttling starts rather quickly. It is therefore a reasonable assumption that most locally benchmarked tasks are running at 2.1 GHz. Despite this handicap, it has a sufficiently large RAM of 32 GB and 3 GB of NVMe disk space.
+One can find the specifications of the local machine used to run the tasks that do not require a \acr{GPU} below. It is a lightweight laptop device. Its performance cores support hyper-threading and have a clock range between 2.1 and 4.7 GHz. Due to its slim design, there is little active cooling. Thus, thermal throttling starts quickly. It is a reasonable assumption that most local benchmarks are running at 2.1 GHz. Despite this handicap, it has a sufficiently large RAM of 32 GB and 3 TB of NVMe disk space.
 
-### System Details Report {.unnumbered}
+### System Details Report {.unlisted .unnumbered}
 
-#### Report details {.unnumbered}
+#### Report details {.unlisted .unnumbered}
 
 -   **Date generated:** 2025-07-19 13:56:16
 
-#### Hardware Information: {.unnumbered}
+#### Hardware Information: {.unlisted .unnumbered}
 
 -   **Hardware Model:** LG Electronics 17ZB90Q-G.AD79G
 -   **Memory:** 32.0 GiB
@@ -23,7 +23,7 @@ One can find the specifications of the local machine used to run the less comput
 -   **Graphics:** Intel® Graphics (ADL GT2)
 -   **Disk Capacity:** 3.0 TB
 
-#### Software Information: {.unnumbered}
+#### Software Information: {.unlisted .unnumbered}
 
 -   **Firmware Version:** A2ZG0150 X64
 -   **OS Name:** Ubuntu 24.04.2 LTS
@@ -54,17 +54,17 @@ data_text_extraction <- data_text_extraction %>%
   )
 ```
 
-A basic requirement for all succeeding tasks is, that the text gets extracted from the PDF files. As written in doclings technical report [@auer_docling_2024] the available open source libraries differ in their speed and restrictiveness of licensing. Since there are no benchmark results this report multiple libraries have been tested here.
+All our experiments use the text extracted from PDF files. The available open-source libraries differ in their speed, quality of results and restrictiveness of licensing [@auerDoclingTechnicalReport2024 ]. We have tested multiple libraries in this thesis, because @auerDoclingTechnicalReport2024  published no quantitative results. The benchmark runs on the local machine described in section \@ref(local-machine). There are `r total_pages` pages to extract the text from.
 
-The benchmark ran on the local machine described in section \@ref(local-machine). There have been `r total_pages` pages to extract the text from.
+Table \@ref(tab:display-data-text-extraction) shows, that *pdfium* and *pymupdf* extract the text fastest. For implementation in a system where the text has to get extracted live or frequently the speed of the library might be paramount. Since the AGPL license of *pymupdf* might not be met with the application, that will be created for \acr{RHvB}, *pdfium* is an interesting candidate for the PDF parsing library to use.
+
+@auerDoclingTechnicalReport2024  reports, that *pdfium* occasionally merges text cells that are not close o each other, resulting in unrecoverable quality issues. Thus we checked some of the extracted texts manually and include the PDF extraction backend as a variable in our experiments. The page identification experiment, using the \acr{regex} approach, shows no effect of the text extraction library. In contrast, we find an effect in the later performed information extraction experiment on synthetic **Aktiva** tables with the \acr{regex} approach.
+
+Some examples for errorneous extracted texts with *pdfium* and *pdfminer* can be found in section \@ref(regex-extraction-mistakes).
 
 ```{r display-data-text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different Python package", ref = opts_current$get("label"), dom="t")
 ```
-
-The result of docling-parse is not formated as markdown yet but also just plain text.
-
-For implementation in a system where the text has to get extracted live or frequently the speed of the library might be paramount. But in special cases it can be important to invest more computational power into text extraction if this assures extraction according a more complicated document layout. E.g. some of the tables have been parsed by pdfium in such a manner that first all row descriptors have been extracted (first row) and thereafter all numeric columns (rowwise) ADD REFERENCE / EXAMPLE.
 
 ### Table detection {#table-detection-benchmark}
 
@@ -203,13 +203,13 @@ results_df_llm %>%
   )
 ```
 
-### Large language model process speed
+### Large language model process speed {#vllm-batch-speed}
 
-In April 2025 there have been issues with running vllm within the Python framework. Thus the first experiments have been conducted using the transformers library. When the problems of building a working vllm based docker image for the experiments it was measured how long the same task takes with the transformers and the vllm library and how the batched processing competes versus a loop approach. The model family used was Qwen 2.5 Instruct. The task was to extract the assets table for ten real example pages.
+In April 2025 there have been issues with running \acr{vllm} within the Python framework. Thus, the first experiments are conducted, using the *transformers* library. When we managed to build a working \acr{vllm} based docker image for the experiments, we measured, how long the same task takes with the *transformers* and the \acr{vllm} library and how the batched processing competes versus a loop approach. The model family used is Qwen2.5-Instruct. The task is to extract the information from ten real **Aktiva** tables.
 
-Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with vllm library run are around four to five times faster. Processing the messages in a batched mode again is six to seven times faster.
+Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with \acr{vllm} run around four to five times faster. Processing the messages in a batched mode is six to seven times faster than using a looped approach. Thus, the change of the experimental setup from a *transformers* powered loop-based approach to a \acr{vllm} powered batched processing approach, increased the speed by 2500 %.
 
-The change of the experimental setup from transformers loop-based to vllm batched mode made is possible run the benchmark on whole PDF documents giving a sound estimate of the false positive rate in the page identification task (see section \@ref(llm-page-identification)). Previous experiments have only been using a subset of pages that have been selected with the baseline regex approach (see section \@ref(regex-page-identification)).
+This allows us to run the page identification benchmark on whole an nual reports, giving a sound estimate of the false positive rate (see section \@ref(llm-page-identification)). Previous experiments were only conducted on a subset of pages, that were selected based on the results of the *simple regex* approach (see section \@ref(regex-page-identification)).
 
 ```{r llm-spped-mini-benchmark-table, echo=echo_flag, warning=warning_flag, message=message_flag}
 data_llm_speed <- data.frame(
@@ -220,7 +220,7 @@ data_llm_speed <- data.frame(
   vllm_batched = c(NA, 20, 30)
 ) %>% setNames(c("Model parameters (in B)", "Transformers", "vLLM", "vLLM batched"))
 
-knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for processing ten asset tables using different libraries and approaches")
+knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for extract the information from ten Aktiva tables using different libraries and approaches.")
 ```
 
 ## Prompts
@@ -844,7 +844,7 @@ knitr::include_graphics("./images/acfr23_balance.pdf")
 
 ## Extraction framework flow chart
 
-(ref:flow-chart-caption) Flowchart of the extraction framework of @li_extracting_2023
+(ref:flow-chart-caption) Flowchart of the extraction framework of @auerDoclingTechnicalReport2024 
 
 ```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="(ref:flow-chart-caption)"}
 knitr::include_graphics("./images/extraction_framework_flow_chart.png")
@@ -1222,6 +1222,269 @@ Vorjahr
 106,67
 
 151,61
+```
+
+Extract by PdfReader for '../Geschaeftsberichte/IBB/ibb\_geschaeftsbericht\_2006.pdf', p. 67:
+
+```{verbatim}
+'\x18\x18
+Jahresbilanz zum 31. Dezember 2006
+a ktivseite in te U r
+31.12.2006 31.12.2005
+1. Barreserve
+	
+	
+b)	
+	
+Guthaben
+	
+bei
+	
+Zentralnotenbanken	
+darunter:
+	
+bei
+	
+der
+	
+Deutschen
+	
+Bundesbank:	
+TEUR
+	
+19.823
+	
+(31.12.2005
+	
+:
+	
+TEUR
+	
+28.873)
+3. Forderungen an 
+k
+reditinstitute
+	 a)
+	
+täglich
+	
+fällig
+	 b)
+	
+andere
+	
+Forderungen
+4. Forderungen an 
+k
+unden
+	
+	
+darunter:
+		
+durch
+	
+Grundpfandrechte
+	
+gesichert:	
+TEUR
+	
+9.496.661
+	
+(31.12.2005
+	
+:
+	
+TEUR
+	
+10.660.277)	
+Kommunalkredite:
+	
+TEUR
+	
+3.532.796
+	
+(31.12.2005
+	
+:
+	
+TEUR
+	
+2.338.961)
+5. Schuldverschreibungen und andere festverzinsliche Wertpapiere
+	 a)
+	
+	Geldmarktpapiere
+	
+		 ab)
+	
+von
+	
+anderen
+	
+Emittenten	
+	 b)
+	
+	Anleihen
+	
+und
+	
+Schuldverschreibungen
+	
+		 ba)
+	
+von
+	
+öffentlichen
+	
+Emittenten
+	
+		 darunter:
+	
+beleihbar
+	
+bei
+	
+der
+	
+Deutschen
+	
+Bundesbank
+	
+		 bb)
+	
+von
+	
+anderen
+	
+Emittenten
+	
+		 darunter:
+	
+beleihbar
+	
+bei
+	
+der
+	
+Deutschen
+	
+Bundesbank
+	 c)
+	
+	eigene
+	
+Schuldverschreibungen
+	 	 Nennbetrag
+7. Beteiligungen	
+	
+	
+darunter:
+		
+an
+	
+Kreditinstituten
+	
+TEUR
+	
+0
+	
+(31.12.2005
+	
+:
+	
+TEUR
+	
+0)
+8. 
+a
+nteile an verbundenen Unternehmen
+	
+	
+darunter:
+		
+an
+	
+Kreditinstituten
+	
+TEUR
+	
+0
+	
+(31.12.2005
+	
+:
+	
+TEUR
+	
+0)
+9. 
+t
+reuhandvermögen
+	
+	darunter:
+	
+Treuhandkredite
+11. Immaterielle 
+a
+nlagewerte
+12. Sachanlagen
+15. Sonstige 
+v
+ermögensgegenstände
+16. 
+r
+echnungsabgrenzungsposten
+Summe der 
+a
+ktiva
+19.823
+ 
+ 
+132.272
+1.562.290
+24.138
+126.223
+126.223 
+3.115.852
+2.976.213
+718
+718
+101.246
+19.823
+1.694.562
+14.758.008
+3.266.931
+11.440
+178.004
+101.246
+10.038
+46.863
+141.626
+17.804
+20.246.345
+28.873
+2.195.434
+205.129
+1.990.305
+14.728.310
+1.682.660
+0
+49.152
+49.152
+1.585.752
+1.585.752
+47.756
+47.722
+11.440
+178.004
+103.297
+103.297
+17.705
+50.334
+141.791
+11.957
+19.149.805
+Jahresabschluss  | Jahresbilanz'
 ```
 
 # Tables

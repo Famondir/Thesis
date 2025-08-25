@@ -1,13 +1,14 @@
 # Literature review (less than 10 p)
+
 \ChapFrame[Literature review][bhtblue]
 
 (5 to 10 lines)
 
-* overview of subchapters
-* relevance for reader (Gutachter)
-* link to previous chapter
-* relevant basic tasks
-* parameter vs active parameter
+-   overview of subchapters
+-   relevance for reader (Gutachter)
+-   link to previous chapter
+-   relevant basic tasks
+-   parameter vs active parameter
 
 ## NLP history
 
@@ -71,31 +72,37 @@ closed-domain vs open-domain
 
 ## Technological topic (related work)
 
-* LLM generation
-* structured output
-* Fewshot
-* context length can be harmful
+-   LLM generation
 
-* most important papers
-* connection of papers (timeline)
-* what used, what not?
-* extending existing paper?
+-   structured output
+
+-   Fewshot
+
+-   context length can be harmful
+
+-   most important papers
+
+-   connection of papers (timeline)
+
+-   what used, what not?
+
+-   extending existing paper?
 
 ## Term frequency
 
 ### Extraction of numeric values
 
-99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@li_extracting_2023] In the untabulated test,  GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had  the lowest accuracy rate at 69%. (ebd.)
+99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@liExtractingFinancialData2023] In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)
 
-Too many hallucinated values when it was NA instead [@grandini_metrics_2020]
+Too many hallucinated values when it was NA instead [@grandiniMetricsMultiClassClassification2020]
 
 ## optinal more topics like previous
 
 ## Summary (0.5 p)
 
-* lessons learned
-* link to goal thesis
-* link to next chapter
+-   lessons learned
+-   link to goal thesis
+-   link to next chapter
 
 ## To place in chapters above
 
@@ -103,19 +110,17 @@ Too many hallucinated values when it was NA instead [@grandini_metrics_2020]
 
 ### Difficulties
 
-* Beispielbilder
+-   Beispielbilder
 
 ## Document Extrtaction Process
 
 ### Document Layout Analysis
 
-An important step in the process of extracting information from documents is to recognize the layout of a document [@zhong_publaynet_2019].
+An important step in the process of extracting information from documents is to recognize the layout of a document [@zhongPubLayNetLargestDataset2019].
 
-Getting the order of texts correct
-align captions to tables and figure
-identify headings, tables and figures
+Getting the order of texts correct align captions to tables and figure identify headings, tables and figures
 
-One of the most popular datasets used for training and benchmarking is PubLayNet (see [PubLayNet on paperswithcode.com](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central [@zhong_publaynet_2019, p. 1]. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. <-- is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?
+One of the most popular datasets used for training and benchmarking is PubLayNet (see [PubLayNet on paperswithcode.com](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central [@zhongPubLayNetLargestDataset2019, p. 1]. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. \<-- is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?
 
 Manual annotated datasets often were limited to several hundred pages. Deep learning methods need a much larger training dataset. Previously optical character recognition (OCR) methods were used.
 
@@ -125,14 +130,10 @@ Object detection
 
 #### Vision Grid Transformer
 
-
-
 ### 
 
 ## Tools
 
 ### TableFormer
 
-SynthTabNet <-- has it:
-- nested / hierarchical tables, where rows add up to another row?
-- identifying units and unit cols/rows
+SynthTabNet \<-- has it: - nested / hierarchical tables, where rows add up to another row? - identifying units and unit cols/rows

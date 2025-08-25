@@ -1,104 +1,152 @@
-\pagenumbering{arabic} 
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+\pagenumbering{arabic}
 
 # Introduction
+
 \ChapFrame[Introduction][bhtyellow]
 
 ## Motivation
 
-* market: public administration, companies with data of special requirements for treating (secret and personal data (high risk data)) <-- DSGVO, AI act
-  * next market for hyper scalers might be public administration with local computing clusters
-* whom is it helping
-* why now: digital sovereignity, AI act; people want NLP AI products, frameworks get easier
-* is the problem easier solvable then years ago? why?
+-   market: public administration, companies with data of special
+    requirements for treating (secret and personal data (high risk
+    data)) \<-- DSGVO, AI act
+    -   next market for hyper scalers might be public administration
+        with local computing clusters
+-   whom is it helping
+-   why now: digital sovereignity, AI act; people want NLP AI products,
+    frameworks get easier
+-   is the problem easier solvable then years ago? why?
 
-missing law to access digital data and no law to choose the format of the data
-[extensible Business Reporting Language](https://de.xbrl.org/) as a standard
-changing from HGB to IFSR
+missing law to access digital data and no law to choose the format of
+the data [extensible Business Reporting Language](https://de.xbrl.org/)
+as a standard changing from HGB to IFSR
 
 ```{r beteiligungsunternehmen, echo=FALSE, out.width="100%", fig.cap="Overview of companies Berlin holds share at"}
 knitr::include_graphics("images/beteiligungsunternehmen.png")
 ```
 
+### Human in the loop
+
+test \acr{HITL}
+
+human in the loop [@natarajanHumanintheloopAIintheloopAutomate2024;
+@mosqueira-reyHumanintheloopMachineLearning2023;
+@wuSurveyHumanintheloopMachine2022]
+
 ## Objectives
 
-The sixth division at RHvB is auditing the companies Berlin is a stakeholder of. Basic information they have to process are the balance sheets and profit and loss accounting. Those information is provided via their annual reports in form of PDF files. The provided annual reports often differ from the publicly available ones in matter of information granularity and design and are treated as non public information. Automate the extraction of those information would be a good starting point for AI assisted information retrieval from PDFs for the RHvB overall.
+The sixth division at RHvB is auditing the companies Berlin is a
+stakeholder of. Basic information they have to process are the balance
+sheets and profit and loss accounting. Those information is provided via
+their annual reports in form of PDF files. The provided annual reports
+often differ from the publicly available ones in matter of information
+granularity and design and are treated as non public information.
+Automate the extraction of those information would be a good starting
+point for AI assisted information retrieval from PDFs for the RHvB
+overall.
 
-It is important to get numeric values totally accurate; numeric values are difficult to handle for langauge models
+It is important to get numeric values totally accurate; numeric values
+are difficult to handle for langauge models
 
-* special part of big problem? central question
-* two sentences: why this problem? new problem or just a part in the big task? hard to solve of straight forward? research or application? what was not done and why?
-* building a system? what task to solve? core functionality? typical use cases?
+-   special part of big problem? central question
+-   two sentences: why this problem? new problem or just a part in the
+    big task? hard to solve of straight forward? research or
+    application? what was not done and why?
+-   building a system? what task to solve? core functionality? typical
+    use cases?
 
 Research questions and hypothesss
 
-Q1: Can a \acr{LLM} be used to efficiently extract financial information from German annual reports?
-Q2. Can LLMs be used to identify the page of interest automatically?
+Q1: Can a \acr{LLM} be used to efficiently extract financial information
+from German annual reports? Q2. Can LLMs be used to identify the page of
+interest automatically?
 
-Q3: Can confidence scores be used to head up the human in the loop on which results to double check? (How can sources of the automatic extraction being communicated down stream in order to make double checking easy before making decisions?)
-Q4: Can contextual information from similar documents reduce errors made during table extraction?
-Q5: What are characteristics of financial tables that make it hard for LLMs to identify / extract them? (How does the length and complexity of financial documents (e.g., multi-column layouts, nested tables) affect table extraction
-performance?)
+Q3: Can confidence scores be used to head up the human in the loop on
+which results to double check? (How can sources of the automatic
+extraction being communicated down stream in order to make double
+checking easy before making decisions?) Q4: Can contextual information
+from similar documents reduce errors made during table extraction? Q5:
+What are characteristics of financial tables that make it hard for LLMs
+to identify / extract them? (How does the length and complexity of
+financial documents (e.g., multi-column layouts, nested tables) affect
+table extraction performance?)
 
 ## Methodology (1 p)
 
-* how to solve the problem?
-* what foundations to have in mind?
-* proceeding?
+-   how to solve the problem?
+-   what foundations to have in mind?
+-   proceeding?
 
-Experimental / Comparative Research
-• Reimplementing framework(s)
-• Comparing / Benchmarking
-• Frameworks
-• Models
-• Methods
-• Use cases
-• Ablation test
+Experimental / Comparative Research • Reimplementing framework(s) •
+Comparing / Benchmarking • Frameworks • Models • Methods • Use cases •
+Ablation test
 
 ## Thesis Outline (0.5 p)
 
 ## To place in chapters above
 
-This master thesis is motivated by a use case from practical work at the Berlin court of audit (Rechnungshof von Berlin; RHvB). The auditors often are faced with the problem that they need information that is provided as natural language or in tables inside of unstructured documents, i.e. in PDF files. The goal of this thesis is benchmarking methods for automated information extraction from specific tables from PDF files.
+This master thesis is motivated by a use case from practical work at the
+Berlin court of audit (Rechnungshof von Berlin; RHvB). The auditors
+often are faced with the problem that they need information that is
+provided as natural language or in tables inside of unstructured
+documents, i.e. in PDF files. The goal of this thesis is benchmarking
+methods for automated information extraction from specific tables from
+PDF files.
 
-Ideally, the data extraction pipeline is able to autonomously
-* identify the pages with the tables of interest.
-* identify the tables of interest on these pages.
-* extract the information as provided into a structured table (e.g. as JSON, a csv file or HTML code).
-* transform the data into a given schema, stripping all aggregated values.
+Ideally, the data extraction pipeline is able to autonomously \*
+identify the pages with the tables of interest. \* identify the tables
+of interest on these pages. \* extract the information as provided into
+a structured table (e.g. as JSON, a csv file or HTML code). \* transform
+the data into a given schema, stripping all aggregated values.
 
-It should extract the values without errors. It would be nice if the computation time and energy consumption is as low as possible.
+It should extract the values without errors. It would be nice if the
+computation time and energy consumption is as low as possible.
 
-A more realistic approach, that is also beneficial to satisfy the AI Act (keine Entscheidung ohne menschliche Beteiligung), is an assistant system, that helps extracting information. Key features to get the human into the loop already at the step of information extraction for such an assistant might be:
+A more realistic approach, that is also beneficial to satisfy the AI Act
+(keine Entscheidung ohne menschliche Beteiligung), is an assistant
+system, that helps extracting information. Key features to get the human
+into the loop already at the step of information extraction for such an
+assistant might be:
 
-* showing the results together with the systems confidence.
-* showing the results next to the values of the source.
-* allowing in place adjustments to the extracted data.
+-   showing the results together with the systems confidence.
+-   showing the results next to the values of the source.
+-   allowing in place adjustments to the extracted data.
 
-A sound decision making is only possible if the information the decision is based on is valid.
+A sound decision making is only possible if the information the decision
+is based on is valid.
 
 ## RHvB
 
-* what does the RHvB do
-* why is this important
-* what does it not do yet (because data source is missing)
+-   what does the RHvB do
+-   why is this important
+-   what does it not do yet (because data source is missing)
 
 ## Datenverfügbarkeit
 
-* keine Regelung, in welcher Form der Rechungshof die Daten, die er benötigt, bereitgestellt zu bekommen hat
+-   keine Regelung, in welcher Form der Rechungshof die Daten, die er
+    benötigt, bereitgestellt zu bekommen hat
 
-Das Gesetz zur Förderung der elektronischen Verwaltung (EGovG) wurde erlassen, "um die Verwaltung effektiver, bürgerfreundlicher und effizienter zu gestalten." [@bmi_referat_o2_minikommentar_2013]
+Das Gesetz zur Förderung der elektronischen Verwaltung (EGovG) wurde
+erlassen, "um die Verwaltung effektiver, bürgerfreundlicher und
+effizienter zu gestalten." [@bmireferato2MinikommentarGesetzZur2013]
 
 [§ 12 EGovG](https://www.gesetze-im-internet.de/egovg/__12.html)
 
-* Vorhaben zur Datenkatalogisierung innerhalb der Verwaltung angestoßen, aber noch nicht richtig gestartet
-* Vornehmlich für Bürger*innen Zugang
+-   Vorhaben zur Datenkatalogisierung innerhalb der Verwaltung
+    angestoßen, aber noch nicht richtig gestartet
+-   Vornehmlich für Bürger\*innen Zugang
 
 ## Unstrukturierte Daten
 
-* Beispielbilder
+-   Beispielbilder
 
 ### Portable Document Format
 
-* print optimized
-* Table structure information gets lost
-* Bild und Textextract
+-   print optimized
+-   Table structure information gets lost
+-   Bild und Textextract
