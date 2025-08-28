@@ -1,4 +1,4 @@
-# Methodology
+# Methodology {#methodology}
 
 \ChapFrame
 
@@ -29,14 +29,33 @@ Research logic? Methods fit deductive. But I start with a very specific problem.
 knitr::include_graphics("images/research_design.png")
 ```
 
-### Research questions
+### Research questions {#research-questions}
 
 For this thesis we formulate two main research questions:
 
-1.  How can we use \acr{LLM}s effectively to locate specific information in a financial report?
-2.  How can we use \acr{LLM}s effectively to extract these information from the document?
+```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
+cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract these information from the document?</li></ol>")
+```
+
+\begin{enumerate}[label={\textbf{Q\theenumi}}]
+  \item How can we use LLMs effectively to locate specific information in a financial report?
+  \item How can we use LLMs effectively to extract these information from the document?
+\end{enumerate}
 
 Each of this questions is investigated with its own methods and experiments. In the following we will use the term *page identification* to refer to the first research question and *information extraction* to refer to the second.
+
+Additionally, we formulate a \acr{UX} motivated side research question:
+
+```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
+cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?</li></ol>")
+```
+
+\begin{enumerate}[label={\textbf{Q\theenumi}}]
+  \setcounter{enumi}{3}
+  \item Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?
+\end{enumerate}
+
+The third question is refered to, using the term *error rate guidiance*.
 
 ### Evaluation framework
 
@@ -49,7 +68,13 @@ The page identification task is successful, if a page is correctly classified to
 ::: paragraph-start
 ##### Information extraction
 
-The information extraction task if successful, if the correct numeric value is extracted with the correct entity identifier in the correct \acr{json} format. If a values defined by the legal text is not present *null* should be returned with the corresponding entity identifier. The entity identifier can be composed of up to three labels, representing the hierarchy defined in the legal text.
+The information extraction task if successful, if the correct numeric value is extracted with the correct entity identifier in the correct \acr{json} format. If a value, defined by the legal text, is not present *null* should be returned with the corresponding entity identifier. The entity identifier can be composed of up to three labels, representing the hierarchy defined in the legal text.
+:::
+
+::: paragraph-start
+##### Error rate guidance
+
+A error rate guided result checking process can be implemented, if we can use extraction task related information, to identify thrust worthy. This means, we could white list these values and red flag the remaining ones. Thus, we could guide the users attention in the error checking process on those values, that empirically tend to have a high chance to be faulty.
 :::
 
 ### Evaluation research
@@ -80,6 +105,14 @@ We use two measures to describe the approaches performances for the information 
 
 Second, we report the F1 score for correctly predicting values as missing and thus returning *null*. The distribution of missing values and given numeric values is not very imbalanced. Nevertheless, we report the F1 score to establish a comparability with the results od the page identification task.
 
+::: paragraph-start
+##### Error rate guidiance
+
+In this thesis we focus our attention on a criteria, which we name *confidence*. We calculate the *confidence* score for answers received from \acr{LLM} based on the non-normalized sum of token log probabilities [@boseakEvaluatingLogLikelihoodConfidence2025]. For the classification tasks this is equal to the normalized sum, since the answer is either containing just one token or the subsequent tokens have a log probability of 0, because the fully answer is determined by the first syllable.
+:::
+
+We are using the non-normalized sum of token log probabilities as well, because we want a single uncertain digit to flag the whole numeric value as as unreliable. This means, that shorter answers tend to have higher *confidence* scores. This is especially true for predicting *null*. Thus, we investigate the prediction of numeric values and *null* separated.
+
 ### Benchmarking
 
 Comparing the performance of different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the *zero shot* strategy. Comparing the runtime or energy consumption gets possible with the \acr{GPU} benchmark data (see section \@ref(gpu-benchmark))
@@ -106,6 +139,12 @@ For the page identification task companies (mainly) from the first row of Figure
 For the information extraction task two sampling iterations are gone through. In the first iteration a single report is selected for each company. In addition, all available reports from the first listed company are chosen, to test an in-company learning approach. In the second iteration more reports of the other companies are added, to increase the ground truth size and allow to test the in-company approach for all companies.
 :::
 
+::: paragraph-start
+##### Error rate guidiance
+
+We investigate the third research question on the two datasets described above, instead of creating a separate dataset.
+:::
+
 ### Ground truth creation process
 
 The ground truth for both tasks is created by by manual labor of the authors. The results of early experiments are used to check the ground truth for mistakes or missed items.
@@ -127,6 +166,12 @@ For the information extraction task we copy the numeric values from the annual r
 There are cases, where a single line defined in the legal text is split up into multiple lines in the annual reports. In those cases we enter the sum into the according row in the csv file. If entities are found, that do not fit any entity given in the legal text, this entry is dropped. For the first iteration the csv files just contained the entities and column names but no values.
 
 In the second iteration we use the predictions of Qwen3-235B, check the values and mark mistakes, correct the values and log all mistakes found. In this iteration we check the ground truth created in the first iteration as well and correct mistakes made earlier.
+
+::: paragraph-start
+##### Error rate guidiance
+
+There is not ground truth for the calculated *confidence* scores. We will simply check, if the true and false predictions can be separated based on the returned *confidence scores*.
+:::
 
 ### Preprocessing
 
@@ -158,7 +203,7 @@ df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_ty
 
 The ultimate goal is to fully automate the information extraction task at hand. Thus, it is important to analyse potential errors, to identify obstacles that hinder performance and find ways to further improve the system.
 
-We expect to find issues with wrong extracted or halluzinated numbers, wrong entity recognition and false positive *null* values.
+We expect to find issues with wrong extracted or hallucinated numbers, wrong entity recognition and false positive *null* values. Not respected units
 
 Quantitative / stratified: We will compare the error rates based on the different variables of the experiments. For the approaches using \acr{LLM}s to solve the problem there are model specific, prompting strategy specific and example specific variables.
 
@@ -176,6 +221,8 @@ To better understand the limitations of the evaluated models, we will conduct a 
 
 see section Evaluation research
 
+### Prompt building
+
 ### Evaluation methods
 
 -   box plots
@@ -184,11 +231,13 @@ see section Evaluation research
 
 -   random forest + SHAP
 
-## Ethical & Practical Considerations
+## Ethical & Practical Considerations (eher am Ende oder weg?)
 
 ### PDF extraction limitations
 
 Pdfminer informs that the text of some annual reports from *IBB* and *Berlinovo* should not be extracted. This information is given in a meta data field of the PDF. We use the text extract from these documents for our study anyway.
+
+Errors catched by \acr{HITL} approach before they have down stream implications.
 
 ### Computational constraints
 
@@ -197,3 +246,11 @@ The extraction with \acr{LLM}s is computationally demanding and should be run on
 ### Generalizability scope
 
 The approach tested here is probably using on other companies annual reports as well. To extract information that is only filling a small part of a page the framework may has to be adjusted. The page identification could be trickier with some approaches if only a single key word is searched.
+
+### Ethical considerations
+
+The extraction of numeric information is not the same as making decisions. It probably isn't affected by any bias, that is discriminating humans.
+
+The automatisation of information extraction is potentially replacing low requirements work places. At \acr{RHvB} there are no jobs for such a task anymore. More free time for other tasks. Shifting to more complex tasks.
+
+AI Act does probably not apply, since decisions are not made on individual level?: Are there restrictions on the use of automated decision-making? Yes, **individuals should not be subject to a decision that is based solely on automated processing** (such as algorithms) and that is legally binding or which significantly affects them.

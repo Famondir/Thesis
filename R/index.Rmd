@@ -39,7 +39,7 @@ output:
         - report_misc/code_folding.html
 css: "report_misc/style.css"
 documentclass: book
-bibliography: ["report_misc/My Library.bib"]
+bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
 biblio-style: apa
 link-citations: yes
 csl: report_misc/apa-single-spaced.csl
@@ -51,6 +51,9 @@ acronyms:
   # sorting: usage
   include_unused: true
   style: short-long
+# urlcolor: blue
+# linkcolor: red
+# citecolor: green
 ---
 
 ```{r setup, include=FALSE}

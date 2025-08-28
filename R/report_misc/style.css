@@ -34,26 +34,6 @@
   overflow-x: auto;
 }
 
-/* .figure {
-  text-align:center;
-}
-
-.figure img {
-  max-width: 800px !important;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-} */
-
-/* .book .book-body .page-wrapper .page-inner .big-image {
-  max-width: 100% !important;
-  height: auto;
-} */
-
-/* .scroll-x {
-  overflow-x: auto;
-} */
-
 h5 span.header-section-number, h6 span.header-section-number {
   display: none;
 }
@@ -132,25 +112,22 @@ div.paragraph-start {
     margin-right: 3px; */
 }
 
-/* Dropdown filter container */
-/* .filter-container {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-} */
+/* ordered lists */
 
-/* Multi-select dropdown styling */
-/* .filter-dropdown {
-  min-width: 200px;
-  height: auto;
-  padding: 5px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  appearance: auto;
-} */
+:root {
+    --counter: 1;
+}
+
+ol.rs-questions {
+    counter-reset: rsq-counter calc(var(--counter) - 1);
+    list-style-type: none;
+}
+
+ol.rs-questions li:before {
+    content: 'Q' counter(rsq-counter, decimal) '. ';
+    counter-increment: rsq-counter;
+    font-weight: bold;
+}
 
 /* Grid container for images */
 .image-grid {

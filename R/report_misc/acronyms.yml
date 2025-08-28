@@ -48,4 +48,20 @@ acronyms:
       longname: secure shell
     - shortname: HTML
       longname: hyper text markup language
+    - shortname: AI
+      longname: artificial intelligence
+    - shortname: GPT
+      longname: generative pre-trained transformers
+    - shortname: UI
+      longname: user interface
+    - shortname: UX
+      longname: user experience
+    - shortname: RAG
+      longname: retrieval augmanted generation
+    - shortname: PLE
+      longname: Per-Layer Embedding
+    - shortname: MoE
+      longname: mixture of experts
+    - shortname: FFN
+      longname: feed forward network
 ---

@@ -1,4 +1,4 @@
-# Discussion
+# Discussion {#discussion}
 
 \ChapFrame
 
@@ -60,6 +60,7 @@ For humans: Easily identifiable if page has a big table with numbers but not so 
 -   using something smaller (e.g. LSTMs) instead LLMs
 -   building application, UX design (ref Ambacher 2024)
 -   table extraction (either VLLMs (visual) or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders
+-   classification oriented models with softmax
 
 in company document next / previous year more helpful than years further away?
 
@@ -77,6 +78,15 @@ Vision model as baseline
 -   check for halluzination vs wrong placed / repeated numbers
 -   no perfect score even with synthetic data
 -   flexible extraction (name something, find it, get it)
+-   UI
+    -   checking results / correct errors; col by col; match entities
+    -   add unused entries (backlog? extra table?)
+    -   possibilities for rerun / flagging the source of issue
+-   ml health check / benchmark framework
+    -   test new models performance
+    -   check if new examples might be harmful (repredicting)
+
+Ad-hocs for monitoring during the year
 
 ### Vision Model
 

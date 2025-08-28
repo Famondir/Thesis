@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>2 Literature review | Extracting tables from financial reports</title>
-  <meta name="description" content="2 Literature review | Extracting tables from financial reports" />
-  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+  <title>2 Literature review | Extraction of tabular data from annual reports with LLMs</title>
+  <meta name="description" content="2 Literature review | Extraction of tabular data from annual reports with LLMs" />
+  <meta name="generator" content="bookdown 0.43.2 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="2 Literature review | Extracting tables from financial reports" />
+  <meta property="og:title" content="2 Literature review | Extraction of tabular data from annual reports with LLMs" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="2 Literature review | Extracting tables from financial reports" />
+  <meta name="twitter:title" content="2 Literature review | Extraction of tabular data from annual reports with LLMs" />
   
   
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Simon Schäfer" />
 
 
-<meta name="date" content="2025-07-07" />
+<meta name="date" content="2025-09-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="introduction.html"/>
-<link rel="next" href="methods.html"/>
+<link rel="next" href="methodology.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -49,6 +49,7 @@
 
 
 
+<link href="libs/codefolding-lua-1.1/codefolding-lua.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -61,8 +62,81 @@
 <script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
 <link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="libs/dt-ext-rowgroup-1.13.6/css/rowGroup.dataTables.min.css" rel="stylesheet" />
+<script src="libs/dt-ext-rowgroup-1.13.6/js/dataTables.rowGroup.min.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.css">
+<script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js"></script> -->
 
 
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 <style type="text/css">
   
@@ -92,7 +166,7 @@ div.csl-indent {
 }
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="report_misc/style.css" type="text/css" />
 </head>
 
 <body>
@@ -105,55 +179,236 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a>
-<ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#notes"><i class="fa fa-check"></i><b>0.1</b> Notes</a></li>
-</ul></li>
+<li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
+
+<li class="divider"></li>
 <li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="03_Literature_review.html"><a href="#datenverf%C3%BCgbarkeit"><i class="fa fa-check"></i><b>1.1</b> Datenverfügbarkeit</a></li>
-<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#unstrukturierte-daten"><i class="fa fa-check"></i><b>1.2</b> Unstrukturierte Daten</a>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#motivation"><i class="fa fa-check"></i><b>1.1</b> Motivation</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#objectives"><i class="fa fa-check"></i><b>1.2</b> Objectives</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#introduction-methodology"><i class="fa fa-check"></i><b>1.3</b> Methodology</a></li>
+<li class="chapter" data-level="1.4" data-path="introduction.html"><a href="introduction.html#thesis-outline"><i class="fa fa-check"></i><b>1.4</b> Thesis Outline</a></li>
+<li class="chapter" data-level="1.5" data-path="introduction.html"><a href="introduction.html#to-place-in-chapters-above"><i class="fa fa-check"></i><b>1.5</b> To place in chapters above</a></li>
+<li class="chapter" data-level="1.6" data-path="introduction.html"><a href="introduction.html#unstrukturierte-daten"><i class="fa fa-check"></i><b>1.6</b> Unstrukturierte Daten</a>
 <ul>
-<li class="chapter" data-level="1.2.1" data-path="introduction.html"><a href="introduction.html#portable-document-format"><i class="fa fa-check"></i><b>1.2.1</b> Portable Document Format</a></li>
+<li class="chapter" data-level="1.6.1" data-path="introduction.html"><a href="introduction.html#portable-document-format"><i class="fa fa-check"></i><b>1.6.1</b> Portable Document Format</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="literature-review.html"><a href="literature-review.html"><i class="fa fa-check"></i><b>2</b> Literature review</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="literature-review.html"><a href="literature-review.html#document-extrtaction-process"><i class="fa fa-check"></i><b>2.1</b> Document Extrtaction Process</a>
+<li class="chapter" data-level="2.0.1" data-path="literature-review.html"><a href="literature-review.html#random-forest"><i class="fa fa-check"></i><b>2.0.1</b> Random Forest</a></li>
+<li class="chapter" data-level="2.0.2" data-path="literature-review.html"><a href="literature-review.html#large-language-models"><i class="fa fa-check"></i><b>2.0.2</b> Large Language Models</a>
 <ul>
-<li class="chapter" data-level="2.1.1" data-path="literature-review.html"><a href="literature-review.html#document-layout-analysis"><i class="fa fa-check"></i><b>2.1.1</b> Document Layout Analysis</a></li>
-<li class="chapter" data-level="2.1.2" data-path="literature-review.html"><a href="literature-review.html#section"><i class="fa fa-check"></i><b>2.1.2</b> </a></li>
+<li class="chapter" data-level="2.0.2.1" data-path="literature-review.html"><a href="literature-review.html#transformers"><i class="fa fa-check"></i><b>2.0.2.1</b> Transformers</a></li>
+<li class="chapter" data-level="2.0.2.2" data-path="literature-review.html"><a href="literature-review.html#encoder"><i class="fa fa-check"></i><b>2.0.2.2</b> Encoder</a></li>
+<li class="chapter" data-level="2.0.2.3" data-path="literature-review.html"><a href="literature-review.html#decoder"><i class="fa fa-check"></i><b>2.0.2.3</b> Decoder</a></li>
+<li class="chapter" data-level="2.0.2.4" data-path="literature-review.html"><a href="literature-review.html#bert"><i class="fa fa-check"></i><b>2.0.2.4</b> BERT</a></li>
+<li class="chapter" data-level="2.0.2.5" data-path="literature-review.html"><a href="literature-review.html#mixture-of-experts"><i class="fa fa-check"></i><b>2.0.2.5</b> Mixture of Experts</a></li>
+<li class="chapter" data-level="2.0.2.6" data-path="literature-review.html"><a href="literature-review.html#guided-decoding"><i class="fa fa-check"></i><b>2.0.2.6</b> Guided decoding</a></li>
+<li class="chapter" data-level="2.0.2.7" data-path="literature-review.html"><a href="literature-review.html#classification-trained-models-not-used"><i class="fa fa-check"></i><b>2.0.2.7</b> Classification trained models (not used)</a></li>
+<li class="chapter" data-level="2.0.2.8" data-path="literature-review.html"><a href="literature-review.html#few-shot-learning"><i class="fa fa-check"></i><b>2.0.2.8</b> Few-shot Learning</a></li>
+<li class="chapter" data-level="2.0.2.9" data-path="literature-review.html"><a href="literature-review.html#rag"><i class="fa fa-check"></i><b>2.0.2.9</b> RAG</a></li>
+<li class="chapter" data-level="2.0.2.10" data-path="literature-review.html"><a href="literature-review.html#gpt-generative-pretrained-transformers"><i class="fa fa-check"></i><b>2.0.2.10</b> GPT (Generative Pretrained Transformers)</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="literature-review.html"><a href="literature-review.html#tools"><i class="fa fa-check"></i><b>2.2</b> Tools</a>
+<li class="chapter" data-level="2.0.3" data-path="literature-review.html"><a href="literature-review.html#information-extraction"><i class="fa fa-check"></i><b>2.0.3</b> Information extraction</a></li>
+<li class="chapter" data-level="2.1" data-path="literature-review.html"><a href="literature-review.html#methodik-data-balancing"><i class="fa fa-check"></i><b>2.1</b> Methodik: Data balancing</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="literature-review.html"><a href="literature-review.html#tableformer"><i class="fa fa-check"></i><b>2.2.1</b> TableFormer</a></li>
+<li class="chapter" data-level="2.1.1" data-path="literature-review.html"><a href="literature-review.html#under-sampling-oversampling"><i class="fa fa-check"></i><b>2.1.1</b> Under sampling, oversampling</a></li>
 </ul></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>3</b> Methods</a>
+<li class="chapter" data-level="2.2" data-path="literature-review.html"><a href="literature-review.html#methodik-term-frequency"><i class="fa fa-check"></i><b>2.2</b> Methodik: Term frequency</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="methods.html"><a href="methods.html#page-identification"><i class="fa fa-check"></i><b>3.1</b> Page identification</a>
+<li class="chapter" data-level="2.2.1" data-path="literature-review.html"><a href="literature-review.html#extraction-of-numeric-values"><i class="fa fa-check"></i><b>2.2.1</b> Extraction of numeric values</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="literature-review.html"><a href="literature-review.html#optinal-more-topics-like-previous"><i class="fa fa-check"></i><b>2.3</b> optinal more topics like previous</a></li>
+<li class="chapter" data-level="2.4" data-path="literature-review.html"><a href="literature-review.html#summary-0.5-p"><i class="fa fa-check"></i><b>2.4</b> Summary (0.5 p)</a></li>
+<li class="chapter" data-level="2.5" data-path="literature-review.html"><a href="literature-review.html#to-place-in-chapters-above-1"><i class="fa fa-check"></i><b>2.5</b> To place in chapters above</a></li>
+<li class="chapter" data-level="2.6" data-path="literature-review.html"><a href="literature-review.html#table-extraction-tasks"><i class="fa fa-check"></i><b>2.6</b> Table extraction tasks</a>
 <ul>
-<li class="chapter" data-level="3.1.1" data-path="methods.html"><a href="methods.html#baselines"><i class="fa fa-check"></i><b>3.1.1</b> Baselines</a></li>
+<li class="chapter" data-level="2.6.1" data-path="literature-review.html"><a href="literature-review.html#difficulties"><i class="fa fa-check"></i><b>2.6.1</b> Difficulties</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="methods.html"><a href="methods.html#baselines-1"><i class="fa fa-check"></i><b>3.2</b> Baselines</a>
+<li class="chapter" data-level="2.7" data-path="literature-review.html"><a href="literature-review.html#document-extrtaction-process"><i class="fa fa-check"></i><b>2.7</b> Document Extrtaction Process</a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="methods.html"><a href="methods.html#simple-pipeline"><i class="fa fa-check"></i><b>3.2.1</b> Simple pipeline</a></li>
-<li class="chapter" data-level="3.2.2" data-path="methods.html"><a href="methods.html#sophisticated-approaches"><i class="fa fa-check"></i><b>3.2.2</b> Sophisticated approaches</a></li>
-</ul></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
+<li class="chapter" data-level="2.7.1" data-path="literature-review.html"><a href="literature-review.html#document-layout-analysis"><i class="fa fa-check"></i><b>2.7.1</b> Document Layout Analysis</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#page-identification-1"><i class="fa fa-check"></i><b>4.1</b> Page identification</a>
+<li class="chapter" data-level="2.7.1.1" data-path="literature-review.html"><a href="literature-review.html#vlt-egal-oder-outlook-vision-grid-transformer"><i class="fa fa-check"></i><b>2.7.1.1</b> Vlt egal oder outlook: Vision Grid Transformer</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7.2" data-path="literature-review.html"><a href="literature-review.html#section-1"><i class="fa fa-check"></i><b>2.7.2</b> </a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="literature-review.html"><a href="literature-review.html#tools"><i class="fa fa-check"></i><b>2.8</b> Tools</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#baselines-2"><i class="fa fa-check"></i><b>4.1.1</b> Baselines</a></li>
+<li class="chapter" data-level="2.8.1" data-path="literature-review.html"><a href="literature-review.html#tableformer"><i class="fa fa-check"></i><b>2.8.1</b> TableFormer</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#table-detection"><i class="fa fa-check"></i><b>4.2</b> Table detection</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>5</b> Discussion</a></li>
-<li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
+<li class="chapter" data-level="3" data-path="methodology.html"><a href="methodology.html"><i class="fa fa-check"></i><b>3</b> Methodology</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="methodology.html"><a href="methodology.html#problem-definition"><i class="fa fa-check"></i><b>3.1</b> Problem Definition</a></li>
+<li class="chapter" data-level="3.2" data-path="methodology.html"><a href="methodology.html#research-design-philosophy"><i class="fa fa-check"></i><b>3.2</b> Research Design &amp; Philosophy</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="methodology.html"><a href="methodology.html#research-questions"><i class="fa fa-check"></i><b>3.2.1</b> Research questions</a></li>
+<li class="chapter" data-level="3.2.2" data-path="methodology.html"><a href="methodology.html#evaluation-framework"><i class="fa fa-check"></i><b>3.2.2</b> Evaluation framework</a></li>
+<li class="chapter" data-level="3.2.3" data-path="methodology.html"><a href="methodology.html#evaluation-research"><i class="fa fa-check"></i><b>3.2.3</b> Evaluation research</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="methodology.html"><a href="methodology.html#evaluation-strategy"><i class="fa fa-check"></i><b>3.3</b> Evaluation Strategy</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="methodology.html"><a href="methodology.html#metrics"><i class="fa fa-check"></i><b>3.3.1</b> Metrics</a></li>
+<li class="chapter" data-level="3.3.2" data-path="methodology.html"><a href="methodology.html#benchmarking"><i class="fa fa-check"></i><b>3.3.2</b> Benchmarking</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="methodology.html"><a href="methodology.html#data-strategy"><i class="fa fa-check"></i><b>3.4</b> Data Strategy</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="methodology.html"><a href="methodology.html#sampling-methodology"><i class="fa fa-check"></i><b>3.4.1</b> Sampling methodology</a></li>
+<li class="chapter" data-level="3.4.2" data-path="methodology.html"><a href="methodology.html#ground-truth-creation-process"><i class="fa fa-check"></i><b>3.4.2</b> Ground truth creation process</a></li>
+<li class="chapter" data-level="3.4.3" data-path="methodology.html"><a href="methodology.html#preprocessing"><i class="fa fa-check"></i><b>3.4.3</b> Preprocessing</a></li>
+<li class="chapter" data-level="3.4.4" data-path="methodology.html"><a href="methodology.html#data-splitting"><i class="fa fa-check"></i><b>3.4.4</b> Data splitting</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="methodology.html"><a href="methodology.html#experimental-framework"><i class="fa fa-check"></i><b>3.5</b> Experimental Framework</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="methodology.html"><a href="methodology.html#gpu-benchmark"><i class="fa fa-check"></i><b>3.5.1</b> Hardware normalization</a></li>
+<li class="chapter" data-level="3.5.2" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.2</b> Error analysis</a></li>
+<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#baseline-selection-rationale"><i class="fa fa-check"></i><b>3.5.3</b> Baseline selection rationale</a></li>
+<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.4</b> Evaluation methods</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="methodology.html"><a href="methodology.html#ethical-practical-considerations-eher-am-ende-oder-weg"><i class="fa fa-check"></i><b>3.6</b> Ethical &amp; Practical Considerations (eher am Ende oder weg?)</a>
+<ul>
+<li class="chapter" data-level="3.6.1" data-path="methodology.html"><a href="methodology.html#pdf-extraction-limitations"><i class="fa fa-check"></i><b>3.6.1</b> PDF extraction limitations</a></li>
+<li class="chapter" data-level="3.6.2" data-path="methodology.html"><a href="methodology.html#computational-constraints"><i class="fa fa-check"></i><b>3.6.2</b> Computational constraints</a></li>
+<li class="chapter" data-level="3.6.3" data-path="methodology.html"><a href="methodology.html#generalizability-scope"><i class="fa fa-check"></i><b>3.6.3</b> Generalizability scope</a></li>
+<li class="chapter" data-level="3.6.4" data-path="methodology.html"><a href="methodology.html#ethical-considerations"><i class="fa fa-check"></i><b>3.6.4</b> Ethical considerations</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="implementation.html"><a href="implementation.html"><i class="fa fa-check"></i><b>4</b> Implementation</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="implementation.html"><a href="implementation.html#environments"><i class="fa fa-check"></i><b>4.1</b> Environments</a></li>
+<li class="chapter" data-level="4.2" data-path="implementation.html"><a href="implementation.html#evaluation-and-reporting"><i class="fa fa-check"></i><b>4.2</b> Evaluation and Reporting</a></li>
+<li class="chapter" data-level="4.3" data-path="implementation.html"><a href="implementation.html#software-packages"><i class="fa fa-check"></i><b>4.3</b> Software Packages</a></li>
+<li class="chapter" data-level="4.4" data-path="implementation.html"><a href="implementation.html#speedup-with-vllm-and-batching"><i class="fa fa-check"></i><b>4.4</b> Speedup with vLLM and batching</a></li>
+<li class="chapter" data-level="4.5" data-path="implementation.html"><a href="implementation.html#text-extraction"><i class="fa fa-check"></i><b>4.5</b> Text extraction</a></li>
+<li class="chapter" data-level="4.6" data-path="implementation.html"><a href="implementation.html#data-processing"><i class="fa fa-check"></i><b>4.6</b> Data processing</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#page-identification-introduction"><i class="fa fa-check"></i><b>5.1</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="results.html"><a href="results.html#regex-page-identification"><i class="fa fa-check"></i><b>5.1.1</b> Baseline: Regex</a></li>
+<li class="chapter" data-level="5.1.2" data-path="results.html"><a href="results.html#toc-understanding"><i class="fa fa-check"></i><b>5.1.2</b> Table of Contents understanding</a>
+<ul>
+<li class="chapter" data-level="5.1.2.1" data-path="results.html"><a href="results.html#text-based-toc-understanding"><i class="fa fa-check"></i><b>5.1.2.1</b> Details for the approaches</a></li>
+<li class="chapter" data-level="5.1.2.2" data-path="results.html"><a href="results.html#results-1"><i class="fa fa-check"></i><b>5.1.2.2</b> Results</a></li>
+</ul></li>
+<li class="chapter" data-level="5.1.3" data-path="results.html"><a href="results.html#llm-page-identification"><i class="fa fa-check"></i><b>5.1.3</b> Classification with LLMs</a>
+<ul>
+<li class="chapter" data-level="5.1.3.1" data-path="results.html"><a href="results.html#binary-classification"><i class="fa fa-check"></i><b>5.1.3.1</b> Binary classification</a></li>
+<li class="chapter" data-level="5.1.3.2" data-path="results.html"><a href="results.html#multi-class-classification"><i class="fa fa-check"></i><b>5.1.3.2</b> Multi-class classification</a></li>
+</ul></li>
+<li class="chapter" data-level="5.1.4" data-path="results.html"><a href="results.html#tf-classifier"><i class="fa fa-check"></i><b>5.1.4</b> Term frequency based classifier</a></li>
+<li class="chapter" data-level="5.1.5" data-path="results.html"><a href="results.html#comparison-page-identification"><i class="fa fa-check"></i><b>5.1.5</b> Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#table-extraction-introduction"><i class="fa fa-check"></i><b>5.2</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#baseline-regex"><i class="fa fa-check"></i><b>5.2.1</b> Baseline: Regex</a></li>
+<li class="chapter" data-level="5.2.2" data-path="results.html"><a href="results.html#extraction-with-llms-real-tables"><i class="fa fa-check"></i><b>5.2.2</b> Extraction with LLMs</a>
+<ul>
+<li class="chapter" data-level="5.2.2.1" data-path="results.html"><a href="results.html#real-table-extraction-results"><i class="fa fa-check"></i><b>5.2.2.1</b> Real tables</a></li>
+<li class="chapter" data-level="5.2.2.2" data-path="results.html"><a href="results.html#synthetic-table-extraction"><i class="fa fa-check"></i><b>5.2.2.2</b> Synthetic tables</a></li>
+<li class="chapter" data-level="5.2.2.3" data-path="results.html"><a href="results.html#real-table-extraction-synth-context"><i class="fa fa-check"></i><b>5.2.2.3</b> Hybrid approach</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2.3" data-path="results.html"><a href="results.html#comparing-table-extraction-methods"><i class="fa fa-check"></i><b>5.2.3</b> Comparison</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#interpretations"><i class="fa fa-check"></i><b>6.1</b> Interpretations</a>
+<ul>
+<li class="chapter" data-level="6.1.0.1" data-path="discussion.html"><a href="discussion.html#table-extraction"><i class="fa fa-check"></i><b>6.1.0.1</b> Table extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#limitations"><i class="fa fa-check"></i><b>6.2</b> Limitations</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="discussion.html"><a href="discussion.html#table-extraction-1"><i class="fa fa-check"></i><b>6.2.1</b> table extraction</a>
+<ul>
+<li class="chapter" data-level="6.2.1.1" data-path="discussion.html"><a href="discussion.html#regex-baseline"><i class="fa fa-check"></i><b>6.2.1.1</b> Regex baseline</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2.2" data-path="discussion.html"><a href="discussion.html#classification"><i class="fa fa-check"></i><b>6.2.2</b> classification</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.3</b> Not covered</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="discussion.html"><a href="discussion.html#table-detection-extraction"><i class="fa fa-check"></i><b>6.3.1</b> Table detection / extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="discussion.html"><a href="discussion.html#outlook"><i class="fa fa-check"></i><b>6.4</b> Outlook</a>
+<ul>
+<li class="chapter" data-level="6.4.1" data-path="discussion.html"><a href="discussion.html#vision-model"><i class="fa fa-check"></i><b>6.4.1</b> Vision Model</a></li>
+<li class="chapter" data-level="6.4.2" data-path="discussion.html"><a href="discussion.html#docling-and-co"><i class="fa fa-check"></i><b>6.4.2</b> Docling and Co</a></li>
+<li class="chapter" data-level="6.4.3" data-path="discussion.html"><a href="discussion.html#table-extraction-2"><i class="fa fa-check"></i><b>6.4.3</b> Table extraction</a></li>
+<li class="chapter" data-level="6.4.4" data-path="discussion.html"><a href="discussion.html#sophisticated-approaches-for-text-extraction"><i class="fa fa-check"></i><b>6.4.4</b> Sophisticated approaches for text extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="discussion.html"><a href="discussion.html#error-analysis-1"><i class="fa fa-check"></i><b>6.5</b> Error analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
-<li class="appendix"><span><b>Appendix</b></span></li>
-<li class="chapter" data-level="A" data-path="web-ui.html"><a href="web-ui.html"><i class="fa fa-check"></i><b>A</b> Web UI</a></li>
+<li class="chapter" data-level="" data-path="glossary.html"><a href="glossary.html"><i class="fa fa-check"></i>Glossary</a></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#hitl"><i class="fa fa-check"></i><b>8.1</b> Human in the loop application</a></li>
+<li class="chapter" data-level="8.2" data-path="appendix.html"><a href="appendix.html#local-machine"><i class="fa fa-check"></i><b>8.2</b> Local machine</a></li>
+<li class="chapter" data-level="8.3" data-path="appendix.html"><a href="appendix.html#benchmarks"><i class="fa fa-check"></i><b>8.3</b> Benchmarks</a>
+<ul>
+<li class="chapter" data-level="8.3.1" data-path="appendix.html"><a href="appendix.html#text-extraction-benchmark"><i class="fa fa-check"></i><b>8.3.1</b> Text extraction</a></li>
+<li class="chapter" data-level="8.3.2" data-path="appendix.html"><a href="appendix.html#table-detection-benchmark"><i class="fa fa-check"></i><b>8.3.2</b> Table detection</a>
+<ul>
+<li class="chapter" data-level="8.3.2.1" data-path="appendix.html"><a href="appendix.html#yolo-benchmark-and-table-transformer"><i class="fa fa-check"></i><b>8.3.2.1</b> yolo benchmark and table transformer</a></li>
+<li class="chapter" data-level="8.3.2.2" data-path="appendix.html"><a href="appendix.html#old-classification-with-llm"><i class="fa fa-check"></i><b>8.3.2.2</b> old classification with llm</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3.3" data-path="appendix.html"><a href="appendix.html#vllm-batch-speed"><i class="fa fa-check"></i><b>8.3.3</b> Large language model process speed</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="appendix.html"><a href="appendix.html#prompts"><i class="fa fa-check"></i><b>8.4</b> Prompts</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="appendix.html"><a href="appendix.html#toc-understanding-promts"><i class="fa fa-check"></i><b>8.4.1</b> TOC understanding</a></li>
+<li class="chapter" data-level="8.4.2" data-path="appendix.html"><a href="appendix.html#classification-prompts"><i class="fa fa-check"></i><b>8.4.2</b> Classification</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="appendix.html"><a href="appendix.html#regex-page-identification-code"><i class="fa fa-check"></i><b>8.5</b> Regular expressions</a></li>
+<li class="chapter" data-level="8.6" data-path="appendix.html"><a href="appendix.html#annual-comprehensive-financial-report-balance-sheet"><i class="fa fa-check"></i><b>8.6</b> Annual Comprehensive Financial Report Balance Sheet</a></li>
+<li class="chapter" data-level="8.7" data-path="appendix.html"><a href="appendix.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>8.7</b> Extraction framework flow chart</a></li>
+<li class="chapter" data-level="8.8" data-path="appendix.html"><a href="appendix.html#regex-extraction-mistakes"><i class="fa fa-check"></i><b>8.8</b> Table extraction with regular expressions</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="tables.html"><a href="tables.html"><i class="fa fa-check"></i><b>9</b> Tables</a>
+<ul>
+<li class="chapter" data-level="9.0.1" data-path="tables.html"><a href="tables.html#classification-1"><i class="fa fa-check"></i><b>9.0.1</b> Classification</a></li>
+<li class="chapter" data-level="9.0.2" data-path="tables.html"><a href="tables.html#table-extraction-3"><i class="fa fa-check"></i><b>9.0.2</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="9.0.2.1" data-path="tables.html"><a href="tables.html#hybrid-approach"><i class="fa fa-check"></i><b>9.0.2.1</b> Hybrid approach</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>10</b> Figures</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="figures.html"><a href="figures.html#page-identification-4"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="10.1.1" data-path="figures.html"><a href="figures.html#regex-baseline-1"><i class="fa fa-check"></i><b>10.1.1</b> Regex baseline</a></li>
+<li class="chapter" data-level="10.1.2" data-path="figures.html"><a href="figures.html#toc-understanding-1"><i class="fa fa-check"></i><b>10.1.2</b> TOC understanding</a></li>
+<li class="chapter" data-level="10.1.3" data-path="figures.html"><a href="figures.html#classification-2"><i class="fa fa-check"></i><b>10.1.3</b> Classification</a>
+<ul>
+<li class="chapter" data-level="10.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>10.1.3.1</b> Binary</a></li>
+<li class="chapter" data-level="10.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-1"><i class="fa fa-check"></i><b>10.1.3.2</b> Multi-class classification</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="figures.html"><a href="figures.html#table-extraction-4"><i class="fa fa-check"></i><b>10.2</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>10.2.1</b> Regex approach</a>
+<ul>
+<li class="chapter" data-level="10.2.1.1" data-path="figures.html"><a href="figures.html#real-tables"><i class="fa fa-check"></i><b>10.2.1.1</b> Real tables</a></li>
+<li class="chapter" data-level="10.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables"><i class="fa fa-check"></i><b>10.2.1.2</b> Synthetic tables</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2.2" data-path="figures.html"><a href="figures.html#real-tables-1"><i class="fa fa-check"></i><b>10.2.2</b> Real tables</a>
+<ul>
+<li class="chapter" data-level="10.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>10.2.2.1</b> Examples from same company</a></li>
+<li class="chapter" data-level="10.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>10.2.2.2</b> OpenAI models</a></li>
+<li class="chapter" data-level="10.2.2.3" data-path="figures.html"><a href="figures.html#hypotheses-5"><i class="fa fa-check"></i><b>10.2.2.3</b> Hypotheses</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-1"><i class="fa fa-check"></i><b>10.2.3</b> Synthetic tables</a>
+<ul>
+<li class="chapter" data-level="10.2.3.1" data-path="figures.html"><a href="figures.html#confidence-5"><i class="fa fa-check"></i><b>10.2.3.1</b> Confidence</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-1"><i class="fa fa-check"></i><b>10.2.4</b> Hybrid approach</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>11</b> Layout testing</a></li>
 </ul>
 
       </nav>
@@ -163,7 +418,7 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Extracting tables from financial reports</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Extraction of tabular data from annual reports with LLMs</a>
           </h1>
         </div>
 
@@ -173,50 +428,403 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="literature-review" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">2</span> Literature review<a href="literature-review.html#literature-review" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="document-extrtaction-process" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Document Extrtaction Process<a href="literature-review.html#document-extrtaction-process" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="document-layout-analysis" class="section level3 hasAnchor" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> Document Layout Analysis<a href="literature-review.html#document-layout-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>An important step in the process of extracting information from documents is to recognize the layout of a document <span class="citation">(<a href="#ref-zhong_publaynet_2019">Zhong et al., 2019</a>)</span>.</p>
-<p>Getting the order of texts correct
-align captions to tables and figure
-identify headings, tables and figures</p>
-<p>One of the most popular datasets used for training and benchmarking is PubLayNet (see <a href="https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val">PubLayNet on paperswithcode.com</a>). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central <span class="citation">(<a href="#ref-zhong_publaynet_2019">Zhong et al., 2019, p. 1</a>)</span>. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. &lt;– is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?</p>
+<p>(less than 10 p)</p>
+<p>(5 to 10 lines)</p>
+<ul>
+<li>overview of subchapters</li>
+<li>relevance for reader (Gutachter)</li>
+<li>link to previous chapter</li>
+<li>relevant basic tasks</li>
+<li>parameter vs active parameter</li>
+</ul>
+<div id="random-forest" class="section level3 hasAnchor" number="2.0.1">
+<h3><span class="header-section-number">2.0.1</span> Random Forest<a href="literature-review.html#random-forest" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>XGBoost not used finally, because calculation <a href="glossary.html#acronyms_SHAP">SHAP (SHapley Additive exPlanations)</a> values for XGBoost model took to long for just a first glimpse on what might influence the extraction.</p>
+</div>
+<div id="large-language-models" class="section level3 hasAnchor" number="2.0.2">
+<h3><span class="header-section-number">2.0.2</span> Large Language Models<a href="literature-review.html#large-language-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Wichtig</p>
+<div id="transformers" class="section level4 hasAnchor" number="2.0.2.1">
+<h4><span class="header-section-number">2.0.2.1</span> Transformers<a href="literature-review.html#transformers" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+<p>hauptsächlich decoder (generieren)</p>
+<p>seit 2017</p>
+</div>
+<div id="encoder" class="section level4 hasAnchor" number="2.0.2.2">
+<h4><span class="header-section-number">2.0.2.2</span> Encoder<a href="literature-review.html#encoder" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+</div>
+<div id="decoder" class="section level4 hasAnchor" number="2.0.2.3">
+<h4><span class="header-section-number">2.0.2.3</span> Decoder<a href="literature-review.html#decoder" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+</div>
+<div id="bert" class="section level4 hasAnchor" number="2.0.2.4">
+<h4><span class="header-section-number">2.0.2.4</span> BERT<a href="literature-review.html#bert" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+</div>
+<div id="mixture-of-experts" class="section level4 hasAnchor" number="2.0.2.5">
+<h4><span class="header-section-number">2.0.2.5</span> Mixture of Experts<a href="literature-review.html#mixture-of-experts" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+</div>
+<div id="guided-decoding" class="section level4 hasAnchor" number="2.0.2.6">
+<h4><span class="header-section-number">2.0.2.6</span> Guided decoding<a href="literature-review.html#guided-decoding" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>generation template strict (closed) vs open</p>
+</div>
+<div id="classification-trained-models-not-used" class="section level4 hasAnchor" number="2.0.2.7">
+<h4><span class="header-section-number">2.0.2.7</span> Classification trained models (not used)<a href="literature-review.html#classification-trained-models-not-used" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Soft max</p>
+</div>
+<div id="few-shot-learning" class="section level4 hasAnchor" number="2.0.2.8">
+<h4><span class="header-section-number">2.0.2.8</span> Few-shot Learning<a href="literature-review.html#few-shot-learning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+</div>
+<div id="rag" class="section level4 hasAnchor" number="2.0.2.9">
+<h4><span class="header-section-number">2.0.2.9</span> RAG<a href="literature-review.html#rag" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+</div>
+<div id="gpt-generative-pretrained-transformers" class="section level4 hasAnchor" number="2.0.2.10">
+<h4><span class="header-section-number">2.0.2.10</span> GPT (Generative Pretrained Transformers)<a href="literature-review.html#gpt-generative-pretrained-transformers" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Wichtig</p>
+</div>
+</div>
+<div id="information-extraction" class="section level3 hasAnchor" number="2.0.3">
+<h3><span class="header-section-number">2.0.3</span> Information extraction<a href="literature-review.html#information-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>closed-domain vs open-domain</p>
+</div>
+<div id="methodik-data-balancing" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Methodik: Data balancing<a href="literature-review.html#methodik-data-balancing" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="under-sampling-oversampling" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Under sampling, oversampling<a href="literature-review.html#under-sampling-oversampling" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+</div>
+<div id="methodik-term-frequency" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Methodik: Term frequency<a href="literature-review.html#methodik-term-frequency" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="extraction-of-numeric-values" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Extraction of numeric values<a href="literature-review.html#extraction-of-numeric-values" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports <span class="citation">(<a href="#ref-liExtractingFinancialData2023">H. Li, Gao, et al., 2023</a>)</span> In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)</p>
+<p>Too many hallucinated values when it was NA instead <span class="citation">(<a href="#ref-grandiniMetricsMultiClassClassification2020">Grandini et al., 2020</a>)</span></p>
+</div>
+</div>
+<div id="optinal-more-topics-like-previous" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> optinal more topics like previous<a href="literature-review.html#optinal-more-topics-like-previous" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="summary-0.5-p" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Summary (0.5 p)<a href="literature-review.html#summary-0.5-p" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>lessons learned</li>
+<li>link to goal thesis</li>
+<li>link to next chapter</li>
+</ul>
+</div>
+<div id="to-place-in-chapters-above-1" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> To place in chapters above<a href="literature-review.html#to-place-in-chapters-above-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="table-extraction-tasks" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Table extraction tasks<a href="literature-review.html#table-extraction-tasks" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="difficulties" class="section level3 hasAnchor" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> Difficulties<a href="literature-review.html#difficulties" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Beispielbilder</li>
+</ul>
+</div>
+</div>
+<div id="document-extrtaction-process" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> Document Extrtaction Process<a href="literature-review.html#document-extrtaction-process" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="document-layout-analysis" class="section level3 hasAnchor" number="2.7.1">
+<h3><span class="header-section-number">2.7.1</span> Document Layout Analysis<a href="literature-review.html#document-layout-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>An important step in the process of extracting information from documents is to recognize the layout of a document <span class="citation">(<a href="#ref-zhongPubLayNetLargestDataset2019">Zhong et al., 2019</a>)</span>.</p>
+<p>Getting the order of texts correct align captions to tables and figure identify headings, tables and figures</p>
+<p>One of the most popular datasets used for training and benchmarking is PubLayNet (see <a href="https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val">PubLayNet on paperswithcode.com</a>). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central <span class="citation">(<a href="#ref-zhongPubLayNetLargestDataset2019">Zhong et al., 2019, p. 1</a>)</span>. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. &lt;– is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?</p>
 <p>Manual annotated datasets often were limited to several hundred pages. Deep learning methods need a much larger training dataset. Previously optical character recognition (OCR) methods were used.</p>
 <p>Identify potentially interesting pages with text / regex search. Check if there is a table present on this page.</p>
 <p>Object detection</p>
-<div id="vision-grid-transformer" class="section level4 hasAnchor" number="2.1.1.1">
-<h4><span class="header-section-number">2.1.1.1</span> Vision Grid Transformer<a href="literature-review.html#vision-grid-transformer" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="vlt-egal-oder-outlook-vision-grid-transformer" class="section level4 hasAnchor" number="2.7.1.1">
+<h4><span class="header-section-number">2.7.1.1</span> Vlt egal oder outlook: Vision Grid Transformer<a href="literature-review.html#vlt-egal-oder-outlook-vision-grid-transformer" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 </div>
 </div>
-<div id="section" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> </h3>
+<div id="section-1" class="section level3" number="2.7.2">
+<h3><span class="header-section-number">2.7.2</span> </h3>
 </div>
 </div>
-<div id="tools" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Tools<a href="literature-review.html#tools" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="tableformer" class="section level3 hasAnchor" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> TableFormer<a href="literature-review.html#tableformer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>SynthTabNet &lt;– has it:
-- nested / hierarchical tables, where rows add up to another row?
-- identifying units and unit cols/rows</p>
+<div id="tools" class="section level2 hasAnchor" number="2.8">
+<h2><span class="header-section-number">2.8</span> Tools<a href="literature-review.html#tools" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="tableformer" class="section level3 hasAnchor" number="2.8.1">
+<h3><span class="header-section-number">2.8.1</span> TableFormer<a href="literature-review.html#tableformer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>SynthTabNet &lt;– has it: - nested / hierarchical tables, where rows add up to another row? - identifying units and unit cols/rows</p>
 
 </div>
 </div>
 </div>
 <h3>References</h3>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-zhong_publaynet_2019" class="csl-entry">
-Zhong, X., Tang, J., &amp; Yepes, A. J. (2019). <em><span>PubLayNet</span>: Largest dataset ever for document layout analysis</em>. arXiv. <a href="https://doi.org/10.48550/arXiv.1908.07836">https://doi.org/10.48550/arXiv.1908.07836</a>
+<div id="ref-grandiniMetricsMultiClassClassification2020" class="csl-entry">
+Grandini, M., Bagli, E., &amp; Visani, G. (2020). <em>Metrics for <span>Multi-Class Classification</span>: An <span>Overview</span></em> (arXiv:2008.05756). arXiv. <a href="https://doi.org/10.48550/arXiv.2008.05756">https://doi.org/10.48550/arXiv.2008.05756</a>
+</div>
+<div id="ref-liExtractingFinancialData2023" class="csl-entry">
+Li, H., Gao, H. (Harry)., Wu, C., &amp; Vasarhelyi, M. A. (2023). <em>Extracting <span>Financial Data</span> from <span>Unstructured Sources</span>: <span>Leveraging Large Language Models</span></em> ({{SSRN Scholarly Paper}} 4567607). Social Science Research Network. <a href="https://doi.org/10.2139/ssrn.4567607">https://doi.org/10.2139/ssrn.4567607</a>
+</div>
+<div id="ref-zhongPubLayNetLargestDataset2019" class="csl-entry">
+Zhong, X., Tang, J., &amp; Yepes, A. J. (2019). <em><span>PubLayNet</span>: Largest dataset ever for document layout analysis</em> (arXiv:1908.07836). arXiv. <a href="https://doi.org/10.48550/arXiv.1908.07836">https://doi.org/10.48550/arXiv.1908.07836</a>
 </div>
 </div>
+<script>
+// Lightbox functionality for displaying images in a modal view
+document.addEventListener("DOMContentLoaded", function () {
+  // Create a lightbox container
+  const lightbox = document.createElement("div");
+  lightbox.id = "lightbox";
+  lightbox.style.position = "fixed";
+  lightbox.style.top = "0";
+  lightbox.style.left = "0";
+  lightbox.style.width = "100%";
+  lightbox.style.height = "100%";
+  lightbox.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  lightbox.style.display = "none";
+  lightbox.style.justifyContent = "center";
+  lightbox.style.alignItems = "center";
+  lightbox.style.zIndex = "1000";
+  document.body.appendChild(lightbox);
+
+  // Add an image element to the lightbox
+  const lightboxImage = document.createElement("img");
+  lightboxImage.id = "lightbox-image";
+  // lightboxImage.style.maxWidth = "90%";
+  // lightboxImage.style.maxHeight = "90%";
+  lightbox.appendChild(lightboxImage);
+
+  // Close lightbox on click
+  lightbox.addEventListener("click", function () {
+    lightbox.style.display = "none";
+  });
+
+  // Add onclick event to all images
+  const images = document.querySelectorAll("img");
+  images.forEach((img) => {
+    img.style.cursor = "pointer"; // Change cursor to indicate clickability
+    img.addEventListener("click", function () {
+      lightboxImage.src = img.src; // Set the lightbox image source
+      lightbox.style.display = "flex"; // Show the lightbox
+    });
+  });
+});
+</script>
+
+<script>
+// Image slider/carousel functionality for divs with class "image-slider"
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.image-slider').forEach(function (slider) {
+    const images = slider.querySelectorAll('img');
+    if (images.length < 2) return; // No need for slider if only one image
+
+    // Hide all images except the first
+    images.forEach((img, i) => img.style.display = i === 0 ? 'inline' : 'none');
+    let current = 0;
+
+    // Create navigation buttons
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '⟨ Prev';
+    prevBtn.style.marginRight = '10px';
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next ⟩';
+    nextBtn.style.marginLeft = '10px';
+
+    // Create a caption container
+    const captionContainer = document.createElement('div');
+    captionContainer.style.fontStyle = 'italic';
+    captionContainer.style.color = '#555';
+
+    // Create a flex container for buttons and caption
+    const controlsContainer = document.createElement('div');
+    controlsContainer.style.display = 'flex';
+    controlsContainer.style.justifyContent = 'space-between';
+    controlsContainer.style.alignItems = 'center';
+    controlsContainer.style.marginTop = '10px';
+    controlsContainer.style.width = '100%';
+
+    // Place buttons and caption in flex container
+    controlsContainer.appendChild(prevBtn);
+    controlsContainer.appendChild(captionContainer);
+    controlsContainer.appendChild(nextBtn);
+
+    // Function to update the caption
+    const updateCaption = () => {
+      const caption = images[current].nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        captionContainer.textContent = caption.textContent;
+      } else {
+        captionContainer.textContent = ''; // Clear caption if none exists
+      }
+    };
+
+    // Function to show the next image
+    const showNextImage = () => {
+      images[current].style.display = 'none';
+      current = (current + 1) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Function to show the previous image
+    const showPrevImage = () => {
+      images[current].style.display = 'none';
+      current = (current - 1 + images.length) % images.length;
+      images[current].style.display = 'inline';
+      updateCaption();
+    };
+
+    // Button click handlers
+    prevBtn.onclick = function () {
+      stopAutoSlide();
+      showPrevImage();
+    };
+    nextBtn.onclick = function () {
+      stopAutoSlide();
+      showNextImage();
+    };
+
+    // Insert controls container below images
+    slider.appendChild(controlsContainer);
+
+    // Automatic sliding
+    let autoSlideInterval = setInterval(showNextImage, 2000);
+
+    // Stop automatic sliding on user interaction
+    const stopAutoSlide = () => {
+      clearInterval(autoSlideInterval);
+    };
+
+    // Stop auto-slide when the user interacts with the slider
+    prevBtn.addEventListener('click', stopAutoSlide);
+    nextBtn.addEventListener('click', stopAutoSlide);
+    images.forEach((img) => {
+      img.addEventListener('click', stopAutoSlide);
+    });
+
+    // Initialize the caption
+    updateCaption();
+  });
+});
+</script>
+
+<script>
+// Dropdown filter functionality for images with lightbox
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('.image-selector').forEach(function (selector) {
+    const images = selector.querySelectorAll('img');
+    if (images.length === 0) return;
+
+    // Create a dropdown filter container
+    const filterContainer = document.createElement('div');
+    filterContainer.classList.add('filter-container');
+
+    const dropdown = document.createElement('select');
+    dropdown.multiple = true;
+    dropdown.classList.add('filter-dropdown');
+
+    // Add options to the dropdown
+    const uniqueCategories = [];
+    images.forEach((img) => {
+      const caption = img.nextElementSibling;
+      if (caption && caption.classList.contains('image-caption')) {
+        const category = caption.textContent.trim();
+        if (!uniqueCategories.includes(category)) uniqueCategories.push(category);
+      }
+    });
+
+    uniqueCategories.forEach((category) => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      // Do NOT set option.selected here!
+      dropdown.appendChild(option);
+    });
+
+    filterContainer.appendChild(dropdown);
+    selector.appendChild(filterContainer);
+
+    // Add a grid container for filtered images
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('image-grid');
+    selector.appendChild(gridContainer);
+
+    // Choices.js initialization
+    const choices = new Choices(dropdown, {
+      removeItemButton: true,
+      shouldSort: false,
+      searchEnabled: false,
+      placeholder: true,
+      placeholderValue: 'Filter categories',
+    });
+
+    // Clear any existing selection first, then set initial selection
+    choices.removeActiveItems(); // This clears existing selections
+    choices.setChoiceByValue(uniqueCategories[0]); // This sets only the first category
+
+    // Filtering function
+    const filterImages = () => {
+      const selectedCategories = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+      gridContainer.innerHTML = '';
+      let shownWrappers = [];
+      images.forEach((img) => {
+        const caption = img.nextElementSibling;
+        if (caption && caption.classList.contains('image-caption')) {
+          const category = caption.textContent.trim();
+          if (selectedCategories.includes(category)) {
+            const imgWrapper = document.createElement('div');
+            imgWrapper.classList.add('image-wrapper');
+            const imgClone = img.cloneNode(true);
+            imgClone.style.cursor = 'pointer';
+            imgClone.addEventListener('click', function () {
+              const lightboxImage = document.querySelector("#lightbox img");
+              const lightbox = document.querySelector("#lightbox");
+              lightboxImage.src = imgClone.src;
+              lightbox.style.display = 'flex';
+            });
+            imgWrapper.appendChild(imgClone);
+            const captionClone = caption.cloneNode(true);
+            imgWrapper.appendChild(captionClone);
+            gridContainer.appendChild(imgWrapper);
+            shownWrappers.push(imgWrapper);
+          }
+        }
+      });
+      // If only one image is shown, make it span both columns
+      if (shownWrappers.length === 1) {
+        shownWrappers[0].style.gridColumn = "span 2";
+      }
+    };
+
+    // Listen for changes from Choices.js
+    dropdown.addEventListener('change', filterImages);
+
+    // Initial grid (only first category shown)
+    filterImages();
+  });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var codes = document.querySelectorAll('.hideme');
+  var code, i, d, s, p;
+  for (i = 0; i < codes.length; i++) {
+    code = codes[i];
+    p = code.parentNode;
+    d = document.createElement('details');
+    s = document.createElement('summary');
+    s.innerText = 'Details';
+    // <details><summary>Details</summary></details>
+    d.appendChild(s);
+    // move the code into <details>
+    p.replaceChild(d, code);
+    d.appendChild(code);
+  }
+});
+</script>
             </section>
 
           </div>
         </div>
       </div>
 <a href="introduction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="methods.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="methodology.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -270,6 +878,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

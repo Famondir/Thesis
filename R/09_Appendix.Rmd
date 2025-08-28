@@ -5,6 +5,100 @@
 
 \ChapFrame
 
+## Human in the loop application {#hitl}
+
+Using \acr{LLM}s has become a lot easier in the past years. *Python*
+frameworks as \acr{vllm} make it easy to deploy open-source models for
+developers. *Open WebUI* allows us to set up a sophisticated chat bot UI
+with ease. *Dify* promises to create no-code \acr{AI} agents via a
+graphical flowchart. But the regular employee at \acr{RHvB} will just
+use a provided application. And to solve the task, to extract (tabular)
+information for loading it into a relational database, a chat UI seems
+not the perfect match.
+
+For the planned application we have two requirements: First, it should
+be able to accurately extract information. Second, it has to provide a
+good user experience.
+
+Extracting the information of the assets table accurately means:
+
+-   Numeric values have to be extracted and transformed according to
+    potentially given currency units, e.g. *T€.*
+
+-   The row labels should be matched with a limited set of labels in the
+    target database.
+
+-   Unknown row labels and their values have to treated in a appropriate
+    way.
+
+To ensure, that there are no mistakes, a \acr{HITL} approach should be
+implemented. Figure \@ref(fig:hitl-workflow) shows that the employee
+should initiate the extraction, by providing the document to extract
+information from and potentially choose, what to extract. The employee
+should also double check the results, before they are saved for future
+usage in down stream tasks.
+
+```{r hitl-workflow, fig.cap="Showing the information extraction process in a HITL application. The fed in document and results are saved in a database, that is used for the in-context learning RAG approaches for future extractions. The results are saved in the relational company database as well, e.g. as information to present in dashboards.", out.width="100%", echo=FALSE}
+knitr::include_graphics("images/HITL_flowchart.png")
+```
+
+Why do we aim to build an application that assists the process instead
+of fully automating it? On one hand, building a system that makes no
+mistakes might be impossible. And it would be more efficient, to ensure
+machine-readable data provision in the first place.
+
+On the other hand, building a \acr{HITL} application, could increase the
+employees acceptance for the product and trust in the results. An
+assisting application is not as threatening as an application, that
+fully automates a process, making the human redundant and potentially
+leading to job cuts. Programms building on the machine learning paradigm
+are rarely making decisions that are not seen as correct by a human. And
+humans make errors as well. Teaming up with an \acr{AI} to reduce the
+error rate, should increase the trust in the results, if this story is
+sold right. (change management)
+
+We believe, that the \acr{UX} would improve, if we can guide the user,
+which values to check and which he can trust. This would reduce the work
+load and might increase the feeling to spend the time meaningful, by
+finding the same amount of mistakes, while checking less values. Thus,
+we formulate our side research question:
+
+```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
+cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?</li></ol>")
+```
+
+\begin{enumerate}[label={\textbf{Q\theenumi}}]
+\setcounter{enumi}{3}
+\item Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?
+\end{enumerate}
+
+Of course, mistakes not only happen by extracting a wrong value, but by
+matching the values row with the wrong row labels from the predefined
+set. This can happen, because they are similar but not equal or because
+the row label at hand is not present in the predefined set yet. Having a
+human in the loop, seems to be a good way to handle such unknown row
+labels as well.
+
+The \acr{UI} should assist in all cases. Comparing numeric values,
+checking the row label matching and showing, which rows have not been
+handled yet and need human decisions. Figure \@ref(fig:compare-results)
+shows a first mockup, about what has to be compared focussing on a
+single years numeric values and the row lable matching. A \acr{UX} study
+should answer questions, how exactly the \acr{UI} should look like and
+if the employee prefers to check the identified page, before the
+extraction begins (see the human shape with question marks in Figure
+\@ref(fig:hitl-workflow)).
+
+```{r compare-results, fig.cap="Showing the information that need to be compared by the user after the information extraction. Unmatched rows could be highlighted in another color.", out.width="100%", echo=FALSE}
+knitr::include_graphics("images/compare_results.png")
+```
+
+human in the loop [@natarajanHumanintheloopAIintheloopAutomate2024;
+@mosqueira-reyHumanintheloopMachineLearning2023;
+@wuSurveyHumanintheloopMachine2022]
+
+-   allowing in place adjustments to the extracted data.
+
 ## Local machine {#local-machine}
 
 One can find the specifications of the local machine used to run the tasks that do not require a \acr{GPU} below. It is a lightweight laptop device. Its performance cores support hyper-threading and have a clock range between 2.1 and 4.7 GHz. Due to its slim design, there is little active cooling. Thus, thermal throttling starts quickly. It is a reasonable assumption that most local benchmarks are running at 2.1 GHz. Despite this handicap, it has a sufficiently large RAM of 32 GB and 3 TB of NVMe disk space.

@@ -1,10 +1,14 @@
-# Implementation (max 5p)
+# Implementation {#implementation}
+
+(max 5p)
 
 \ChapFrame
 
 ## Environments
 
 The computations for this thesis are performed in two environments. Task that do not require a \acr{GPU} are run locally. You can find the specifications of the local device in section \@ref(local-machine). Other tasks are run on the Datexis Kubernetes cluster.
+
+Egal ab hier:
 
 The prototyping for these tasks is performed on the cluster as well. Therefore, a interactive docker image with SSH capabilities and Python has been created based on the \acr{vllm} docker image. In rare cases a \acr{vllm} server is deployed on the cluster and queried from the local machine during prototyping.
 
@@ -28,6 +32,8 @@ Furthermore, this allows us to create a \acr{PDF} version as well as a \acr{HTML
 
 Macht das Sinn, das hier aufzulisten? Wenn ja, wie detailliert? Vielleiche auf eine requirements Datei je Sprache verweisen?
 
+Einmal die großen und was es macht
+
 -   Python
 
     -   pandas
@@ -37,6 +43,8 @@ Macht das Sinn, das hier aufzulisten? Wenn ja, wie detailliert? Vielleiche auf e
     -   scikit learn
 
     -   vLLM
+
+    -   chroma DB
 
 -   R
 
