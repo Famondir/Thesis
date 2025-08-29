@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: llama4-maverick-402b-synth-table-extraction-from-html-final-job
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: llama4-maverick-402b-real-table-extraction-final-job
+    spec:
+      priorityClassName: unimportant
+      containers:
+      - name: llama4-maverick-402b-real-table-extraction-final-job
+        image: registry.datexis.com/s92818/remote-work-vllm-0-9-1:latest
+        command: ["/bin/sh", "-c"]
+        args: [
+          "python3 -u /pvc/thesis_benchmarks/final_synth_table_extraction_from_html_benchmark_vllm.py --batched --model_name meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 --n_loops 1 --tensor_parallel_size 4"
+        ]
+        resources:
+          requests:
+              cpu: "2"
+              memory: "256Gi"
+              nvidia.com/gpu: "4"
+          limits:
+            nvidia.com/gpu: "4"
+            memory: "1024Gi"
+            cpu: "32"
+        env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: HF_HOME
+            value: "/pvc/hub_cache"
+          - name: OMP_NUM_THREADS
+            value: "1"
+          - name: HUGGING_FACE_HUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token-secret
+                key: token
+        volumeMounts:
+          - name: vllm-pvc
+            mountPath: /pvc
+          - name: dshm
+            mountPath: /dev/shm
+      nodeSelector:
+        # kubernetes.io/hostname: cl-worker29
+        gpu: b200
+      imagePullSecrets:
+        - name: private-registry-auth
+      volumes:
+        - name: vllm-pvc
+          persistentVolumeClaim:
+            claimName: vllm-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+      restartPolicy: Never
