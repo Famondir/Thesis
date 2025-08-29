@@ -41,3 +41,5 @@ QThesis/
 micha_gold_truth_aktiva_only_KORRIGIERT/
 micha_gold_truth_aktiva_only_KORRIGIERT_backup/
 benchmark_truth/real_tables_extended/*
+Python/openai_classifying_test/azure_test.ipynb
+Python/openai_classifying_test/hide_azure_test.ipynb

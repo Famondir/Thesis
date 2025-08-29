@@ -43,9 +43,17 @@ RUN pip install openpyxl
 RUN pip install tabulate
 RUN pip install matplotlib
 RUN pip install odfpy
+RUN pip install --upgrade pymupdf
+RUN pip install docling-parse
+RUN pip install docling
+RUN pip install pymupdf4llm
+RUN pip install pdf2image pytesseract
 # RUN pip install --upgrade transformers
 # for kimi k2
 # RUN pip install blobfile
+
+RUN apt-get update && apt-get install -y poppler-utils
+RUN apt-get install -y tesseract-ocr
 
 # configuring git
 RUN git config --global user.email "s92818@bht-berlin.de"
