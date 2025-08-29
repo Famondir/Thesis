@@ -464,9 +464,12 @@ document.addEventListener("DOMContentLoaded", function () {
     lightbox.style.display = "none";
   });
 
-  // Add onclick event to all images
+  // Add onclick event to all images except the excluded one
   const images = document.querySelectorAll("img");
   images.forEach((img) => {
+    if (img.src.includes("images/BHT_Logo_horizontal_Anthrazit_transparent.svg")) {
+      return; // Skip the excluded image
+    }
     img.style.cursor = "pointer"; // Change cursor to indicate clickability
     img.addEventListener("click", function () {
       lightboxImage.src = img.src; // Set the lightbox image source
