@@ -1,0 +1,158 @@
+.book .book-body .page-wrapper .page-inner {
+  max-width: 1200px;
+  width: calc(100% - 200px);
+}
+
+@media (max-width: 1240px) {
+  .book .book-body .page-wrapper .page-inner {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.page-inner p, 
+.page-inner ol, 
+.page-inner ul,
+.page-inner details,
+.page-inner :is(h1, h2, h3, h4, h5, h6),
+.page-inner .figure,
+.page-inner div.datatables,
+.page-inner div.references,
+.page-inner div.sourceCode,
+.page-inner div.paragraph-start,
+.page-inner div.references,
+.page-inner table {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-inner div.big-table, 
+.page-inner div.big-table div.datatables, 
+.page-inner div.big-table div.datatables * {
+  max-width: 100% !important;
+  overflow-x: auto;
+}
+
+h5 span.header-section-number, h6 span.header-section-number {
+  display: none;
+}
+
+h5, h6, h5+p, h6+p {
+  display: inline;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal ol, .book .book-body .page-wrapper .page-inner section.normal ul {
+    margin: auto;
+}
+
+/*--- Folding ---*/
+
+.pre-detail p {
+  margin-bottom: 0 !important;
+  font-style: italic;
+  color: gray;
+}
+
+.pre-detail + details {
+  margin-bottom: 1rem;
+}
+
+/*--- LOGO ---*/
+
+.toc-logo {
+  /* width: 200px !important; */
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.toc-logo img {
+  max-width: 100%;
+  /* margin-bottom: 10px; */
+}
+
+.toc-logo a {
+  padding: 0 !important;
+}
+
+.summary > li:first-child {
+  height: auto !important; 
+}
+
+/*--- Image HTML ---*/
+
+.image-slider span.image-caption, .image-selector span.image-caption {
+    display: none;
+}
+
+.image-selector p>img {
+    display: none;
+}
+
+.choices {
+  width: 100%;
+}
+
+.pdf-embed embed {
+  height: 1150px;
+}
+
+div.sourceCode span {
+  text-wrap: auto;
+}
+
+div.datatables {
+  margin-bottom: 2em;
+}
+
+div.paragraph-start {
+    margin-block: 0.85em;
+    /* margin-left: 3px;
+    margin-right: 3px; */
+}
+
+/* ordered lists */
+
+:root {
+    --counter: 1;
+}
+
+ol.rs-questions {
+    counter-reset: rsq-counter calc(var(--counter) - 1);
+    list-style-type: none;
+}
+
+ol.rs-questions li:before {
+    content: 'Q' counter(rsq-counter, decimal) '. ';
+    counter-increment: rsq-counter;
+    font-weight: bold;
+}
+
+/* Grid container for images */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Wrapper for each image and caption */
+.image-wrapper {
+  text-align: center;
+}
+
+/* Captions below images */
+.image-wrapper .image-caption {
+  margin-top: 5px;
+  font-style: italic;
+  color: #555;
+  font-size: 12px;
+}
+
+#lightbox-image {
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
+}
