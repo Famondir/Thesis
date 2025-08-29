@@ -48,11 +48,11 @@ acronyms:
   loa_title: ""
   insert_loa: false
   insert_links: true
-  # sorting: usage
-  include_unused: true
+  sorting: usage
+  include_unused: false
   style: short-long
 # urlcolor: blue
-# linkcolor: red
+# linkcolor: blue
 # citecolor: green
 ---
 

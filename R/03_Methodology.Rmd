@@ -217,6 +217,10 @@ Example:
 
 To better understand the limitations of the evaluated models, we will conduct a detailed error analysis. We will first quantify the types of errors (e.g., false positives, false negatives, misclassifications) using confusion matrices and error rate statistics. Additionally, we will manually inspect a sample of erroneous predictions to identify common causes, such as ambiguous table layouts, OCR errors, or model misinterpretations. Errors will be categorized by document type and extraction task to reveal systematic weaknesses. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.
 
+99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@liExtractingFinancialData2023] In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)
+
+Too many hallucinated values when it was NA instead [@grandiniMetricsMultiClassClassification2020]
+
 ### Baseline selection rationale
 
 see section Evaluation research
@@ -230,6 +234,8 @@ see section Evaluation research
 -   PR-curve
 
 -   random forest + SHAP
+
+XGBoost not used finally, because calculation \acr{SHAP} values for XGBoost model took to long for just a first glimpse on what might influence the extraction. lm also fitted and not used
 
 ## Ethical & Practical Considerations (eher am Ende oder weg?)
 

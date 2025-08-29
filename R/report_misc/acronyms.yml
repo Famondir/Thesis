@@ -34,8 +34,12 @@ acronyms:
       longname: Virtual Large Language Model
     - shortname: AUC
       longname: area under the curve
+    - shortname: IDF
+      longname: Inverse Document Frequency
     - shortname: TF-IDF
       longname: Frequency-Inverse Document Frequency
+    - shortname: BM25
+      longname: best matching 25
     - shortname: HITL
       longname: human-in-the-loop
     - shortname: GPU
@@ -64,4 +68,8 @@ acronyms:
       longname: mixture of experts
     - shortname: FFN
       longname: feed forward network
+    - shortname: XAI
+      longname: explainable artificial intelligence
+    - shortname: XGBoost
+      longname: Extreme Gradient Boosting
 ---
