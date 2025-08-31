@@ -1,8 +1,14 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Literature review {#literature-review}
 
 (less than 10 p)
 
-\ChapFrame[Literature review][bhtblue]
+\ChapFrame[Literature review][bhtred]
 
 The introduction described, that the problem, we want to solve with thesis, is part of the field of information retrieval. Thus, section \@ref(information-retrieval) describes methods, used to retrieve information from documents. It gives a brief overview on \acrfull{regex}, before subsection \@ref(llm-theory) describes the mechanisms and architecture of recent \acrfull{LLM}s, including \acr{MoE} architecture.
 

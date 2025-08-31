@@ -1,12 +1,301 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Discussion {#discussion}
 
-\ChapFrame
+\ChapFrame[Discussion][bhtgray]
 
-## Interpretations
+## Page identification
 
-#### Table extraction
+### General performance
 
-##### Regular expression approach
+::: paragraph-start
+##### Results
+
+The page identification task is solved with higher F1 scores for every target class than the human reference F1 score. It is solved completely on the created dataset for predicting the class **Aktiva**. In two cases the multi-class classification wit Llama 4 Scout is best. For classifying **GuV** the binary classification with Ministral is even better.
+:::
+
+::: paragraph-start
+##### Interpretations
+:::
+
+::: paragraph-start
+##### Compare with previous work
+
+We are able to narrow down the page range to five pages without using a \acr{LLM}. With the \acr{LLM} we are guaranteed, to find the correct pages within a range of two pages. Most of the time the first page in the \acr{LLM} ranking is the correct one. @liExtractingFinancialData2023 do not present a concrete number of pages, they have to process after page refinement. The \acr{TOC} does not work as well as expected from their report.
+:::
+
+::: paragraph-start
+##### Implications
+:::
+
+::: paragraph-start
+##### Limitations
+
+The term frequency and \acr{LLM} classification might perform worse, if the information searched for, is just making up a small part of the pages content. If the information is not even in a table, but part of a regular sentence, it might get difficult to find the correct page with this approach. Maybe the \acr{TOC} approach could be used for page range refinement in this case.
+:::
+
+For detecting (smaller) tables Yolo can be used (see \@ref(yolo)).
+
+::: paragraph-start
+##### Unexpected results
+
+-   Ministral is performing unexpected well.
+-   \acr{TOC} approach performs not good
+:::
+
+::: paragraph-start
+##### Recommendations
+
+We recommend, if possible, to refine the page range, using a term frequency approach. Afterwards a \acr{LLM} can be used to perform a multi-class classification those pages. Use the page with the highest score for the information extraction. Keep the ranking.
+:::
+
+Do not include a obligatory step, to confirm the selected page, but start the information extraction right away. When the user is checking the results, a wrong page will be noticed immedeatly. Then other pages can be inspected manually, following the order in the ranking.
+
+Save the examples already classified in a vector database and use those in future tasks. Include documents from the same company. Build the database document by document in the beginning, before starting with batch wise processing.
+
+::: paragraph-start
+##### Possible improvement
+
+-   Instead of the simple term frequency the \acr{TF-IDF} measure could be implemented.
+
+-   With more expertise and few shot learning the \acr{TOC} approach could perform better.
+:::
+
+::: paragraph-start
+##### Conclusion
+:::
+
+### Energy usage and runtime
+
+The fastest and least energy consuming strategy, using only \acr{LLM}s is to use a small model as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
+
+An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But the results of the multi-class strategy are good enough. In both strategies the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-1].
+
+[^06_discussion-1]: Potentially smaller fine tuned models can solve the task even more efficient.
+
+Nevertheless, it is more promising, to reduce the number of pages, to classify with the \acr{LLM} in the first place. This can be achieved, by running the term-frequency approach first to refine the page range, and then use the \acr{LLM} approach.
+
+::: paragraph-start
+###### Compare with manual page identification
+
+The manual approach is the slowest. We identified the pages of interest for all target classes in ten random documents for the benchmark. We used the \acr{TOC} and the search function to find key words like **Aktiva** or **Bilanz**. Anyhow, its almost as fast as the multi-classification using Llama 4 Scout, while consuming eight times less energy. Comparing it to Ministral-8B-Instruct it take three times longer but consumes less then half of the energy.
+:::
+
+Not taken into account fo this comparison are factors as:
+
+-   costs to buy and maintain hardware (i.e. a GPU cluster).
+
+-   higher costs per runtime if the \acr{LLM} compute is purchased from cloud providers. CLOUD: price if LLM is in the cloud \<-- print tokens used
+
+    -   four classes (3 random examples): 11 k tokens
+
+    -   binary (3 random examples): 6.5 k tokens
+
+-   payment and insurance to pay for a human (e.g . student coworker).
+
+-   the training time and energy consumption for training either
+
+    -   a \acr{LLM} (probably done by the \acr{LLM} provider).
+
+    -   a human (growing up, getting educated).
+
+-   the energy consumed with the food humans eat.
+
+## Information extraction
+
+::: paragraph-start
+##### Results
+
+The best performing model - Qwen3-235B-A22B-Instruct - almost reaches human performance on real **Aktiva** tables, but is much faster. Both measures, percentage of correct numeric predictions (98.0 %) and F1 score (98.1 %) are not perfect yet and could be improved. It achieves perfect results on synthetic tables provided in \acr{HTML} format.
+:::
+
+::: paragraph-start
+##### Interpretations
+
+The strong performance observed means, that Qwen3-235B is performing numeric transformations, respecting the currency units, in many cases. Otherwise the upper limit for correct numeric extraction would be 80.8 %, since 19.2 % of all numeric values have *T€* as unit.
+:::
+
+Furthermore, we can see that it is possible to achieve perfect output, if the input is perfect structured and without unknown row identifiers. Perfect in, perfect out. Thus, we show that there is no \acr{LLM} approach inherent mechanism, that prevents perfect information extraction of numeric values.
+
+synth: The 0.1 % incorrect prediction from the PDF documents could be caused by faulty text extracts by *pdfium*.
+
+investigate F1 score
+
+::: paragraph-start
+##### Compare with previous work
+
+@liExtractingFinancialData2023 achieved a perfect extraction result, after refining their approach. (strated at 96.1 %) including omissions when the LLM was instructed to extract a list of line items, misjudgment of units (such as thousands or millions), and incorrect identification of rows and columns
+
+Total 152 data points from 8 ACFRs reports (probably homogeneous) fuzzy matching instruction 3 values per go, instructions for currency units
+
+98.9 % on ESG reports after refinement, 90 values from 15 documents; heterogeneou (multiple ccompanies)? started at 93.3 % misjudging units between grams, kilograms, and tonnes introduced additional fields to the data points and had LLM extract the units as separate output fields
+
+small in sample extractions =\> 4000 county year ACFRs: 96 % (80_000 data points)
+:::
+
+::: paragraph-start
+##### Implications
+
+We have not investigated yet, if the 2 % wrong extracted numeric values are caused by not respecting currency units, or if there is another reason. A potential reason may be numeric values, that get stiched together during text extraction.
+
+-   invest more into table extraction?
+
+Checked other extraction libraries as well. Including Azure Document Intelligence and Dpcling, but results not better. In Markdown they get worse.
+
+Checking the extracted values takes up to three minutes. This totals in 300 minutes prediction checking. Thus, selecting a smaller model that is finishing after 2:30 minutes is not speeding up the process a lot. Once we get a sufficient good performance with the big models the prediction checking can be dropped. This would bring th real benefit.
+:::
+
+::: paragraph-start
+##### Limitations
+
+-   add schemas for different hierarchies
+:::
+
+::: paragraph-start
+##### Unexpected results
+
+-   converts currency units without being prompted explicitly
+:::
+
+::: paragraph-start
+##### Recommendations
+
+-   invest in supply of machine-readable information
+:::
+
+::: paragraph-start
+##### Possible improvement
+
+The extraction performance may get higher, if the in-context learning examples show how to deal with columns that have a currency unit.
+
+-   explicitly instruct, how to handle currency units
+
+-   extend schema or sum rows
+
+-   handle non matched rows explicitly
+:::
+
+::: paragraph-start
+##### Conclusion
+:::
+
+## Error rate guidance
+
+::: paragraph-start
+##### Results
+
+Confidence score can be used to determine empirical error rate for confidence intervals. For well performing models we find most predictions in the highest confidence interval. 
+
+Ministral shows good spread over confidence range for page identification task. We can find confidence intervals with zero error rate for the page identification task and the information instruction task on synthetic data.
+
+We do not find confidence intervals with a error rate below 1 % for real **Aktiva** tables. Explicitly instructing to respect currency units, reduces errors.
+:::
+
+::: paragraph-start
+##### Interpretations
+
+Confidence score can be used to guide attention for page identification task, but hardly for information extraction task.
+:::
+
+::: paragraph-start
+##### Compare with previous work
+:::
+
+::: paragraph-start
+##### Implications
+
+Additional segementation could be necessary, to find values that are predicted well enough.
+:::
+
+::: paragraph-start
+##### Limitations
+:::
+
+::: paragraph-start
+##### Unexpected results
+
+Most models predict high confidence, even for wrong predictions.
+:::
+
+::: paragraph-start
+##### Recommendations
+:::
+
+::: paragraph-start
+##### Possible improvement
+:::
+
+::: paragraph-start
+##### Conclusion
+:::
+
+Discussion:
+
+An additional feature to narrow down the selection and get a more concrete error rate scores for similar texts could be the the company.
+
+Check perfect text?
+
+Learning benefit of real examples higher for numeric value extraction as for lable matching.
+
+works only well for page identification, where it is not really needed (perfect results, low checks, implicit found in extraction window)
+
+additional segmentation might help
+
+HTML might help =\> document parsing and table extraction
+
+## Table extraction
+
+### General performance
+
+::: paragraph-start
+##### Results
+:::
+
+::: paragraph-start
+##### Interpretations
+:::
+
+::: paragraph-start
+##### Compare with previous work
+:::
+
+::: paragraph-start
+##### Implications
+:::
+
+::: paragraph-start
+##### Limitations
+:::
+
+::: paragraph-start
+##### Unexpected results
+:::
+
+::: paragraph-start
+##### Recommendations
+:::
+
+::: paragraph-start
+##### Possible improvement
+:::
+
+::: paragraph-start
+##### Conclusion
+:::
+
+## Summary
+
+```{r hitl-error-handling, fig.cap="Showing the information extraction process in a HITL application. We propose to include user action only after the information extraction. If a wrong page is selected, this can be fixed and extraction runs again. Wrong extracted values and handling unknown row identifiers should be done in one place.", echo=FALSE, out.width="100%", fig.align='center'}
+
+knitr::include_graphics("images/HITL_flowchart_error_handling.png")
+```
+
+
+#### Regular expression approach
 
 ```{r table-extraction-regex-data-loading-discussion, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
 df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
@@ -15,22 +304,21 @@ df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") 
   )
 ```
 
-
 Some possible explanations for the different performance on the extracted texts are:
 
--   a duplicated row name[^06_discussion-1]
+-   a duplicated row name[^06_discussion-2]
 -   numeric columns extracted separated from row names by extraction libraries
--   sums in the same row as the single values[^06_discussion-2]
--   with pdfium: missing white space[^06_discussion-3]
--   with pdfium: random line breaks[^06_discussion-4]
+-   sums in the same row as the single values[^06_discussion-3]
+-   with pdfium: missing white space[^06_discussion-4]
+-   with pdfium: random line breaks[^06_discussion-5]
 
-[^06_discussion-1]: The row *Geleistete Anzahlungen* can be found in two parts of the table and the simple approach just matches the numbers to the first found entry.
+[^06_discussion-2]: The row *Geleistete Anzahlungen* can be found in two parts of the table and the simple approach just matches the numbers to the first found entry.
 
-[^06_discussion-2]: In this case the \acr{regex} takes the sum as the value for the previous year.
+[^06_discussion-3]: In this case the \acr{regex} takes the sum as the value for the previous year.
 
-[^06_discussion-3]: This can form unexpected numeric patterns or prevent the row names to be recognized.
+[^06_discussion-4]: This can form unexpected numeric patterns or prevent the row names to be recognized.
 
-[^06_discussion-4]: The approach takes care of line breaks between words, but not within. This leads to unrecognized row names as well.
+[^06_discussion-5]: The approach takes care of line breaks between words, but not within. This leads to unrecognized row names as well.
 
 You can find some examples for incorrect extracted texts in section \@ref(regex-extraction-mistakes).
 
@@ -100,26 +388,13 @@ Ad-hocs for monitoring during the year
 
 Yolo
 
-### Docling and Co
-
 ### Table extraction
 
 building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 
 predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
 
-### Sophisticated approaches for text extraction
-
--   docling
-
-not implemented
-
--   Nougat
--   maker
--   Azure
-
 ## Error analysis
 
 -   errors from wrong formatted numbers
-
 -   errors from wrong / unclear entity mapping

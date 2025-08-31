@@ -1,6 +1,12 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Appendix C - Error rate guidance report
 \phantomsection
-\ChapFrame
+\ChapFrame[Error rate guidance report][bhtgray]
 
 (ref:error-rate-guidance-intro-text)
 
@@ -78,7 +84,13 @@ df_flipped_score %>%
 ```
 
 ```{r confidence-match-plot-qwen-binary-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
-df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
+df_filtered <- df_binary %>% filter(
+  classification_type == "Aktiva", 
+  # model == "Qwen3-32B", 
+  # model_family=="Qwen 2.5", 
+  str_detect(model_family, "Qwen"), 
+  # parameter_count < 16
+  ) %>% 
   arrange(desc(f1_score))
 
 df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
@@ -89,24 +101,26 @@ df_flipped_score <- df_temp %>%
     is_aktiva = str_detect(type, "Aktiva")
   )
 
-model_name_best_f1_aktiva <- df_filtered[1, "model"]
-method__best_f1_aktiva <- df_filtered[1, "method"]
+model_name_best_f1_aktiva_qwen <- df_filtered[1, "model"]
+method__best_f1_aktiva_qwen <- df_filtered[1, "method"]
 ```
 
 This is different for models of most other model families. Figure
 \@ref(fig:confidence-match-plot-qwen-binary) shows, that
-`r model_name_best_f1_aktiva` returns always high confidence scores,
+`r model_name_best_f1_aktiva_qwen` returns always high confidence scores,
 even when it is wrong. The model shows perfect recall but its precision
 is worse than the precision of the Mistral model.
 
-```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct."}
+(ref:confidence-match-plot-qwen-binary-cap) Showing the confidence score for the Aktiva classification task grouped by table type and correctness for `r model_name_best_f1_aktiva_qwen`.
+
+```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="(ref:confidence-match-plot-qwen-binary-cap)"}
 df_flipped_score %>% 
   ggplot() +
   geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
   geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
   facet_wrap(~type) +
-  labs(title = model_name_best_f1_aktiva,
-       subtitle = method__best_f1_aktiva)
+  labs(title = model_name_best_f1_aktiva_qwen,
+       subtitle = method__best_f1_aktiva_qwen)
 ```
 
 ```{r def-micro-pr-function-binary, echo=echo_flag, warning=warning_flag, message=message_flag}
@@ -283,7 +297,7 @@ least.
 
 ```{r table-identification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
 confidence_vs_truth_binary <- df_binary %>% 
-  filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-32B")) %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", model_name_best_f1_aktiva_qwen)) %>% 
   group_by(method, model) %>% mutate(
     mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
   ) %>% group_by(model, classification_type) %>% 
@@ -595,9 +609,9 @@ we find no interval without an error rate below 1 %.
     and still there was no range without wrong classification for Llama
     4 Scout.
 
-```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters. Showing individual scores for groups with less than 20 observations.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
 confidence_vs_truth_multi <- df_multi %>% 
-  filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", "Qwen3-8B")) %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", model_name_best_f1_aktiva_qwen)) %>% 
   unnest(metrics) %>% 
   group_by(method, model, metric_type) %>% mutate(
     mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
@@ -616,7 +630,13 @@ confidence_vs_truth_multi %>% ggplot() +
     position = position_dodge2(preserve = "single")) +
   scale_fill_discrete(drop = FALSE) +
   scale_x_discrete(drop = FALSE) +
-  facet_grid(~ model)
+  facet_grid(~ model) + 
+  geom_point(
+    data = .%>% group_by(model, metric_type, match) %>% mutate(n = n(), .before = 1) %>% filter(n<20),
+    aes(x = match, y = confidence_score, alpha = metric_type), color = "green",
+    shape = 4, position=position_jitterdodge(dodge.width=0.9, jitter.width = 0.2, jitter.height = 0.005)
+  ) +
+  scale_alpha_manual(values = c(1, 1, 1), guide = "none")
 ```
 
 ```{r table-identification-llm-confidence-lm-multi, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals for the multi-class classification task."}
@@ -747,7 +767,7 @@ confidence_intervals_real <- confidence_vs_truth_real %>% #rename(confidence = c
 
 conf_scores_top_real <- confidence_intervals_real %>% 
   filter(conf_center == 0.975, model == "Qwen3-235B-A22B-Instruct-2507-FP8") %>% 
-  select(predicted_NA, chance_false) %>% deframe()
+  select(predicted_NA, chance_false) %>% mutate(chance_false = round(chance_false, 1)) %>% deframe()
 ```
 
 ::: paragraph-start
@@ -803,7 +823,7 @@ confidence_intervals_real %>%
   #   position = position_stack(vjust = 1), vjust = -0.6, 
   #   size = 3, color = "black"
   # ) +
-  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555"), drop = FALSE) +
   scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 
@@ -890,7 +910,7 @@ confidence_intervals_hybrid %>%
   #   position = position_stack(vjust = 1), vjust = -0.6, 
   #   size = 3, color = "black"
   # ) +
-  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555"), drop=FALSE) +
   scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
   labs(
     x = "Confidence Interval Center", 

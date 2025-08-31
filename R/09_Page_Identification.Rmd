@@ -1,9 +1,15 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 \setcounter{chapter}{0}
 \renewcommand{\thechapter}{\Alph{chapter}}
 
 # Appendix A - Page identification report {#page-identification-report}
 \phantomsection
-\ChapFrame
+\ChapFrame[Page identification report][bhtblue]
 
 (ref:page-identification-intro-text)
 
@@ -512,8 +518,22 @@ Delete or place somewhere else?:
 
 ```{r page-identification-llm-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 temp_list <- readRDS("data_storage/page_identification_llm.rds")
-df_binary <- temp_list$df_binary
-df_multi <- temp_list$df_multi
+df_binary <- temp_list$df_binary %>% mutate(
+        # model_family = sub("_.*", "", model),
+        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
+        model = str_remove(model, "-0-9-1")
+      )
+df_multi <- temp_list$df_multi %>% mutate(
+        # model_family = sub("_.*", "", model),
+        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
+        model = str_remove(model, "-0-9-1")
+      )
 
 method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
 

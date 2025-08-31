@@ -1,5 +1,11 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # References {-}
-\addthumb{References and glossary}{\Huge{\textbf{8}}}{white}{gray}
+\addthumb{References and glossary}{\Huge{\textbf{8}}}{white}{bhtyellow}
 
 <div id="refs"></div>
 

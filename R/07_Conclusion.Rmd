@@ -1,3 +1,9 @@
-# Conclusion {#conclusion}
-\ChapFrame
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
 
+# Conclusion {#conclusion}
+
+\ChapFrame[Conclusion][bhtred]

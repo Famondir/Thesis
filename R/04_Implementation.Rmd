@@ -1,8 +1,14 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Implementation {#implementation}
 
 (max 5p)
 
-\ChapFrame
+\ChapFrame[Implementation][bhtyellow]
 
 ## Environments
 

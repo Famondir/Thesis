@@ -585,3 +585,19 @@ sketch = htmltools::withTags(table(
 ))
 print(sketch)
 datatable(iris[1:20, c(5, 1:4)], container = sketch, rownames = FALSE)
+
+####
+
+confidence_vs_truth_multi %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence_score, fill = metric_type), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_grid(~ model) + 
+  geom_point(
+    data = .%>% group_by(model, metric_type, match) %>% mutate(n = n(), .before = 1) %>% filter(n<20),
+    aes(x = match, y = confidence_score, alpha = metric_type), color = "green",
+    shape = 4, position=position_jitterdodge(dodge.width=1, jitter.width = 0.05, jitter.height = 0.005)
+  ) +
+  scale_alpha_manual(values = c(1, 1, 1), guide = "none")

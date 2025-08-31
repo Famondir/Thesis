@@ -1,6 +1,13 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Appendix B - Information extraction report
+
 \phantomsection
-\ChapFrame
+\ChapFrame[Information extraction report][bhtteal]
 
 (ref:information-extraction-intro-text)
 
@@ -36,54 +43,25 @@ table_extraction_regex_baseline_medians <- tribble(
 )
 ```
 
-The baseline for the table extraction task is set by an approach using
-regular expressions on the text extract. Figure
-\@ref(fig:table-extraction-regex-performance) shows the performance of
-this approach. In the first row (A) the percentage of correct predicted
-numeric values and the percentage of total correct responses is shown.
-The second row (B) shows the precision, recall and F1 score for
-identifying a value as missing and thus predicting *null*. The
-percentage of total correct responses is calculated as
+The baseline for the table extraction task is set by an approach using regular expressions on the text extract. Figure \@ref(fig:table-extraction-regex-performance) shows the performance of this approach. In the first row (A) the percentage of correct predicted numeric values and the percentage of total correct responses is shown. The second row (B) shows the precision, recall and F1 score for identifying a value as missing and thus predicting *null*. The percentage of total correct responses is calculated as
 
 $$
 percentage\_correct\_total = \frac{n_{correct\_numeric} + n_{missing\_true\_positive}}{n_{total\_entries}}
 $$
 
-with $n_{total\_entries} = 58$ . This implies that the correct
-prediction of missing values has more influence for tables, that have
-only a few numeric values in the ground truth. The minimal number of
-numeric values in a tables is ten. Figure
-\@ref(fig:display-extraction-metrics-full-NA) shows, that the percentage
-of total correct responses is not a sufficient metric, because responses
-that only predicted *null* can have a high score if there are only a few
-numeric values in the ground truth table.
+with $n_{total\_entries} = 58$ . This implies that the correct prediction of missing values has more influence for tables, that have only a few numeric values in the ground truth. The minimal number of numeric values in a tables is ten. Figure \@ref(fig:display-extraction-metrics-full-NA) shows, that the percentage of total correct responses is not a sufficient metric, because responses that only predicted *null* can have a high score if there are only a few numeric values in the ground truth table.
 
 ::: paragraph-start
 ##### Performance
 
-In each frame there are two groups of two box-plots. The left group is
-showing the performance on real **Aktiva** tables. The right group shows
-the performance on synthetic **Aktiva** tables. Within the group the
-green (left) box shows the performance on text extracted with the
-*pdfium* library. The peach colored (right) box shows the performance on
-text extracted with the *pymupdf* library.
+In each frame there are two groups of two box-plots. The left group is showing the performance on real **Aktiva** tables. The right group shows the performance on synthetic **Aktiva** tables. Within the group the green (left) box shows the performance on text extracted with the *pdfium* library. The peach colored (right) box shows the performance on text extracted with the *pymupdf* library.
 :::
 
-Figure \@ref(fig:table-extraction-regex-performance) shows, that the
-\acr{regex} approach performs better[^05_results-25] on the synthetic
-tables compared to the real tables. Even though, the performance is not
-perfect and more consistent on the text extracted with *pymupdf*
-compared to *pdfium*. In contrast, the used text extraction library has
-no noticeable influence on the real **Aktiva** tables.
+Figure \@ref(fig:table-extraction-regex-performance) shows, that the \acr{regex} approach performs better[^10_information_extraction-1] on the synthetic tables compared to the real tables. Even though, the performance is not perfect and more consistent on the text extracted with *pymupdf* compared to *pdfium*. In contrast, the used text extraction library has no noticeable influence on the real **Aktiva** tables.
 
-[^05_results-25]: A comparison of the numeric values over all methods
-    can be found in section \@ref(comparing-table-extraction-methods).
+[^10_information_extraction-1]: A comparison of the numeric values over all methods can be found in section \@ref(comparing-table-extraction-methods).
 
-The performance for the \acr{regex} based table extraction is much
-better than the \acr{regex} based page identification performance. The
-median performance scores of the \acr{regex} approaches will be
-reflected by a dashed line in the box-plots in subsequent sections. The
-scores for the real **Aktiva** table extraction are:
+The performance for the \acr{regex} based table extraction is much better than the \acr{regex} based page identification performance. The median performance scores of the \acr{regex} approaches will be reflected by a dashed line in the box-plots in subsequent sections. The scores for the real **Aktiva** table extraction are:
 
 ```{r table-extraction-regex-baseline-medians, echo=echo_flag, warning=warning_flag, message=message_flag}
 table_extraction_regex_baseline_medians %>% mutate(
@@ -228,18 +206,9 @@ df_real_table_extraction %>% filter(str_detect(model, "235B")) %>%
   facet_grid(model_family ~ .)
 ```
 
-This section presents the results for the table extraction task
-performed with \acr{LLM}s on **Aktiva** tables. Subsection
-\@ref(real-table-extraction-results) compraes the performance of open
-source models on real tables. It also compares those results with the
-table extraction performance achieved with models by OpenAI.
+This section presents the results for the table extraction task performed with \acr{LLM}s on **Aktiva** tables. Subsection \@ref(real-table-extraction-results) compraes the performance of open source models on real tables. It also compares those results with the table extraction performance achieved with models by OpenAI.
 
-Subsection \@ref(synthetic-table-extraction) presents the results on
-synthetic **Aktiva** tables. Subsection
-\@ref(real-table-extraction-synth-context) shows a hybrid approach,
-where synthetic tables are used for the in-context learning, to extract
-real **Aktiva** tables. Finally, we summarize the results for all
-approaches in subsection \@ref(comparing-table-extraction-methods).
+Subsection \@ref(synthetic-table-extraction) presents the results on synthetic **Aktiva** tables. Subsection \@ref(real-table-extraction-synth-context) shows a hybrid approach, where synthetic tables are used for the in-context learning, to extract real **Aktiva** tables. Finally, we summarize the results for all approaches in subsection \@ref(comparing-table-extraction-methods).
 
 -   confidence usable to head for user checks?
 -   not handled new entries
@@ -292,29 +261,12 @@ super_underperformer <- df_real_table_extraction %>% filter(!method %in% c('zero
 ::: paragraph-start
 ##### Performance
 
-For the table extraction task
-`r length(unique(df_real_table_extraction$model))+2` open source models
-from `r length(unique(df_real_table_extraction$model_family))` model
-families have been benchmarked[^05_results-26]. Table
-\@ref(tab:table-metrics-llm-real-table-extraction) shows the best
-performing combination of \acr{LLM} and prompting strategy for each
-model family. The results are sorted by their mean percentage of total
-correct predictions. It also shows the normalized runtime in seconds and
-the parameter number of the model.
+For the table extraction task `r length(unique(df_real_table_extraction$model))+2` open source models from `r length(unique(df_real_table_extraction$model_family))` model families have been benchmarked[^10_information_extraction-2]. Table \@ref(tab:table-metrics-llm-real-table-extraction) shows the best performing combination of \acr{LLM} and prompting strategy for each model family. The results are sorted by their mean percentage of total correct predictions. It also shows the normalized runtime in seconds and the parameter number of the model.
 :::
 
-[^05_results-26]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B*
-    and *google_gemma-3n-E4B-it* have been tested as well but don't get
-    presented as they never performed anywhere beyond random guessing.
+[^10_information_extraction-2]: The models *deepseek-ai_DeepSeek-R1-Distill-Qwen-32B* and *google_gemma-3n-E4B-it* have been tested as well but don't get presented as they never performed anywhere beyond random guessing.
 
-Qwen3-235B-A22B-Instruct performed best with a mean score of
-`r top_scoring_model_big_mean`. This is equal with the performance that
-we achieved building the ground truth dataset. There are other models
-that perform almost as good with a score of 0.96 and more, but that
-don't match the human performance. These models show a median score of
-1.0. Qwen3-235B-A22B-Instruct is the second fastest of those well
-performing models and needs less than six minutes. Only Llama 4 Maverick
-is faster. It needs half the time to extract the information.
+Qwen3-235B-A22B-Instruct performed best with a mean score of `r top_scoring_model_big_mean`. This is equal with the performance that we achieved building the ground truth dataset. There are other models that perform almost as good with a score of 0.96 and more, but that don't match the human performance. These models show a median score of 1.0. Qwen3-235B-A22B-Instruct is the second fastest of those well performing models and needs less than six minutes. Only Llama 4 Maverick is faster. It needs half the time to extract the information.
 
 ```{r table-metrics-llm-real-table-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_top_scoring_models_big %>% 
@@ -325,13 +277,7 @@ df_top_scoring_models_big %>%
   render_table(caption = "Comparing best table extraction performance with real 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrrrrr", dom="t")
 ```
 
-Table \@ref(tab:table-metrics-llm-real-table-extraction-small) shows the
-performance of models with less than 17B parameters, that have not been
-listed above. Qwen3-14B performs best among the smaller models achieving
-a mean of `r top_scoring_model_small_mean` and median of 1.0. It takes
-1:49 minutes to extract the information from all **Aktiva** tables.
-Ministral-8B-Instruct does not perform as good as in the page
-identification task.
+Table \@ref(tab:table-metrics-llm-real-table-extraction-small) shows the performance of models with less than 17B parameters, that have not been listed above. Qwen3-14B performs best among the smaller models achieving a mean of `r top_scoring_model_small_mean` and median of 1.0. It takes 1:49 minutes to extract the information from all **Aktiva** tables. Ministral-8B-Instruct does not perform as good as in the page identification task.
 
 ```{r table-metrics-llm-real-table-extraction-small, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_top_scoring_models_small %>% 
@@ -343,40 +289,13 @@ df_top_scoring_models_small %>%
   render_table(caption = "Comparing best table extraction performance with real 'Aktiva' dataset for each model family for models with less than 17B parameters. Models that have been listes in the previous table are not listed again.", ref = opts_current$get("label"), alignment = "lllrrrrr", dom="t")
 ```
 
-Most models need a context learning approach to beat the performance of
-the regular expression approach at total and numeric correctness rate
-and F1 score. Table \@ref(tab:zero-and-synth-performing-models-tab)
-shows, that `r nrow(zero_shot_stars)` models perform better without any
-guidance[^05_results-27]. `r nrow(static_example_stars)` models achieved
-an performance better than the \acr{regex} baseline using the approach
-to learn with a fixed example from the synthetic dataset.
+Most models need a context learning approach to beat the performance of the regular expression approach at total and numeric correctness rate and F1 score. Table \@ref(tab:zero-and-synth-performing-models-tab) shows, that `r nrow(zero_shot_stars)` models perform better without any guidance[^10_information_extraction-3]. `r nrow(static_example_stars)` models achieved an performance better than the \acr{regex} baseline using the approach to learn with a fixed example from the synthetic dataset.
 
-[^05_results-27]: There is an external guidance through the provided
-    xgrammar template but it is not communicated to the model in form of
-    a promt.
+[^10_information_extraction-3]: There is an external guidance through the provided xgrammar template but it is not communicated to the model in form of a promt.
 
-In contrast: most of the models achieved a better performance than the
-regex baseline when they were provided with one or more examples from
-real **Aktiva** tables. Table
-\@ref(tab:super-underperforming-models-tab) shows, that
-`r nrow(super_underperformer)` don't consitently achieve a better score,
-when provided with three or five real **Aktiva** table examples. Here we
-find the smallest models with less than 2B parameters which don't
-achieve a consistence performance no matter how many examples they get.
-But we also find models that start to perform bad if they get a too long
-context with too many examples like the very recent and large model
-Llama 4 Maverick.
+In contrast: most of the models achieved a better performance than the regex baseline when they were provided with one or more examples from real **Aktiva** tables. Table \@ref(tab:super-underperforming-models-tab) shows, that `r nrow(super_underperformer)` don't consitently achieve a better score, when provided with three or five real **Aktiva** table examples. Here we find the smallest models with less than 2B parameters which don't achieve a consistence performance no matter how many examples they get. But we also find models that start to perform bad if they get a too long context with too many examples like the very recent and large model Llama 4 Maverick.
 
-The results for all models are presented in Figure
-\@ref(fig:table-extraction-llm-performance-total-overview),
-\@ref(fig:table-extraction-llm-performance-numeric-overview) and
-\@ref(fig:table-extraction-llm-f1-overview). In general the performance
-within a model family is positive correlated with the models number of
-parameters, if we provide real **Aktiva** examples. Once the 4B
-parameters are passed, the improvements get less and less, approaching
-the perfect performance. But no model achieves sperfect result on all
-documents. The *zero_shot* and *static_example* approach show some
-unpredicted performance drop, i.e. for Qwen3-14B.
+The results for all models are presented in Figure \@ref(fig:table-extraction-llm-performance-total-overview), \@ref(fig:table-extraction-llm-performance-numeric-overview) and \@ref(fig:table-extraction-llm-f1-overview). In general the performance within a model family is positive correlated with the models number of parameters, if we provide real **Aktiva** examples. Once the 4B parameters are passed, the improvements get less and less, approaching the perfect performance. But no model achieves sperfect result on all documents. The *zero_shot* and *static_example* approach show some unpredicted performance drop, i.e. for Qwen3-14B.
 
 ```{r zero-and-synth-performing-models-tab, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 zero_shot_stars %>% full_join(static_example_stars, join_by(model), suffix = c("_zero_shot", "_static_example")) %>% select(model, starts_with("median_total")) %>% 
@@ -434,33 +353,12 @@ perc_wrong_prediction_count <- round((df_overview_gpt %>% filter(!str_detect(mod
 ::: paragraph-start
 ##### OpenAI models
 
-Even though a lot of documents to process at \acr{RHvB} will not be
-public and thus must not be processed on public cloud infrastructure,
-the performance of models like OpenAI's GPT are interesting benchmark
-references within this thesis and for comparing these findings with
-other papers results. Therefore for this thesis the public available
-versions of annual reports have been used instead of the ones used
-internally or for public administration purposes. Those public available
-reports often are visually more appealing and more heterogeneous in
-their structure.
+Even though a lot of documents to process at \acr{RHvB} will not be public and thus must not be processed on public cloud infrastructure, the performance of models like OpenAI's GPT are interesting benchmark references within this thesis and for comparing these findings with other papers results. Therefore for this thesis the public available versions of annual reports have been used instead of the ones used internally or for public administration purposes. Those public available reports often are visually more appealing and more heterogeneous in their structure.
 :::
 
-Table \@ref(tab.table-extraction-llm-performance-total-gpt-ranking)
-shows the ranking for the best model-method combinations Qwen3 235B is
-performing best. gpt-4.1 and gpt-5-mini perform equally well and are
-almost as good as Qwen3 235B. All models but gpt-4.1-nano, gpt-5-nano
-and Qwen3-0.6B manage to beat the \acr{regex} threshold. Qwen3-0.6B
-performs better than the nano models once it gets provided with an
-example.
+Table \@ref(tab.table-extraction-llm-performance-total-gpt-ranking) shows the ranking for the best model-method combinations Qwen3 235B is performing best. gpt-4.1 and gpt-5-mini perform equally well and are almost as good as Qwen3 235B. All models but gpt-4.1-nano, gpt-5-nano and Qwen3-0.6B manage to beat the \acr{regex} threshold. Qwen3-0.6B performs better than the nano models once it gets provided with an example.
 
-Table \@ref(tab:costs-azure) shows the accumulated costs for the table
-extraction task for the models provided by Azure. Using gpt-4.1 is most
-expensive, followed by gpt-5-mini. Next is gpt-5-nano. This is caused by
-an unexpected high cost for output tokens. In general we find, that the
-ratio of output costs to input costs is much higher for gpt-5 models.
-Since gpt-5-mini gives consistently good results already with one
-provided example, this could be the most cost efficient strategy. But it
-takes gpt-5-mini more than three times longer to respond than gpt-4.1.
+Table \@ref(tab:costs-azure) shows the accumulated costs for the table extraction task for the models provided by Azure. Using gpt-4.1 is most expensive, followed by gpt-5-mini. Next is gpt-5-nano. This is caused by an unexpected high cost for output tokens. In general we find, that the ratio of output costs to input costs is much higher for gpt-5 models. Since gpt-5-mini gives consistently good results already with one provided example, this could be the most cost efficient strategy. But it takes gpt-5-mini more than three times longer to respond than gpt-4.1.
 
 ```{r table-extraction-llm-performance-total-gpt-ranking, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 df_overview_gpt %>% group_by(model, method) %>% 
@@ -517,58 +415,19 @@ costs_azure %>%
 
 Discussion?:
 
-Since the output token costs are not that different (2 \$ for 1M output
-tokens with gpt-5-mini vs 1.6 \$ with gpt-4.1-mini), the generated
-output token number has to be much higher for the gpt-5-mini models. But
-since the responses are based on the same schema and required the same
-numeric values there shouldn't be a big difference[^05_results-28].
+Since the output token costs are not that different (2 \$ for 1M output tokens with gpt-5-mini vs 1.6 \$ with gpt-4.1-mini), the generated output token number has to be much higher for the gpt-5-mini models. But since the responses are based on the same schema and required the same numeric values there shouldn't be a big difference[^10_information_extraction-4].
 
-[^05_results-28]: With the gpt-oss models we found the new Harmony
-    response format to produce a lot of tokens in the chain of thought
-    stream, we discarded, because we only need the \acr{json} in the
-    final stream Maybe this is similar for gpt-5 models as well but the
-    chain of thought stream is kept on Azures side?
+[^10_information_extraction-4]: With the gpt-oss models we found the new Harmony response format to produce a lot of tokens in the chain of thought stream, we discarded, because we only need the \acr{json} in the final stream Maybe this is similar for gpt-5 models as well but the chain of thought stream is kept on Azures side?
 
-Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) shows the
-distribution of F1 score for up to three examples. It shows green
-crosses at the bottom of the abscissa that indicate prediction, where no
-*null* value is reported. This means, the model hallucinates many
-numeric values. This is only the case for OpenAI's models but not for
-Qwen3 models. This behaviour persists up to five examples for the nano
-as well the gpt-oss 20b model. For gpt-4.1 and gpt-4.1-mini these cases
-vanish when we provide three or more examples and never appeared for
-gpt-5-mini.
+Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) shows the distribution of F1 score for up to three examples. It shows green crosses at the bottom of the abscissa that indicate prediction, where no *null* value is reported. This means, the model hallucinates many numeric values. This is only the case for OpenAI's models but not for Qwen3 models. This behaviour persists up to five examples for the nano as well the gpt-oss 20b model. For gpt-4.1 and gpt-4.1-mini these cases vanish when we provide three or more examples and never appeared for gpt-5-mini.
 
-One can find the full plots in Figures
-\@ref(fig:table-extraction-llm-performance-total-gpt),
-\@ref(fig:table-extraction-llm-performance-numeric-gpt) and
-\@ref(fig:table-extraction-llm-f1-gpt)).
+One can find the full plots in Figures \@ref(fig:table-extraction-llm-performance-total-gpt), \@ref(fig:table-extraction-llm-performance-numeric-gpt) and \@ref(fig:table-extraction-llm-f1-gpt)).
 
-We were not able to get OpenAI's models to stick to the provided
-\acr{json} schema strictly. Passing the \acr{ebnf} grammar did not work
-at all. This means that with gpt-4.1-nano there have been
-`r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-4.1-nano") %>% nrow()`
-predictions that have been completely empty. For gpt-5-nano we find
-`r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-5-nano") %>% nrow()`
-such predictions. Figure
-\@red(fig:table-extraction-llm-prediction-count-gpt) shows the
-distribution of responses with a wrong number of predictions (including
-*null* and numeric predictions). Overall there have been
-`r perc_wrong_prediction_count` % of the responses of OpenAI's models
-that were compatible with the schema but had a wrong number of rows
-predicted. The maximum number of returned values (by gpt-5-nano) is 714.
+We were not able to get OpenAI's models to stick to the provided \acr{json} schema strictly. Passing the \acr{ebnf} grammar did not work at all. This means that with gpt-4.1-nano there have been `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-4.1-nano") %>% nrow()` predictions that have been completely empty. For gpt-5-nano we find `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-5-nano") %>% nrow()` such predictions. Figure \@red(fig:table-extraction-llm-prediction-count-gpt) shows the distribution of responses with a wrong number of predictions (including *null* and numeric predictions). Overall there have been `r perc_wrong_prediction_count` % of the responses of OpenAI's models that were compatible with the schema but had a wrong number of rows predicted. The maximum number of returned values (by gpt-5-nano) is 714.
 
-Using gpt-5-chat for the table extraction task with structured output is
-not working, returning an error informing that a *json_schema* can't be
-used with this model. Figure \@ref(fig:table-extraction-llm-errors-gpt)
-shows, where other models produced an answer that could not be parsed as
-valid \acr{json}.Most errors occured for gpt-oss-20B and the
-*static_example* method. Over half of all tables could not be
-transcripted in \acr{json} with in the 40_000 response token
-limit[^05_results-29]. Only with gpt-5-mini we had no \acr{json} parsing
-error.
+Using gpt-5-chat for the table extraction task with structured output is not working, returning an error informing that a *json_schema* can't be used with this model. Figure \@ref(fig:table-extraction-llm-errors-gpt) shows, where other models produced an answer that could not be parsed as valid \acr{json}.Most errors occured for gpt-oss-20B and the *static_example* method. Over half of all tables could not be transcripted in \acr{json} with in the 40_000 response token limit[^10_information_extraction-5]. Only with gpt-5-mini we had no \acr{json} parsing error.
 
-[^05_results-29]: Without the Harmony format 4_000 are enough.
+[^10_information_extraction-5]: Without the Harmony format 4_000 are enough.
 
 ```{r table-extraction-llm-f1-gpt-slice, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="90%", out.extra='keepaspectratio', fig.height=10, , dev=std_dev, fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values."}
 df_overview_gpt %>% 
@@ -603,24 +462,12 @@ df_overview_gpt %>% mutate(n_pred = map_dbl(predictions, ~nrow(.)), .before = 1)
 ::: paragraph-start
 ##### Out of company performance
 
-Table \@ref(tab:table-extraction-same-company-improvement-table) shows
-the improvement for the percentage of correct predictions total, when
-**Aktiva** tables from the same company as the target tables company are
-provided for the in-context learning. It shows that this improvement is
-biggest for goolge and Qwen and smallest for Llama models.
+Table \@ref(tab:table-extraction-same-company-improvement-table) shows the improvement for the percentage of correct predictions total, when **Aktiva** tables from the same company as the target tables company are provided for the in-context learning. It shows that this improvement is biggest for goolge and Qwen and smallest for Llama models.
 :::
 
-Figure
-\@ref(fig:table-extraction-llm-performance-total-overview-out-of-company)
-shows, that using **Aktiva** in-company examples improves the
-performance, mainly by reducing the number of bad predictions. The found
-improvement is present for all models but Llama 4 Maverick. Here the
-number of bad predictions gets larger if we provide three or more
-examples. With five examples the performances totally collapses.
+Figure \@ref(fig:table-extraction-llm-performance-total-overview-out-of-company) shows, that using **Aktiva** in-company examples improves the performance, mainly by reducing the number of bad predictions. The found improvement is present for all models but Llama 4 Maverick. Here the number of bad predictions gets larger if we provide three or more examples. With five examples the performances totally collapses.
 
-The perfromance improvement for GPT-4.1-mini and GTP-4.1 with only one
-provided example seems to be big, because the box is getting much more
-narrow. But the median shifts not more than for other models.
+The perfromance improvement for GPT-4.1-mini and GTP-4.1 with only one provided example seems to be big, because the box is getting much more narrow. But the median shifts not more than for other models.
 
 Check results for openai, when 5 nano finished
 
@@ -825,95 +672,46 @@ n_synth_table_extraction <- list.files(
 ::: paragraph-start
 ##### Ground truth dataset
 
-For this task we created synthetic **Aktiva** tables that should allow
-to investigate the influence certain characteristics of tables on the
-extraction task. We systematically created **Aktiva** tables that vary
-over the following characteristics:
+For this task we created synthetic **Aktiva** tables that should allow to investigate the influence certain characteristics of tables on the extraction task. We systematically created **Aktiva** tables that vary over the following characteristics:
 :::
 
-1.  n_columns: Number of columns the numeric values are distributed over
-    ranging from 2 to 4.
+1.  n_columns: Number of columns the numeric values are distributed over ranging from 2 to 4.
 2.  header_span: Span in the header rows.
-3.  thin: Including just a subset of all possible entries for a
-    **Aktiva** table.
-4.  unit_in_first_cell: Is the currency unit (e.g. T€) given in the
-    beginning of the table instead for each column.
-5.  enumeration: Are the rows numerated following the schema in the
-    legal text.
-6.  many_line_breaks: Limiting the character length for the row
-    descriptions to 50 to introduce line breaks.
-7.  shuffle_rows: The order of the rows within lower hierarchies can
-    vary.
-8.  text_around: There is some random text before and after the table on
-    the generated page.
-9.  sum_same_line: Summed values are in the same line as single values
-    if there are more than two columns.
+3.  thin: Including just a subset of all possible entries for a **Aktiva** table.
+4.  unit_in_first_cell: Is the currency unit (e.g. T€) given in the beginning of the table instead for each column.
+5.  enumeration: Are the rows numerated following the schema in the legal text.
+6.  many_line_breaks: Limiting the character length for the row descriptions to 50 to introduce line breaks.
+7.  shuffle_rows: The order of the rows within lower hierarchies can vary.
+8.  text_around: There is some random text before and after the table on the generated page.
+9.  sum_same_line: Summed values are in the same line as single values if there are more than two columns.
 10. unit: Eight different currency units from. E.g.: €, TEUR, Mio. €
 11. input_format: Table is exported as PDF, HTML or Markdown document.
 
-This results in `r n_synth_tables` tables. A sample of 10 % is used for
-the extraction task. The *header_span* and *text_around* are only varied
-for the PDF format.
+This results in `r n_synth_tables` tables. A sample of 10 % is used for the extraction task. The *header_span* and *text_around* are only varied for the PDF format.
 
 ::: paragraph-start
 ##### Extraction task overview
 
-For the table extraction task with synthetic **Aktiva** tables
-`r length(unique(df_synth_table_extraction$model))` open source models
-from `r length(unique(df_synth_table_extraction$model_family))` model
-families have been benchmarked. There have been the same seven methods
-tested with each \acr{LLM} as described in section
-\@ref(extraction-with-llms-real-tables). Each method was used twice,
-because in one trial the \acr{LLM} is prompted to respect the currency
-units and in the other trail it is not.
+For the table extraction task with synthetic **Aktiva** tables `r length(unique(df_synth_table_extraction$model))` open source models from `r length(unique(df_synth_table_extraction$model_family))` model families have been benchmarked. There have been the same seven methods tested with each \acr{LLM} as described in section \@ref(extraction-with-llms-real-tables). Each method was used twice, because in one trial the \acr{LLM} is prompted to respect the currency units and in the other trail it is not.
 :::
 
-This results in `r n_synth_table_extraction` files, that hold the
-results of 4_915 table extractions each. For the investigation of
-potential predictors influences the random forest is generated with a
-sample of 50_000 of these 68_810 results and finally, the \acr{SHAP}
-values are calculated with 2_000 rows of data.
+This results in `r n_synth_table_extraction` files, that hold the results of 4_915 table extractions each. For the investigation of potential predictors influences the random forest is generated with a sample of 50_000 of these 68_810 results and finally, the \acr{SHAP} values are calculated with 2_000 rows of data.
 
 ::: paragraph-start
 ##### Performance
 
-Table \@ref(tab:table-metrics-llm-real-table-extraction-synth-context)
-shows the best performing combination of \acr{LLM} and prompting
-strategy for each model family. The results are sorted by their mean
-percentage of total correct predictions. We only compare results for
-table extractions that work with a PDF document based table here.
+Table \@ref(tab:table-metrics-llm-real-table-extraction-synth-context) shows the best performing combination of \acr{LLM} and prompting strategy for each model family. The results are sorted by their mean percentage of total correct predictions. We only compare results for table extractions that work with a PDF document based table here.
 :::
 
-For every model family there is at least one model-method combination
-that performed better than the \acr{regex} baseline. For the synthetic
-table extraction task the baseline is
-`r round(synth_table_extraction_regex_total_performance_median, 3)`.
-`r deframe(n_better_as_regex)['TRUE']` from `r sum(n_better_as_regex)`
-model-method combinations perform better than this baseline. There has
-been no model that performed better than this baseline with the
-*zero_shot* or *static_example* method.
+For every model family there is at least one model-method combination that performed better than the \acr{regex} baseline. For the synthetic table extraction task the baseline is `r round(synth_table_extraction_regex_total_performance_median, 3)`. `r deframe(n_better_as_regex)['TRUE']` from `r sum(n_better_as_regex)` model-method combinations perform better than this baseline. There has been no model that performed better than this baseline with the *zero_shot* or *static_example* method.
 
-Table \@ref(tab:table-metrics-llm-real-table-extraction-synth-context)
-shows, that Qwen3-235B-A22B-Instruct performs best. Llama 4 Scout also
-performs very good but is three times faster. Table
-\@ref(tab:table-metrics-llm-real-table-extraction-synth-context-small)
-shows three small \acr{LLM}s that also beat the median threshold for the
-synthetic table extraction task. But we would not prefer the Qwen3-8B
-model over the Llama Scout model, because its speed advantage is to
-small, compared to the performance decrease. But if there is limited
-VRAM available the Qwen3 model is a good choice. It can run well with 40
-GB VRAM. The Llama Scout needs 640 GB VRAM to run well[^05_results-30].
+Table \@ref(tab:table-metrics-llm-real-table-extraction-synth-context) shows, that Qwen3-235B-A22B-Instruct performs best. Llama 4 Scout also performs very good but is three times faster. Table \@ref(tab:table-metrics-llm-real-table-extraction-synth-context-small) shows three small \acr{LLM}s that also beat the median threshold for the synthetic table extraction task. But we would not prefer the Qwen3-8B model over the Llama Scout model, because its speed advantage is to small, compared to the performance decrease. But if there is limited VRAM available the Qwen3 model is a good choice. It can run well with 40 GB VRAM. The Llama Scout needs 640 GB VRAM to run well[^10_information_extraction-6].
 
-[^05_results-30]: When we say, it runs well, it gets rated as *okay* on
-    the [LLM Inference: VRAM & Performance
-    Calculator](https://apxml.com/tools/vram-calculator).
+[^10_information_extraction-6]: When we say, it runs well, it gets rated as *okay* on the [LLM Inference: VRAM & Performance Calculator](https://apxml.com/tools/vram-calculator).
 
 Detail:
 
-Figure
-\@ref(fig:synth-table-extraction-llm-performance-numeric-overview)
-shows, that Llama 3.3 70B never manages to reduce the spread in the
-numeric prediction performance.
+Figure \@ref(fig:synth-table-extraction-llm-performance-numeric-overview) shows, that Llama 3.3 70B never manages to reduce the spread in the numeric prediction performance.
 
 ```{r table-metrics-llm-real-table-extraction-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_synth_top_performance %>% 
@@ -944,41 +742,16 @@ df_synth_top_performance_small %>%
 ::: paragraph-start
 ##### Hypotheses
 
-Table \@ref(tab:hypotheses-and-results-synth-table-extraction-llm-table)
-shows some unsupported hypotheses for predictors with strong effects.
-The observations suggest, that prompting the model to respect the
-currency units is decreasing its performance to predict the correct
-numeric values. This is understandable, if the task is reflected
-properly and we made a mistake there, when we formulated our hypothesis.
+Table \@ref(tab:hypotheses-and-results-synth-table-extraction-llm-table) shows some unsupported hypotheses for predictors with strong effects. The observations suggest, that prompting the model to respect the currency units is decreasing its performance to predict the correct numeric values. This is understandable, if the task is reflected properly and we made a mistake there, when we formulated our hypothesis.
 :::
 
-If the model is not prompted to respect the currency units, it is
-presented with examples that just copy over the numeric values. And it
-gets evaluated if it copied the values correctly. If the model is
-prompted to respect the currency units, it is presented with examples,
-where the values not only get copied but also transformed. And they get
-evaluated if they do the transformation correct as well. Thus the task
-is harder, if numeric values should be respected and the effect is
-having a negative direction.
+If the model is not prompted to respect the currency units, it is presented with examples that just copy over the numeric values. And it gets evaluated if it copied the values correctly. If the model is prompted to respect the currency units, it is presented with examples, where the values not only get copied but also transformed. And they get evaluated if they do the transformation correct as well. Thus the task is harder, if numeric values should be respected and the effect is having a negative direction.
 
-Figure
-\@ref(fig:better-performance-for-value-transformation-with-html-and-md)
-shows that the transformation task is handled best, if the examples are
-provided with the *top_n_rag* strategy. It does not work with the
-*zero_shot* strategy. It also shows, that the performance is lower with
-the PDF *input_format* and that the models have difficulties, if the
-*unit_multiplier* is one million. This also shows a strong effect and is
-strongest for the PDF *input_format*. This is a general effect. We see
-in \@ref(fig:table-extraction-llm-confidence-lm-synth) that it can be
-different for single models like Qwen3-235B.
+Figure \@ref(fig:better-performance-for-value-transformation-with-html-and-md) shows that the transformation task is handled best, if the examples are provided with the *top_n_rag* strategy. It does not work with the *zero_shot* strategy. It also shows, that the performance is lower with the PDF *input_format* and that the models have difficulties, if the *unit_multiplier* is one million. This also shows a strong effect and is strongest for the PDF *input_format*. This is a general effect. We see in \@ref(fig:table-extraction-llm-confidence-lm-synth) that it can be different for single models like Qwen3-235B.
 
 old:
 
-HTML and Markdown better but expected interaction effects mostly not
-found - except: - columns help pdf - thinning least bad for pdf - pdf
-worst with numbers that have currency units (short numbers, maybe no
-1000er delimiter) - enumeration positive for pdf (and interaction with
-log10 mult)
+HTML and Markdown better but expected interaction effects mostly not found - except: - columns help pdf - thinning least bad for pdf - pdf worst with numbers that have currency units (short numbers, maybe no 1000er delimiter) - enumeration positive for pdf (and interaction with log10 mult)
 
 line breaks are no problem
 
@@ -986,9 +759,7 @@ zero shot gets confused by text around
 
 Markdown might be even better than HTML
 
-respecting units was bad - except for: Top n rag finds examples with
-same currency units (shorter numbers more important than currnency in
-header?)
+respecting units was bad - except for: Top n rag finds examples with same currency units (shorter numbers more important than currnency in header?)
 
 log10 multiplier has many interaction effects
 
@@ -1142,42 +913,19 @@ confidence_intervals_hybrid <- confidence_vs_truth_hybrid %>% #rename(confidence
   )
 ```
 
-In this section we present the results of using synthetic **Aktiva**
-tables for the in-context learning to extract information from real
-**Aktiva** tables. We show that even such a hybrid approach can be used,
-to extend the extraction task by a unit conversation task.
+In this section we present the results of using synthetic **Aktiva** tables for the in-context learning to extract information from real **Aktiva** tables. We show that even such a hybrid approach can be used, to extend the extraction task by a unit conversation task.
 
 ::: paragraph-start
 ##### Performance
 
-Table
-\@ref(tab:comparing-extraction-performance-real-and-synth-context-learning)
-compares the overall performance for the extraction task of the best
-model-method combination in the hybrid approach per model with the
-*zero_shot* and real example training performance. Using real examples
-for in-context-learning for those model-method combinations is better
-than using the generated synthetic data. Qwen3-8B and gemma3-12b can
-improve the most using real examples instead of sythetic examples,
-normalized on the possible improvement from the synthetic learning
-results using this formula:
+Table \@ref(tab:comparing-extraction-performance-real-and-synth-context-learning) compares the overall performance for the extraction task of the best model-method combination in the hybrid approach per model with the *zero_shot* and real example training performance. Using real examples for in-context-learning for those model-method combinations is better than using the generated synthetic data. Qwen3-8B and gemma3-12b can improve the most using real examples instead of sythetic examples, normalized on the possible improvement from the synthetic learning results using this formula:
 :::
 
 $$
 delta\_rate_{synth} = \frac{median \left( real \right)-median \left( synth \right)}{1-median \left( synth \right)}
 $$
 
-On the same time, gemma3-12b shows the lowest *delta_rate* with under 10
-%, when the improvement of using synthetic examples is compared with the
-*zero_shot* method. For the other models this is more tan 48 % and
-highest for Llama Scout 4 with 87.5 % improving from 0.45 to 0.93.
-Qwen-235B score as high with both learning approaches, but scored best
-with just using a single synthetic example. Table
-\@ref(tab:comparing-extraction-performance-real-and-synth-context-learning-median)
-shows that these observations are valid for the improvement with in the
-models independent from the selected method. Figure
-\@ref(fig:compare-real-table-extraction-by-context-type) shows, that the
-improvement for using one or three synthetic examples is biggest for
-Qwen3-8B.
+On the same time, gemma3-12b shows the lowest *delta_rate* with under 10 %, when the improvement of using synthetic examples is compared with the *zero_shot* method. For the other models this is more tan 48 % and highest for Llama Scout 4 with 87.5 % improving from 0.45 to 0.93. Qwen-235B score as high with both learning approaches, but scored best with just using a single synthetic example. Table \@ref(tab:comparing-extraction-performance-real-and-synth-context-learning-median) shows that these observations are valid for the improvement with in the models independent from the selected method. Figure \@ref(fig:compare-real-table-extraction-by-context-type) shows, that the improvement for using one or three synthetic examples is biggest for Qwen3-8B.
 
 ```{r comparing-extraction-performance-real-and-synth-context-learning, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 best_models_with_examples %>% 
@@ -1208,39 +956,14 @@ best_models_with_examples %>%
 ::: paragraph-start
 ##### Learning to respect currency units
 
-Table
-\@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table)
-shows, the difference in the percentage of correct predicted numeric
-values, if the \acr{LLM} is prompted to respect currency units and gets
-synthetic **Aktiva** tables that show how to cope with different
-currency units, separate for the number of columns with currency units.
-There are `r n_tables_n_cols %>% deframe() %>% .["1"]` tables that have
-*T€* in the previous year column and
-`r n_tables_n_cols %>% deframe() %>% .["2"]` tables that have all
-columns listed in *T€*.
+Table \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table) shows, the difference in the percentage of correct predicted numeric values, if the \acr{LLM} is prompted to respect currency units and gets synthetic **Aktiva** tables that show how to cope with different currency units, separate for the number of columns with currency units. There are `r n_tables_n_cols %>% deframe() %>% .["1"]` tables that have *T€* in the previous year column and `r n_tables_n_cols %>% deframe() %>% .["2"]` tables that have all columns listed in *T€*.
 :::
 
-It shows, that Qwen3-235B, Llama 4 Scout, Mistral-Large and Ministral-8B
-all can apply the demonstrated numeric transformation for most of the
-values, if both columns have the *T€* unit. Qwen3-235B, Llama 4 Scout
-and Mistral-Large also can apply this, if only one columns has a unit
-corrency. This works best for Qwen3-235B. The target value to archive
-here is 0.5 instead of 1.0. This is worth to mentioning because there
-are no synthetic examples that haf different currency units for
-different columns. Ministral can not generalize this skill. It seems,
-that Qwen3 apllies numeric transformations regardles the fact, if there
-are currency units given for a column. Thus, it performs noticeably
-worse on the majority of all tables. Figure
-\@ref(fig:table-extraction-llm-respecting-units-plot) shows, that the
-performance of Llama 3.1 8B and gemma3 27B on colums with currency units
-does not change.
+It shows, that Qwen3-235B, Llama 4 Scout, Mistral-Large and Ministral-8B all can apply the demonstrated numeric transformation for most of the values, if both columns have the *T€* unit. Qwen3-235B, Llama 4 Scout and Mistral-Large also can apply this, if only one columns has a unit corrency. This works best for Qwen3-235B. The target value to archive here is 0.5 instead of 1.0. This is worth to mentioning because there are no synthetic examples that haf different currency units for different columns. Ministral can not generalize this skill. It seems, that Qwen3 apllies numeric transformations regardles the fact, if there are currency units given for a column. Thus, it performs noticeably worse on the majority of all tables. Figure \@ref(fig:table-extraction-llm-respecting-units-plot) shows, that the performance of Llama 3.1 8B and gemma3 27B on colums with currency units does not change.
 
-\@ref(fig:compare-effect-of-respecting-units-on-overall-performance),
-\@ref(fig:compare-effect-of-respecting-units-on-numeric-performance) and
-\@ref(fig:compare-effect-of-respecting-units-on-NA-F1)
+\@ref(fig:compare-effect-of-respecting-units-on-overall-performance), \@ref(fig:compare-effect-of-respecting-units-on-numeric-performance) and \@ref(fig:compare-effect-of-respecting-units-on-NA-F1)
 
-Thus, synthetic data can be used to solve new tasks and substitute
-missing data for rare classes.
+Thus, synthetic data can be used to solve new tasks and substitute missing data for rare classes.
 
 ```{r comparing-extraction-performance-synth-context-learning-respecting-units-table, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 df_real_table_extraction_synth_respect_units %>% 

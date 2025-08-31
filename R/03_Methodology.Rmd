@@ -1,6 +1,12 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Methodology {#methodology}
 
-\ChapFrame
+\ChapFrame[Methodology][bhtblue]
 
 This chapter describes the research design of this thesis. In the subsequent sections it elaborates
 
@@ -191,7 +197,10 @@ df_pages %>% group_by(company) %>% mutate(
     vjust = -0.5,
     size = 3
   ) +
-  scale_x_discrete(guide = guide_axis(angle = 30))
+  scale_x_discrete(
+    guide = guide_axis(angle = 45),
+    labels = scales::label_wrap(30)
+    )
 ```
 
 Table \@ref(tab:display-multiple-tables-per-type-and-document) shows how many documents have multiple target tables per type and how many target tables span two pages. In total `r num_consecutive_pages` tables are distributed on two pages. In `r num_multiple_tables_per_document` documents there are multiple tables per type of interest. There are `r num_two_tables_on_one_page` pages with two target tables (**Aktiva** and **Passiva**) on it.
@@ -209,16 +218,16 @@ new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %
 ```
 
 ::: paragraph-start
-##### Information extraction
+##### Information extraction {#information-extraction-data-sampling}
 
 For the manual information extraction we need up to 12 minutes per table. The maximum amount of values to copy and format (or type manually) among the tables used is 40. In addition to this manual process conceptional process can be necessary, because the values have to matched to the strict grammar. Sometimes we have to decide that there is no row a value fits in or there are multiple values that have to get summed up in order to calculate the value that fits in the predefined schema.
 :::
 
-This manual work was done for `r old_doc_base %>% nrow()` documents. For every company that published the detailed form of balance sheets a single document was included. Additionally documents were included for *Amt für Statistik und Brandenburg* to check, if a context learning approach is benefiting from documents from the same company. Later, the predictions of the \acr{LLM}s were used, to create additional `r new_doc_base %>% nrow()` ground truth tables. The old ground truth tables were checked in this this iteration and an error rate of 2.4 % was detected. Thus, the human reference score for percentage of correct predictions is 0.976. Figure \@ref(fig:table-extraction-doc-base) shows how many **Aktiva** tables are used for all tasks in this subsection, that use real data instead of synthetic data.
+This manual work was done for `r old_doc_base %>% nrow()` documents. For every company that published the detailed form of balance sheets a single document was included. Additionally documents were included for *Amt für Statistik und Brandenburg* to check, if a context learning approach is benefiting from documents from the same company.
 
-To overcome the limited amount of real data and to allow the systematic investigation of potential predictors for the extraction performance, even if their occurrence is very unbalanced within the real data, synthetic **Aktiva** tables were created (see subsection \@ref(synthetic-table-extraction)).
+Later, the predictions of the \acr{LLM}s were used, to create additional `r new_doc_base %>% nrow()` ground truth tables. The old ground truth tables were checked in this this iteration and an error rate of 2.4 % was detected. Thus, the human reference score for percentage of correct predictions is 0.976. Figure \@ref(fig:table-extraction-doc-base) shows how many **Aktiva** tables are used for all tasks in this subsection, that use real data instead of synthetic data.
 
-```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents."}
+```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents.", fig.width=9}
 new_doc_base %>% rowwise() %>% 
   mutate(
     .before = 1, 
@@ -226,12 +235,18 @@ new_doc_base %>% rowwise() %>%
     initial_doc_base = str_remove(filepath, "_extended") %in% old_doc_base$filepath
     ) %>% ggplot() +
   geom_bar(aes(x = company, fill = initial_doc_base)) +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_x_discrete(
+    guide = guide_axis(angle = 60),
+    labels = scales::label_wrap(30)
+    ) +
   theme(
     axis.title.x = element_blank(),
-    legend.position = "top"
+    legend.position = "top",
+    plot.margin = margin(l = 0)
   )
 ```
+
+To overcome the limited amount of real data and to allow the systematic investigation of potential predictors for the extraction performance, even if their occurrence is very unbalanced within the real data, synthetic **Aktiva** tables were created. Subsection \@ref(synthetic-table-extraction) gives a detailed description, which table features are varied systematically, resulting in 16_504 tables in three formats each.
 
 ::: paragraph-start
 ##### Error rate guidiance
@@ -283,19 +298,25 @@ Building the term frequency random forest, we face a highly imbalanced dataset. 
 
 ### LLM overview
 
-Table \@ref(tab:llm-overview) einbinden
-
-```{r llm-overview, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
-table <- read_csv("data_storage/model_usage_extraction.csv") %>% 
+```{r llm-overview-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_llm_overview <- read_csv("data_storage/model_usage_extraction.csv") %>% 
   arrange(tolower(model_family), parameter_count) %>% 
   rename(parameter = parameter_count) %>% 
   mutate_if(is.character, ~if_else(is.na(.), "", .)) %>% 
+  mutate_if(is.character, ~if_else(. == "X", "✓", .))
+```
+
+Table \@ref(tab:llm-overview) gives an overview on all \acr{LLM}s used for the tasks in this thesis. It shows the passive parameter count in billions for each \acr{LLM} and shows in which specific approach it is used with a tick. Overall `r length(unique(df_llm_overview$model))` models from `r length(unique(df_llm_overview$model_family))` model families are used.
+
+```{r llm-overview, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+table <- df_llm_overview %>% 
   render_table(
     alignment="lrccccc", 
     caption="Overview of benchmarked LLMs for all tasks. Parameter shows passive parametercount in billions.", 
     ref = opts_current$get("label"),
     colgroups = c(" " = 2, "information extraction" = 3, "page identification" = 2),
-    row_group_col = 1
+    row_group_col = 1,
+    force_kable = FALSE
     )
 if(knitr::is_latex_output()) {
   table <- table %>% column_spec(1, width = "5.8cm")
@@ -303,6 +324,88 @@ if(knitr::is_latex_output()) {
 
 table
 ```
+
+### Approaches
+
+#### Page identification
+
+::: paragraph-start
+##### Regular expressions
+
+We develop multiple sets of regular expressions and filter out all pages that do not fulfill all regular expressions of a given set. There are different sets for each target type, **Aktiva**, **Passiva** and **GuV**. The sets also differ in how versatile they can cope with additional white space introduced by a imperfect text extraction and how many different words for a given term are accepted. Figure \@ref(fig:regex-filter) shows an example for two sets of regular expressions to identify a **Aktiva** page.
+:::
+
+```{r regex-filter, fig.cap="Comparing the prediction of two different sets of regular expressions on dummy pages. The simple one has a lower recall, while the  expended one has a lower precision.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/regex_filtering.png")
+```
+
+::: paragraph-start
+##### Table of Contents Understanding
+
+We use a \acr{LLM} to extract the \acr{TOC} from the first pages from a document or use the embedded \acr{TOC} and prompt a \acr{LLM} to identify the pages where the **Aktiva**, **Passiva** and **GuV** are located. Figure \@ref(fig:toc-screenshot) shows a screenshot of a annual report with an embedded TOC and its TOC in text form.
+:::
+
+```{r toc-screenshot, fig.cap="Showing a screenshot of a annual report with an embedded TOC (left) and its TOC in text form (right). The embeded TOC is not listing all entries from the TOC in text form.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/toc.png")
+```
+
+::: paragraph-start
+##### Large Language Model Classification
+
+We use \acr{LLM}s to classify if the text extract of a given page is containing a **Aktiva**, **Passiva** or **GuV** table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type.
+:::
+
+We test a wide range of open-weight models and compare different prompting techniques. Figure \@ref(fig:prompt-setup-classification) shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.
+
+```{r prompt-setup-classification, fig.cap="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/promt_building_classification.png")
+```
+
+::: paragraph-start
+##### Term frequency Ranking
+
+We use normalized term frequencies and normalized float frequency to as features for a classification using a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data. Figure \@ref(fig:tf-flowchart) visualizes, how the prediction works in this approach.
+:::
+
+```{r tf-flowchart, fig.cap="Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/tf_flowchart.png")
+```
+
+#### Information extraction
+
+::: paragraph-start
+##### Regular expressions
+
+We use regular expressions to extract the numeric values for matching row identifiers. The regular expressions handle line breaks between words in the row identifiers, but not within a word. They can handle multiple signs of white space. Besides that, they try to fully match the labels from the legal text with the text extract, ignoring upper case. They extract numbers with "." as thousands separator. Figure \@ref(fig:regex-extractor) is visualizing those capabilities.
+:::
+
+```{r regex-extractor, fig.cap="Visualizing the extraction results for different text examples. Texts in green boxes are matching our regular expression. Texts in red boxes do not, because of the red text part.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/regex_extracting.png")
+```
+
+::: paragraph-start
+##### Real tables
+
+We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with restricted generation. The \acr{LLM} has to group row identifiers and corresponding numeric values and match the row identifier with the labels of the schema. If a row identifier is unknown, the values have to be discarded. If a label is not present among the row identifiers, the model predicts *null*. All values are extracted in one pass. We do not include any instruction, how to proceed with currency units, that might be given for certain columns.
+:::
+
+We test a wide range of open-weight models and compare different prompting techniques. Figure \@ref(fig:prompt-setup-extraction) shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing a synthetic **Aktiva** table as example. We test models from OpenAIs GPT family in addition to the open-weight models.
+
+```{r prompt-setup-extraction, fig.cap="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM for the information extraction task.", echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("images/promt_building_extraction.png")
+```
+
+::: paragraph-start
+##### Synthetic tables
+
+We use \acr{LLM}s to extract the numeric values of synthetic **Aktiva** tables with restricted generation. The procedure is identical as with the real **Aktiva** tables. We extract all values with and without an explicit instruction on how to proceed with currency units. We limit our test on the open-weight models.
+:::
+
+::: paragraph-start
+##### Hybrid approach
+
+We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with restricted generation, providing examples from synthetic **Aktiva** tables. The procedure is identical as with the real **Aktiva** tables. We extract all values with and without an explicit instruction on how to proceed with currency units. We limit our test on the open-weight models.
+:::
 
 ### Hardware normalization {#gpu-benchmark}
 
@@ -341,8 +444,6 @@ Too many hallucinated values when it was NA instead [@grandiniMetricsMultiClassC
 ### Baseline selection rationale
 
 see section Evaluation research
-
-### Prompt building
 
 ### Evaluation methods
 

@@ -6,10 +6,25 @@ render_table <- function(
   dom = "tiprfl",
   row_groups = NULL,      # For LaTeX: list(name, start, end, ...)
   row_group_col = NULL,    # For HTML/DT: column index or name to group by
-  colgroups = NULL
+  colgroups = NULL,
+  force_kable = FALSE
 ) {
+  output_HTML <- if_else(force_kable, FALSE, knitr::is_html_output())
+  output_LaTeX <- if_else(force_kable, TRUE, knitr::is_latex_output())
+
+  latex_sub <- "([%&_#{}])"
+
   # Replace **x** with <b>x</b> for HTML and \textbf{x} for LaTeX
-  df <- df %>% bold_value_in_table()
+  if (output_HTML) {
+    df <- df %>%
+      mutate_all(~ gsub("\\*\\*(.*?)\\*\\*", "<b>\\1</b>", .))
+  } else if (output_LaTeX) {
+    df <- df %>%
+      mutate_all(~ gsub(latex_sub, "\\\\\\1", .)) %>% # Escape LaTeX special characters
+      mutate_all(~ gsub("\\*\\*(.*?)\\*\\*", "\\\\textbf{\\1}", .))
+  } else {
+    df <- df
+  }
   
   # Helper to convert knitr alignment to DT alignment
   get_dt_align <- function(align) {
@@ -18,11 +33,11 @@ render_table <- function(
     })
   }
   
-  if (!knitr::is_html_output()) {
+  if (!output_HTML) {
     latex_sub <- "([%&_#{}-])"
     
     # Escape special characters in the caption for LaTeX
-    if (!is.null(caption) && knitr::is_latex_output()) {
+    if (!is.null(caption) && output_LaTeX) {
       caption <- gsub(latex_sub, "\\\\\\1", caption) # Escape LaTeX special characters
     }
   
@@ -31,7 +46,7 @@ render_table <- function(
     ) # Escape LaTeX special characters in column names
   }
 
-  if (knitr::is_html_output()) {
+  if (output_HTML) {
     sketch = NULL
 
     # If colgroups provided, create a sketch with the colgroups
@@ -97,7 +112,7 @@ render_table <- function(
     } else {
       datatable(df, escape = FALSE, options = dt_options, extensions = if (is.null(dt_extensions)) character(0) else dt_extensions, container = sketch, rownames = FALSE)
     }
-  } else if (knitr::is_latex_output()) {
+  } else if (output_LaTeX) {
     # Hide the row_group_col column if specified (by name or index)
     if (!is.null(row_group_col)) {
       generate_row_groups <- function(df, row_group_col, css = "background-color: #666; color: #fff;") {
@@ -125,7 +140,7 @@ render_table <- function(
       df <- df %>% ungroup() %>% select(-col_idx)
     }
     kbl_out <- kbl(
-      df, escape = FALSE, format = "latex", align = alignment, caption = caption, booktabs = T
+      df, escape = FALSE, format = if_else(knitr::is_latex_output(), "latex", "html"), align = alignment, caption = caption, booktabs = T
     ) %>% kable_styling(latex_options = "striped")
     if (!is.null(row_groups)) {
       for (grp in row_groups) {

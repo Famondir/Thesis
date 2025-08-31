@@ -1,6 +1,12 @@
+---
+editor_options: 
+  markdown: 
+    wrap: none
+---
+
 # Appendix D - Feature effect analysis
 \phantomsection
-\ChapFrame
+\ChapFrame[Feature effect analysis][bhtred]
 
 ## Regular expressions
 

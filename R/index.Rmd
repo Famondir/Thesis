@@ -56,6 +56,10 @@ acronyms:
 # urlcolor: blue
 # linkcolor: blue
 # citecolor: green
+
+editor_options: 
+  markdown: 
+    wrap: none
 ---
 
 ```{r setup, include=FALSE}
@@ -133,7 +137,7 @@ We use Github Copilot in VSCode for coding assistance. Mostly the GPT-4.1 is use
 
 We use perplexity.ai in our literature research process.
 
-We use [] for 
+We use [] for
 
 ## Goals and Learnings {.unlisted .unnumbered}
 
