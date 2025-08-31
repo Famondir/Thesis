@@ -1,0 +1,40 @@
+# Tables
+\stopthumb
+
+## Classification
+
+```{r comparing-actual-number-of-in-context-examples, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_classification_n_examples %>%
+  render_table(alignment="llrrrr", caption="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n_examples.", ref = opts_current$get("label"))
+```
+
+## Table extraction
+
+### Hybrid approach
+
+```{r comparing-extraction-performance-real-and-synth-context-learning-median, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+median_models_with_examples %>% 
+  mutate(
+    delta_real_synth = median_real-median_synth,
+    delta_rate_real_synth = (delta_real_synth)/(1-median_synth),
+    delta_synth_zero = median_synth-median_zero_shot,
+    delta_rate_synth_zero = (delta_synth_zero)/(1-median_zero_shot)
+    ) %>% 
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", round(., 3), "**"),
+      round(., 3)
+    )
+  ) %>% select(
+    model, # method, 
+    median_real, median_synth, median_zero_shot, 
+    # delta_real_synth, delta_synth_zero, 
+    delta_rate_real_synth, delta_rate_synth_zero
+    ) %>% 
+  render_table(
+    alignment = "lrrrrr",
+    caption = "Comparing extraction performance for real Aktiva extraction task with synthetic and real examples for in-context learning with a zero shot approach averaged over all methods",
+    ref = opts_current$get("label"), dom="t")
+```

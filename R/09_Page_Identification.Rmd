@@ -1,0 +1,1385 @@
+\setcounter{chapter}{0}
+\renewcommand{\thechapter}{\Alph{chapter}}
+
+# Appendix A - Page identification report {#page-identification-report}
+\phantomsection
+\ChapFrame
+
+(ref:page-identification-intro-text)
+
+## Baseline: Regex {#regex-page-identification}
+
+```{r page-identification-regex-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag, message=FALSE, cache=TRUE, cache.extra = tools::md5sum("data_storage/page_identification_regex.rds")}
+data_page_identification_regex <- readRDS("data_storage/page_identification_regex.rds")
+
+metrics <- data_page_identification_regex$metrics
+metric_summaries <- data_page_identification_regex$metric_summaries
+metrics_by_company_and_type <- data_page_identification_regex$metrics_by_company_and_type
+
+metrics_plot_regex_page_identification <- metrics %>% bind_rows() %>%
+  pivot_longer(
+    cols = -c(package, method, classification_type),
+    names_to = "metric",
+    values_to = "value"
+  ) %>%
+  filter(metric %in% c(
+    # "acc", 
+    "precision", "recall", "F1")) %>%
+  ggplot() +
+  geom_jitter(aes(x = method, y = value, color = package), alpha = 0.5, width = 0.2, height = 0) +
+  facet_grid(metric~classification_type) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  coord_cartesian(ylim = c(0, 1))
+
+# creating combi table
+df_list <- list()
+
+for (type in c("Aktiva", "Passiva", "GuV")) {
+  df_temp <- metric_summaries[type][[1]] %>%
+    mutate_if(
+        is.numeric, 
+        ~ifelse(
+            . == max(., na.rm = TRUE),
+            paste0("**", format(round(., 3), nsmall=3), "**"),
+            format(round(., 3), nsmall=3)
+        )
+    ) %>% pivot_wider(names_from = stat, values_from = c(precision, recall, F1)) %>% mutate(
+        precision = paste(precision_mean, "±", precision_sd),
+        recall = paste(recall_mean, "±", recall_sd),
+        F1 = paste(F1_mean, "±", F1_sd),
+    ) %>% 
+    select(-ends_with("_mean")) %>% select(-ends_with("_sd")) %>% mutate_all(~str_remove(., " ± NA")) %>% 
+  arrange(desc(method)) %>% mutate(.before = 2, type = type)
+  # rownames(df_temp) <- df_temp$method
+  
+  df_list[[type]] <- df_temp
+}
+
+df_combined <- bind_rows(df_list) %>% bold_value_in_table()
+```
+
+The first approach presented in this section is, to use a key word list
+and \acrfull{regex} to filter out irrelevant pages. It is setting the
+performance baseline for the following approaches. Building a sound
+regular expression often is an iterative process. In a first approach a
+very *simple regex* was implemented. To increase the recall to 1.0 the
+regular expression was extended[^05_results-4]. This second regex is
+called *exhaustive regex*. In a third attempt minor changes have been
+made to the *exhaustive regex* to increase the precision without
+decreasing the recall. This regular expression is called *exhausitve
+regex restricted*. The regular expressions can be found in the appendix
+(see section \@ref(regex-page-identification-code)).
+
+[^05_results-4]: The idea is that the regular expression approach is
+    computationally cheap. If we can rely on the fact, that it keeps all
+    relevant pages we can use additional, computationally more expensive
+    approaches to further refine the page range.
+
+Table \@ref(tab:display-metrics-regex-page-identification-all) shows the
+mean performance for precision, recall and F1 for the three regular
+expressions for the three types of pages to identify[^05_results-5]. It
+was possible to create a regular expression that has a high recall for
+all target types. The precision is low for all tested regular
+expressions and target types. Figure
+\@ref(fig:display-metrics-plot-regex-page-identification-details) gives
+insight into performance differences between the companies. There is
+only one document from *Berlin Energie und Netzholding* where the
+**GuV** is not identified except with the *exhausitve regex
+restricted*[^05_results-6].
+
+[^05_results-5]: See Figure
+    \@ref(fig:display-metrics-plot-regex-page-identification) for a
+    graphical representation.
+
+[^05_results-6]: I don't understand why the restricted version is
+    finding the page but the non-restricted regex is not.
+
+The regular expressions have been tested on the texts extracted with
+multiple Python libraries. The reported standard deviations are very
+small. This means that there are no substantial differences in the
+extracted texts on a word level[^05_results-7]. But table
+\@ref(tab:display-data-text-extraction) in section
+\@ref(text-extraction-benchmark) shows that there are differences in the
+extraction speed.
+
+[^05_results-7]: Since the results are not depending on the text
+    extraction library, the *exhaustive regex restricted* ran only with
+    the text extracted by the fastest extraction library: *pdfium*. This
+    library is used for the most tasks in this thesis. Later faced
+    issues with the text extracted by *pdfium* are discussed in \@ref().
+
+Code can be found at
+"benchmark_jobs/page_identification/page_identification_benchmark_regex.ipynb"
+
+Todo: \* look into details where they differ and if it is because of a
+line break or whitespace?
+
+```{r display-metrics-regex-page-identification-all, echo=echo_flag, warning=warning_flag, message=message_flag, results=ifelse(knitr::is_html_output(), "asis", 'markup')}
+if (knitr::is_html_output()) {
+  # Set caption
+  cat("<table>",paste0("<caption>", "(#tab:", opts_current$get("label"), ")", "Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", "</caption>"),"</table>", sep ="\n")
+
+  df_combined %>% datatable(
+    escape = FALSE, options = list(
+      pageLength = 10, scrollX = TRUE, dom = "t", rowGroup = list(dataSrc=c(2)), ordering=FALSE, 
+      columnDefs = list(list(visible=FALSE, targets=c(2)))
+    ), extensions = 'RowGroup'
+  )
+} else if (knitr::is_latex_output()) {
+  df_combined %>% kbl(caption = "Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", escape = FALSE) %>%
+    pack_rows("Aktiva", 1, 3, label_row_css = "background-color: #666; color: #fff;") %>%
+    pack_rows("Passiva", 4, 6, label_row_css = "background-color: #666; color: #fff;") %>%
+    pack_rows("GuV", 7, 9, label_row_css = "background-color: #666; color: #fff;")
+}
+```
+
+```{r display-metrics-plot-regex-page-identification-details, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=8, out.width="100%", dev=std_dev, fig.cap="Comparing the performance among different companies."}
+metrics_by_company_and_type %>% 
+    select(company, n_files, method, precision, recall, classification_type) %>%
+    pivot_longer(cols=c(precision, recall), names_to = "metric") %>% 
+    ggplot() +
+    geom_boxplot(aes(x = company, y = value, fill = n_files), alpha = 0.5) +
+    geom_jitter(aes(x = company, y = value, color = method), alpha = 1, height = 0) +
+    facet_grid(classification_type~metric) +
+    scale_x_discrete(guide = guide_axis(angle = 30)) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+::: paragraph-start
+##### Summary
+
+Nothing works well
+:::
+
+## Table of Contents understanding {#toc-understanding}
+
+```{r page-identification-toc-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("scripts/page_identification_toc_data_loading.R", "../benchmark_truth/toc_data.json", "../Python/pdf_texts.json"))}
+source("scripts/page_identification_toc_data_loading.R")
+```
+
+The second approach presented in this section leverages the \acr{TOC}
+understanding capabilities of \acr{LLM}s. @liExtractingFinancialData2023
+use this approach with long documents as a first step to determine a
+page range of interest. If the predicted page range is correct and
+narrow, this approach is more efficient than processing the whole
+document with a \acr{LLM} directly. The \acr{TOC} in a \acr{PDF}
+document can be embedded in a standardized, machine readable format or
+be presented in varying, human readable forms of text on any page. Of
+course there are documents without any \acr{TOC}.
+
+Thus, the task is investigated based on two different input data formats
+In one case the \acr{LLM} is provided with text extracted from the
+beginning of the document. In the other case the \acr{LLM} is provided
+with the Markdown formatted version of the machine readable \acr{TOC}
+embedded in the document. Subsection \@ref(text-based-toc-understanding)
+shows the results for the text based approach. Subsection
+\@ref(code-based-toc-understanding) shows the results for the approach,
+using the embedded \acr{TOC}.
+
+Additionally, each approach is performed three times with minor changes
+in the prompt. The prompts used for both approaches can be found at
+\@ref(toc-understanding-promts). The prompt was adjusted two times to
+tackle shortcomings in the results. The first change adds the
+information, that assets and liabilities are part of the balance sheet.
+It is the balance sheet, that is listed in the \acr{TOC} - not the
+assets or liabilities itself. The second change specifies the
+information, that assets and liabilities are often on separated pages,
+into, liabilities often are found on the page after the assets.
+
+The code can be found in:
+
+-   "benchmark_jobs/page_identification/toc_extraction_mistral.ipynb"
+
+-   "benchmark_jobs/page_identification/toc_extraction_qwen.ipynb"
+
+Discussion:
+
+-   @liExtractingFinancialData2023 did not report any issues with this
+    approach. They use few-shot learning and Chain-of-Thought techniques
+    to help the \acr{LLM} to understand the task. They ask just for one
+    information at a time.
+-   ChatGPT 4 vs Mistral 2410 8B (huge parameter difference)
+-   For a lot of short annual reports one can find the tables of
+    interest within the first eight pages as well.
+
+### Details for the approaches {#text-based-toc-understanding}
+
+::: paragraph-start
+##### Text based
+
+@liExtractingFinancialData2023 used the \acr{TOC} to identify the pages
+of interest. In their approach the table of contents is extracted from
+the text. Based on their observation, that the \acr{TOC} in \acr{ACFR}s
+is found within the initial 165 lines of the converted document
+[@liExtractingFinancialData2023, p. 20], they use the first 200 lines of
+text.
+:::
+
+My initial expectation was to find the \acr{TOC} within the first five
+pages. Often there are way less than 200 lines of text on the five first
+pages (see Figure \@ref(fig:page-identification-toc-histogram)). In my
+approach the first step is to prompt the \acr{LLM} to identify and
+extract the \acr{TOC} in a given text extract\^[The prompt can be found
+in section \@ref(toc-understanding-promts)]. For the same documents
+Mistral 2410 8B finds\^[The strings extracted in this step have not been
+checked in detail.]
+
+-   `r n_found_toc_5_pages` strings that should represent a table of
+    contents among the first five pages.
+
+-   `r n_found_toc_200_lines` strings that should represent a table of
+    contents among the first 200 lines.
+
+```{r page-identification-toc-histogram, echo=echo_flag, warning=warning_flag, message=message_flag, fig.width=8, fig.height=3, out.width="80%", dev=std_dev, fig.cap="Histogram of the number of lines in the first 5 pages of the annual reports"}
+df_num_lines %>% 
+  filter(filepath %in% df_targets_no_ocr$filepath) %>% # filter documents that would need ocr preprocessing
+  ggplot() +
+  geom_histogram(aes(x = num_lines), bins = 20) +
+  labs(x = "Number of lines in the first 5 pages", y = "Count") +
+  coord_cartesian(xlim = c(0, max(df_num_lines$num_lines)))
+```
+
+::: paragraph-start
+##### Machine readable TOC based {#code-based-toc-understanding}
+
+I also tested to use the \acr{TOC} representation embedded within the
+PDF files. First, this limits the text amount to process. Second, this
+hopefully increases the quality of the data passed to the \acr{LLM}.
+`r n_toc` of the `r n_toc+n_no_toc` annual reports have a machine
+readable embedded \acr{TOC}. The embedded \acr{TOC} is converted into
+markdown format before it gets passed to the \acr{LLM}. Here is an
+example:
+:::
+
+```{r page-identification-markdown-code, echo=FALSE, warning=warning_flag, message=message_flag}
+cat(toc_data$files_with_toc$markdown_toc[[1]])
+```
+
+### Results
+
+::: paragraph-start
+##### Comparison of the different approaches: base prompt
+
+Table \@ref(tab:page-identification-toc-analysis-table) shows that the
+machine readable \acr{TOC} approach has the highest rate of correct page
+ranges for all types with the base prompt. It also predicts the most
+correct page ranges in absolute numbers for **Aktiva** and **GuV**.
+Thus, it also has the highest rate of correct page ranges based on the
+total number of page ranges to identify over all documents - no matter,
+if there was a \acr{TOC} of any type in the document or not - for
+**Aktiva** and **GuV** of around `r perc_correct_total_base` %.
+:::
+
+```{r page-identification-toc-analysis-table, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
+df_toc_benchmark %>% group_by(benchmark_type, type) %>% 
+  reframe(n_correct = sum(in_range), n = n()) %>% 
+  left_join(data_unnested %>% group_by(type) %>% summarise(n_total = n())) %>% 
+  mutate(
+    perc_correct = n_correct/n*100,
+    perc_correct_total = n_correct/n_total*100
+    ) %>% 
+  group_by(type) %>% 
+  mutate_at(
+    vars(perc_correct, n_correct, perc_correct_total), 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", format_floats(.), "**"),
+      format_floats(.)
+    )
+  ) %>% 
+  render_table(alignment="llrrrrr", caption="Comparing the number and percentage of correct identified page ranges among the approaches.", ref = opts_current$get("label"), dom="t")
+```
+
+Figure \@ref(fig:page-identification-toc-analysis) shows that the amount
+of correct predicted page ranges for **Passiva** is lowest for all
+approaches but can be improved by simply extending the predicted end
+page number by one the most. This improvement would be best for the
+machine readable \acr{TOC} approach. This approach is the only one,
+where the number of correct page ranges **Aktiva** would not increase if
+we extend its range by one. Table
+\@ref(tab:page-identification-toc-analysis-same-end-page) shows that
+this is the case, because the machine readable \acr{TOC} approach
+predicts the same end page for **Passiva** as for **Aktiva** in
+`r perc_equal_end_page_mr` % of the cases, even though the prompt for
+all approaches included the information, that **Aktiva** and **Passiva**
+are on separate pages.
+
+```{r page-identification-toc-analysis, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing number of found TOC and amount of correct and incorrect predicted page ranges"}
+df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
+  geom_text(
+    data = . %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1)
+```
+
+```{r page-identification-toc-analysis-same-end-page, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+df_toc_benchmark %>%
+  filter(type != "GuV") %>%
+  group_by(benchmark_type, filepath) %>%
+  summarise(all_equal = n_distinct(end_page) == 1) %>% 
+  group_by(benchmark_type) %>% 
+  reframe(equal_end_page = sum(all_equal), n = n()) %>% 
+  mutate(perc_equal_end_page = round(equal_end_page/n*100,1)) %>% 
+  render_table(alignment="lrrr", caption="Comparing the number and percentage end pages prediction for Aktiva and Passiva that are equal.", ref = opts_current$get("label"), dom="t")
+```
+
+::: paragraph-start
+##### Comparison of the different approaches: advanved prompts
+
+As a first attempt, to increase the correct page range rate for
+**Passiva** I tried to specify, that assets and liabilities are part of
+the balance sheet. This did work for the text based approaches, but not
+for the machine readable approach (see Figure
+\@ref(fig:page-identification-toc-analysis-balanced)). Figure
+\@ref(fig:page-identification-toc-analysis-next-page) shows that it is
+more successful, to explicit tell the \acr{LLM} that the liabilities
+table is often on the page, after the assets table.
+:::
+
+```{r page-identification-toc-analysis-next-page, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges"}
+next_page_df_toc_benchmark %>% ggplot() +
+  geom_bar(aes(x = type, fill = in_range, colour = min_distance <= 1)) +
+  geom_text(
+    data = . %>% filter(in_range == TRUE),
+    aes(x = type, label = paste0(round(perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.2,
+    color = "white"
+  ) +
+  geom_text(
+    aes(x = type, label = paste0(round(1-perc_correct, 2), "")),
+    stat = "count",
+    vjust = 1.5,
+    color = "white"
+  ) +
+  facet_wrap(~benchmark_type, nrow = 1) # +
+  # theme(
+  #   legend.position = "bottom"
+  # )
+```
+
+Table \@ref(tab:page-identification-toc-analysis-table-next-page) shows
+the results from the final zero shot prompt. The machine readable
+\acr{TOC} approach is now predicting best for all types. Nevertheless, a
+correct page range prediction rate below `r worst_finaLcorrect_rate_toc`
+% is still unsufficient to build downstream task on withou human
+checkups. Table \@ref(tab:page-identification-toc-gpu-time-comparison)
+shows, that the machine readable \acr{TOC} approach is the fastest as
+well.
+
+```{r page-identification-toc-analysis-table-next-page, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
+next_page_df_toc_benchmark %>% group_by(benchmark_type, type) %>% 
+  reframe(n_correct = sum(in_range), n = n()) %>% 
+  left_join(data_unnested %>% group_by(type) %>% summarise(n_total = n())) %>% 
+  mutate(
+    perc_correct = n_correct/n*100,
+    perc_correct_total = n_correct/n_total*100
+    ) %>% 
+  group_by(type) %>% 
+  mutate_at(
+    vars(perc_correct, n_correct, perc_correct_total), 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", format_floats(.), "**"),
+      format_floats(.)
+    )
+  ) %>% 
+  render_table(alignment="llrrrrr", caption="Comparing the number and percentage of correct identified page ranges among the approaches.", ref = opts_current$get("label"), dom="t")
+```
+
+```{r page-identification-toc-gpu-time-comparison, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
+gpu_time_per_document_page_range %>% mutate_if(
+  is.numeric, 
+  ~ifelse(
+    . == min(., na.rm = TRUE),
+    paste0("**", ., "**"),
+    .
+  )
+) %>% 
+  render_table(alignment="lrr", caption="Comparing GPU time for page range prediction and table of contents extraction. Time in seconds per text processed.", ref = opts_current$get("label"))
+```
+
+Table \@ref(tab:page-range-prediction-performance-table) shows, that
+this advantage of the machine readable \acr{TOC} approach is not coming
+from wide predicted page ranges. It has the smallest median range size
+among all approaches. Figure
+\@ref(fig:page-identification-toc-range-plot) shows, that especially the
+ranges for **GuV** are not normally distributed. Some far off lying
+range sizes are shifting the mean off from the median.
+
+```{r page-range-prediction-performance-table, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+mean_ranges %>%
+  mutate_at(
+    vars(median_range),
+    ~ifelse(
+      . == min(., na.rm = TRUE),
+      paste0("**", ., "**"),
+      .
+    )
+  ) %>%
+  render_table(alignment="lrrrr", caption="Comparing the mean and median page range sizes.", ref = opts_current$get("label"))
+```
+
+```{r page-identification-toc-range-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparint the predicted page range sizes. The red vertical line shows the mean and the green one shows the median of these sizes.", fig.height=4}
+next_page_df_toc_benchmark %>% 
+  # mutate(range = range-1) %>% 
+  ggplot() +
+  geom_histogram(aes(x = range), binwidth = 1) +
+  geom_vline(data = mean_ranges, aes(xintercept = mean_range), color = "red") +
+  geom_vline(data = mean_ranges, aes(xintercept = median_range), color = "green") +
+  facet_grid(benchmark_type~type)
+```
+
+Figure \@ref(fig:page-identification-toc-range-logprobs) shows that the
+confidence of the \acr{LLM}s responses is higher for the machine
+readable \acr{TOC} approach as well. Besides a single group that was
+predicted far off, the page ranges are closer to the correct pages too.
+A linear regression of the correlation between minimal page distance and
+logistic probability shows that is has a similar slope for all
+approaches and target types.
+
+```{r page-identification-toc-range-logprobs, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the minimal distance of the predicted page range to the actual page number overthe logprobs of the models response confidence.", fig.height=4}
+next_page_df_toc_benchmark %>% group_by(filepath, benchmark_type) %>%
+  distance_confidence_plot() +
+  facet_grid(type~benchmark_type) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+::: paragraph-start
+### Machine readable TOC approach specific results
+
+Figure \@ref(fig:page-identification-toc-mr-degration) shows, that
+correct predictions for the page range are more probable when the
+embedded \acr{TOC} has a medium number of entries. It is possible to
+drop documents with less than `r min_n_entries_max_correct` without
+loosing a single correct prediction. This means that the \acr{LLM} was
+not able to make a correct prediction for documents with \acr{TOC}, that
+have less then `r min_n_entries_max_correct` entries. This is not
+surprising since neither **Bilanz** nor **GuV** are mentioned there
+explicit.
+:::
+
+It has no big influence on the predictions, if the \acr{TOC} is passed
+formatted as markdown or json. With the json formatted \acr{TOC} it
+found two more correct page ranges[^05_results-8]. This was tested
+because the relation between heading and value for the column
+*page_number* might have been clearer[^05_results-9] in json for a
+one-dimensional working \acr{LLM}.
+
+[^05_results-8]: This result is based on a single test run.
+
+[^05_results-9]: With json the key *page_number* gets repeated every
+    line, while it is just mentiones once in the beginning of the
+    markdown formatted tables.
+
+```{r page-identification-toc-mr-degration, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the amount of correct and incorrect predicted page ranges (bars) and the percentage of correct predictions (black line)."}
+df_toc_benchmark_mr_degration_next_page %>% 
+  ggplot() +
+  geom_col(aes(x = n_entries, y = value, fill = correct)) +
+  geom_line(aes(x = as.numeric(n_entries), y = 100*perc_correct, group = 1)) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  facet_wrap(~type, ncol = 1)
+```
+
+Delete or place somewhere else?:
+
+-   Thus it is safer to go with the 200 lines approach. But it also
+    takes longer. \@ref(tab:page-identification-toc-gpu-time-comparison)
+
+-   Values can be higher than 80, the total number of PDF files, since
+    there can be multiple tables of interested for the same type in a
+    single document or a table of interest can span two pages.
+
+## Classification with LLMs {#llm-page-identification}
+
+```{r page-identification-llm-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
+temp_list <- readRDS("data_storage/page_identification_llm.rds")
+df_binary <- temp_list$df_binary
+df_multi <- temp_list$df_multi
+
+method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
+
+method_familiy_colors <- c(
+  "zero_shot" = "#e41a1c", 
+  "law_context" = "#377eb8", 
+  "top_n_rag_examples" = "#4daf4a", 
+  "n_random_examples" = "#984ea3", 
+  'n_rag_examples' = "#ff7f00"
+  )
+
+model_by_size_classification <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
+  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
+  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
+  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
+  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
+  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
+  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
+  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
+  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
+  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
+  ) %>% gsub("^[^_]+_", "", .)
+
+df_binary <- df_binary %>% 
+  mutate(
+  n_examples = as.numeric(n_examples),
+  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
+  n_examples = if_else(method_family == "law_context", 1, n_examples),
+  method_family = factor(method_family, levels = method_families)
+) %>% mutate(model = gsub("^[^_]+_", "", model)) %>% 
+  filter(model %in% model_by_size_classification) %>% 
+  ungroup() # %>% 
+  # mutate(
+  #   model = str_replace(model, "_vllm", ""),
+  #   model_family = sub("_.*", "", model),
+  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  # )
+
+binary_task <- list()
+binary_task$n_models <- df_binary$model %>% unique() %>% length()
+binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
+binary_task$n_method_families <- df_binary$method_family %>% unique() %>% length()
+
+top_performer_binary <- df_binary %>% 
+  filter(is.finite(f1_score), loop == 0) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>%
+  group_by(model_family, classification_type) %>% 
+  slice_max(n = 1, f1_score) %>% 
+  arrange(desc(f1_score)) %>% 
+  select(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) %>%
+  mutate(
+    f1_score = round(f1_score, 2),
+    norm_runtime = round(norm_runtime, 0),
+  ) %>% rename(
+    "runtime in s" = norm_runtime,
+  )
+
+top_performer_binary_median <- top_performer_binary %>% group_by(classification_type) %>% summarise(median = median(f1_score))
+top_performer_binary_median_guv <- top_performer_binary_median %>% filter(classification_type == "GuV") %>% pull(median)
+top_performer_binary_median_aktiva <- top_performer_binary_median %>% filter(classification_type == "Aktiva") %>% pull(median)
+top_performer_binary_median_passiva <- top_performer_binary_median %>% filter(classification_type == "Passiva") %>% pull(median)
+
+df_multi <- df_multi %>% 
+  mutate(
+  n_examples = as.numeric(n_examples),
+  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
+  n_examples = if_else(method_family == "law_context", 1, n_examples),
+  method_family = factor(method_family, levels = method_families)
+) %>% mutate(model = gsub("^[^_]+_", "", model)) %>% 
+  filter(model %in% model_by_size_classification) %>% 
+  ungroup() #%>%
+  # mutate(
+  #   model = str_replace(model, "_vllm", ""),
+  #   model_family = sub("_.*", "", model),
+  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  # )
+
+top_performer_multu <- df_multi %>% 
+  unnest(metrics) %>% 
+  filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
+  filter(is.finite(f1_score), loop == 0) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>%
+  group_by(model_family, metric_type) %>% 
+  slice_max(n = 1, f1_score) %>% 
+  arrange(desc(f1_score)) %>% # head(10) %>% 
+  select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
+  mutate(
+    f1_score = round(f1_score, 2),
+    norm_runtime = round(norm_runtime, 0),
+  ) %>% rename(
+    "runtime in s" = norm_runtime,
+  )
+```
+
+The third approach we present in this section, uses pretrained
+\acr{LLM}s to classify, if a given text extract is including any of the
+target tables. Two classification approaches are presented.
+
+On the one hand, a binary classification is used three times, to
+predict, if the text extract is including an **Aktiva**, **Passiva** or
+**GuV** table, once at a time. In this case the \acr{LLM} is forced to
+answer with either *yes* or *no*. On the other hand, the \acr{LLM}
+performed a \\acr{mcc]. For the \acr{mcc} the \acr{LLM} is forced to
+answer *Aktiva*, *Passiva*, *GuV* or *other*. The prompts can be found
+in appendix in section \@ref(classification-prompts).
+
+The different classification tasks are combined with different prompting
+strategies. A zero shot approach is setting the baseline. In a second
+approach the excerpt of the relevant law is provided with the context.
+Additionally, three few shot approaches are used.
+
+In the few shot approaches text examples and a correct classification
+for the text examples are provided. Figure
+\@ref(fig:comparing-actual-number-of-in-context-examples-plot) shows how
+many examples the \acr{LLM} gets provided, depending on the
+classification type and chosen parameter *n_example*[^05_results-10].
+For both approaches three example selection strategies are implemented.
+First, random examples for each page type get sampled from the truth
+dataset. Second, a vector database provides the entries that are closest
+to the target text for each page type. Third, the vector database just
+provides the texts that are closest to the target text without
+considering the page type of the examples returned.
+
+[^05_results-10]: See also Table
+    \@ref(tab:comparing-actual-number-of-in-context-examples).
+
+For the binary classification task the \acr{LLM} is provided with more
+examples for the target type than for other types. Thus, the number of
+examples and tokens is reduced. This should reduce the runtime as well.
+On the same time the \acr{LLM} should get enough information about the
+structure and contents of the target class and some information how it
+differs from other big tables or general text pages.
+
+For the \acr{mcc} the same amount of every possible class is provided.
+Thus, the relation between the parameter *n_examples* and the number of
+tokens to process is stronger for the *n_random_examples* and
+*n_rag_examples* strategies.
+
+```{r comparing-actual-number-of-in-context-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the actual number of provided examples depending on the classification type, example selection strategy and chosen parameter n-examples. The slope for the top-n-rag-examples strategy is the same for both approaches. The line for the strategies n-random-examples and n-rag-examples is equal within each approach."}
+df_classification_n_examples <- read_csv("../benchmark_truth/real_example_count.csv")
+
+df_classification_n_examples %>% 
+  rename(strategy = approach) %>% 
+  ggplot() +
+  geom_point(aes(x = n_example, y = sum, color = strategy), alpha = .5) +
+  geom_line(data = . %>% filter(strategy != "n_random_examples"), aes(x = n_example, y = sum, color = strategy)) +
+  geom_line(data = . %>% filter(strategy == "n_random_examples"), aes(x = n_example, y = sum, color = strategy), linetype = "dashed") +
+  facet_grid(~classification)
+```
+
+Table \@ref(tab:page-identification-llm-overview) shows, which models
+have been used in the classification benchmarks. Overall
+`r binary_task$n_models` models from `r binary_task$n_model_families`
+model families have been tested. Prerequirement for a model to be tested
+is, that it can be used with the \acr{vllm} library, accessed via
+hugging face and fits into the combined VRAM of 8 nvidia B200 graphic
+cards (1.536 TB). The models cover a wide range of (active) parameter
+sizes. Especially for the Qwen family many models of different parameter
+sizes are used in the benchmark, to investigate if there is a clear
+minimum amount of parameters needed, to solve the classification task.
+
+The results of the benchmarks have been logged as \acr{json} files
+totaling in 2.1 GB of data for the final results.
+
+```{r page-identification-llm-overview, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
+df_binary %>% 
+  mutate(
+   model = str_replace(model, "_vllm", ""),
+   model_family = sub("_.*", "", model),
+   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
+  ) %>% filter(model %in% model_by_size_classification) %>% select(model_family, model, parameter_count) %>% unique() %>% arrange(tolower(model_family), parameter_count) %>% 
+  render_table(alignment="llr", caption="Overview of benchmarked LLMs for the classification tasks.", ref = opts_current$get("label"))
+```
+
+To do:
+
+-   compare out of company vs in company rag
+
+### Binary classification
+
+Table \@ref(tab:table-metrics-llm-page-identification-binary) shows the
+best performing combination of model family and prompting method for
+each classification target type. The classification of **GuV** tables
+works best and is solved almost perfectly. The F1 score for **Aktiva**
+and **Passiva** are 0.07 lower for the top performing model. The median
+F1 score of **GuV** is `r top_performer_binary_median_guv` 0.1 higher
+than the median F1 score for **Aktiva**
+(`r top_performer_binary_median_aktiva`) and 0.2 higher than the median
+F1 score for **Passiva**
+(`r round(top_performer_binary_median_passiva, 2)`).
+
+Mistral 8B Instruct 2410 is performing best for the binary
+classification task for each target type. Llama-4-Scout-17B-16E-Instruct
+is performing second best for **Aktiva** and **GuV** and is close to the
+second best for **Passiva** as well. The runtime of Mistral 8B Instruct
+2410 is four times lower than the runtime of
+Llama-4-Scout-17B-16E-Instruct. In addition, the time to load
+Llama-4-Scout-17B-16E-Instruct into the VRAM is much
+longer[^05_results-11], because it has a total of 109B parameters. It
+was surprising that Googles gemma models perform so bad[^05_results-12].
+
+[^05_results-11]: It takes around 30 minutes to setup a vllm instance
+    with Llama-4 Scout compared to 4:30 minutes setuptime for Mistral 8B
+    2410.
+
+[^05_results-12]: This is not due to a temporary technical problems
+    caused by a bug in the transformers version shipped with the vllm
+    0-9-2 image. Those problems have been overcome. The performance
+    stays bad.
+
+```{r table-metrics-llm-page-identification-binary, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
+top_performer_binary %>% 
+  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the binary classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
+```
+
+Figure \@ref(fig:binary-classification-result-mistral-plot) shows, the
+classification performance for Mistral 8B 2410 in detail. It shows the
+F1 score for each target type over the models runtime. It shows the
+results for the different prompting strategies (*method_families*) with
+differently colored shapes. The *zero_shot* strategy performs worst with
+a F1 score below 0.6. Next come the *law_context* and
+*top_n_rag_examples* strategy. Above those the *n_random_examples* and
+finally the *n_rag_examples* strategy perform best.
+
+The shape is giving information, if the example proveded to the
+\acr{LLM} are selected from other companies than the target table comes
+from only, or if they can also be selected from documents of the same
+company. This is only relevant for strategies that get the examples
+picked by the documents vector embedding distances. The \acr{LLM}
+performs better[^05_results-13], if examples from documents of the same
+company can be used. If this is not permitted, the *n_random_example*
+approach performs better than the *n_rag_example* for the classification
+of **GuV** and **Passiva** tables.
+
+[^05_results-13]: It has a better F1 score, when examples from the same
+    company are permitted. The recall is better with examples from same
+    company. The precision is better without. The improvement in the
+    recall is stronger.
+
+The number inside of the shapes is referring to the *n_examples*
+function parameter. Most models got benchmarked with an *n_examples*
+value of up to three. The actual number of examples provided to the
+models is depending on the method family / example selection strategy
+and can be looked up in Table
+\@ref(tab:comparing-actual-number-of-in-context-examples).
+
+The best performing model, Mistral 8B 2410, was provided with mode
+examples to investigate the effect of a richer context. The predictions
+do not get better by providing more and more examples. Figure
+\@ref(fig:binary-classification-result-mistral-plot) shows, that the
+improvements get smaller naturally going from three to five examples
+while approaching an F1 score of 1.0.
+
+But for the *n_rag_example* strategy we find a significant drop in the
+F1 score, if we set the *n_examples* to five[^05_results-14] and
+examples pages come from annual reports of other companies. This is
+caused by a sever recall drop. For the *n_random_example* strategy we
+see a small drop with the F1 score for the class **Passiva** as well.
+Taking into account that the runtime also almost is twice as high, this
+is very inefficient.
+
+[^05_results-14]: In this case five examples for the target table type
+    and two examples for each other type are provided, totaling at
+    twelve examples.
+
+Figure \@ref(fig:binary-classification-result-mistral-plot) also shows,
+that the results are stable[^05_results-15]. Running the benchmark three
+times shows similar results in the F1 score for each strategy. This is
+reflected by closely overlapping shapes of the same color with the same
+number within.
+
+[^05_results-15]: Earlier experiments on a subset of the pages have been
+    run five times indicating stable results. Running the experiments up
+    to tree times in this very task indicate this as well.
+
+```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410."}
+df_binary %>% filter(model == "Ministral-8B-Instruct-2410", loop < 3) %>% 
+  filter(n_examples <= 5 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  scale_color_manual(values = method_familiy_colors) +
+  facet_grid(model~classification_type) +
+  # theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  ) +
+  labs(x = "normalized runtime in minutes")
+```
+
+Figure
+\@ref(fig:binary-classification-result-mistral-many-random-examples-plot)
+shows the experiments for Ministral-8B-Instruct-2410 with *n_examples*
+greater or equal three. This time the actual number of examples provided
+to the \acr{LLM} are shown in the shapes to increase the comparability
+among the different strategies. Additionally, it shows results for the
+*top_n_rag_example* strategy with *n_examples* up to 13. The F1 score of
+the *top_n_rag_example* strategy stays lower than the F1 score of the
+*n_rag_examples* strategy, even though there are more examples used.
+This is mainly caused by lower precision scores, probably because there
+are no contrasting examples provided.
+
+```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
+df_binary %>% left_join(df_classification_n_examples, by = c(
+  "method_family" = "approach", 
+  "n_examples" = "n_example", 
+  "classifier_type" = "classification"
+  )) %>% rename(sum_examples = sum) %>% 
+  filter(model == "Ministral-8B-Instruct-2410", loop < 2) %>% 
+  filter(n_examples > 1 | is.na(n_examples)) %>% 
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  scale_color_manual(values = method_familiy_colors) +
+  geom_text(aes(label = sum_examples)) +
+  facet_grid(model~classification_type) +
+  # theme(legend.position = "bottom") +
+  guides(
+    color = guide_legend(ncol = 1, title.position = "top"),
+    shape = guide_legend(ncol = 1, title.position = "top")
+  ) +
+  labs(x = "normalized runtime in minutes")
+```
+
+Figure \@ref(fig:binary-classification-performance-over-runtime) and
+Figure
+\@ref(fig:binary-classification-performance-over-runtime-full-time)
+shows the F1 performance over normalized rundtime for all benchmarked
+models. Comparing Mistral-8B-Instruct-2410 with
+Mistral-124B-Instruct-2411 shows that one can spend over tenfold amount
+of computation power without getting better results.
+
+It also shows, that with Qwen 2.5 it needs at least the 3B parameter
+model to achieve good results. Comparing the 32B and 72B parameter
+models shows, that th performance does not increase anymore, but starts
+to decrease. For Qwen 3 it shows, that only the newer mix of experts
+models give reasonable results.
+
+The mix of expert models show good performance for the Llama 4 family as
+well and reduce the compute time compared with the 72B models of LLama
+3. But for LLama 4 Maverick the performance drops using the
+*n_rag_examples* strategy with three *n_examples*. The performance of
+Llama 3.1 70B was higher than the performance of Llama 3.3 70B.
+
+Summary:
+
+Neither do newer generations always improve the performance for the
+binary classification task, nor do more parameters always improve or at
+least show stable performance.
+
+### Multi-class classification
+
+Table \@ref(tab:table-metrics-llm-page-identification-multi) shows that
+Llama-4-Scout solves the \acr{mcc} task almost perfect for all classes.
+Mistral-Large-Instruct-2411 performs second best. In contrast to the
+binary classification task no order is visible, what class was easiest
+to predict. Googles gemma models perform much better in the \acr{mcc}
+task with F1 scores of 0.89 instead of 0.58 for the binary
+classification task.
+
+Table
+\@ref(tab:table-metrics-llm-page-identification-multi-small-models)
+shows that the smaller models do perform good, too. Ministral-8B
+performs good but is around tenfold faster than Mistral-Large and
+Llama-4 Scout. For the larger models the *n_rag_examples* strategy is
+performing best. For the smaller models the *top_n_rag_examples*
+strategy is performing good as well and is faster because of shorter
+contexts.
+
+```{r table-metrics-llm-page-identification-multi, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
+top_performer_multu %>% render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the multi-class classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
+
+```
+
+```{r table-metrics-llm-page-identification-multi-small-models, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis", class.chunk="big-table"}
+df_multi %>% 
+  unnest(metrics) %>% 
+  filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
+  filter(is.finite(f1_score), loop == 0) %>% 
+  filter(parameter_count<17) %>% 
+  filter(n_examples <= 3 | is.na(n_examples)) %>%
+  group_by(model_family, metric_type) %>% 
+  filter(f1_score == max(f1_score, na.rm = TRUE)) %>% 
+  arrange(desc(f1_score)) %>% # head(10) %>% 
+  select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
+  mutate(
+    f1_score = round(f1_score, 2),
+    norm_runtime = round(norm_runtime, 0),
+  ) %>% rename(
+    "runtime in s" = norm_runtime,
+  ) %>% 
+  render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the multi-class classification tasks focussing on models with less than 17B parameters. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
+```
+
+Figure
+\@ref(fig:performance-over-runtime-multi-classification-mistral-vs-llama-scout)
+shows, the micro averaged F1 score for the three minority classes over
+the normalized runtime for two models. It shows the results for the
+different prompting strategies (*method_families*) with differently
+colored shapes.
+
+The shape is giving information, if the examples provided to the
+\acr{LLM}, are exclusively selected from other companies than the target
+table comes from, or if they can also be selected from documents of the
+same company. This is only relevant for strategies that get the examples
+picked by the documents vector embedding distances (*top_n_rag_examples*
+and *n_rag_examples*). The \acr{LLM} performs better, if examples from
+documents of the same company can be used.
+
+The number inside of the shapes is referring to the *n_examples*
+function parameter. Most models got benchmarked with an *n_examples*
+value of up to three. The actual number of examples provided to the
+models is depending on the method family / example selection strategy
+and can be looked up in Table
+\@ref(tab:comparing-actual-number-of-in-context-examples).
+
+*n_rag_examples* better for Llama 4 Scout than *n_random_examples* ; For
+Ministral it is depending on the *out_of_company* setting
+
+On can see, that Ministral–8B 2410 reaches a good performance already
+with few examples, but only if *out_of_company* is false. It performs
+moderate with the *law-context* strategy and *zero_shot*, too. Adding
+more examples does not improve the performance. Best with
+*top_n_rag_examples*
+
+```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
+df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities")
+
+df_selected %>% 
+  filter(model %in% c(
+    "Ministral-8B-Instruct-2410",
+    # "Mistral-Large-Instruct-2411",
+    # "Mistral-Small-3.1-24B-Instruct-2503",
+    "Llama-4-Scout-17B-16E-Instruct"
+    # "Llama-4-Maverick-17B-128E-Instruct-FP8"
+  ),
+  loop == 0,
+  n_examples <= 9
+  ) %>% 
+  ggplot(aes(x = norm_runtime/60, y = f1_score)) +
+  geom_point(aes(color = method_family, shape = out_of_company), size = 7, alpha = .6) +
+  scale_shape(na.value = 15, guide = "legend") +
+  geom_text(aes(label = n_examples)) +
+  facet_grid(model~metric_type) +
+  scale_color_manual(values = method_familiy_colors) +
+  labs(x = "normalized runtime in minutes") #+
+  # theme(legend.position = "bottom") +
+  # guides(
+  #   color = guide_legend(ncol = 1, title.position = "top"),
+  #   shape = guide_legend(ncol = 1, title.position = "top")
+  # ) +
+  # scale_x_discrete(guide = guide_axis(angle = 30))
+```
+
+## Term frequency based classifier {#tf-classifier}
+
+The fourth approach uses term frequencies for a key word list and the
+number of floats to rank pages. The approach is inspired by
+\acr{TF-IDF} - a technique commonly used for information retrieval. It
+is similar to the baseline approach, because it uses a key word list and
+regular expressions to count terms and floats. But it is more flexible
+because the works in the key word list are not mandatory. This makes the
+approach robust against issues in the text extracts for single key
+words.
+
+The key word list is generated removing the stop words from the law
+about **Aktiva**, **Passiva** and **GuV**. The key words from the
+\acr{regex} approach are added, e.g. *GuV* and *Gewinn- und
+Verlustrechnung*. Since real life representations of those target types
+never contain all entries, it is not possible to include most of those
+words in a strict \acr{regex} search as presented in the first approach.
+
+This approach sums the counts of each word from the key word list per
+page in a first variable. In a second variable it counts the number of
+floats on each page. These two variables are then divided by the number
+of words found on the page. These densities are used to rank all pages
+from a single document. This is done with a unique key word list for
+each target type.
+
+A random forest is trained to determine which density should be weighted
+to what amount. Because of the imbalanced data set undersampling is used
+when the training data set is created[^05_results-22]. A single random
+forest is trained because the density of floats and specific words is
+assumed to be similar. The actual type of the page is not taken into
+account. The model just knows if the page is a page of any target type,
+based on the term and float density. This trippels the data points of
+the target class.
+
+[^05_results-22]: The random forest build with undersampling performs
+    much better as a classifier, that is trained using n oversamples
+    train dataset.
+
+This single random forest performs much better than random forests that
+are trained using the dataset for each target type separatly. The
+performance is tested on all data points not included in the
+undersampled train dataset. Thus the test dataset is again highly
+imbalanced.
+
+The random forest performs a binary classification task. But instead of
+the actual classifications, the predicted scores are used to rank the
+pages. Instead of precision or recall the metric used for the evaluation
+is top k recall. It is of interest which value of k is required to get a
+recall of 100 %.
+
+The code can be found at:
+"benchmark_jobs/page_identification/term_frequency.ipynb"
+
+```{python random-forest-2-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+df_train_us = pd.read_csv("../benchmark_results/page_identification/term_frequency_table.csv")
+
+# Drop rows without ground truth
+# df_train_us = df_word_counts.merge(df_truth, on=["filepath", "type"], how="left")
+df_train_us["is_truth"] = (df_train_us["page"] == df_train_us["page_truth"]).astype(int)
+df_train_us = df_train_us.dropna(subset=["page_truth"])
+
+# Undersample the majority class (is_truth == 0)
+df_true = df_train_us[df_train_us["is_truth"] == 1]
+df_false = df_train_us[df_train_us["is_truth"] == 0]
+df_false_undersampled = df_false.sample(n=len(df_true), random_state=42)
+df_train_us_balanced = pd.concat([df_true, df_false_undersampled]).sample(frac=1, random_state=42).reset_index(drop=True)
+# df_train_us_balanced
+
+# Features and target
+X = df_train_us_balanced[["term_frequency", "float_frequency"]].values
+y = df_train_us_balanced["is_truth"].values
+
+# Train-test split (70% train, 30% test)
+X_train, X_test, y_train, y_test, df_train_split, df_test_split = train_test_split(
+    X, y, df_train_us_balanced, test_size=0.3, random_state=42, stratify=y
+)
+
+# Train Random Forest model
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+score = clf.score(X_train, y_train)
+# print(f"Training accuracy: {score:.2%}")
+score = clf.score(X_test, y_test)
+# print(f"Test accuracy: {score:.2%}")
+
+# Predict and rerank: get predicted probabilities for each page
+df_train_split["score"] = clf.predict_proba(X_train)[:, 1]
+df_test_split["score"] = clf.predict_proba(X_test)[:, 1]
+
+# Add all not-chosen negatives from df_false to test split
+df_false_unused = df_false.loc[~df_false.index.isin(df_false_undersampled.index)]
+df_false_unused = df_false_unused.copy()
+df_false_unused["score"] = clf.predict_proba(df_false_unused[["term_frequency", "float_frequency"]].values)[:, 1]
+df_false_unused["rank"] = np.nan  # Not ranked yet
+
+# Concatenate with test split
+df_test_split = pd.concat([df_test_split, df_false_unused], ignore_index=True)
+
+# For each group (filepath, type), sort by score descending
+df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
+df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
+```
+
+-   top 1
+-   top k
+
+low precision llm linked to position of correct page? numeric frequency?
+
+Figure \@ref(fig:forest-map-tf-2-predictors) shows how the test data
+points are distributed in the two dimensional value map for the random
+forest with two predictors. The target pages have a *float_frequncy*
+between 0.2 and 0.5 and pages with a *term_frequency* value over 0.07
+get classified as target. One target page shows a lower *term_frequency*
+and thus does not get ranked correct. (recall, precision?)
+
+```{python forest-map-tf-2-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-2preds.sav'), results='hold', fig.cap="Classification map showing which score a data point gets based on its term and float frequency and which type the data points in the test dataset actually have."}
+import shap
+import pickle
+import pandas as pd
+
+import matplotlib.pyplot as plt
+from sklearn.inspection import DecisionBoundaryDisplay
+from matplotlib.colors import ListedColormap
+
+predictors = [
+    "term_frequency", 
+    "float_frequency", 
+    "date_count", 
+    "integer_count"
+]
+
+clf = pickle.load(open('data_storage/rf-tf-2preds.sav', 'rb'))
+df_test_split = pd.read_csv("data_storage/term_frequency_results_2_predictors_test.csv")
+
+
+X = df_test_split[["term_frequency", "float_frequency"]].values
+
+cm = plt.cm.RdBu
+cm_bright = ListedColormap(["#FF0000", "#0000FF"])
+x_min, x_max = X[:, 0].min() - 0.05, X[:, 0].max() + 0.05
+y_min, y_max = X[:, 1].min() - 0.05, X[:, 1].max() + 0.05
+
+plt.figure(figsize=(8, 6))
+ax = plt.gca()
+catch_this_message =DecisionBoundaryDisplay.from_estimator(
+    clf, X, cmap=cm, alpha=0.8, ax=ax, eps=0.05
+)
+
+df_test_split_sorted = df_test_split.sort_values('is_truth')
+X_test = df_test_split_sorted[["term_frequency", "float_frequency"]].values
+y_test = df_test_split_sorted["is_truth"].values
+score = clf.score(X_test, y_test)
+
+# ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright, edgecolors="k", label="Train")
+ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6, edgecolors="k", label="Test")
+catch_this_message =ax.set_xlim(x_min, x_max)
+catch_this_message =ax.set_ylim(y_min, y_max)
+ax.set_xlabel("term_frequency")
+ax.set_ylabel("float_frequency")
+ax.set_title(f"RandomForestClassifier (accuracy={score:.2f})")
+plt.legend()
+plt.show()
+```
+
+A second random forest is trained supplementing the two predictors *term
+density* and *float density* with two additional predictors: *date
+count* and *integer count*. Figure
+\@ref(fig:top-n-recall-term-frequency) shows the top n recall for both
+random forests. On the left side the top n recall on the imbalanced test
+dataset is shown. On the right side the performance on the train
+dataset.
+
+Both random forests perform similar on the train dataset. The random
+forest with four predictors reaches perfect recall faster for **Aktiva**
+on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the
+random forest with four predictors. With the random forest with two
+predictors it needs $n = 7$.
+
+```{r top-n-recall-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Comparing the top n recall on training and test dataset among the random forest with two and four predictors."}
+df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
+  mutate(data_split = 'test', n_predictors = 2)
+df_2_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_train.csv") %>% 
+  mutate(data_split = 'train', n_predictors = 2)
+df_4_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_test.csv") %>% 
+  mutate(data_split = 'test', n_predictors = 4)
+df_4_predictors_train <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_4_predictors_train.csv") %>% 
+  mutate(data_split = 'train', n_predictors = 4)
+
+df_rf_results <- bind_rows(
+  df_2_predictors_train, df_2_predictors_test,
+  df_4_predictors_train, df_4_predictors_test
+  )
+
+max_rank = df_rf_results %>% filter(is_truth == 1) %>% pull(rank) %>% max()
+results <- map_dfr(1:max_rank, function(i_rank) {
+  df_rf_results %>% 
+    filter(is_truth == 1) %>% 
+    group_by(type, data_split, n_predictors) %>% 
+    mutate(le = if_else(rank <= i_rank, 1, 0)) %>% 
+    summarise(mean = mean(le), .groups = "drop") %>% 
+    mutate(i_rank = i_rank)
+})
+
+results %>% ggplot() +
+  geom_col(aes(x = i_rank, y = mean)) +
+  facet_nested(type ~ data_split + n_predictors) +
+  labs(
+    x = "rank",
+    y = "top n recall",
+    # title = "Top n recall for different ranks, data splits and number of predictors"
+  )
+
+```
+
+```{python random-forest-4-predictors, include=TRUE, eval=FALSE, echo=echo_flag, warning=warning_flag, message=message_flag}
+import pandas as pd
+import pickle
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+df_train_us = pd.read_csv("../benchmark_results/page_identification/term_frequency_table.csv")
+
+# Drop rows without ground truth
+# df_train_us = df_word_counts.merge(df_truth, on=["filepath", "type"], how="left")
+df_train_us["is_truth"] = (df_train_us["page"] == df_train_us["page_truth"]).astype(int)
+df_train_us = df_train_us.dropna(subset=["page_truth"])
+
+# Undersample the majority class (is_truth == 0)
+df_true = df_train_us[df_train_us["is_truth"] == 1]
+df_false = df_train_us[df_train_us["is_truth"] == 0]
+df_false_undersampled = df_false.sample(n=len(df_true), random_state=42)
+df_train_us_balanced = pd.concat([df_true, df_false_undersampled]).sample(frac=1, random_state=42).reset_index(drop=True)
+# df_train_us_balanced
+
+predictors = [
+    "term_frequency", 
+    "float_frequency", 
+    "date_count", 
+    "integer_count"
+]
+
+# Features and target
+X = df_train_us_balanced[predictors].values # only better with date and integer counts; otherwise worse
+y = df_train_us_balanced["is_truth"].values
+
+# Train-test split (70% train, 30% test)
+X_train, X_test, y_train, y_test, df_train_split, df_test_split = train_test_split(
+    X, y, df_train_us_balanced, test_size=0.3, random_state=42, stratify=y
+)
+
+# Train Random Forest model
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+catch_this_message =clf.fit(X_train, y_train)
+
+# Predict and rerank: get predicted probabilities for each page
+df_train_split["score"] = clf.predict_proba(X_train)[:, 1]
+df_test_split["score"] = clf.predict_proba(X_test)[:, 1]
+
+# Add all not-chosen negatives from df_false to test split
+df_false_unused = df_false.loc[~df_false.index.isin(df_false_undersampled.index)]
+df_false_unused = df_false_unused.copy()
+df_false_unused["score"] = clf.predict_proba(df_false_unused[predictors].values)[:, 1]
+df_false_unused["rank"] = np.nan  # Not ranked yet
+
+# Concatenate with test split
+df_test_split = pd.concat([df_test_split, df_false_unused], ignore_index=True)
+
+# For each group (filepath, type), sort by score descending
+df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
+df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
+```
+
+Figure \@ref(fig:shap-tf-4-predictors) shows that the two additional
+predictors *date_count* and *integer_count* have little importance. But
+since it is computationally cheap to determine their value and the
+effiency of a random forest classifier, there is little reason not to
+use them.
+
+```{python shap-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-preds.sav'), fig.cap="Beeswarm plot of SHAP importance values for the four predictors of the second random forest classifier."}
+import shap
+import pickle
+import pandas as pd
+
+predictors = [
+    "term_frequency", 
+    "float_frequency", 
+    "date_count", 
+    "integer_count"
+]
+
+clf = pickle.load(open('data_storage/rf-tf-4preds.sav', 'rb'))
+df_test_split = pd.read_csv("data_storage/term_frequency_results_4_predictors_test.csv")
+
+# Use the same predictors and trained RandomForestClassifier (clf) as in cell 20
+explainer = shap.TreeExplainer(clf)
+shap_values = explainer.shap_values(df_test_split[predictors].values)
+
+# Plot summary for class 1 (is_truth == 1)
+shap.summary_plot(shap_values[:,:,1], df_test_split[predictors].values, feature_names=predictors)
+```
+
+Fianlly, figure \@ref(fig:micro-pr-curve-tf-4-predictors) shows the
+precision-recall-curves for the term frequency approach for all three
+target types. The \acr{AUC} for all types is below 0.5. The precision
+and F1 score stay below 0.5 as well. A high recall can be maintained for
+all types for threshold values up to at least 0.72.
+
+```{r micro-pr-curve-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the precsion-recall-curve for the random forest with four predictors.", fig.height=8}
+plot_pr_double_curve_tf <- function(df, selected_type, x_stuff = FALSE) {
+  df_temp2 <- df %>% filter(
+    n_predictors == 4, data_split == "test",
+    type == selected_type
+  ) %>% 
+    rename(
+      confidence_score = score
+    ) %>% 
+    mutate(
+      type = factor(is_truth, levels = c(1, 0))
+    )
+  
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% filter(threshold<=1) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1_row_high_recall <- pr_df %>% 
+    filter(recall > 0.999, precision > 0.1) %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_F1_high_recall <- best_F1_row_high_recall %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  best_threshold_high_recall <- best_F1_row_high_recall  %>% pull(threshold)
+  best_precision_high_recall <- best_F1_row_high_recall  %>% pull(precision)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      subtitle = paste0("Precision-Recall Curve for ", selected_type, " (AUC = ", pr_auc, ")"),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1), xlim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
+    )
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1), xlim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  if (x_stuff == FALSE) {
+    g1 <- g1 + guides(color = FALSE) +
+      labs(x = element_blank())
+    
+    g2 <- g2 + guides(color = FALSE) +
+      labs(x = element_blank())
+  }
+  
+  combined_plot <- g1 + g2
+  combined_plot + plot_annotation(caption = paste0(
+    'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
+    'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
+}
+
+df_temp <- df_rf_results
+
+p_aktiva <- df_temp %>% plot_pr_double_curve_tf("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp %>% plot_pr_double_curve_tf("Passiva", x_stuff = FALSE)
+p_guv <- df_temp %>% plot_pr_double_curve_tf("GuV", x_stuff = TRUE)
+# p_other <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("other", x_stuff = TRUE)
+
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = "Random forest with four predictors")
+```
+
+## Summary
+
+
+
+

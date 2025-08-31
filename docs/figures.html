@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>10 Figures | Extraction of tabular data from annual reports with LLMs</title>
-  <meta name="description" content="10 Figures | Extraction of tabular data from annual reports with LLMs" />
+  <title>14 Figures | Extraction of tabular data from annual reports with LLMs</title>
+  <meta name="description" content="14 Figures | Extraction of tabular data from annual reports with LLMs" />
   <meta name="generator" content="bookdown 0.43.2 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="10 Figures | Extraction of tabular data from annual reports with LLMs" />
+  <meta property="og:title" content="14 Figures | Extraction of tabular data from annual reports with LLMs" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="10 Figures | Extraction of tabular data from annual reports with LLMs" />
+  <meta name="twitter:title" content="14 Figures | Extraction of tabular data from annual reports with LLMs" />
   
   
   
@@ -263,11 +263,12 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.5" data-path="methodology.html"><a href="methodology.html#experimental-framework"><i class="fa fa-check"></i><b>3.5</b> Experimental Framework</a>
 <ul>
-<li class="chapter" data-level="3.5.1" data-path="methodology.html"><a href="methodology.html#gpu-benchmark"><i class="fa fa-check"></i><b>3.5.1</b> Hardware normalization</a></li>
-<li class="chapter" data-level="3.5.2" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.2</b> Error analysis</a></li>
-<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#baseline-selection-rationale"><i class="fa fa-check"></i><b>3.5.3</b> Baseline selection rationale</a></li>
-<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#prompt-building"><i class="fa fa-check"></i><b>3.5.4</b> Prompt building</a></li>
-<li class="chapter" data-level="3.5.5" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.5</b> Evaluation methods</a></li>
+<li class="chapter" data-level="3.5.1" data-path="methodology.html"><a href="methodology.html#llm-overview"><i class="fa fa-check"></i><b>3.5.1</b> LLM overview</a></li>
+<li class="chapter" data-level="3.5.2" data-path="methodology.html"><a href="methodology.html#gpu-benchmark"><i class="fa fa-check"></i><b>3.5.2</b> Hardware normalization</a></li>
+<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.3</b> Error analysis</a></li>
+<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#baseline-selection-rationale"><i class="fa fa-check"></i><b>3.5.4</b> Baseline selection rationale</a></li>
+<li class="chapter" data-level="3.5.5" data-path="methodology.html"><a href="methodology.html#prompt-building"><i class="fa fa-check"></i><b>3.5.5</b> Prompt building</a></li>
+<li class="chapter" data-level="3.5.6" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.6</b> Evaluation methods</a></li>
 </ul></li>
 <li class="chapter" data-level="3.6" data-path="methodology.html"><a href="methodology.html#ethical-practical-considerations-eher-am-ende-oder-weg"><i class="fa fa-check"></i><b>3.6</b> Ethical &amp; Practical Considerations (eher am Ende oder weg?)</a>
 <ul>
@@ -290,31 +291,20 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#page-identification-introduction"><i class="fa fa-check"></i><b>5.1</b> Page identification</a>
 <ul>
-<li class="chapter" data-level="5.1.1" data-path="results.html"><a href="results.html#regex-page-identification"><i class="fa fa-check"></i><b>5.1.1</b> Baseline: Regex</a></li>
-<li class="chapter" data-level="5.1.2" data-path="results.html"><a href="results.html#toc-understanding"><i class="fa fa-check"></i><b>5.1.2</b> Table of Contents understanding</a>
+<li class="chapter" data-level="5.1.1" data-path="results.html"><a href="results.html#approaches"><i class="fa fa-check"></i><b>5.1.1</b> Approaches</a></li>
+<li class="chapter" data-level="5.1.2" data-path="results.html"><a href="results.html#comparison-page-identification"><i class="fa fa-check"></i><b>5.1.2</b> Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#table-extraction-introduction"><i class="fa fa-check"></i><b>5.2</b> Information extraction</a>
 <ul>
-<li class="chapter" data-level="5.1.2.1" data-path="results.html"><a href="results.html#text-based-toc-understanding"><i class="fa fa-check"></i><b>5.1.2.1</b> Details for the approaches</a></li>
-<li class="chapter" data-level="5.1.2.2" data-path="results.html"><a href="results.html#results-1"><i class="fa fa-check"></i><b>5.1.2.2</b> Results</a></li>
+<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#approaches-1"><i class="fa fa-check"></i><b>5.2.1</b> Approaches</a></li>
+<li class="chapter" data-level="5.2.2" data-path="results.html"><a href="results.html#comparing-table-extraction-methods"><i class="fa fa-check"></i><b>5.2.2</b> Comparison</a></li>
 </ul></li>
-<li class="chapter" data-level="5.1.3" data-path="results.html"><a href="results.html#llm-page-identification"><i class="fa fa-check"></i><b>5.1.3</b> Classification with LLMs</a>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#error-rate-guidance-results"><i class="fa fa-check"></i><b>5.3</b> Error rate guidance</a>
 <ul>
-<li class="chapter" data-level="5.1.3.1" data-path="results.html"><a href="results.html#binary-classification"><i class="fa fa-check"></i><b>5.1.3.1</b> Binary classification</a></li>
-<li class="chapter" data-level="5.1.3.2" data-path="results.html"><a href="results.html#multi-class-classification"><i class="fa fa-check"></i><b>5.1.3.2</b> Multi-class classification</a></li>
+<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#page-identification-error-rate-results"><i class="fa fa-check"></i><b>5.3.1</b> Page identification</a></li>
+<li class="chapter" data-level="5.3.2" data-path="results.html"><a href="results.html#information-extraction-error-rate-results"><i class="fa fa-check"></i><b>5.3.2</b> Information extraction</a></li>
 </ul></li>
-<li class="chapter" data-level="5.1.4" data-path="results.html"><a href="results.html#tf-classifier"><i class="fa fa-check"></i><b>5.1.4</b> Term frequency based classifier</a></li>
-<li class="chapter" data-level="5.1.5" data-path="results.html"><a href="results.html#comparison-page-identification"><i class="fa fa-check"></i><b>5.1.5</b> Comparison</a></li>
-</ul></li>
-<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#table-extraction-introduction"><i class="fa fa-check"></i><b>5.2</b> Table extraction</a>
-<ul>
-<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#baseline-regex"><i class="fa fa-check"></i><b>5.2.1</b> Baseline: Regex</a></li>
-<li class="chapter" data-level="5.2.2" data-path="results.html"><a href="results.html#extraction-with-llms-real-tables"><i class="fa fa-check"></i><b>5.2.2</b> Extraction with LLMs</a>
-<ul>
-<li class="chapter" data-level="5.2.2.1" data-path="results.html"><a href="results.html#real-table-extraction-results"><i class="fa fa-check"></i><b>5.2.2.1</b> Real tables</a></li>
-<li class="chapter" data-level="5.2.2.2" data-path="results.html"><a href="results.html#synthetic-table-extraction"><i class="fa fa-check"></i><b>5.2.2.2</b> Synthetic tables</a></li>
-<li class="chapter" data-level="5.2.2.3" data-path="results.html"><a href="results.html#real-table-extraction-synth-context"><i class="fa fa-check"></i><b>5.2.2.3</b> Hybrid approach</a></li>
-</ul></li>
-<li class="chapter" data-level="5.2.3" data-path="results.html"><a href="results.html#comparing-table-extraction-methods"><i class="fa fa-check"></i><b>5.2.3</b> Comparison</a></li>
-</ul></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#summary-results"><i class="fa fa-check"></i><b>5.4</b> Summary</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
 <ul>
@@ -346,71 +336,119 @@ div.csl-indent {
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="chapter" data-level="" data-path="glossary.html"><a href="glossary.html"><i class="fa fa-check"></i>Glossary</a></li>
-<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a>
+<li class="chapter" data-level="8" data-path="page-identification-report.html"><a href="page-identification-report.html"><i class="fa fa-check"></i><b>8</b> Appendix A - Page identification report</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#hitl"><i class="fa fa-check"></i><b>8.1</b> Human in the loop application</a></li>
-<li class="chapter" data-level="8.2" data-path="appendix.html"><a href="appendix.html#local-machine"><i class="fa fa-check"></i><b>8.2</b> Local machine</a></li>
-<li class="chapter" data-level="8.3" data-path="appendix.html"><a href="appendix.html#benchmarks"><i class="fa fa-check"></i><b>8.3</b> Benchmarks</a>
+<li class="chapter" data-level="8.1" data-path="page-identification-report.html"><a href="page-identification-report.html#regex-page-identification"><i class="fa fa-check"></i><b>8.1</b> Baseline: Regex</a></li>
+<li class="chapter" data-level="8.2" data-path="page-identification-report.html"><a href="page-identification-report.html#toc-understanding"><i class="fa fa-check"></i><b>8.2</b> Table of Contents understanding</a>
 <ul>
-<li class="chapter" data-level="8.3.1" data-path="appendix.html"><a href="appendix.html#text-extraction-benchmark"><i class="fa fa-check"></i><b>8.3.1</b> Text extraction</a></li>
-<li class="chapter" data-level="8.3.2" data-path="appendix.html"><a href="appendix.html#table-detection-benchmark"><i class="fa fa-check"></i><b>8.3.2</b> Table detection</a>
-<ul>
-<li class="chapter" data-level="8.3.2.1" data-path="appendix.html"><a href="appendix.html#yolo-benchmark-and-table-transformer"><i class="fa fa-check"></i><b>8.3.2.1</b> yolo benchmark and table transformer</a></li>
-<li class="chapter" data-level="8.3.2.2" data-path="appendix.html"><a href="appendix.html#old-classification-with-llm"><i class="fa fa-check"></i><b>8.3.2.2</b> old classification with llm</a></li>
+<li class="chapter" data-level="8.2.1" data-path="page-identification-report.html"><a href="page-identification-report.html#text-based-toc-understanding"><i class="fa fa-check"></i><b>8.2.1</b> Details for the approaches</a></li>
+<li class="chapter" data-level="8.2.2" data-path="page-identification-report.html"><a href="page-identification-report.html#results-1"><i class="fa fa-check"></i><b>8.2.2</b> Results</a></li>
+<li class="chapter" data-level="8.2.3" data-path="page-identification-report.html"><a href="page-identification-report.html#machine-readable-toc-approach-specific-results"><i class="fa fa-check"></i><b>8.2.3</b> Machine readable TOC approach specific results</a></li>
 </ul></li>
-<li class="chapter" data-level="8.3.3" data-path="appendix.html"><a href="appendix.html#vllm-batch-speed"><i class="fa fa-check"></i><b>8.3.3</b> Large language model process speed</a></li>
+<li class="chapter" data-level="8.3" data-path="page-identification-report.html"><a href="page-identification-report.html#llm-page-identification"><i class="fa fa-check"></i><b>8.3</b> Classification with LLMs</a>
+<ul>
+<li class="chapter" data-level="8.3.1" data-path="page-identification-report.html"><a href="page-identification-report.html#binary-classification"><i class="fa fa-check"></i><b>8.3.1</b> Binary classification</a></li>
+<li class="chapter" data-level="8.3.2" data-path="page-identification-report.html"><a href="page-identification-report.html#multi-class-classification"><i class="fa fa-check"></i><b>8.3.2</b> Multi-class classification</a></li>
 </ul></li>
-<li class="chapter" data-level="8.4" data-path="appendix.html"><a href="appendix.html#prompts"><i class="fa fa-check"></i><b>8.4</b> Prompts</a>
-<ul>
-<li class="chapter" data-level="8.4.1" data-path="appendix.html"><a href="appendix.html#toc-understanding-promts"><i class="fa fa-check"></i><b>8.4.1</b> TOC understanding</a></li>
-<li class="chapter" data-level="8.4.2" data-path="appendix.html"><a href="appendix.html#classification-prompts"><i class="fa fa-check"></i><b>8.4.2</b> Classification</a></li>
+<li class="chapter" data-level="8.4" data-path="page-identification-report.html"><a href="page-identification-report.html#tf-classifier"><i class="fa fa-check"></i><b>8.4</b> Term frequency based classifier</a></li>
+<li class="chapter" data-level="8.5" data-path="page-identification-report.html"><a href="page-identification-report.html#summary-2"><i class="fa fa-check"></i><b>8.5</b> Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="8.5" data-path="appendix.html"><a href="appendix.html#regex-page-identification-code"><i class="fa fa-check"></i><b>8.5</b> Regular expressions</a></li>
-<li class="chapter" data-level="8.6" data-path="appendix.html"><a href="appendix.html#annual-comprehensive-financial-report-balance-sheet"><i class="fa fa-check"></i><b>8.6</b> Annual Comprehensive Financial Report Balance Sheet</a></li>
-<li class="chapter" data-level="8.7" data-path="appendix.html"><a href="appendix.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>8.7</b> Extraction framework flow chart</a></li>
-<li class="chapter" data-level="8.8" data-path="appendix.html"><a href="appendix.html#regex-extraction-mistakes"><i class="fa fa-check"></i><b>8.8</b> Table extraction with regular expressions</a></li>
+<li class="chapter" data-level="9" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html"><i class="fa fa-check"></i><b>9</b> Appendix B - Information extraction report</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#baseline-regex"><i class="fa fa-check"></i><b>9.1</b> Baseline: Regex</a></li>
+<li class="chapter" data-level="9.2" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#extraction-with-llms-real-tables"><i class="fa fa-check"></i><b>9.2</b> Extraction with LLMs</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#real-table-extraction-results"><i class="fa fa-check"></i><b>9.2.1</b> Real tables</a></li>
+<li class="chapter" data-level="9.2.2" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#synthetic-table-extraction"><i class="fa fa-check"></i><b>9.2.2</b> Synthetic tables</a></li>
+<li class="chapter" data-level="9.2.3" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#real-table-extraction-synth-context"><i class="fa fa-check"></i><b>9.2.3</b> Hybrid approach</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="tables.html"><a href="tables.html"><i class="fa fa-check"></i><b>9</b> Tables</a>
-<ul>
-<li class="chapter" data-level="9.0.1" data-path="tables.html"><a href="tables.html#classification-1"><i class="fa fa-check"></i><b>9.0.1</b> Classification</a></li>
-<li class="chapter" data-level="9.0.2" data-path="tables.html"><a href="tables.html#table-extraction-3"><i class="fa fa-check"></i><b>9.0.2</b> Table extraction</a>
-<ul>
-<li class="chapter" data-level="9.0.2.1" data-path="tables.html"><a href="tables.html#hybrid-approach"><i class="fa fa-check"></i><b>9.0.2.1</b> Hybrid approach</a></li>
+<li class="chapter" data-level="9.3" data-path="appendix-b---information-extraction-report.html"><a href="appendix-b---information-extraction-report.html#summary-3"><i class="fa fa-check"></i><b>9.3</b> Summary</a></li>
 </ul></li>
+<li class="chapter" data-level="10" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html"><i class="fa fa-check"></i><b>10</b> Appendix C - Error rate guidance report</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#page-identification-4"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="10.1.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#binary-classification-1"><i class="fa fa-check"></i><b>10.1.1</b> Binary classification</a></li>
+<li class="chapter" data-level="10.1.2" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#multi-class-classification-1"><i class="fa fa-check"></i><b>10.1.2</b> Multi-class classification</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>10</b> Figures</a>
+<li class="chapter" data-level="10.2" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#extraction-with-llms"><i class="fa fa-check"></i><b>10.2</b> Extraction with LLMs</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="figures.html"><a href="figures.html#page-identification-4"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
-<ul>
-<li class="chapter" data-level="10.1.1" data-path="figures.html"><a href="figures.html#regex-baseline-1"><i class="fa fa-check"></i><b>10.1.1</b> Regex baseline</a></li>
-<li class="chapter" data-level="10.1.2" data-path="figures.html"><a href="figures.html#toc-understanding-1"><i class="fa fa-check"></i><b>10.1.2</b> TOC understanding</a></li>
-<li class="chapter" data-level="10.1.3" data-path="figures.html"><a href="figures.html#classification-2"><i class="fa fa-check"></i><b>10.1.3</b> Classification</a>
-<ul>
-<li class="chapter" data-level="10.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>10.1.3.1</b> Binary</a></li>
-<li class="chapter" data-level="10.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-1"><i class="fa fa-check"></i><b>10.1.3.2</b> Multi-class classification</a></li>
+<li class="chapter" data-level="10.2.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#real-tables-1"><i class="fa fa-check"></i><b>10.2.1</b> Real tables</a></li>
+<li class="chapter" data-level="10.2.2" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#synthetic-tables-1"><i class="fa fa-check"></i><b>10.2.2</b> Synthetic tables</a></li>
+<li class="chapter" data-level="10.2.3" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#hybrid-aproach"><i class="fa fa-check"></i><b>10.2.3</b> Hybrid aproach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10.2" data-path="figures.html"><a href="figures.html#table-extraction-4"><i class="fa fa-check"></i><b>10.2</b> Table extraction</a>
+<li class="chapter" data-level="11" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html"><i class="fa fa-check"></i><b>11</b> Appendix D - Feature effect analysis</a>
 <ul>
-<li class="chapter" data-level="10.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>10.2.1</b> Regex approach</a>
+<li class="chapter" data-level="11.1" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#regular-expressions-3"><i class="fa fa-check"></i><b>11.1</b> Regular expressions</a></li>
+<li class="chapter" data-level="11.2" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#real-tables-2"><i class="fa fa-check"></i><b>11.2</b> Real tables</a></li>
+<li class="chapter" data-level="11.3" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#hybrid-approach-1"><i class="fa fa-check"></i><b>11.3</b> Hybrid approach</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html"><i class="fa fa-check"></i><b>12</b> Appendix E - Miscellaneous</a>
 <ul>
-<li class="chapter" data-level="10.2.1.1" data-path="figures.html"><a href="figures.html#real-tables"><i class="fa fa-check"></i><b>10.2.1.1</b> Real tables</a></li>
-<li class="chapter" data-level="10.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables"><i class="fa fa-check"></i><b>10.2.1.2</b> Synthetic tables</a></li>
-</ul></li>
-<li class="chapter" data-level="10.2.2" data-path="figures.html"><a href="figures.html#real-tables-1"><i class="fa fa-check"></i><b>10.2.2</b> Real tables</a>
+<li class="chapter" data-level="12.1" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#hitl"><i class="fa fa-check"></i><b>12.1</b> Human in the loop application</a></li>
+<li class="chapter" data-level="12.2" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#local-machine"><i class="fa fa-check"></i><b>12.2</b> Local machine</a></li>
+<li class="chapter" data-level="12.3" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#benchmarks"><i class="fa fa-check"></i><b>12.3</b> Benchmarks</a>
 <ul>
-<li class="chapter" data-level="10.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>10.2.2.1</b> Examples from same company</a></li>
-<li class="chapter" data-level="10.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>10.2.2.2</b> OpenAI models</a></li>
-<li class="chapter" data-level="10.2.2.3" data-path="figures.html"><a href="figures.html#hypotheses-5"><i class="fa fa-check"></i><b>10.2.2.3</b> Hypotheses</a></li>
-</ul></li>
-<li class="chapter" data-level="10.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-1"><i class="fa fa-check"></i><b>10.2.3</b> Synthetic tables</a>
+<li class="chapter" data-level="12.3.1" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#text-extraction-benchmark"><i class="fa fa-check"></i><b>12.3.1</b> Text extraction</a></li>
+<li class="chapter" data-level="12.3.2" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#table-detection-benchmark"><i class="fa fa-check"></i><b>12.3.2</b> Table detection</a>
 <ul>
-<li class="chapter" data-level="10.2.3.1" data-path="figures.html"><a href="figures.html#confidence-5"><i class="fa fa-check"></i><b>10.2.3.1</b> Confidence</a></li>
+<li class="chapter" data-level="12.3.2.1" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#yolo-benchmark-and-table-transformer"><i class="fa fa-check"></i><b>12.3.2.1</b> yolo benchmark and table transformer</a></li>
+<li class="chapter" data-level="12.3.2.2" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#old-classification-with-llm"><i class="fa fa-check"></i><b>12.3.2.2</b> old classification with llm</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-1"><i class="fa fa-check"></i><b>10.2.4</b> Hybrid approach</a></li>
+<li class="chapter" data-level="12.3.3" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#vllm-batch-speed"><i class="fa fa-check"></i><b>12.3.3</b> Large language model process speed</a></li>
+</ul></li>
+<li class="chapter" data-level="12.4" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#prompts"><i class="fa fa-check"></i><b>12.4</b> Prompts</a>
+<ul>
+<li class="chapter" data-level="12.4.1" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#toc-understanding-promts"><i class="fa fa-check"></i><b>12.4.1</b> TOC understanding</a></li>
+<li class="chapter" data-level="12.4.2" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#classification-prompts"><i class="fa fa-check"></i><b>12.4.2</b> Classification</a></li>
+</ul></li>
+<li class="chapter" data-level="12.5" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#regex-page-identification-code"><i class="fa fa-check"></i><b>12.5</b> Regular expressions</a></li>
+<li class="chapter" data-level="12.6" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#annual-comprehensive-financial-report-balance-sheet"><i class="fa fa-check"></i><b>12.6</b> Annual Comprehensive Financial Report Balance Sheet</a></li>
+<li class="chapter" data-level="12.7" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#extraction-framework-flow-chart"><i class="fa fa-check"></i><b>12.7</b> Extraction framework flow chart</a></li>
+<li class="chapter" data-level="12.8" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html#regex-extraction-mistakes"><i class="fa fa-check"></i><b>12.8</b> Table extraction with regular expressions</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="tables.html"><a href="tables.html"><i class="fa fa-check"></i><b>13</b> Tables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="tables.html"><a href="tables.html#classification-1"><i class="fa fa-check"></i><b>13.1</b> Classification</a></li>
+<li class="chapter" data-level="13.2" data-path="tables.html"><a href="tables.html#table-extraction-3"><i class="fa fa-check"></i><b>13.2</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="13.2.1" data-path="tables.html"><a href="tables.html#hybrid-approach-2"><i class="fa fa-check"></i><b>13.2.1</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>11</b> Layout testing</a></li>
+<li class="chapter" data-level="14" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>14</b> Figures</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="figures.html"><a href="figures.html#page-identification-5"><i class="fa fa-check"></i><b>14.1</b> Page identification</a>
+<ul>
+<li class="chapter" data-level="14.1.1" data-path="figures.html"><a href="figures.html#regex-baseline-1"><i class="fa fa-check"></i><b>14.1.1</b> Regex baseline</a></li>
+<li class="chapter" data-level="14.1.2" data-path="figures.html"><a href="figures.html#toc-understanding-1"><i class="fa fa-check"></i><b>14.1.2</b> TOC understanding</a></li>
+<li class="chapter" data-level="14.1.3" data-path="figures.html"><a href="figures.html#classification-2"><i class="fa fa-check"></i><b>14.1.3</b> Classification</a>
+<ul>
+<li class="chapter" data-level="14.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>14.1.3.1</b> Binary</a></li>
+<li class="chapter" data-level="14.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-2"><i class="fa fa-check"></i><b>14.1.3.2</b> Multi-class classification</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14.2" data-path="figures.html"><a href="figures.html#table-extraction-4"><i class="fa fa-check"></i><b>14.2</b> Table extraction</a>
+<ul>
+<li class="chapter" data-level="14.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>14.2.1</b> Regex approach</a>
+<ul>
+<li class="chapter" data-level="14.2.1.1" data-path="figures.html"><a href="figures.html#real-tables-3"><i class="fa fa-check"></i><b>14.2.1.1</b> Real tables</a></li>
+<li class="chapter" data-level="14.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables-2"><i class="fa fa-check"></i><b>14.2.1.2</b> Synthetic tables</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2.2" data-path="figures.html"><a href="figures.html#real-tables-4"><i class="fa fa-check"></i><b>14.2.2</b> Real tables</a>
+<ul>
+<li class="chapter" data-level="14.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>14.2.2.1</b> Examples from same company</a></li>
+<li class="chapter" data-level="14.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>14.2.2.2</b> OpenAI models</a></li>
+<li class="chapter" data-level="14.2.2.3" data-path="figures.html"><a href="figures.html#hypotheses-5"><i class="fa fa-check"></i><b>14.2.2.3</b> Hypotheses</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-3"><i class="fa fa-check"></i><b>14.2.3</b> Synthetic tables</a>
+<ul>
+<li class="chapter" data-level="14.2.3.1" data-path="figures.html"><a href="figures.html#confidence-4"><i class="fa fa-check"></i><b>14.2.3.1</b> Confidence</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-3"><i class="fa fa-check"></i><b>14.2.4</b> Hybrid approach</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>15</b> Layout testing</a></li>
 </ul>
 
       </nav>
@@ -428,8 +466,8 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="figures" class="section level1 hasAnchor" number="10">
-<h1><span class="header-section-number">10</span> Figures<a href="figures.html#figures" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="figures" class="section level1 hasAnchor" number="14">
+<h1><span class="header-section-number">14</span> Figures<a href="figures.html#figures" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>NA predicting</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="figures.html#cb122-1" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
@@ -456,25 +494,25 @@ div.csl-indent {
 <div class="figure"><span style="display:block;" id="fig:display-extraction-metrics-full-NA"></span>
 <img src="_main_files/figure-html/display-extraction-metrics-full-NA-1.png" alt="Displaying the performance metrics a LLMs response would have, if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables." width="100%" />
 <p class="caption">
-Figure 10.1: Displaying the performance metrics a LLMs response would have, if all predictions are ‘null’. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables.
+Figure 14.1: Displaying the performance metrics a LLMs response would have, if all predictions are ‘null’. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables.
 </p>
 </div>
-<div id="page-identification-4" class="section level2 hasAnchor" number="10.1">
-<h2><span class="header-section-number">10.1</span> Page identification<a href="figures.html#page-identification-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="regex-baseline-1" class="section level3 hasAnchor" number="10.1.1">
-<h3><span class="header-section-number">10.1.1</span> Regex baseline<a href="figures.html#regex-baseline-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="page-identification-5" class="section level2 hasAnchor" number="14.1">
+<h2><span class="header-section-number">14.1</span> Page identification<a href="figures.html#page-identification-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="regex-baseline-1" class="section level3 hasAnchor" number="14.1.1">
+<h3><span class="header-section-number">14.1.1</span> Regex baseline<a href="figures.html#regex-baseline-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="figures.html#cb123-1" tabindex="-1"></a>metrics_plot_regex_page_identification</span></code></pre></div>
 </details>
 <div class="figure"><span style="display:block;" id="fig:display-metrics-plot-regex-page-identification"></span>
 <img src="_main_files/figure-html/display-metrics-plot-regex-page-identification-1.png" alt="Comparing page identification metrics for different regular expressions for each classification task by type of the target table." width="100%" />
 <p class="caption">
-Figure 10.2: Comparing page identification metrics for different regular expressions for each classification task by type of the target table.
+Figure 14.2: Comparing page identification metrics for different regular expressions for each classification task by type of the target table.
 </p>
 </div>
 </div>
-<div id="toc-understanding-1" class="section level3 hasAnchor" number="10.1.2">
-<h3><span class="header-section-number">10.1.2</span> TOC understanding<a href="figures.html#toc-understanding-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="toc-understanding-1" class="section level3 hasAnchor" number="14.1.2">
+<h3><span class="header-section-number">14.1.2</span> TOC understanding<a href="figures.html#toc-understanding-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="figures.html#cb124-1" tabindex="-1"></a>balanced_df_toc_benchmark <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb124-2"><a href="figures.html#cb124-2" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> type, <span class="at">fill =</span> in_range, <span class="at">colour =</span> min_distance <span class="sc">&lt;=</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
@@ -496,7 +534,7 @@ Figure 10.2: Comparing page identification metrics for different regular express
 <div class="figure"><span style="display:block;" id="fig:page-identification-toc-analysis-balanced"></span>
 <img src="_main_files/figure-html/page-identification-toc-analysis-balanced-1.png" alt="Comparing number of fount TOC and amount of correct and incorrect predicted page ranges" width="100%" />
 <p class="caption">
-Figure 10.3: Comparing number of fount TOC and amount of correct and incorrect predicted page ranges
+Figure 14.3: Comparing number of fount TOC and amount of correct and incorrect predicted page ranges
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -505,10 +543,10 @@ Figure 10.3: Comparing number of fount TOC and amount of correct and incorrect p
 <span id="cb125-3"><a href="figures.html#cb125-3" tabindex="-1"></a>  <span class="co"># )</span></span></code></pre></div>
 </details>
 </div>
-<div id="classification-2" class="section level3 hasAnchor" number="10.1.3">
-<h3><span class="header-section-number">10.1.3</span> Classification<a href="figures.html#classification-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="binary" class="section level4 hasAnchor" number="10.1.3.1">
-<h4><span class="header-section-number">10.1.3.1</span> Binary<a href="figures.html#binary" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="classification-2" class="section level3 hasAnchor" number="14.1.3">
+<h3><span class="header-section-number">14.1.3</span> Classification<a href="figures.html#classification-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="binary" class="section level4 hasAnchor" number="14.1.3.1">
+<h4><span class="header-section-number">14.1.3.1</span> Binary<a href="figures.html#binary" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Binary classification F1 score over runtime limited to 60 minutes</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="figures.html#cb126-1" tabindex="-1"></a>design <span class="ot">=</span> <span class="st">&quot;</span></span>
@@ -543,7 +581,7 @@ Figure 10.3: Comparing number of fount TOC and amount of correct and incorrect p
 <div class="figure"><span style="display:block;" id="fig:binary-classification-performance-over-runtime"></span>
 <img src="_main_files/figure-html/binary-classification-performance-over-runtime-1.png" alt="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.4: Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.
+Figure 14.4: Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.
 </p>
 </div>
 <p>Binary classification F1 score over runtime unlimited</p>
@@ -571,12 +609,12 @@ Figure 10.4: Comparing F1 score over normalized runtime for binary classificatio
 <div class="figure"><span style="display:block;" id="fig:binary-classification-performance-over-runtime-full-time"></span>
 <img src="_main_files/figure-html/binary-classification-performance-over-runtime-full-time-1.png" alt="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.5: Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.
+Figure 14.5: Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.
 </p>
 </div>
 </div>
-<div id="multi-class-classification-1" class="section level4 hasAnchor" number="10.1.3.2">
-<h4><span class="header-section-number">10.1.3.2</span> Multi-class classification<a href="figures.html#multi-class-classification-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="multi-class-classification-2" class="section level4 hasAnchor" number="14.1.3.2">
+<h4><span class="header-section-number">14.1.3.2</span> Multi-class classification<a href="figures.html#multi-class-classification-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Multi-class classification micro minorites F1 score over runtime limited to 60 minutes</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="figures.html#cb128-1" tabindex="-1"></a>design <span class="ot">=</span> <span class="st">&quot;</span></span>
@@ -611,7 +649,7 @@ Figure 10.5: Comparing F1 score over normalized runtime for binary classificatio
 <div class="figure"><span style="display:block;" id="fig:multi-classification-performance-over-runtime"></span>
 <img src="_main_files/figure-html/multi-classification-performance-over-runtime-1.png" alt="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.6: Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.
+Figure 14.6: Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.
 </p>
 </div>
 <p>Multi-class classification micro minorites F1 score over runtime</p>
@@ -647,7 +685,7 @@ Figure 10.6: Comparing F1 score over normalized runtime for multi-class classifi
 <div class="figure"><span style="display:block;" id="fig:multi-classification-performance-over-runtime-full-time"></span>
 <img src="_main_files/figure-html/multi-classification-performance-over-runtime-full-time-1.png" alt="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.7: Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.
+Figure 14.7: Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -665,19 +703,19 @@ Figure 10.7: Comparing F1 score over normalized runtime for multi-class classifi
 <span id="cb130-12"><a href="figures.html#cb130-12" tabindex="-1"></a></span>
 <span id="cb130-13"><a href="figures.html#cb130-13" tabindex="-1"></a><span class="fu">wrap_elements</span>(p_aktiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_passiva) <span class="sc">/</span> <span class="fu">wrap_elements</span>(p_guv) <span class="sc">+</span></span>
 <span id="cb130-14"><a href="figures.html#cb130-14" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
-<span id="cb130-15"><a href="figures.html#cb130-15" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="fu">str_c</span>(model, <span class="st">&quot; with &quot;</span>, method))</span></code></pre></div>
+<span id="cb130-15"><a href="figures.html#cb130-15" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="fu">str_c</span>(model_name, <span class="st">&quot; with &quot;</span>, method_name))</span></code></pre></div>
 </details>
 <div class="figure"><span style="display:block;" id="fig:micro-pr-curve-llm-multi-llama-scout"></span>
 <img src="_main_files/figure-html/micro-pr-curve-llm-multi-llama-scout-1.png" alt="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct." width="100%" />
 <p class="caption">
-Figure 10.8: Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct.
+Figure 14.8: Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct.
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="table-extraction-4" class="section level2 hasAnchor" number="10.2">
-<h2><span class="header-section-number">10.2</span> Table extraction<a href="figures.html#table-extraction-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="table-extraction-4" class="section level2 hasAnchor" number="14.2">
+<h2><span class="header-section-number">14.2</span> Table extraction<a href="figures.html#table-extraction-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="figures.html#cb131-1" tabindex="-1"></a>df_overview_synth <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">target_data =</span> <span class="st">&quot;synth&quot;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb131-2"><a href="figures.html#cb131-2" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
@@ -703,32 +741,32 @@ Figure 10.8: Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruc
 <div class="figure"><span style="display:block;" id="fig:comparing-table-extraction-performance-among-real-and-synth-aktiva-data"></span>
 <img src="_main_files/figure-html/comparing-table-extraction-performance-among-real-and-synth-aktiva-data-1.png" alt="Comparing the table extraction performance among real and synthetic Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.9: Comparing the table extraction performance among real and synthetic Aktiva tables
+Figure 14.9: Comparing the table extraction performance among real and synthetic Aktiva tables
 </p>
 </div>
-<div id="regex-approach" class="section level3 hasAnchor" number="10.2.1">
-<h3><span class="header-section-number">10.2.1</span> Regex approach<a href="figures.html#regex-approach" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="real-tables" class="section level4 hasAnchor" number="10.2.1.1">
-<h4><span class="header-section-number">10.2.1.1</span> Real tables<a href="figures.html#real-tables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="regex-approach" class="section level3 hasAnchor" number="14.2.1">
+<h3><span class="header-section-number">14.2.1</span> Regex approach<a href="figures.html#regex-approach" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="real-tables-3" class="section level4 hasAnchor" number="14.2.1.1">
+<h4><span class="header-section-number">14.2.1.1</span> Real tables<a href="figures.html#real-tables-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="figures.html#cb132-1" tabindex="-1"></a>real_table_extraction_regex_shap_plot</span></code></pre></div>
 </details>
 <div class="figure"><span style="display:block;" id="fig:real-table-extraction-regex-shap-plot"></span>
 <img src="_main_files/figure-html/real-table-extraction-regex-shap-plot-1.png" alt="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.10: Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach
+Figure 14.10: Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach
 </p>
 </div>
 </div>
-<div id="synthetic-tables" class="section level4 hasAnchor" number="10.2.1.2">
-<h4><span class="header-section-number">10.2.1.2</span> Synthetic tables<a href="figures.html#synthetic-tables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="synthetic-tables-2" class="section level4 hasAnchor" number="14.2.1.2">
+<h4><span class="header-section-number">14.2.1.2</span> Synthetic tables<a href="figures.html#synthetic-tables-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="figures.html#cb133-1" tabindex="-1"></a>synth_table_extraction_regex_shap_plot</span></code></pre></div>
 </details>
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-regex-shap-plot"></span>
 <img src="_main_files/figure-html/synth-table-extraction-regex-shap-plot-1.png" alt="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.11: Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach
+Figure 14.11: Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -737,13 +775,13 @@ Figure 10.11: Mean absolute SHAP values and beeswarm plots for synth table extra
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-regex-dependence-plot-backend"></span>
 <img src="_main_files/figure-html/synth-table-extraction-regex-dependence-plot-backend-1.png" alt="Showing the interactions of the extraction backend pdfium with the table characteristics for F1 score." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.12: Showing the interactions of the extraction backend pdfium with the table characteristics for F1 score.
+Figure 14.12: Showing the interactions of the extraction backend pdfium with the table characteristics for F1 score.
 </p>
 </div>
 </div>
 </div>
-<div id="real-tables-1" class="section level3 hasAnchor" number="10.2.2">
-<h3><span class="header-section-number">10.2.2</span> Real tables<a href="figures.html#real-tables-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="real-tables-4" class="section level3 hasAnchor" number="14.2.2">
+<h3><span class="header-section-number">14.2.2</span> Real tables<a href="figures.html#real-tables-4" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="figures.html#cb135-1" tabindex="-1"></a>design <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
 <span id="cb135-2"><a href="figures.html#cb135-2" tabindex="-1"></a>   <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">29</span>,<span class="dv">30</span>,  </span>
@@ -780,7 +818,7 @@ Figure 10.12: Showing the interactions of the extraction backend pdfium with the
 <div class="figure"><span style="display:block;" id="fig:real-table-extraction-performance-over-runtime"></span>
 <img src="_main_files/figure-html/real-table-extraction-performance-over-runtime-1.png" alt="Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 5 minutes of runtime." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.13: Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 5 minutes of runtime.
+Figure 14.13: Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 5 minutes of runtime.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -818,7 +856,7 @@ Figure 10.13: Comparing percentage of correct predictions total over the normali
 <div class="figure"><span style="display:block;" id="fig:real-table-extraction-performance-over-runtime-full"></span>
 <img src="_main_files/figure-html/real-table-extraction-performance-over-runtime-full-1.png" alt="Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Showing the full runtime range." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.14: Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Showing the full runtime range.
+Figure 14.14: Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Showing the full runtime range.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -835,7 +873,7 @@ Figure 10.14: Comparing percentage of correct predictions total over the normali
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-total-overview"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-total-overview-1.png" alt="Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.15: Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables
+Figure 14.15: Percentage of correct extracted or as missing categorized values for table extraction task on real Aktiva tables
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -852,7 +890,7 @@ Figure 10.15: Percentage of correct extracted or as missing categorized values f
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-numeric-overview"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-numeric-overview-1.png" alt="Percentage of correct extracted numeric values for table extraction task on real Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.16: Percentage of correct extracted numeric values for table extraction task on real Aktiva tables
+Figure 14.16: Percentage of correct extracted numeric values for table extraction task on real Aktiva tables
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -869,11 +907,11 @@ Figure 10.16: Percentage of correct extracted numeric values for table extractio
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-f1-overview"></span>
 <img src="_main_files/figure-html/table-extraction-llm-f1-overview-1.png" alt="F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.17: F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables
+Figure 14.17: F1 score for the missing classification if a value is missing for table extraction task on real Aktiva tables
 </p>
 </div>
-<div id="examples-from-same-company" class="section level4 hasAnchor" number="10.2.2.1">
-<h4><span class="header-section-number">10.2.2.1</span> Examples from same company<a href="figures.html#examples-from-same-company" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="examples-from-same-company" class="section level4 hasAnchor" number="14.2.2.1">
+<h4><span class="header-section-number">14.2.2.1</span> Examples from same company<a href="figures.html#examples-from-same-company" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="figures.html#cb140-1" tabindex="-1"></a>model_selection <span class="ot">&lt;-</span> <span class="fu">c</span>(model_by_size, <span class="st">&quot;gpt-4.1-nano&quot;</span>, <span class="st">&quot;gpt-5-nano&quot;</span>, <span class="st">&quot;gpt-4.1-mini&quot;</span>, <span class="st">&quot;gpt-5-mini&quot;</span>, <span class="st">&quot;gpt-4.1&quot;</span>)</span>
 <span id="cb140-2"><a href="figures.html#cb140-2" tabindex="-1"></a></span>
@@ -930,12 +968,12 @@ Figure 10.17: F1 score for the missing classification if a value is missing for 
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-total-overview-out-of-company"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-total-overview-out-of-company-1.png" alt="Comparing the overall extraction performance depending on the condition if examples from the same company can be used." width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.18: Comparing the overall extraction performance depending on the condition if examples from the same company can be used.
+Figure 14.18: Comparing the overall extraction performance depending on the condition if examples from the same company can be used.
 </p>
 </div>
 </div>
-<div id="openai-models-1" class="section level4 hasAnchor" number="10.2.2.2">
-<h4><span class="header-section-number">10.2.2.2</span> OpenAI models<a href="figures.html#openai-models-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="openai-models-1" class="section level4 hasAnchor" number="14.2.2.2">
+<h4><span class="header-section-number">14.2.2.2</span> OpenAI models<a href="figures.html#openai-models-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="figures.html#cb141-1" tabindex="-1"></a>df_overview_gpt <span class="sc">%&gt;%</span> </span>
 <span id="cb141-2"><a href="figures.html#cb141-2" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
@@ -951,7 +989,7 @@ Figure 10.18: Comparing the overall extraction performance depending on the cond
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-total-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-total-gpt-1.png" alt="Comparing the percentage of correct predictions overall for OpenAi's LLMs with some Qwen 3 models" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.19: Comparing the percentage of correct predictions overall for OpenAi’s LLMs with some Qwen 3 models
+Figure 14.19: Comparing the percentage of correct predictions overall for OpenAi’s LLMs with some Qwen 3 models
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -968,7 +1006,7 @@ Figure 10.19: Comparing the percentage of correct predictions overall for OpenAi
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-performance-numeric-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-performance-numeric-gpt-1.png" alt="Comparing the percentage of correct numeric predictions for OpenAi's LLMs with some Qwen 3 models" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.20: Comparing the percentage of correct numeric predictions for OpenAi’s LLMs with some Qwen 3 models
+Figure 14.20: Comparing the percentage of correct numeric predictions for OpenAi’s LLMs with some Qwen 3 models
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -987,12 +1025,12 @@ Figure 10.20: Comparing the percentage of correct numeric predictions for OpenAi
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-f1-gpt"></span>
 <img src="_main_files/figure-html/table-extraction-llm-f1-gpt-1.png" alt="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values." width="100%" height="90%" keepaspectratio />
 <p class="caption">
-Figure 10.21: Comparing the F1 score for predicting the missingness of a value for OpenAi’s LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.
+Figure 14.21: Comparing the F1 score for predicting the missingness of a value for OpenAi’s LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.
 </p>
 </div>
 </div>
-<div id="hypotheses-5" class="section level4 hasAnchor" number="10.2.2.3">
-<h4><span class="header-section-number">10.2.2.3</span> Hypotheses<a href="figures.html#hypotheses-5" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="hypotheses-5" class="section level4 hasAnchor" number="14.2.2.3">
+<h4><span class="header-section-number">14.2.2.3</span> Hypotheses<a href="figures.html#hypotheses-5" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="figures.html#cb144-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
 <span id="cb144-2"><a href="figures.html#cb144-2" tabindex="-1"></a>  real_table_extraction_llm_shap_plot[[i]] <span class="ot">&lt;-</span> real_table_extraction_llm_shap_plot[[i]] <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">tag_level =</span> <span class="st">&#39;new&#39;</span>)</span>
@@ -1008,13 +1046,13 @@ Figure 10.21: Comparing the F1 score for predicting the missingness of a value f
 <div class="figure"><span style="display:block;" id="fig:real-table-extraction-llm-shap-plot"></span>
 <img src="_main_files/figure-html/real-table-extraction-llm-shap-plot-1.png" alt="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.22: Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs
+Figure 14.22: Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs
 </p>
 </div>
 </div>
 </div>
-<div id="synthetic-tables-1" class="section level3 hasAnchor" number="10.2.3">
-<h3><span class="header-section-number">10.2.3</span> Synthetic tables<a href="figures.html#synthetic-tables-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="synthetic-tables-3" class="section level3 hasAnchor" number="14.2.3">
+<h3><span class="header-section-number">14.2.3</span> Synthetic tables<a href="figures.html#synthetic-tables-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="figures.html#cb145-1" tabindex="-1"></a>df_overview_synth <span class="sc">%&gt;%</span> </span>
 <span id="cb145-2"><a href="figures.html#cb145-2" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
@@ -1029,7 +1067,7 @@ Figure 10.22: Mean absolute SHAP values and beeswarm plots for real table extrac
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-llm-performance-total-overview"></span>
 <img src="_main_files/figure-html/synth-table-extraction-llm-performance-total-overview-1.png" alt="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.23: Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables
+Figure 14.23: Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1046,7 +1084,7 @@ Figure 10.23: Percentage of correct extracted or as missing categorized values f
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-llm-performance-numeric-overview"></span>
 <img src="_main_files/figure-html/synth-table-extraction-llm-performance-numeric-overview-1.png" alt="Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.24: Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables
+Figure 14.24: Percentage of correct extracted numeric values for table extraction task on synthetic Aktiva tables
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1063,11 +1101,11 @@ Figure 10.24: Percentage of correct extracted numeric values for table extractio
 <div class="figure"><span style="display:block;" id="fig:synth-table-extraction-llm-f1-overview"></span>
 <img src="_main_files/figure-html/synth-table-extraction-llm-f1-overview-1.png" alt="F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables" width="100%" height="95%" keepaspectratio />
 <p class="caption">
-Figure 10.25: F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables
+Figure 14.25: F1 score for the missing classification if a value is missing for table extraction task on synthetic Aktiva tables
 </p>
 </div>
-<div id="confidence-5" class="section level4 hasAnchor" number="10.2.3.1">
-<h4><span class="header-section-number">10.2.3.1</span> Confidence<a href="figures.html#confidence-5" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="confidence-4" class="section level4 hasAnchor" number="14.2.3.1">
+<h4><span class="header-section-number">14.2.3.1</span> Confidence<a href="figures.html#confidence-4" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="figures.html#cb148-1" tabindex="-1"></a>confidence_intervals_synth_by_format <span class="ot">&lt;-</span>  <span class="fu">readRDS</span>(<span class="st">&quot;data_storage/confidence_intervals_synth_by_format.rds&quot;</span>)</span>
 <span id="cb148-2"><a href="figures.html#cb148-2" tabindex="-1"></a></span>
@@ -1170,13 +1208,13 @@ Figure 10.25: F1 score for the missing classification if a value is missing for 
 <div class="figure"><span style="display:block;" id="fig:table-extraction-llm-confidence-lm-synth-grouped-by-input-format"></span>
 <img src="_main_files/figure-html/table-extraction-llm-confidence-lm-synth-grouped-by-input-format-1.png" alt="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task. Additionally grouped by input format." width="100%" />
 <p class="caption">
-Figure 10.26: Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task. Additionally grouped by input format.
+Figure 14.26: Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task. Additionally grouped by input format.
 </p>
 </div>
 </div>
 </div>
-<div id="hybrid-approach-1" class="section level3 hasAnchor" number="10.2.4">
-<h3><span class="header-section-number">10.2.4</span> Hybrid approach<a href="figures.html#hybrid-approach-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="hybrid-approach-3" class="section level3 hasAnchor" number="14.2.4">
+<h3><span class="header-section-number">14.2.4</span> Hybrid approach<a href="figures.html#hybrid-approach-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="figures.html#cb149-1" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
 <span id="cb149-2"><a href="figures.html#cb149-2" tabindex="-1"></a>  df_real_table_extraction_synth <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">context =</span> <span class="st">&quot;synth&quot;</span>), </span>
@@ -1198,7 +1236,7 @@ Figure 10.26: Estimating the relative frequency to find a wrong extraction resul
 <div class="figure"><span style="display:block;" id="fig:compare-real-table-extraction-by-context-type"></span>
 <img src="_main_files/figure-html/compare-real-table-extraction-by-context-type-1.png" alt="Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-context learning" width="100%" />
 <p class="caption">
-Figure 10.27: Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-context learning
+Figure 14.27: Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-context learning
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1220,7 +1258,7 @@ Figure 10.27: Comparing table extraction perfromance for real Aktiva extraction 
 <div class="figure"><span style="display:block;" id="fig:compare-effect-of-respecting-units-on-overall-performance"></span>
 <img src="_main_files/figure-html/compare-effect-of-respecting-units-on-overall-performance-1.png" alt="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units." width="100%" />
 <p class="caption">
-Figure 10.28: Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
+Figure 14.28: Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1242,7 +1280,7 @@ Figure 10.28: Comparing the effect on overall perfrormance if currency units sho
 <div class="figure"><span style="display:block;" id="fig:compare-effect-of-respecting-units-on-numeric-performance"></span>
 <img src="_main_files/figure-html/compare-effect-of-respecting-units-on-numeric-performance-1.png" alt="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units." width="100%" />
 <p class="caption">
-Figure 10.29: Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
+Figure 14.29: Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
 </p>
 </div>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
@@ -1264,10 +1302,11 @@ Figure 10.29: Comparing the effect on numeric perfrormance if currency units sho
 <div class="figure"><span style="display:block;" id="fig:compare-effect-of-respecting-units-on-NA-F1"></span>
 <img src="_main_files/figure-html/compare-effect-of-respecting-units-on-NA-F1-1.png" alt="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units." width="100%" />
 <p class="caption">
-Figure 10.30: Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
+Figure 14.30: Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.
 </p>
 </div>
 <p>real_table_extraction_llm_synth_context_shap_plot</p>
+
 </div>
 </div>
 </div>

@@ -8,6 +8,14 @@
 
 ##### Regular expression approach
 
+```{r table-extraction-regex-data-loading-discussion, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
+df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
+  filter(table_type != "real_tables") %>% mutate(
+    table_type = str_remove(table_type, "_extended")
+  )
+```
+
+
 Some possible explanations for the different performance on the extracted texts are:
 
 -   a duplicated row name[^06_discussion-1]

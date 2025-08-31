@@ -1,0 +1,318 @@
+# Appendix D - Feature effect analysis
+\phantomsection
+\ChapFrame
+
+## Regular expressions
+
+::: paragraph-start
+##### Hypotheses
+
+The formulated hypotheses have been evaluated visually using the
+dependence and beeswarm plots from the *shapviz* library based on the
+\acr{SHAP} values calculated for a random forest.
+:::
+
+```{r real-table-extraction-regex-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds')}
+results <- readRDS("data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
+
+shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
+p1a <- shap_num %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "% numeric correct") +
+  coord_cartesian(xlim = c(0, 0.225))
+p1b <- shap_num %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.35, 0.35))
+
+shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
+p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "F1 NA") +
+  coord_cartesian(xlim = c(0, 0.225))
+p2b <- shap_f1 %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.35, 0.35))
+shap_f1_sum_same_line <- shap_f1 %>% sv_dependence("sum_same_line", "T_in_previous_year")
+
+shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
+p3a <- shap_binom %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "binomial") +
+  coord_cartesian(xlim = c(0, 0.225))
+p3b <- shap_binom %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.35, 0.35))
+
+real_table_extraction_regex_shap_plot <- (p1a | p1b) /
+  (p2a | p2b) /
+  (p3a | p3b)
+```
+
+```{r synth-table-extraction-regex-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds')}
+results <- readRDS("data_storage/h2o/synth_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds")
+
+shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
+p1a <- shap_num %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "% numeric correct") +
+  coord_cartesian(xlim = c(0, 0.15))
+p1b <- shap_num %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.5, 0.5))
+
+p1c <- shap_num %>% sv_dependence("extraction_backend") +
+  labs(title = "dependence plot for extraction_backend")
+p1d <- shap_num %>% sv_dependence("header_span", color_var = "extraction_backend") +
+  labs(title = "dependence plot for header_span")
+
+shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
+p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "F1 NA") +
+  coord_cartesian(xlim = c(0, 0.15))
+p2b <- shap_f1 %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.5, 0.5))
+
+shap_f1_extraction_backend <- shap_f1 %>% sv_dependence(colnames(.$X), "extraction_backend")
+
+shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
+p3a <- shap_binom %>% sv_importance(show_numbers = TRUE) +
+  labs(title = "binomial") +
+  coord_cartesian(xlim = c(0, 0.15))
+p3b <- shap_binom %>% sv_importance(kind = "beeswarm") +
+  coord_cartesian(xlim = c(-0.5, 0.5))
+
+synth_table_extraction_regex_shap_plot <- (p1a | p1b) /
+  (p2a | p2b) /
+  (p3a | p3b)
+
+synth_table_extraction_regex_shap_num_details_plot <- p1d | p1c
+```
+
+::: paragraph-start
+###### Real dataset
+
+The formulated hypotheses have been evaluated visually using the
+dependence and beeswarm plots from the shapviz library based on the
+\acr{SHAP} values calculated with a random forest.
+:::
+
+Table
+\@ref(tab:hypotheses-and-results-real-table-extraction-regex-table)
+shows in the first column the predictors included in the random forests.
+Subsequent groups of two columns show the hypotheses and the found
+effects of those predictors for two aggregated measures (F1 score and
+percentage of correct numeric predictions) and one value based measure
+(binomial correctness rating).
+
+Predictors that are marked with an asterisk only have five or less
+representatives. Thus, those results are not reliable. Bold set
+hypotheses show the predictors, that showed the highest mean \acr{SHAP}
+values. For all measures but the binomial this means the effect is at
+least 0.025. For the binomial measure the effect of a predictor with
+bold hypothesis is at least 0.05. Results with red text highlight
+hypotheses that are not supported by the visual evaluation.
+
+Table
+\@ref(tab:hypotheses-and-results-real-table-extraction-regex-table)
+shows many red results, meaning the corresponding hypothesis is getting
+no support. Since most of these findings show only minor effect strength
+we don't interpret them as strongly challenging those hypotheses. Only
+three findings regarding the F1 score show a strong effect and findings
+that do not align with our hypotheses. First, it seems, that finding a
+sum in the same row, has a negative effect of finding any valid number
+there. Second, it has negative effect, if the previous year column is
+given as *T€*. Third, it has negative effect, if the columns are
+visually separated.
+
+see Figure \@ref(fig:real-table-extraction-regex-shap-plot)
+
+```{r hypotheses-and-results-real-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the regular expression approach.")
+```
+
+::: paragraph-start
+###### Synthetic dataset
+
+Table
+\@ref(tab:hypotheses-and-results-synth-table-extraction-regex-table)
+shows, many red results as well, meaning the corresponding hypothesis is
+getting no support. We find more predictors with a strong effect
+compared to the real **Aktiva** table extraction task. The results are
+based on 24_576 extracted tables and the \acr{SHAP} values have been
+calculated on 2_000 examples each.
+:::
+
+Contrary to our assumption, does the *extraction_backend* have a strong
+effect on all measures. We find, that *pdfium* is struggling with some
+of the table characteristics while *pymupdf* is not influenced by them.
+Figure \@ref(fig:synth-table-extraction-regex-shap-num-details-plot) A
+shows this exemplary for the characteristic *header_span*. An example
+for a erroneous text extraction with *pdfium* can be found in section
+\@ref(#regex-extraction-mistakes). Actually, all results that are marked
+with an asterisk are showing this effect if *pdfium* is used as
+extraction backend. This can be inspected in Figure
+\@ref(fig:synth-table-extraction-regex-dependence-plot-backend).
+
+Furthermore, does the number of columns is have a positive effect
+overall. Figure
+\@ref(fig:synth-table-extraction-regex-shap-num-details-plot) B shows,
+that this effect has inverse direction for the two libraries.
+
+It might be worth noting, that the row for *Anteile an verbundenen
+Unternehmen* was rated to have a clear negative effect on the chance to
+extract the correct value.
+
+The question, if visual separation of columns is having an effect, as
+found for the real data, is not studied here, because in the synthetic
+tables all columns are visually separated. But this could be
+investigated in future work. It is possible, that the visual separation
+is causing the faulty text extractions of *pdfium*.
+
+```{r hypotheses-and-results-synth-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the regular expression approach.")
+```
+
+```{r synth-table-extraction-regex-shap-num-details-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=8, fig.height=4, dev=std_dev, fig.cap="Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data for the percentage of correct numeric predictions."}
+synth_table_extraction_regex_shap_num_details_plot + 
+  plot_annotation(tag_levels = 'A')
+```
+
+## Real tables
+
+::: paragraph-start
+##### Hypotheses
+
+The formulated hypotheses have been evaluated visually using the
+dependence and beeswarm plots from the shapviz library based on the
+\acr{SHAP} values calculated with a random forest.
+:::
+
+```{r real-table-extraction-llm-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds')}
+results <- readRDS("data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
+
+shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
+p1a <- shap_num %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "% numeric correct") +
+  coord_cartesian(xlim = c(0, 0.12))
+p1b <- shap_num %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+p1c <- shap_num %>% sv_dependence("T_in_year", "vis_seperated_rows")
+p1d <- shap_num %>% sv_dependence("vis_seperated_rows", "T_in_year")
+
+shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
+p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "F1 NA") +
+  coord_cartesian(xlim = c(0, 0.12))
+p2b <- shap_f1 %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
+p3a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "binomial") +
+  coord_cartesian(xlim = c(0, 0.12))
+p3b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$confidence$shap_values$rf %>% convert_shap_x()
+p4a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "confidence") +
+  coord_cartesian(xlim = c(0, 0.12))
+p4b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+real_table_extraction_llm_shap_plot <- (p1a | p1b) /
+  (p2a | p2b) /
+  (p3a | p3b) /
+  (p4a | p4b)
+
+real_table_extraction_llm_shap_num_details_plot <- p1c | p1d
+```
+
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-llm-table)
+shows in the first column the predictors included in the random forests.
+Subsequent groups of two columns show the hypotheses and the found
+effects of those predictors for two aggregated measures (F1 score and
+percentage of correct numeric predictions) and two value based measures
+(binomial correctness rating and reported confidence for the
+prediction).
+
+Predictors that are marked with an asterix only have five or less
+representatives. Thus, those results are not reliable. Bold set
+hypotheses show the predictors, that showed the highest mean \acr{SHAP}
+values. For all measures but the binomial this means the effect is at
+least 0.025. For the binomial measure the effect of a predictor with
+bold hypothesis is at least 0.05. Results with red text highlight
+hypotheses that are not supported by the visual evaluation.
+
+For most measures the model and method related predictors
+(*model_family*, *parameter_count*, *method_family* and *n_examples*)
+show the strongest effects. Worth mentioning is, that *method_family*
+and *n_examples* show no strong effect on the reported confidence score.
+From the table related characteristics most strong effects show the
+hypothesized direction. Not predicted was the negative effect of label
+length on the reported confidence score. The visual separation of
+columns and rows shows small effects. We find no support for a negative
+effect of the fact that the **Passiva** table is on the same page as the
+**Aktiva** table.
+
+see Figure \@ref(fig:real-table-extraction-llm-shap-plot)
+
+```{r hypotheses-and-results-real-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables the LLM approach.")
+```
+
+## Hybrid approach
+
+::: paragraph-start
+##### Hypotheses
+
+Table
+\@ref(tab:hypotheses-and-results-real-table-extraction-llm-synth-context-table)
+shows only one unsupported hypothesis for a predictor with a strong
+effect: *method_family*. Figure
+\@ref(fig:static-example-best-dependence-plot) shows the dependence plot
+for the this predictor. The prompting strategy *static_example* shows
+the highest \acr{SHAP} values. This is surprising, because the the
+*static example* is equivalent to providing a single random example.
+:::
+
+```{r real-table-extraction-llm-synth-context-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds')}
+results <- readRDS("data_storage/h2o/real_table_extraction_synth_context_h2o_results_sample_50000_shap_2000_NA_recoded_extended.rds")
+
+shap_num <- results$perc_numeric$shap_values$rf %>% convert_shap_x()
+p1a <- shap_num %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "% numeric correct") +
+  coord_cartesian(xlim = c(0, 0.12))
+p1b <- shap_num %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+p1c <- shap_num %>% sv_dependence("method_family")
+# p1d <- shap_num %>% sv_dependence("vis_seperated_rows", "T_in_year")
+
+shap_f1 <- results$NA_F1$shap_values$rf %>% convert_shap_x()
+p2a <- shap_f1 %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "F1 NA") +
+  coord_cartesian(xlim = c(0, 0.12))
+p2b <- shap_f1 %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$binomial$shap_values$rf %>% convert_shap_x()
+p3a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "binomial") +
+  coord_cartesian(xlim = c(0, 0.12))
+p3b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+shap_binom <- results$confidence$shap_values$rf %>% convert_shap_x()
+p4a <- shap_binom %>% sv_importance(show_numbers = TRUE, max_display = 25) +
+  labs(title = "confidence") +
+  coord_cartesian(xlim = c(0, 0.12))
+p4b <- shap_binom %>% sv_importance(kind = "beeswarm", max_display = 25) +
+  coord_cartesian(xlim = c(-0.5, 0.35))
+
+real_table_extraction_llm_synth_context_shap_plot <- (p1a | p1b) /
+  (p2a | p2b) /
+  (p3a | p3b) /
+  (p4a | p4b)
+
+real_table_extraction_llm_synth_context_shap_num_details_plot <- p1c # | p1d
+```
+
+```{r hypotheses-and-results-real-table-extraction-llm-synth-context-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_synth_context_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the hybrid LLM approach.")
+```
+
+```{r static-example-best-dependence-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
+real_table_extraction_llm_synth_context_shap_num_details_plot
+```

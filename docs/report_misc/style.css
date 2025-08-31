@@ -106,6 +106,15 @@ div.datatables {
   margin-bottom: 2em;
 }
 
+div.datatables th[colspan]:not([colspan="1"]) {
+  text-align: center;
+  border-right: 2px solid #ccc !important;
+}
+
+div.datatables th[colspan]:not([colspan="1"]):last-child {
+  border-right: none !important;
+}
+
 div.paragraph-start {
     margin-block: 0.85em;
     /* margin-left: 3px;

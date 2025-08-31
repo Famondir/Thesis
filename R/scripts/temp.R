@@ -486,7 +486,7 @@ top_k_wide
     )
 )
 
-####
+#### llm usage table extraction csv ####
 
 # df_empty <- readRDS("data_storage/table_extraction_regex.rds") %>% slice_head(n=1) %>% 
 #   pull(predictions) %>% .[[1]]
@@ -494,4 +494,94 @@ top_k_wide
 # df_empty$previous_year_result <- NA
 # df_empty
 
+norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
+  mutate(
+    model_name = model_name %>% str_replace("/", "_")
+  )
+norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
 
+
+df_real_table_extraction %>% select(model_family, model) %>% 
+  mutate(task = "real tables") %>% 
+  bind_rows(
+    df_synth_table_extraction %>% select(model_family, model) %>% 
+      mutate(task = "synth tables") 
+  ) %>% 
+  bind_rows(
+    df_real_table_extraction_synth %>% select(model_family, model) %>% 
+      mutate(task = "hybrid")
+  ) %>% 
+  bind_rows(
+    df_real_table_extraction_azure %>% select(model_family, model) %>%
+      mutate(task = "real tables")
+  ) %>%
+  bind_rows(
+    df_binary %>% select(model_family, model) %>%
+      mutate(task = "binary") %>% mutate(
+        # model_family = sub("_.*", "", model),
+        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
+        model = str_remove(model, "-0-9-1")
+      )
+  ) %>%
+  bind_rows(
+    df_multi %>% select(model_family, model) %>%
+      mutate(task = "multi-class") %>% mutate(
+        # model_family = sub("_.*", "", model),
+        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
+        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
+        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
+        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
+        model = str_remove(model, "-0-9-1")
+      )
+  ) %>%
+  unique() %>% 
+  mutate(used = "X") %>% 
+  left_join(
+    norm_factors_few_examples %>% 
+      mutate(model = gsub("^[^_]+_", "", model_name)) %>% 
+      select(model, parameter_count),
+  ) %>% 
+  pivot_wider(names_from = task, values_from = used) %>% 
+  write_csv("data_storage/model_usage_extraction.csv")
+
+
+df <- read_csv("data_storage/model_usage_extraction.csv") %>% 
+  arrange(tolower(model_family), parameter_count) %>% 
+  mutate_if(is.character, ~if_else(is.na(.), "", .))
+
+alignment="lrccccc"
+caption="Overview of benchmarked LLMs for the extraction tasks."
+col_idx = 1
+row_group_col = 1
+row_groups <- generate_row_groups(df, row_group_col = col_idx)
+# df <- df %>% ungroup() %>% select(-col_idx)
+kbl_out <- kbl(
+  df, escape = FALSE, format = "latex", align = alignment, caption = caption, booktabs = T
+) %>% kable_styling()
+
+for (grp in row_groups) {
+  kbl_out <- kbl_out %>% pack_rows(grp$name, grp$start, grp$end, label_row_css = grp$css)
+}
+kbl_out
+
+colgroups = c(" " = 2, "information extraction" = 3, "page identification" = 2)
+kbl_out %>% add_header_above(colgroups)
+
+sketch = htmltools::withTags(table(
+  class = 'display',
+  thead(
+    tr(
+      th(rowspan = 2, 'Species'),
+      th(colspan = 2, 'Sepal'),
+      th(colspan = 2, 'Petal')
+    ),
+    tr(
+      lapply(rep(c('Length', 'Width'), 2), th)
+    )
+  )
+))
+print(sketch)
+datatable(iris[1:20, c(5, 1:4)], container = sketch, rownames = FALSE)

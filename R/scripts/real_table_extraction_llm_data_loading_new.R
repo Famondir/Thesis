@@ -985,8 +985,6 @@ df_azure_txt <- bind_rows(meta_list_llm) %>% select(!starts_with("changed_values
 
 ##### combine #####
 
-library(ggh4x)
-
 df_qwen235 <- bind_rows(
   df_docling_md,
   df_docling_txt,
@@ -1001,6 +999,10 @@ df_qwen235 <- bind_rows(
 ) %>% filter(company != "MEAB GmbH")
 
 df_qwen235 %>% saveRDS("data_storage/table_extraction_qwen3_235B_multiple_input_formats")
+
+###### plotting ######
+
+library(ggh4x)
 
 table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% 
   mutate(
@@ -1057,13 +1059,13 @@ df_temp <- df_best %>%
     ) %>% 
   filter(str_detect(name, "false"))
   
-df_temp %>% 
-  group_by(company) %>% 
-  mutate(value = sum(value)/n()) %>% 
+df_temp %>%
+  group_by(company) %>%
+  mutate(value_per_report = sum(value)/n()) %>%
   ggplot() +
-  geom_tile(aes(y = truth, x = predicted, fill = value)) +
+  geom_tile(aes(y = truth, x = predicted, fill = value_per_report)) +
   geom_text(
-    data = . %>% select(name, truth, predicted) %>% unique(), 
+    data = . %>% select(name, truth, predicted) %>% unique(),
     aes(label = name, y = truth, x = predicted), color = "white"
     ) +
   facet_wrap(~company)

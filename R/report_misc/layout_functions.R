@@ -1,4 +1,13 @@
-render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom = "tiprfl") {
+render_table <- function(
+  df, 
+  alignment = NULL, 
+  caption = NULL, 
+  ref = NULL, 
+  dom = "tiprfl",
+  row_groups = NULL,      # For LaTeX: list(name, start, end, ...)
+  row_group_col = NULL,    # For HTML/DT: column index or name to group by
+  colgroups = NULL
+) {
   # Replace **x** with <b>x</b> for HTML and \textbf{x} for LaTeX
   df <- df %>% bold_value_in_table()
   
@@ -18,12 +27,40 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom =
     }
   
     df <- df %>%
-      mutate(across(everything(), ~gsub(latex_sub, "\\\\\\1", .))) %>%
       setNames(gsub(latex_sub, "\\\\\\1", colnames(.))
     ) # Escape LaTeX special characters in column names
   }
 
   if (knitr::is_html_output()) {
+    sketch = NULL
+
+    # If colgroups provided, create a sketch with the colgroups
+    if(!is.null(colgroups)) {
+      # Expand the " " entry by its value, keep other named entries as is
+      if (" " %in% names(colgroups)) {
+        # Replace the " " entry with the appropriate number of columns, using names from colnames(df)
+        n_blank <- colgroups[" "]+if_else(is.null(row_group_col), 0 , 1)
+        blank_names <- colnames(df)[seq_len(n_blank)]
+        other_names <- names(colgroups)[names(colgroups) != " "]
+        colgroups <- c(setNames(rep(1, n_blank), blank_names), colgroups[other_names])
+        skipped_names <- colnames(df)[-(seq_along(blank_names))]
+      }
+      
+      sketch = htmltools::withTags(table(
+        class = 'display',
+        thead(
+            tr(
+                lapply(seq_along(colgroups), function(i) {
+                  th(colspan = unname(colgroups)[i], names(colgroups)[i], rowspan = if_else(unname(colgroups)[i] == 1, 2, 1))
+                })
+            ),
+            tr(
+                lapply(skipped_names, th)
+            )
+        )
+      ))
+    }
+
     # Set caption
     if (!is.null(caption) & !is.null(ref)) {
       cat("<table>",paste0("<caption>", "(#tab:", ref, ")", caption, "</caption>"),"</table>", sep ="\n")
@@ -32,38 +69,92 @@ render_table <- function(df, alignment = NULL, caption = NULL, ref = NULL, dom =
     df <- df %>% mutate(across(where(is.character), ~str_replace_all(., "_", "_<wbr>"))) %>% 
       setNames(str_replace_all(colnames(.), "_", " "))
     
-    # Set column alignment for DT
+    dt_options <- list(pageLength = 10, scrollX = TRUE, dom = dom)
+    dt_extensions <- NULL
+    if (!is.null(row_group_col)) {
+      # If column name, get index
+      if (is.character(row_group_col)) {
+        col_idx <- which(names(df) == row_group_col)
+      } else {
+        col_idx <- row_group_col
+      }
+      col_idx <- col_idx-if_else(is.null(colgroups), 0 , 1)
+      dt_options$rowGroup <- list(dataSrc = col_idx)
+      dt_options$ordering <- FALSE
+      dt_options$columnDefs <- list(list(visible = FALSE, targets = col_idx))
+      dt_extensions <- 'RowGroup'
+    }
     if (!is.null(alignment)) {
       dt_align <- get_dt_align(alignment)
       col_defs <- lapply(seq_along(dt_align), function(i) {
         list(targets = i - 1, className = paste0('dt-', dt_align[i]))
       })
-      datatable(df, escape = FALSE, options = list(pageLength = 10, columnDefs = col_defs, scrollX = TRUE, dom = dom))
+      dt_options$columnDefs <- c(dt_options$columnDefs, col_defs)
+    }
+    # If no colgroups, just use default datatable
+    if (is.null(sketch)) {
+      datatable(df, escape = FALSE, options = dt_options, extensions = if (is.null(dt_extensions)) character(0) else dt_extensions)
     } else {
-      datatable(df, escape = FALSE, options = list(pageLength = 10, scrollX = TRUE, dom = dom))
+      datatable(df, escape = FALSE, options = dt_options, extensions = if (is.null(dt_extensions)) character(0) else dt_extensions, container = sketch, rownames = FALSE)
     }
   } else if (knitr::is_latex_output()) {
-    kbl(
-      df, escape = FALSE, format = "latex", align = alignment, caption = caption
-      ) %>%
-      kable_styling()
+    # Hide the row_group_col column if specified (by name or index)
+    if (!is.null(row_group_col)) {
+      generate_row_groups <- function(df, row_group_col, css = "background-color: #666; color: #fff;") {
+        # Get the column index if a name is given
+        if (is.character(row_group_col)) {
+          col_idx <- which(names(df) == row_group_col)
+        } else {
+          col_idx <- row_group_col
+        }
+        group_vals <- df[[col_idx]]
+        rle_groups <- rle(as.character(group_vals))
+        ends <- cumsum(rle_groups$lengths)
+        starts <- c(1, head(ends + 1, -1))
+        mapply(function(name, start, end) {
+          list(name = name, start = start, end = end, css = css)
+        }, rle_groups$values, starts, ends, SIMPLIFY = FALSE)
+      }
+
+      col_idx <- if (is.character(row_group_col)) {
+        which(names(df) == row_group_col)
+      } else {
+        row_group_col
+      }
+      row_groups <- generate_row_groups(df, row_group_col = col_idx)
+      df <- df %>% ungroup() %>% select(-col_idx)
+    }
+    kbl_out <- kbl(
+      df, escape = FALSE, format = "latex", align = alignment, caption = caption, booktabs = T
+    ) %>% kable_styling(latex_options = "striped")
+    if (!is.null(row_groups)) {
+      for (grp in row_groups) {
+        kbl_out <- kbl_out %>% pack_rows(grp$name, grp$start, grp$end, label_row_css = grp$css)
+      }
+    }
+    if (!is.null(colgroups)) {
+      kbl_out <- kbl_out %>% add_header_above(colgroups)
+    }
+    kbl_out
   } else {
-    knitr::kable(
-      df, align = alignment#, caption = caption
-      )
+    knitr::kable(df, align = alignment)
   }
 }
 
 bold_value_in_table <- function(df) {
+  latex_sub <- "([%&_#{}])"
+
   # Replace **x** with <b>x</b> for HTML and \textbf{x} for LaTeX
-  df <- df %>%
-    mutate_all(~ if (knitr::is_html_output()) {
-      gsub("\\*\\*(.*?)\\*\\*", "<b>\\1</b>", .)
-    } else if (knitr::is_latex_output()) {
-      gsub("\\*\\*(.*?)\\*\\*", "\\\\textbf{\\1}", .)
-    } else {
-      .
-    })
+  if (knitr::is_html_output()) {
+    df <- df %>%
+      mutate_all(~ gsub("\\*\\*(.*?)\\*\\*", "<b>\\1</b>", .))
+  } else if (knitr::is_latex_output()) {
+    df <- df %>%
+      mutate_all(~ gsub(latex_sub, "\\\\\\1", .)) %>% # Escape LaTeX special characters
+      mutate_all(~ gsub("\\*\\*(.*?)\\*\\*", "\\\\textbf{\\1}", .))
+  } else {
+    df <- df
+  }
 }
 
 create_hypotheses_table <- function(html_path, caption, detect="\\*$") {
@@ -111,7 +202,8 @@ create_hypotheses_table <- function(html_path, caption, detect="\\*$") {
     cells <- xml_find_all(row, ".//td|.//th")
     map_dfr(cells, extract_cell_info)
   })
-  
+
+    
   # Find which cells are bold (excluding the first column)
   bold_matrix <- sapply(cell_info_list, function(row) row$bold) %>% t()
   # Set first column to FALSE (never bold)

@@ -11,6 +11,8 @@ output:
   # bookdown::pdf_book:
   bookdown::pdf_document2:
     # latex_engine: xelatex
+    # extra_dependencies: ["float"]
+    extra_dependencies: ["flafter"]
     pandoc_args: 
       # - --lua-filter=report_misc/acrfull.lua
       - !expr acronymsdown::add_filter()
@@ -83,6 +85,7 @@ library(ggplot2)
 library(patchwork)
 library(ggh4x)
 library(PRROC)
+library(yardstick)
 ```
 
 ```{r load_layout_functions, include=FALSE}
@@ -118,11 +121,19 @@ Gegenstand dieser Arbeit ist ein Benchmark zur Informationsextraktion aus PDF-Da
 
 ## Reading advices {.unlisted .unnumbered}
 
-The author recommends to read the thesis in its digital gitbook version instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution[^index-1]. The more, the merrier.
+The author recommends to read the thesis in its [digital gitbook version](https://famondir.github.io/Thesis/) instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution[^index-1]. The more, the merrier.
 
 [^index-1]: Most of the time the thesis was inspected at a third of the authors 42" screen with 4k resolution. For inspecting the large overview graphics it is a very handy tool the author recommends every data scientist or software developer.
 
 \huge [😊]{style="font-size: 1.5em;"} \normalsize
+
+## Declaration of the Use of Artificial Intelligence {.unlisted .unnumbered}
+
+We use Github Copilot in VSCode for coding assistance. Mostly the GPT-4.1 is used. Sometimes Claude Sonnet 4.
+
+We use perplexity.ai in our literature research process.
+
+We use [] for 
 
 ## Goals and Learnings {.unlisted .unnumbered}
 

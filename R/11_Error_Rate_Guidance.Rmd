@@ -1,0 +1,904 @@
+# Appendix C - Error rate guidance report
+\phantomsection
+\ChapFrame
+
+(ref:error-rate-guidance-intro-text)
+
+The formula for the confidence score is given in Equation \@ref(eq:confidence).
+
+## Page identification
+
+### Binary classification
+
+```{r confidence-match-plot-mistral-binary-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
+target_type <- "Aktiva"
+
+df_filtered <- df_binary %>% filter(
+  classification_type == target_type, n_examples<=3
+  ) %>%
+  arrange(desc(f1_score))
+
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, target_type)
+  )
+
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+```
+
+We investigate the relation between the reported confidence for an answer
+and its correctness, to check if it is possible to inform humans in the
+loop about results they should double check and which results they can
+trust. The \acr{LLM} just returns one
+prediction and its confidence[^05_results-16] for the binary classification task. We calculate its confidence as $confidence = exp(logprob)$, if the answer is *yes*. And  we calculate its confidence as $confidence = 1-exp(logprob)$, if the the answer is *no*,
+
+[^05_results-16]: The model could be forced to return multiple answers,
+    but it was not. The confidence score is given as log probability.
+    The exponential function was applied to show the results on the more
+    common scale of 0 to 1.
+
+Figure \@ref(fig:confidence-match-plot-mistral-binary) shows the
+distribution of reported confidence score for the binary classification
+with target type **Aktiva** for all table types grouped by their
+correctness for Ministral-8B-Instruct-2410. One can see that the predictions are very accurate making just
+`r sum(df_temp$match==FALSE)` mistakes for `r length(df_temp$match)`
+predictions. 
+
+The reported confidence for answer *yes* is showing a wide
+spread from around 0.25 to 1.0. This is true for the answer *no* as
+well. Most wrong decisions are made for responses that have a reported
+confidence in the range from 0.25 to 0.75. But there are more correct
+answers in this range as well. It never misclassifies **GuV** or
+**Passiva**[^05_results-17] as **Aktiva**. But it with shows some not
+recalled **Aktiva** tables and is predicting some of the pages of
+majority class, with not further described content and structure, as
+**Aktiva**.
+
+[^05_results-17]: There was a single prediction where \acr{LLM} predicts
+    **Aktiva** with high confidence, when the truth is **Passiva**
+    instead. Because Qwen was showing the same wrong prediction for one
+    **Passiva** table, I double checked the ground truth. I found, that
+    the page shows **Aktiva** and **Passiva** simultaneously and was not
+    correct codified. This was not the only time, where a mistake in the
+    gold truth was found, by examining potential \acr{LLM} mistakes.
+
+```{r confidence-match-plot-mistral-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Mistral-8B-Instruct-2410."}
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim=c(0,1))
+```
+
+```{r confidence-match-plot-qwen-binary-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
+df_filtered <- df_binary %>% filter(classification_type == "Aktiva", model_family=="Qwen") %>% 
+  arrange(desc(f1_score))
+
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+```
+
+This is different for models of most other model families. Figure
+\@ref(fig:confidence-match-plot-qwen-binary) shows, that
+`r model_name_best_f1_aktiva` returns always high confidence scores,
+even when it is wrong. The model shows perfect recall but its precision
+is worse than the precision of the Mistral model.
+
+```{r confidence-match-plot-qwen-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confidence score for the Aktiva classification task grouped by table type and correctness for Qwen-2.5-32B-Instruct."}
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva)
+```
+
+```{r def-micro-pr-function-binary, echo=echo_flag, warning=warning_flag, message=message_flag}
+library(yardstick)
+
+calc_flipped_conf_all_types <- function(df, model_name, method_name) {
+  l_temp <- list()
+  # browser()
+  
+  for (target in c('Aktiva', 'GuV', 'Passiva')) {
+    # t <- "Aktiva"
+    # df_filtered <- df %>% filter(
+    #   classification_type == t,
+    #   n_examples <= 3,
+    #   loop == 0) %>% 
+    #   arrange(desc(f1_score))
+    # model_name_best_f1_aktiva <- df_filtered[model_rank, "model"]
+    # method_best_f1_aktiva <- df_filtered[model_rank, "method"]
+    
+    df_filtered <- df %>%
+      filter(
+        classification_type == target,
+        model == model_name,
+        method == method_name,
+        loop == 0
+      ) %>% 
+      arrange(desc(f1_score))
+    
+    df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+    
+    df_flipped_score <- df_temp %>% 
+      mutate(
+        confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+        target = target
+      )
+    l_temp[target] <- list(df_flipped_score)
+  }
+  
+  list(df = bind_rows(l_temp), model = model_name, method = method_name)
+}
+
+plot_pr_double_curve <- function(l, selected_type, x_stuff = FALSE) {
+  # browser()
+  df_temp2 <- l$df %>% filter(target == selected_type) %>% 
+    mutate(type = if_else(type == selected_type, type, "no")) %>% 
+    mutate(type = factor(type, levels = c(selected_type, "no")))
+  # pr_obj <- pr.curve(scores.class0 = df_temp2$confidence_score[df_temp2$match == 1],
+  #                    scores.class1 = df_temp2$confidence_score[df_temp2$match == 0],
+  #                    curve = TRUE)
+  
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% filter(threshold<=1) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1_row_high_recall <- pr_df %>% 
+    filter(recall > 0.999, precision > 0.1) %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_F1_high_recall <- best_F1_row_high_recall %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  best_threshold_high_recall <- best_F1_row_high_recall  %>% pull(threshold)
+  best_precision_high_recall <- best_F1_row_high_recall  %>% pull(precision)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      subtitle = paste0("Precision-Recall Curve for ", selected_type, " (AUC = ", pr_auc, ")"),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
+    )
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  if (x_stuff == FALSE) {
+    g1 <- g1 + guides(color = FALSE) +
+      labs(x = element_blank())
+    
+    g2 <- g2 + guides(color = FALSE) +
+      labs(x = element_blank())
+  }
+  
+  combined_plot <- g1 + g2
+  combined_plot + plot_annotation(caption = paste0(
+    'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
+    'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
+}
+```
+
+Figure \@ref(fig:micro-pr-curve-llm-binary-1) shows the
+precision-recall-curve for the best performing model twice for each
+target type. On the left plots the line color represents the threshold
+score one could use to decide when to accept a response as it is. On the
+right plots the line color is showing the F1 score that results with a
+chosen threshold.
+
+The \acr{AUC} value is lowest for **Aktiva**. Here the F1 score is
+highest for a threshold value of 0.73. This prevents to classify the
+pages of type *other* to get classified as **Aktiva**. If it is required
+to have a very high recall value a threshold of 0.44 should be chosen.
+
+The precision-recall-curve for **Passiva** is very similar but there is
+a step close to the recall value of 1.0. This has the effect that for a
+a guaranteed high recall a very low precision (0.24) and F1 (0.38) has
+to be accepted[^05_results-18].
+
+[^05_results-18]: Thus, a human has in average to check four pages and
+    select the correct **Passiva** page among them.
+
+The shape of the precision-recall-curve for **GuV** almost perfectly
+reaches the top right corner. The highest F1 score is found with a
+threshold value of .56. With a threshold value of 0.5 a very high recall
+is guaranteed and the F1 score is just a little lower.
+
+```{r micro-pr-curve-llm-binary-1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for the best performing model."}
+model_name <- "Ministral-8B-Instruct-2410"
+method_name <- "3_rag_examples"
+
+df_temp_mistral <- df_binary %>% calc_flipped_conf_all_types(model_name, method_name)
+p_aktiva <- df_temp_mistral %>% plot_pr_double_curve("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_mistral %>% plot_pr_double_curve("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_mistral %>% plot_pr_double_curve("GuV", x_stuff = TRUE)
+
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model_name, " with ", method_name))
+```
+
+Figure \@ref(fig:table-identification-llm-confidence) summarizes the
+relation between reported confidence and correctness of the
+classification for all target types and compares it among the best
+performing model-strategy combinations for Ministral-8B-Instruct-2410
+and Qwen3-8B. One can see, that the reported confidence for correct and
+incorrect classifications are separable in most cases for Mistral-8B.
+This separation is worse for Qwen3-8B and worst for target type
+**Passiva**.
+
+Figure \@ref(fig:table-identification-llm-confidence-lm) shows, that for
+Ministral-8B values with a confidence of 0.7 and more, a human don't has
+to double check the classification for target type **GuV**. This
+interval is smallest for **Passiva** where only confidences above 0.9
+can be fully trusted. These empirical intervals might shrink, once more
+data is evaluated. If one is less strict and accepts misclassifiaction
+rates of 1 % the found interval for **Passiva** starts at 0.8 and is
+probably less depended on the sample evaluated. The percentage of
+predictions that can be trusted without risk is greater than 93 % even
+for target type **Passiva**.
+
+For Qwen3-8B we find almost no range without any wrong classifications.
+For **GuV** this range includes 35 % of all predictions. The ranges that
+allow for 1 % of wrong classifications cover 57 % of all predictions at
+least.
+
+```{r table-identification-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+confidence_vs_truth_binary <- df_binary %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-32B")) %>% 
+  group_by(method, model) %>% mutate(
+    mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
+  ) %>% group_by(model, classification_type) %>% 
+  arrange(desc(mean_f1)) %>% 
+  slice_max(mean_f1, n = 1, with_ties = FALSE) %>% 
+  select(-filepath) %>% 
+  unnest(predictions) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    # truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_vs_truth_binary %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence_score, fill = classification_type), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_nested(~ model + classification_type)
+```
+
+```{r table-identification-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals"}
+confidence_vs_truth_binary %>% rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, classification_type, model) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(classification_type, model) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  ) %>%
+  ggplot() +
+  geom_col(aes(x = conf_center, y = perc, color = chance_low, fill = chance_false_interval), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_grid(classification_type ~ model)
+
+```
+
+Discussion:
+
+-   Could be more efficient to predict "is any of interest" and then
+    which type, because dataset is highly imbalanced.
+
+-   Why takes n_rag_examples so much longer?
+
+-   **Aktiva** and **Passiva** sometimes on the same page and more
+    similar than **GuV**?
+
+-   Recall = 1 for human in the loop (looking at selection of pages that
+    could be target and none else, if the number of wrong pages are few
+    =\> what says F1 with recall 1?)
+
+-   Confidence range to error rate
+
+### Multi-class classification
+
+::: paragraph-start
+##### Confidence
+
+Figure \@ref(fig:confidence-match-plot-llama-multi) shows the reported
+confidence scores for the predictions for the best performing
+model-strategy combination, Llama 4 Scout with *3_rag_examples*. It is
+confident for most correct predictions and only misclassifies some of
+the pages with unknown characteristics. The target types are all
+recognized correct. All confidences are greater than 0.5. Probably
+because there is no case where the confidences for all possible classes
+is below 0.5 and there always is a most probable class. It would have
+been interesting to use the classification framework of \acr{vllm} to
+get predictions for all competing classes. But this requires special
+trained models with pooling capability[^05_results-19].
+:::
+
+[^05_results-19]: It might be possible to request the n most probable
+    answers to get confidence scores for all different predictions. But
+    this was not investigated.
+
+```{r confidence-match-plot-llama-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the reported confidence scores for all predictions of Llama 4 Scout grouped by the true target type. Errors have only been made within the majority class."}
+df_filtered <- df_selected %>%
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim = c(0,1))
+```
+
+Figure \@ref(fig:confidence-match-plot-mistral-multi) shows the reported
+confidence scores for the predictions for the best performing
+model-strategy combination among the small models limited to
+*n_examples* with n smaller five[^05_results-20],
+Ministral-8B-Instruct-2410 with *3_rag_examples*. One can see there are
+some wrong classifications for the minority classes as well. Especially,
+the **Passiva** target type is often classified as *other*. This is
+problematic for a smooth workflow (see discussion chapter?)
+
+[^05_results-20]: The best performance results with
+    *top_11_rag_examples* but the plot was less interesting and its F1
+    score was not listed in Table
+    \@ref(tab:table-metrics-llm-page-identification-multi-small-models).
+
+```{r confidence-match-plot-mistral-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the reported confidence scores for all predictions of Ministral 8B grouped by the true target type. Errors have only been made within the majority class."}
+df_filtered <- df_selected %>% filter(
+  model == "Ministral-8B-Instruct-2410", 
+  method == "3_rag_examples"
+  ) %>% 
+  arrange(desc(f1_score))
+df_temp <- df_filtered[1,"predictions"][[1]][[1]] %>% as_tibble()
+df_flipped_score <- df_temp %>% 
+  mutate(
+    confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score),
+    is_aktiva = str_detect(type, "Aktiva")
+  )
+model_name_best_f1_aktiva <- df_filtered[1, "model"]
+method__best_f1_aktiva <- df_filtered[1, "method"]
+
+df_flipped_score %>% 
+  ggplot() +
+  geom_boxplot(aes(x = predicted_type, y = confidence_score)) +
+  geom_jitter(aes(x = predicted_type, y = confidence_score, color = match), alpha = .3, height = 0) +
+  facet_wrap(~type) +
+  labs(title = model_name_best_f1_aktiva,
+       subtitle = method__best_f1_aktiva) +
+  coord_cartesian(ylim = c(0,1))
+```
+
+```{r def-micro-pr-function-multi, echo=echo_flag, warning=warning_flag, message=message_flag}
+plot_pr_double_curve_multi <- function(df, selected_type, x_stuff = FALSE) {
+  df_temp2 <- df %>% 
+    filter(loop == 0) %>% select(-filepath) %>% unnest(predictions) %>% 
+    select(type, predicted_type, confidence_score) %>% 
+    mutate(
+      type = if_else(type == selected_type, type, "no"),
+      predicted_type = if_else(predicted_type == selected_type, predicted_type, "no")
+      ) %>% 
+    mutate(type = factor(type, levels = c(selected_type, "no"))) %>% 
+    mutate(
+      confidence_score = if_else(predicted_type == "no", 1-confidence_score, confidence_score)
+    )
+
+  
+  # Precision-Recall Curve with ggplot2
+  
+  pr_df <- df_temp2 %>% pr_curve(type, confidence_score) %>%
+    rename(threshold = .threshold) %>% filter(threshold<=1) %>% 
+    mutate(f1 = 2 * precision * recall / (precision + recall))
+  
+  pr_auc <- round(df_temp2 %>% pr_auc(type, confidence_score) %>% .$.estimate, 3)
+  best_F1_row <- pr_df %>% slice_max(n = 1, f1)  
+  best_F1_row_high_recall <- pr_df %>% 
+    filter(recall > 0.999, precision > 0.1) %>% slice_max(n = 1, f1)  
+  best_F1 <- best_F1_row  %>% pull(f1)
+  best_F1_high_recall <- best_F1_row_high_recall %>% pull(f1)
+  best_threshold <- best_F1_row  %>% pull(threshold)
+  best_threshold_high_recall <- best_F1_row_high_recall  %>% pull(threshold)
+  best_precision_high_recall <- best_F1_row_high_recall  %>% pull(precision)
+  
+  g1 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision)) +
+    geom_line(aes(color = threshold), size = 1.2) +
+    scale_color_viridis_c(option = "plasma", limits = c(0, 1)) +
+    labs(
+      subtitle = paste0("Precision-Recall Curve for ", selected_type, " (AUC = ", pr_auc, ")"),
+      x = "Recall",
+      y = "Precision"
+    ) +
+    coord_cartesian(ylim = c(0,1)) +
+    theme(
+      legend.position = "bottom"
+    )
+  
+  g2 <- pr_df %>%
+    ggplot(aes(x = recall, y = precision, color = f1)) +
+    geom_line(size = 1.2) +
+    scale_color_viridis_c(option = "viridis", limits = c(0, 1)) +
+    labs(
+      # title = "Precision-Recall Curve colored by F1 score",
+      x = "Recall",
+      y = NULL,
+      color = "F1 score"
+    ) +
+    coord_cartesian(ylim = c(0,1))+
+    theme(
+      legend.position = "bottom"
+    ) 
+  
+  if (x_stuff == FALSE) {
+    g1 <- g1 + guides(color = FALSE) +
+      labs(x = element_blank())
+    
+    g2 <- g2 + guides(color = FALSE) +
+      labs(x = element_blank())
+  }
+  
+  combined_plot <- g1 + g2
+  combined_plot + plot_annotation(caption = paste0(
+    'Best F1 score of ', round(best_F1,3) , ' gets reached with threshold of value ', round(best_threshold,3), '\n',
+    'Best F1 score with recall > 0.999 of ', round(best_F1_high_recall,3) , ' gets reached with threshold of value ', round(best_threshold_high_recall,3), ' (corresp. precision value: ', round(best_precision_high_recall,3) , ')'))
+}
+```
+
+Figure \@ref(fig:micro-pr-curve-llm-multi-ministral) shows the
+precision-recall-curve for Ministral-8B-Instruct-2410 with
+*3_rag_examples* twice for each target type. On the left plots the line
+color represents the threshold score one could use to decide when to
+accept a response as it is. On the right plots the line color is showing
+the F1 score that results with a chosen threshold.
+
+The \acr{AUC} is highest for **GuV** again. But for the multi-class
+classification **Passiva** shows the lowest \acr{AUC}, not **Aktiva** as
+it was in the binary classification task. The precision-recall-curve for
+**Aktiva** and \*\*Passiva\*+ show a "step" in the area of high recall.
+This has a strong effect on the threshold one should choose, if one
+wants to guarantee a high recall. The corresponding precision values of
+0.2 and 0.13 mean that a human has to check five to eight pages in
+average to get a correct classified page of type **Aktiva** and
+**Passiva**.
+
+The corresponding plot for the best performing model,
+Llama-4-Scout-17B-16E-Instruct, can be found in Figure
+\@ref(fig:micro-pr-curve-llm-multi-llama-scout). Here the
+precision-recall-curve for **Passiva** and **GuV** is almost perfect.
+Just the single prediction for **Aktiva** wit a lower confidence shows
+an influence on the precision-recall-curve.
+
+```{r micro-pr-curve-llm-multi-ministral, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for Ministral-8B-Instruct-2410."}
+model_name <- "Ministral-8B-Instruct-2410"
+method_name <- "3_rag_examples"
+
+df_temp_mistral_multi <- df_multi %>% 
+  filter(
+    model == model_name,
+    method == method_name
+  ) # %>% unnest(metrics) # %>% calc_micro_f1(model, method)
+p_aktiva <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("Aktiva", x_stuff = FALSE)
+p_passiva <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("Passiva", x_stuff = FALSE)
+p_guv <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("GuV", x_stuff = TRUE)
+# p_other <- df_temp_mistral_multi %>% plot_pr_double_curve_multi("other", x_stuff = TRUE)
+
+wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
+  plot_layout(heights = c(2, 2, 3)) +
+  plot_annotation(title = str_c(model_name, " with ", method_name))
+```
+
+Figure \@ref(fig:table-identification-llm-confidence-multi) summarizes
+the relation between reported confidence and correctness of the
+classification for all target types and compares it among the best
+performing model-strategy combinations for
+Llama-4-Scout-17B-16E-Instruct, Ministral-8B-Instruct-2410 and Qwen3-8B.
+It seems, as the reported confidence for correct and incorrect
+classifications are separable in most cases for Mistral-8B. For Llama 4
+Scout this seems not true for the target type **GuV**. For Qwen3-8B
+there is almost no separation at all.
+
+Figure \@ref(fig:table-identification-llm-confidence-lm-multi) shows,
+that there is almost no area, where the empirical rate of wrong
+classifications is zero[^05_results-21]. Only for Ministral-8B we find
+intervals, where a human don't has to double check the classification
+for target types **Aktiva** and **GuV**. These intervals include 90 % of
+all predictions. If error rates of 1 % are accepted almost all
+predictions by Llama Scout 4 and about 96 % of the predictions by
+Ministral-8B are included in the corresponding intervals. For Qwen3-8B
+we find no interval without an error rate below 1 %.
+
+[^05_results-21]: The size of intervals has been narrowed down to 0.1 %
+    and still there was no range without wrong classification for Llama
+    4 Scout.
+
+```{r table-identification-llm-confidence-multi, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the multi-class page identification task for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/data_storage/page_identification_llm.rds"), fig.height=3}
+confidence_vs_truth_multi <- df_multi %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Llama-4-Scout-17B-16E-Instruct", "Qwen3-8B")) %>% 
+  unnest(metrics) %>% 
+  group_by(method, model, metric_type) %>% mutate(
+    mean_f1 = mean(f1_score, na.rm=TRUE), .before = 1
+  ) %>% group_by(model, metric_type) %>% 
+  arrange(desc(mean_f1)) %>% 
+  slice_max(mean_f1, n = 1, with_ties = FALSE) %>% 
+  select(-filepath) %>% 
+  unnest(predictions) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    # truth_NA = factor(truth_NA, levels = c(F, T))
+  ) %>% filter(metric_type %in% c("Aktiva", "Passiva", "GuV"))
+
+confidence_vs_truth_multi %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence_score, fill = metric_type), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_grid(~ model)
+```
+
+```{r table-identification-llm-confidence-lm-multi, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals for the multi-class classification task."}
+confidence_vs_truth_multi %>% rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, metric_type, model) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(metric_type, model) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  ) %>%
+  ggplot() +
+  geom_col(aes(x = conf_center, y = perc, color = chance_low, fill = chance_false_interval), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("#00CC00", "orange", "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_grid(metric_type ~ model)
+
+```
+
+## Extraction with LLMs
+
+### Real tables
+
+```{r table-extraction-llm-confidence-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
+confidence_vs_truth_real <- df_real_table_extraction %>% 
+  # filter(loop == 0) %>% 
+  filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B", "Qwen3-235B-A22B-Instruct-2507-FP8")) %>% 
+  group_by(method, model, loop) %>% mutate(
+    mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE), .before = 1
+    ) %>% group_by(model) %>% 
+  # arrange(desc(mean_percentage_correct_total)) %>% 
+  slice_max(mean_percentage_correct_total, n = 1, with_ties = TRUE) %>% 
+  mutate(predictions_processed = map(predictions, ~{
+    .x %>% 
+      select(-"_merge") %>% 
+      mutate(
+        match = (year_truth == year_result) | (is.na(year_truth) & is.na(year_result)),
+        confidence = confidence_this_year,
+        truth_NA = is.na(year_truth),
+        predicted_NA = is.na(year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% 
+      mutate(
+        confidence = confidence_previous_year,
+        match = (previous_year_truth == previous_year_result) | (is.na(previous_year_truth) & is.na(previous_year_result)),
+        truth_NA = is.na(previous_year_truth),
+        predicted_NA = is.na(previous_year_result),
+        .before = 4
+      ) %>% nest(
+        tuple_previous_year = c(match, confidence, truth_NA, predicted_NA)
+      ) %>% select(
+        -c(year_truth, previous_year_truth, year_result, previous_year_result,
+           confidence_this_year, confidence_previous_year)
+      ) %>% 
+      pivot_longer(-c("E1", "E2", "E3")) %>% 
+      unnest(cols = value) %>% mutate(
+        match = if_else(is.na(match), FALSE, match)
+      )
+  })) %>% 
+  unnest(predictions_processed) %>% mutate(
+    match = factor(match, levels = c(F, T)),
+    truth_NA = factor(truth_NA, levels = c(F, T))
+  )
+
+confidence_intervals_real <- confidence_vs_truth_real %>% #rename(confidence = confidence_score) %>% 
+  mutate(
+    conf_interval = cut(confidence, breaks = seq(0, 1, by = 0.05), include.lowest = TRUE),
+    conf_center = as.numeric(sub("\\((.+),(.+)\\]", "\\1", levels(conf_interval))[conf_interval]) + 0.025
+  ) %>%
+  group_by(conf_center, predicted_NA, model) %>%
+  summarise(
+    n_true = sum(match == TRUE, na.rm = TRUE),
+    n_false = sum(match == FALSE, na.rm = TRUE),
+    total = n_true + n_false,
+    chance_false = if_else(total > 0, n_false / total * 100, NA_real_),
+    chance_zero = chance_false == 0,
+    chance_below_1 = chance_false < 1,
+    chance_low = if_else(chance_zero, 0, if_else(chance_below_1, 1, 2)),
+    chance_low = factor(chance_low, levels = c(0,1,2), labels = c("equls 0 %", "below 1 %", "more"))
+  ) %>% group_by(predicted_NA, model) %>% mutate(
+    perc = total/sum(total)*100
+  ) %>% ungroup() %>% 
+  mutate(
+    chance_false_interval = cut(
+      chance_false,
+      breaks = c(0, 1, 2, 4, 8, 16, 32, 64, Inf),
+      labels = c("[0,1)", "[1,2)", "[2,4)", "[4,8)", 
+                 "[8,16)", "[16,32)", "[32,64)", "[64,Inf)"),
+      right = FALSE,
+      ordered_result = TRUE
+    ),
+  )
+
+conf_scores_top_real <- confidence_intervals_real %>% 
+  filter(conf_center == 0.975, model == "Qwen3-235B-A22B-Instruct-2507-FP8") %>% 
+  select(predicted_NA, chance_false) %>% deframe()
+```
+
+::: paragraph-start
+##### Confidence
+
+Figure \@ref(fig:table-extraction-llm-confidence) shows, that the
+distrubution of the models reported confidence is heterogeneous. Again,
+Qwen3-8B reports very high confidence values no matter if the results
+are correct or not. Qwen3-235B-A22B-Instruct (and Qwen3-14B) report some
+lower confidence scores for predictions, where they are wrong. The
+Mistral model again reports a wider range of confidences and for wrong
+results the reporetd confidence is lower. But no real separation can be
+observed for any of the models.
+:::
+
+Figure \@ref(fig:table-extraction-llm-confidence-lm) helps answering the
+question, if the reported confidence score of the responses can be used,
+to alert a human that certain predictions might be wrong. In contrast to
+the page identification task, we find no confidence intervals where the
+mistake rate is equal 0 or less than 1 %. The majority of the
+predictions has a very high reported confidence. For the best performing
+model Qwen3-235B-A22B-Instruct we find error rates of
+`r conf_scores_top_real["FALSE"]` % for numeric predictions and
+`r conf_scores_top_real["TRUE"]` % for predicting a missing value.
+
+Thus, we can inform the human about the empirical found error rates but
+do not flag some values to be realy trustworthy. In defense for the
+model: with manual transcription the error rate is not lower. But we can
+inform the human about values that have shown a higher rate of mistakes,
+especially for the Ministral model.
+
+```{r table-extraction-llm-confidence, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the reported confidence scores for the table extraction task on real dataset for the Mistral and Qwen 3 with 8B parameters.", cache=TRUE, cache.extra = tools::md5sum("data_storage/real_table_extraction_llm.rds")}
+confidence_vs_truth_real %>% ggplot() +
+  geom_boxplot(
+    aes(x = match, y = confidence, fill = truth_NA), 
+    position = position_dodge2(preserve = "single")) +
+  scale_fill_discrete(drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  facet_grid(~ model)
+
+```
+
+```{r table-extraction-llm-confidence-lm, echo=echo_flag, warning=warning_flag, message=message_flag, fig.height=5, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong classification over different confidence intervals."}
+confidence_intervals_real %>%
+  ggplot() +
+  geom_col(aes(
+    x = conf_center, y = perc, 
+    color = chance_low, 
+    fill = chance_false_interval
+    ), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_grid(paste("predicted NA:", predicted_NA) ~ model)
+```
+
+### Synthetic tables
+
+::: paragraph-start
+##### Confidence
+
+Figure \@ref(fig:table-extraction-llm-confidence-lm-synth) shows, that
+we do not find a high confidence interval containing a majority of the
+predictions with 0 % error rate. But for Qwen3-235B we find, that the
+error rate is below 1 %, except for predicting numeric values, while
+ignoring their currency units.
+:::
+
+Figure
+\@ref(fig:table-extraction-llm-confidence-lm-synth-grouped-by-input-format)
+groups the responses additonally by the *input_format* of the documents.
+It shows, that with HTML documents Qwen3-235B achieves 0 % error rate
+for the prediction of missing values and predicting numeric values, if
+currency units get respected.
+
+```{r table-extraction-llm-confidence-lm-synth, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task.", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/confidence_intervals_synth.rds"))}
+confidence_intervals_synth  <- readRDS("data_storage/confidence_intervals_synth.rds")
+
+confidence_intervals_synth %>%
+  ggplot() +
+  geom_col(aes(
+    x = conf_center, y = perc, 
+    color = chance_low, 
+    fill = chance_false_interval
+    ), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop = FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_nested(paste("respect units:", respect_units)+paste("predicted NA:", predicted_NA) ~ model)
+```
+
+### Hybrid aproach 
+
+::: paragraph-start
+##### Confidence
+
+Figure \@ref(fig:table-extraction-llm-confidence-lm-synth-context) shows
+the rate of wrong predictions for given confidence intervals. Again, the
+confidence for predicting a missing value is higher than for predicting
+a numeric value. One can't see much difference, but for the best
+performing model Qwen3-235B the error rate for numeric values is lower,
+when currency units are respected (20 % vs 26 %). But the error rate is
+still to high to mark any numeric value as trustful.
+:::
+
+```{r table-extraction-llm-confidence-lm-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
+confidence_intervals_hybrid %>%
+  ggplot() +
+  geom_col(aes(
+    x = conf_center, y = perc, 
+    color = chance_low, 
+    fill = chance_false_interval
+    ), alpha = 1) +
+  # geom_text(
+  #   aes(x = conf_center, y = perc, label = round(perc, 0)), 
+  #   position = position_stack(vjust = 1), vjust = -0.6, 
+  #   size = 3, color = "black"
+  # ) +
+  scale_color_manual(values = c("equls 0 %" = "#00CC00", "below 1 %" = "orange", "more" = "#555555")) +
+  scale_fill_manual(values = rev(c("#d53e4f", "#f46d43", "#fdae61", "#fee08b", "#e6f598", "#abdda4", "#66c2a5", "#3288bd")), drop=FALSE) +
+  labs(
+    x = "Confidence Interval Center", 
+    y = "Percentage of predictions", 
+    color = "mistake rate") +
+  coord_cartesian(
+    ylim = c(0, 100), 
+    xlim = c(0,1)
+  ) +
+  facet_nested(paste("respect units:", respect_units)+paste("predicted NA:", predicted_NA) ~ model)
+```
