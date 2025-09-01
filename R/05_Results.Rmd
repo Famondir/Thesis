@@ -8,7 +8,7 @@ editor_options:
 
 \ChapFrame[Results][bhtteal]
 
-This chapter presents the results for the two main and our side research questions of this thesis:
+This chapter presents the main results for the two main and our side research questions of this thesis:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
 cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract these information from the document?</li><li>Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?</li></ol>")
@@ -22,7 +22,9 @@ cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effe
 
 Section \@ref(page-identification-introduction) presents the results for the first research question. Section \@ref(table-extraction-introduction) presents the results for the second question. Section \@ref(error-rate-guidance-results) shows the results for the side research question. Finally, we will summarize all results in section \@ref(summary-results).
 
-Each section will start with an overview about the specific sub tasks as well about the models, methods and data used to investigate the research question. We refer to the sections in the appendix that document our investigation and the results of the sub tasks in detail.
+Each section will start with an overview about the specific sub tasks as well as about the models, methods and data used to investigate the research question.
+
+This chapter focusses on the presentation of results, that answer the question, if an approach can be used to solve a task. We discuss additional findings in chapter \@ref(discussion). The presentation of those additional results can be found in the appendix. We refer to the chapters of the appendix, that document our investigation and the results of the sub tasks in detail, at the beginning of each of the following sections.
 
 ## Page identification {#page-identification-introduction}
 
@@ -34,7 +36,7 @@ Each section will start with an overview about the specific sub tasks as well ab
 
 [^05_results-1]: Personal opinion: Developing well performing regular expressions can be a very tedious and setting appropriate rules requires some domain knowledge. It can be worth the effort if there are a lot of documents with similar information to extract. For this thesis it took multiple months. At least, now there is kind of a pipeline one can reuse, exchanging the rules and key word lists. Thus the next similar task should be solved faster.
 
-This section is presenting the results of four approaches to identify the page[^05_results-2] of interest:
+This section is presenting the results of four approaches to identify the page[^05_results-2] of interest. The detailed report on all experiments conducted in their results can be found in the appendix:
 
 [^05_results-2]: In some cases the information of interest is spanning two pages. These rare cases are not covered from the approaches presented here, yet.
 

@@ -61,14 +61,6 @@ Figure \@ref(fig:table-extraction-regex-performance) shows, that the \acr{regex}
 
 [^10_information_extraction-1]: A comparison of the numeric values over all methods can be found in section \@ref(comparing-table-extraction-methods).
 
-The performance for the \acr{regex} based table extraction is much better than the \acr{regex} based page identification performance. The median performance scores of the \acr{regex} approaches will be reflected by a dashed line in the box-plots in subsequent sections. The scores for the real **Aktiva** table extraction are:
-
-```{r table-extraction-regex-baseline-medians, echo=echo_flag, warning=warning_flag, message=message_flag}
-table_extraction_regex_baseline_medians %>% mutate(
-  across(is.numeric, ~round(., 3))
-) %>% kbl(caption = "Summarizing the median performance of the regex approaches for the real and synthetic table extracion task.")
-```
-
 ```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Performance overall and on numeric value extraction with regular expressions."}
 p1 <- df_table_extraction_regex %>%
   select(c(table_type, percentage_correct_numeric, percentage_correct_total, T_EUR, extraction_backend)) %>% 
@@ -108,6 +100,16 @@ p1 + p2 + guide_area() +
     widths = c(2, 1)
   ) + plot_annotation(tag_levels = 'A')
 ```
+
+The performance for the \acr{regex} based table extraction is much better than the \acr{regex} based page identification performance. The median performance scores of the \acr{regex} approaches will be reflected by a dashed line in the box-plots in subsequent sections. The scores for the real **Aktiva** table extraction are:
+
+```{r table-extraction-regex-baseline-medians, echo=echo_flag, warning=warning_flag, message=message_flag}
+table_extraction_regex_baseline_medians %>% mutate(
+  across(is.numeric, ~round(., 3))
+) %>% kbl(caption = "Summarizing the median performance of the regex approaches for the real and synthetic table extracion task.")
+```
+
+The difference in the precision scores for the \acr{regex} approach on synthetic tables is discussed in section \@ref(regex-synth-backend-discussion).
 
 ## Extraction with LLMs {#extraction-with-llms-real-tables}
 
@@ -191,7 +193,7 @@ df_real_table_extraction %>% filter(!str_detect(model, "oss")) %>%
   group_by(company) %>% 
   ggplot() +
   geom_boxplot(aes(x = company, y = percentage_correct_numeric)) + 
-  geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
+  # geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
   scale_x_discrete(guide = guide_axis(angle = 30)) + 
   facet_grid(model_family ~ .)
 

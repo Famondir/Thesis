@@ -20,6 +20,8 @@ The page identification task is solved with higher F1 scores for every target cl
 
 ::: paragraph-start
 ##### Interpretations
+
+To get the best results, a combination of two \acr{LLM}s would be necessary. A more general approach is using Llama 4 Scout for multi-class classification. If there is little VRAM Ministral-8B also does a decent job in multi-class classifiacation.
 :::
 
 ::: paragraph-start
@@ -30,21 +32,25 @@ We are able to narrow down the page range to five pages without using a \acr{LLM
 
 ::: paragraph-start
 ##### Implications
+
+Introducing new areas of application should be easily possible and manageable even from a regular user. For the term frequency approach we can set up a pipeline, where the user just has to enter a list of keywords and then he gets presented a page ranking, based on \acr{TF-IDF} values. The user might adjust the key word list or select correct pages to build a ground truth. If there are more measures of interest (e.g. a float frequency as well) we can automatically train a random forest classifier as well.
 :::
+
+Another approach is, that the user provides documents and a list on which page the information of interest is located. This can be the base for a retrieval augmented few-shot classifier, that will improve in the process of classifying more pages.
 
 ::: paragraph-start
 ##### Limitations
 
-The term frequency and \acr{LLM} classification might perform worse, if the information searched for, is just making up a small part of the pages content. If the information is not even in a table, but part of a regular sentence, it might get difficult to find the correct page with this approach. Maybe the \acr{TOC} approach could be used for page range refinement in this case.
+The term frequency and \acr{LLM} classification might perform worse, if the information searched for, is just making up a small part of the pages content. If the information is in a table we can use a visual table detection model, to identify all tables. Section \@ref(yolo) shows that this is a promising approach. Then we can use the retrieval augmantag few-shot approach to identify, which table is the correct one.
 :::
 
-For detecting (smaller) tables Yolo can be used (see \@ref(yolo)).
+If the information is not even in a table, but part of a regular sentence, it might get difficult to find the correct page with this approach. Maybe the \acr{TOC} approach could be used for page range refinement in this case.
 
 ::: paragraph-start
 ##### Unexpected results
 
--   Ministral is performing unexpected well.
--   \acr{TOC} approach performs not good
+-   Ministral is performing unexpected well. Is performs better, than other Mistral models, that are newer and have more parameters.
+-   \acr{TOC} approach performs not as well as expected by @liExtractingFinancialData2023 results.
 :::
 
 ::: paragraph-start
@@ -67,13 +73,17 @@ Save the examples already classified in a vector database and use those in futur
 
 ::: paragraph-start
 ##### Conclusion
+
+
 :::
 
 ### Energy usage and runtime
 
-The fastest and least energy consuming strategy, using only \acr{LLM}s is to use a small model as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
+The fastest and least energy consuming strategy, using only \acr{LLM}s, is to use a small model as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
 
-An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But the results of the multi-class strategy are good enough. In both strategies the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-1].
+An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But this would probably consume as much energy as the multi-class approach, because we have to provide a balanced amount of examples for each class. The results of the multi-class strategy are good enough  to run it right away.
+
+In both strategies the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-1].
 
 [^06_discussion-1]: Potentially smaller fine tuned models can solve the task even more efficient.
 
@@ -107,6 +117,8 @@ Not taken into account fo this comparison are factors as:
 
 ## Information extraction
 
+### General performance
+
 ::: paragraph-start
 ##### Results
 
@@ -121,16 +133,20 @@ The strong performance observed means, that Qwen3-235B is performing numeric tra
 
 Furthermore, we can see that it is possible to achieve perfect output, if the input is perfect structured and without unknown row identifiers. Perfect in, perfect out. Thus, we show that there is no \acr{LLM} approach inherent mechanism, that prevents perfect information extraction of numeric values.
 
-synth: The 0.1 % incorrect prediction from the PDF documents could be caused by faulty text extracts by *pdfium*.
+The 0.1 % incorrect predictions on synthetic tables from the PDF documents could be caused by faulty text extracts by *pdfium*. But the Markdown input is without any flaws and resulted in 0.1 % errors as well.
 
 investigate F1 score
 
 ::: paragraph-start
 ##### Compare with previous work
 
-@liExtractingFinancialData2023 achieved a perfect extraction result, after refining their approach. (strated at 96.1 %) including omissions when the LLM was instructed to extract a list of line items, misjudgment of units (such as thousands or millions), and incorrect identification of rows and columns
+@liExtractingFinancialData2023 achieve a perfect extraction result, after refining their approach, extracting a total of 152 data points from 8 ACFRs reports. Before the prompt adjustments they find 96.1 % correct extracted datapoints.
 
-Total 152 data points from 8 ACFRs reports (probably homogeneous) fuzzy matching instruction 3 values per go, instructions for currency units
+They included an instruction how to handle missing values but do not report any remarkably higher error rates with missing values.
+
+
+
+(probably homogeneous) fuzzy matching instruction 3 values per go, instructions for currency units
 
 98.9 % on ESG reports after refinement, 90 values from 15 documents; heterogeneou (multiple ccompanies)? started at 93.3 % misjudging units between grams, kilograms, and tonnes introduced additional fields to the data points and had LLM extract the units as separate output fields
 
@@ -153,6 +169,7 @@ Checking the extracted values takes up to three minutes. This totals in 300 minu
 ##### Limitations
 
 -   add schemas for different hierarchies
+-   test guided decoding instead of restricted (open a new list for unmatched entries?)
 :::
 
 ::: paragraph-start
@@ -164,7 +181,9 @@ Checking the extracted values takes up to three minutes. This totals in 300 minu
 ::: paragraph-start
 ##### Recommendations
 
--   invest in supply of machine-readable information
+-   invest in supply of machine-readable information and good user experience, instead of 100 % perfect extraction
+
+- building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 :::
 
 ::: paragraph-start
@@ -183,12 +202,72 @@ The extraction performance may get higher, if the in-context learning examples s
 ##### Conclusion
 :::
 
+* check if missing value in one col (hand full of those cases) is resulting in hallucinations
+* confusion matrix
+
+### Company specific results
+
+predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
+
+WBM und Kassenlotterie komische Textsatzreihenfolge, aber kein negativer Effekt auf text extract
+
+### Error analysis
+
+-   new lines / splitted lines
+-   test synthetic hypothesis with pymupdf extract
+-   2.4 % wrong gold standard creation
+
+-   errors from wrong formatted numbers
+-   errors from wrong / unclear entity mapping
+
+#### Ground truth creation
+
+During the second pass of the ground truth creation we find, that 2.4 % of the values differ among the previously created gold standard and the results of the second pass. In the first pass the values are copied manually, while the results of the second pass are \acr{LLM}s predictions, that we double checked. We find 75 values differing in the 24 documents that are part of both data collections. Table \@ref(tab:error-analysis-gold-standard-extraction) shows the nature of errors and their counts. Most errors are distributed in the *omission* classes.
+
+Errors of this type result from an inconsistent coding process. In one pass a value might have been included, while it is not included in the other pass. Or the value is matched to different row identifiers during the two passes. To resolve this kind of errors a strict and detailed coding manual is necessary. Additionally, the coding should be done from experts of the field instead of the data scientist.
+
+```{r error-analysis-gold-standard-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+tribble(
+  ~error_type, ~count,
+  "ommited in first pass", 29,
+  "ommited in second pass", 20,
+  "multiple differences", 13,
+  "missing digit", 10,
+  "swapped digits", 2,
+  "comma instead of dot", 1,
+) %>% render_table(
+  alignment = "lr",
+  caption = "Showing the nature of errors and their counts. Errors with multiple difference have Levenshtein distance greater one.",
+  ref = opts_current$get("label"),
+  dom = "t"
+)
+```
+
+#### Regular expression approach {#regex-synth-backend-discussion}
+
+```{r table-extraction-regex-data-loading-discussion, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
+df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
+  filter(table_type != "real_tables") %>% mutate(
+    table_type = str_remove(table_type, "_extended")
+  )
+```
+
+We find, that the regular expression approaches performance on the synthetic dataset is highly influenced by the extraction library used. For the real data we find no difference. Figure \@ref(fig:table-extraction-regex-performance) B shows, that the \acr{regex} approach on text extracted with *pdfium* especially has a wider precision range. The number of wrong extracted numeric values is a little as well.
+
+A reason for this might be incorrect extracted texts. We find, that there are issues with missing (or additional) white space, misplaced line breaks and an extraction of the text column first, followed by the numeric columns. You can find examples for those types of incorrect extracted texts by three different PDF extraction libraries in section \@ref(regex-extraction-mistakes). One of the examples is found with the real table dataset, while two are found with the synthetic tables.
+
+The random white space and line breaks could be handles by adjusting the regular expression for the label matching. Missing white space between numeric values could also be handled by adjusting the \acr{regex}. The misplaced columns would need more advanced reprocessing strategies. But all those error ypes shouel influence the recall and not the precision.
+
+A possible explanation for a spread in precision could be the duplicated row identifier *Geleistete Anzahlungen*. Our simple approach matches this row always with the first occurrence. This means, if the second occurrence is given in the ground truth, but not the first one, our approach would create a false positive result. The percentage of false positive example is then determining the precision value and is linked to the number of total rows in the ground truth.
+
+A reason for wrong numeric values are rows, where the summed value is given in the next column, but same row, as the individual values. In this case the approach selects one individual value and a sum, instead of two individual values.
+
 ## Error rate guidance
 
 ::: paragraph-start
 ##### Results
 
-Confidence score can be used to determine empirical error rate for confidence intervals. For well performing models we find most predictions in the highest confidence interval. 
+Confidence score can be used to determine empirical error rate for confidence intervals. For well performing models we find most predictions in the highest confidence interval.
 
 Ministral shows good spread over confidence range for page identification task. We can find confidence intervals with zero error rate for the page identification task and the information instruction task on synthetic data.
 
@@ -209,10 +288,14 @@ Confidence score can be used to guide attention for page identification task, bu
 ##### Implications
 
 Additional segementation could be necessary, to find values that are predicted well enough.
+
+confidence intervals based on company (know which formats are tricky)
 :::
 
 ::: paragraph-start
 ##### Limitations
+
+
 :::
 
 ::: paragraph-start
@@ -223,10 +306,14 @@ Most models predict high confidence, even for wrong predictions.
 
 ::: paragraph-start
 ##### Recommendations
+
+0 % empirical error rate unstable. Chose cutoff or show error rate continuously?
 :::
 
 ::: paragraph-start
 ##### Possible improvement
+
+Testing normalized confidence.
 :::
 
 ::: paragraph-start
@@ -247,7 +334,7 @@ additional segmentation might help
 
 HTML might help =\> document parsing and table extraction
 
-## Table extraction
+## Feature effect analysis
 
 ### General performance
 
@@ -294,45 +381,7 @@ HTML might help =\> document parsing and table extraction
 knitr::include_graphics("images/HITL_flowchart_error_handling.png")
 ```
 
-
-#### Regular expression approach
-
-```{r table-extraction-regex-data-loading-discussion, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
-df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
-  filter(table_type != "real_tables") %>% mutate(
-    table_type = str_remove(table_type, "_extended")
-  )
-```
-
-Some possible explanations for the different performance on the extracted texts are:
-
--   a duplicated row name[^06_discussion-2]
--   numeric columns extracted separated from row names by extraction libraries
--   sums in the same row as the single values[^06_discussion-3]
--   with pdfium: missing white space[^06_discussion-4]
--   with pdfium: random line breaks[^06_discussion-5]
-
-[^06_discussion-2]: The row *Geleistete Anzahlungen* can be found in two parts of the table and the simple approach just matches the numbers to the first found entry.
-
-[^06_discussion-3]: In this case the \acr{regex} takes the sum as the value for the previous year.
-
-[^06_discussion-4]: This can form unexpected numeric patterns or prevent the row names to be recognized.
-
-[^06_discussion-5]: The approach takes care of line breaks between words, but not within. This leads to unrecognized row names as well.
-
-You can find some examples for incorrect extracted texts in section \@ref(regex-extraction-mistakes).
-
-The random line breaks result in some missed row names which is reflected by the bigger spread for NA precision with *pdfium* on the synthetic dataset (see Figure \@ref(fig:table-extraction-regex-performance) B). Nevertheless, the NA precision for the majority of the cases is perfect. This is different with the real dataset. The NA precision is found to be at only `r df_table_extraction_regex %>% filter(table_type == "real_tables") %>% pull(NA_precision) %>% mean() %>% round(2)`.
-
 ## Limitations
-
-### table extraction
-
--   found mistakes in gold standard with the llm results; mistakes found by human double check
--   new lines / splitted lines
--   test synthetic hypothesis with pymupdf extract
--   2.4 % wrong gold standard creation
--   confidence intervals based on company (know which formats are tricky)
 
 #### Regex baseline
 
@@ -384,17 +433,3 @@ Vision model as baseline
 
 Ad-hocs for monitoring during the year
 
-### Vision Model
-
-Yolo
-
-### Table extraction
-
-building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
-
-predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
-
-## Error analysis
-
--   errors from wrong formatted numbers
--   errors from wrong / unclear entity mapping

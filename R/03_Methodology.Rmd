@@ -439,7 +439,11 @@ To better understand the limitations of the evaluated models, we will conduct a 
 
 99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@liExtractingFinancialData2023] In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)
 
-Too many hallucinated values when it was NA instead [@grandiniMetricsMultiClassClassification2020]
+found error types: including omissions when the LLM was instructed to extract a list of line items, misjudgment of units (such as thousands or millions), and incorrect identification of rows and columns
+
+failed to extract all of list, Too many hallucinated values when it was NA instead [@goughertyTestingReliabilityAIbased2024]
+
+[@grandiniMetricsMultiClassClassification2020]
 
 ### Baseline selection rationale
 

@@ -28,6 +28,7 @@ tab:page-identification-performance-overview-all
 tab:page-identification-performance-overview-top-k-recall
 tab:page-identification-efficiency-overview-all
 tab:compare-extraction-performance
+tab:error-analysis-gold-standard-extraction
 fig:hitl-error-handling
 tab:display-metrics-regex-page-identification-all
 fig:display-metrics-plot-regex-page-identification-details
@@ -54,8 +55,8 @@ fig:forest-map-tf-2-predictors
 fig:top-n-recall-term-frequency
 fig:shap-tf-4-predictors
 fig:micro-pr-curve-tf-4-predictors
-tab:table-extraction-regex-baseline-medians
 fig:table-extraction-regex-performance
+tab:table-extraction-regex-baseline-medians
 tab:table-metrics-llm-real-table-extraction
 tab:table-metrics-llm-real-table-extraction-small
 tab:zero-and-synth-performing-models-tab
@@ -279,6 +280,7 @@ conclusion
 energy-usage-and-runtime-1
 compare-with-manual-page-identification
 information-extraction-4
+general-performance-1
 results-2
 interpretations-1
 compare-with-previous-work-1
@@ -288,6 +290,10 @@ unexpected-results-1
 recommendations-1
 possible-improvement-1
 conclusion-1
+company-specific-results
+error-analysis-1
+ground-truth-creation
+regex-synth-backend-discussion
 error-rate-guidance-1
 results-3
 interpretations-2
@@ -298,8 +304,8 @@ unexpected-results-2
 recommendations-2
 possible-improvement-2
 conclusion-2
-table-extraction
-general-performance-1
+feature-effect-analysis
+general-performance-2
 results-4
 interpretations-3
 compare-with-previous-work-3
@@ -310,17 +316,12 @@ recommendations-3
 possible-improvement-3
 conclusion-3
 summary-1
-regular-expression-approach
 limitations-4
-table-extraction-1
 regex-baseline
 classification
 not-covered
 table-detection-extraction
 outlook
-vision-model
-table-extraction-2
-error-analysis-1
 page-identification-report
 regex-page-identification
 summary-2
@@ -393,7 +394,7 @@ extraction-framework-flow-chart
 regex-extraction-mistakes
 tables
 classification-1
-table-extraction-3
+table-extraction
 hybrid-approach-4
 figures
 page-identification-7
@@ -402,7 +403,7 @@ toc-understanding-1
 classification-2
 binary
 multi-class-classification-3
-table-extraction-4
+table-extraction-1
 regex-approach
 real-tables-5
 synthetic-tables-4

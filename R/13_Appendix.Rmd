@@ -189,6 +189,10 @@ for (file in json_files_table_detection) {
   meta_list[[length(meta_list) + 1]] <- lst
 }
 
+table_detection_result_list <- meta_list %>% 
+  tibble() %>% unnest_wider(".") %>% 
+  mutate(model = str_remove(model, ".json"))
+
 # Plot the metrics over threshold
 metric_plots <- list()
 
@@ -271,7 +275,15 @@ for (result in meta_list_llm) {
     )
 }
 
+pr_auc_custom <- function(df_temp) {
+  DescTools::AUC(c(0,df_temp$precision), c(1,df_temp$recall))
+}
 
+df_table_detection_result <- table_detection_result_list %>%
+  rowwise() %>% mutate(
+    runtime = to_minutes(runtime), 
+    pr_auc = pr_auc_custom(metrics)
+    ) %>% ungroup()
 ```
 
 #### old classification with llm
@@ -285,14 +297,33 @@ benchmark and n-shot base for llm classification (contrasts)
 We test three visual models, trained for table detection. One is based on Microsofts table transformer. The other two are based on Ultralytics Yolo 12 and differ in their parameter size:
 
 * microsoft/table-transformer-detection
-* yolov12l-doclaynet
-* yolov12n-doclaynet
+* yolo12l-doclaynet
+* yolo12n-doclaynet
 
 The Yolo models performed much better. Up to a threshold of 0.5 they show a recall of around 1 and a precision over 0.95. Thus, they can be used to refine the page range, by identifying all pages that have a table. The table transformer model has a worse precision of around 0.7
 
-microsoft 10:16
-yolo large 
-yolo nano 8:19
+microsoft `r filter(table_detection_result_list, model == "microsoft-table-transformer-detection")$runtime %>% to_minutes()` min
+yolo large `r filter(table_detection_result_list, model == "yolo12l-doclaynet")$runtime %>% to_minutes()` min
+yolo nano `r filter(table_detection_result_list, model == "yolo12n-doclaynet")$runtime %>% to_minutes()` min
+
+```{r df-yolo}
+df_table_detection_result %>% 
+  select(model, runtime, pr_auc) %>% 
+  mutate(pr_auc = format_floats(pr_auc, 3))
+```
+
+
+```{r pr-curve-yolo}
+table_detection_result_list %>% rowwise() %>% 
+  mutate(metrics = list(bind_rows(metrics, c(precision = 0, recall = 1)))) %>% 
+  unnest(metrics) %>% 
+  ggplot() + 
+  geom_line(aes(x = precision, y = recall, color = model), alpha = 0.6) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
 
 ```{r metric-plots-slider, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-slider', out.width="100%", results='asis'}
 for (entry in metric_plots) {
