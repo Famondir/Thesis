@@ -65,6 +65,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(kableExtra.latex.load_packages = FALSE)
+knitr::opts_chunk$set(fig.align='center') 
 # knitr::opts_chunk$set(fig.width=8, fig.height=4) 
 # knitr::opts_chunk$set(fig.pos = "H", out.extra = "")
 

@@ -73,15 +73,13 @@ Save the examples already classified in a vector database and use those in futur
 
 ::: paragraph-start
 ##### Conclusion
-
-
 :::
 
 ### Energy usage and runtime
 
 The fastest and least energy consuming strategy, using only \acr{LLM}s, is to use a small model as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
 
-An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But this would probably consume as much energy as the multi-class approach, because we have to provide a balanced amount of examples for each class. The results of the multi-class strategy are good enough  to run it right away.
+An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But this would probably consume as much energy as the multi-class approach, because we have to provide a balanced amount of examples for each class. The results of the multi-class strategy are good enough to run it right away.
 
 In both strategies the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-1].
 
@@ -144,8 +142,6 @@ investigate F1 score
 
 They included an instruction how to handle missing values but do not report any remarkably higher error rates with missing values.
 
-
-
 (probably homogeneous) fuzzy matching instruction 3 values per go, instructions for currency units
 
 98.9 % on ESG reports after refinement, 90 values from 15 documents; heterogeneou (multiple ccompanies)? started at 93.3 % misjudging units between grams, kilograms, and tonnes introduced additional fields to the data points and had LLM extract the units as separate output fields
@@ -183,7 +179,7 @@ Checking the extracted values takes up to three minutes. This totals in 300 minu
 
 -   invest in supply of machine-readable information and good user experience, instead of 100 % perfect extraction
 
-- building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
+-   building a document extraction database document by document can improve performance taking advantage of same-company rag in-context learning
 :::
 
 ::: paragraph-start
@@ -202,22 +198,136 @@ The extraction performance may get higher, if the in-context learning examples s
 ##### Conclusion
 :::
 
-* check if missing value in one col (hand full of those cases) is resulting in hallucinations
-* confusion matrix
+-   check if missing value in one col (hand full of those cases) is resulting in hallucinations
+-   confusion matrix
 
 ### Company specific results
 
-predictions for barrierefreie documents of WBM empty, one time because the pages showed **GuV**; also no predictions for Zoo 2024 **Passiva**
+Figure \@ref(fig:extraction-qwen235-by-company) shows, the precision and recall values for predicting a missing value and the percentage of correct numeric predictions for Qwen3-235B for each company. The number after the company name, as well as the color of the boxes indicate, how many of the numeric columns have *T€* as currency unit. The crosses indicate the individual scores per document. The teal crosses represent predictions, if examples from the same company are used for the *top n rag* prompting strategy. Red ones represent predictions, where this is not the case.
 
-WBM und Kassenlotterie komische Textsatzreihenfolge, aber kein negativer Effekt auf text extract
+```{r extraction-qwen235-by-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.", fig.width=8, fig.height=10}
+# df_real_table_extraction %>% filter(!str_detect(model, "oss")) %>% 
+#   filter(n_examples == 3) %>% 
+#   mutate(.before = 1, company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])) %>% 
+#   group_by(company) %>% 
+#   ggplot() +
+#   geom_boxplot(aes(x = company, y = percentage_correct_numeric)) + 
+#   # geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
+#   scale_x_discrete(guide = guide_axis(angle = 30)) + 
+#   facet_grid(model_family ~ .)
+
+df_real_table_extraction_best_by_company <- df_real_table_extraction %>% 
+  filter(str_detect(model, "235B")) %>% 
+  filter(n_examples == 5, method_family == "top_n_rag_examples") %>% 
+  # group_by(company) %>% 
+  pivot_longer(cols = c(NA_precision, percentage_correct_numeric, NA_recall))
+
+df_real_table_extraction_best_by_company %>% ggplot() +
+  geom_boxplot(
+    aes(y = paste(company, n_T_EUR), x = value, fill = ordered(n_T_EUR)),
+    alpha= .7
+    ) + 
+  geom_jitter(
+    aes(y = paste(company, n_T_EUR), x = value, color = same_company), 
+    shape = 4
+    ) +
+  scale_y_discrete(label = scales::label_wrap(32)) + 
+  theme(
+    legend.position = "bottom"
+  ) +
+  ylab("") +
+  labs(
+    title = df_real_table_extraction_best_by_company$model[[1]],
+    subtitle = df_real_table_extraction_best_by_company$method[[1]]
+    ) +
+  facet_nested(.~name)
+```
+
+One can see, that Qwen3-235B yields perfect predictions for the majority of the companies. This is especially true, if only the teal crosses are considerd. The predictions improve for most companies, if examples from the same company are used for the few-shot learning. It is especially helpful for handling the single numeric column with *T€* for *Deutsche Klassenlotterie*. It is also helping with the two columns with *T€* for *Gewobag*, even though the other examples have not *T€* present.
+
+It seems a little harmful for *WBM GmbH* and can not solve the problems for numeric prediction for *Helmholtz Zentrum GmbH* and *Berliner Stadtgüter*. It improved the precision for *Rundfunk Berlin-Brandenburg* and the recall of *Stadt und Land GmbH* and *Partner für Deutschland*.
+
+Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) shows the performance of Qwen3-235B for the *top n rag* and *n random* example strategies and distinguishes based on the fact, if examples from the same company can be used for in-context learning. The achieved percentage of correct predictions total is highest, if examples form the same company are used. It is even higher than the human reference score.
+
+If using examples form the same company is not allowed, it seems better to use random examples. This is probably the case, because this comes with a higher heterogeneity. High homogeneity among the learning examples from other companies might demonstrate patterns, that are not correct for the company the target document comes from. The pattern, that the same company in-context learning yields best results is true for all models. The order of the results with random examples or examples from other companies varies among the models.
+
+```{r information-extraction-compare-same-company-examples-qwen235, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
+table_same_company <- df_real_table_extraction %>% 
+  filter(str_detect(model, "235B")) %>% 
+  # filter(n_examples == 5, method_family == "top_n_rag_examples") %>%
+  group_by(model, method, same_company) %>% 
+  reframe(
+    mean_numeric = mean(percentage_correct_numeric, na.rm = TRUE),
+    mean_F1 = mean(NA_F1, na.rm = TRUE),
+    mean_total = mean(percentage_correct_total, na.rm = TRUE)
+    ) %>%
+  group_by(same_company) %>% slice_max(n = 1, mean_numeric, with_ties = FALSE) %>% 
+  # select(model, method, mean_numeric, mean_F1, mean_total) %>% 
+  ungroup() %>% 
+  mutate_if(
+    is.numeric, 
+    ~ifelse(
+      . == max(., na.rm = TRUE),
+      paste0("**", format_floats(., 3), "**"),
+      format_floats(., 3)
+    )
+  ) %>% setNames(colnames(.) %>% str_replace("_", " ")) %>% 
+  render_table(
+    alignment = "lllrrr",
+    caption = "Comparing the performance of Qwen3-235B for the best approaches depending on the circumstance if examples from the same company can be used for learning.",
+    ref = opts_current$get("label"),
+    dom = "t"
+  )
+if(knitr::is_latex_output()) {
+  table_same_company <- table_same_company %>%
+    column_spec(4:6, width = "1.5cm") %>% 
+    column_spec(1, width = "3.2cm")
+}
+table_same_company
+```
+
+In general the approach seems not be prone to hallucinations. When we accidentally tried to extract values from a **Passiva** and **GuV** table, no prediction was made, because non of the row identifiers matches our strict schema.
+
+predictions for barrierefreie documents of WBM empty
+
+An odd text marking order in a PDF by dragging the mouse is no indicator for a bad text extract.
+
+```{r, echo=FALSE}
+# df_real_table_extraction %>% 
+#   # filter(str_detect(model, "235B")) %>% 
+#   # filter(n_examples == 5, method_family == "top_n_rag_examples") %>%
+#   group_by(model_family, model, method, same_company) %>% 
+#   reframe(
+#     mean_numeric = mean(percentage_correct_numeric, na.rm = TRUE),
+#     mean_F1 = mean(NA_F1, na.rm = TRUE),
+#     mean_total = mean(percentage_correct_total, na.rm = TRUE)
+#     ) %>%
+#   group_by(same_company, model) %>% slice_max(n = 1, mean_numeric, with_ties = FALSE) %>% 
+#   # select(model, method, mean_numeric, mean_F1, mean_total) %>% 
+#   group_by(model) %>% 
+#   # mutate_if(
+#   #   is.numeric, 
+#   #   ~ifelse(
+#   #     . == max(., na.rm = TRUE),
+#   #     paste0("**", format_floats(., 3), "**"),
+#   #     format_floats(., 3)
+#   #   )
+#   # ) %>% 
+#   ggplot() +
+#   geom_col(aes(x = model, fill = same_company, y = mean_total), position = position_dodge2()) +
+#   scale_x_discrete(guide = guide_axis(angle = 45))
+```
 
 ### Error analysis
 
 -   new lines / splitted lines
+
 -   test synthetic hypothesis with pymupdf extract
+
 -   2.4 % wrong gold standard creation
 
 -   errors from wrong formatted numbers
+
 -   errors from wrong / unclear entity mapping
 
 #### Ground truth creation
@@ -258,9 +368,11 @@ A reason for this might be incorrect extracted texts. We find, that there are is
 
 The random white space and line breaks could be handles by adjusting the regular expression for the label matching. Missing white space between numeric values could also be handled by adjusting the \acr{regex}. The misplaced columns would need more advanced reprocessing strategies. But all those error ypes shouel influence the recall and not the precision.
 
-A possible explanation for a spread in precision could be the duplicated row identifier *Geleistete Anzahlungen*. Our simple approach matches this row always with the first occurrence. This means, if the second occurrence is given in the ground truth, but not the first one, our approach would create a false positive result. The percentage of false positive example is then determining the precision value and is linked to the number of total rows in the ground truth.
+A possible explanation for a small spread in precision with both PDF extraction backends could be the duplicated row identifier *Geleistete Anzahlungen*. Our simple approach matches this row always with the first occurrence. This means, if the second occurrence is given in the ground truth, but not the first one, our approach would create a false positive result. The percentage of false positive example is then determining the precision value and is linked to the number of total rows in the ground truth. But we do not see sucha pattern for the *pymupdf* results at all.
 
 A reason for wrong numeric values are rows, where the summed value is given in the next column, but same row, as the individual values. In this case the approach selects one individual value and a sum, instead of two individual values.
+
+-   synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
 
 ## Error rate guidance
 
@@ -294,8 +406,6 @@ confidence intervals based on company (know which formats are tricky)
 
 ::: paragraph-start
 ##### Limitations
-
-
 :::
 
 ::: paragraph-start
@@ -383,20 +493,161 @@ knitr::include_graphics("images/HITL_flowchart_error_handling.png")
 
 ## Limitations
 
-#### Regex baseline
+### Context rot
 
--   synthetic tables have been generated with cell lines because this should have improved the performance of a table extraction approach (not conducted)- maybe this is confusing pdfium? Or the zoom level?
+We reported the worsening performance of Llama 4 Maverick, when it gets to many examples presented in both main tasks. Since we used the FP8 version, we tested if this is a problem of to low precision in the calculation. But we find the same behavior with the FP16 version. It is the only model we detect the issue of *context rot* for.
+
+*Context rot* is a term introduces in [@kellyhongContextRotHow2025] technical report. The investigated an advanced *Needle in the Haystack* problem, including distractors and requiring the \acr{LLM}s to find semantic similarity instead of exact term matching. They find that the accuracy often starts to decrease with 10 k input tokens and more.
+
+Meta claims that Llama 4 Maverick has a context length 1 M (Llama 4 Scout even 10 M), where other models often ar limited to 128 k or 32 k or less. We limited our input token length to 32 k in most cases and reached this limit multiple times. We find it remarkable, that Llama 4 Maverick already shows *context rot* at inputs of length 10 k - 100 times shorter than their context window.
+
+@levySameTaskMore2024 show a notable degradation in LLMs' reasoning performance at much shorter input lengths than their technical maximum. They also show, that Mistral achieves the highest accuracy, when the relevant information is at the end of the prompt. We are not sure, how to relate these findings, since we do not include irrelevant information.
+
+#### Page identification
+
+Figure \@ref(fig:bar-plot-maverick-binary) shows the amount of correct (matching) and incorrect classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. One can see, that the *n_rag_example* strategy starts predicting the target class too often with increased number of examples. This behavior is not observed for the *n_random_examples* strategy.
+
+```{r bar-plot-maverick-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the amount of correct classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. With increased number of examples the n-rag-example strategy starts predicting the target class too often."}
+df_rot_binary <- df_binary %>% 
+  filter(
+    str_detect(model, "Mav"), 
+    method_family %in% c("n_rag_examples", "n_random_examples")
+    ) %>% 
+  select(-filepath) %>% 
+  unnest(predictions)
+
+df_rot_binary %>% 
+  ggplot() +
+  geom_bar(aes(x = if_else(predicted_type == "no", "other", "target"), fill = match)) +
+  facet_nested(classification_type~method_family+n_examples) +
+  xlab("predicted type")
+```
+
+Figure \@ref(fig:confusion-matrix-maverick-multi-class) is showing the confusion matrices for the multi-class classification with Llama 4 Maverick grouped by *method_family* and *n_examples*. Teal bordered tiles are correct predictions and red bordered tiles represent wrong predictions. The number is showing the percentage of classifications by the \acr{LLM} of a certain type (*predicted_type*) based on the true count of observations with that type (*type*). They sum up to one column-wise.
+
+We can see, that the *n_rag_example* strategy starts to predict **GuV** too often, when presented with two or more examples. We observe the same for the *n_random_examples* strategy starting from three provided examples. The \acr{LLM} is not just over-predicting **GuV**, but also other target classes. The over-prediction rate for *other* is lowest. Those pages often have no page filling table and thus are more different from the target classes and easier to distinguish (for a human).
+
+```{r confusion-matrix-maverick-multi-class, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confusion matrices for the multi-class classification with Llama 4 Maverick grouped by method-family and n-examples.", fig.width=9}
+df_rot_multi <- df_multi %>% 
+  filter(
+    str_detect(model, "Mav"), 
+    method_family %in% c("n_rag_examples", "n_random_examples")
+  ) %>% 
+  select(-filepath) %>% 
+  unnest(predictions)
+
+df_rot_multi %>% 
+  group_by(type, method_family, n_examples) %>%
+  mutate(
+    count_total = n()
+  ) %>% 
+  group_by(type, predicted_type, method_family, n_examples) %>% 
+  mutate(
+    count = n(),
+    percentage_correct = count/count_total
+  ) %>% 
+  ggplot() +
+  geom_tile(
+    aes(x = type, y = predicted_type, fill = percentage_correct, color = match),
+    size = 1, height = 0.81, width = 0.9
+    ) + 
+  facet_nested(method_family~n_examples) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  geom_text(
+    data = . %>% select(type, method_family, n_examples, percentage_correct) %>% unique(),
+    aes(label = round(percentage_correct, 2), y = predicted_type, x = type), color = "white"
+  ) +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+A possible explanation fro over-predicting **GuV** most might be, that the examples for **GuV** are presented first, because we just iterate over the *phrase_dict* dictionary (see code below). @liuLostMiddleHow2023 describe a behavior of \acr{LLM}s, that they are better with identifying relevant information, when it is placed in the beginning or end of the context. Since all examples are provided in the same manner, examples for classes other than the target class, could be interpreted as distractors with a high similarity. @kellyhongContextRotHow2025 shows, that in the presence of similar \acr{LLM}s' performance can degrade quickly. They do not present results, if the position of the picked distractor is important. Thus, we formulate the hypotheses for future investigation:
+
+1.  \acr{LLM}s tend to choose distractors at the beginning or end of the prompt.
+
+2.  \acr{LLM}s tend to choose distractors that apprear first or last.
+
+3.  There is an interaction effect, with the position, where the task itself is specified.
+
+```{python example-order, eval=FALSE, echo=TRUE}
+phrase_dict = {
+  "GuV": "a 'Gewinn- und Verlustrechnung' (profit and loss statement) table",
+  "Aktiva": "a 'Aktiva' (assets) table",
+  "Passiva": "a 'Passiva' (liabilities) table",
+  'other': "a text that does not suit the categories of interest",
+}
+```
+
+#### Information extraction
+
+Figure \@ref(fig:confusion-matrix-maverick-extraction) shows the confusion matrix for the information extraction task with Llama 4 Maverick and five examples. It shows, that the \acr{LLM} starts to predict numeric values for every row instead of prediction *null* if a row is missing. Figure \@ref(fig:numeric-predictions-maverick-extraction) shows, what kind of numeric values are predicted. We find two peaks for predicting floating point numbers close to zero or close to 30, while the true values (and values from the examples provided) are in a range of 1_000 and 10_000_000. Thus, we assume the values are hallucinated and not wrongly picked from the examples provided.
+
+Local and global context window / attention [@khowajaAnalysisLlama4s2025]. Trained on 256 k tokens with FP8 precision.
+
+```{r confusion-matrix-maverick-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="80%", dev=std_dev, fig.cap="Showing the confusion matrix for the information extraction task with Llama 4 Maverick and five in-context learning examples.", fig.height=3, fig.align='center'}
+df_rot <- df_real_table_extraction %>% 
+  filter(str_detect(model, "Mav"), n_examples == 5) %>% 
+  unnest(predictions)
+
+df_rot %>% 
+  pivot_longer(NA_true_positive:NA_true_negative) %>% 
+  group_by(name) %>% 
+  reframe(
+    mean = mean(value),
+    median = median(value)
+    ) %>% 
+  mutate(
+    predicted = !str_detect(name, "negative"),
+    truth = !(name %in% c("NA_true_negative", "NA_false_positive")),
+    upper_bond = ordered(ceiling(mean)),
+    median = ordered(median)
+  ) %>% 
+  ggplot() +
+  geom_tile(
+    aes(y = truth, x = predicted, fill = mean, color = median),
+    size=2, height = 0.98, width = 0.98
+    ) +
+  geom_text(
+    data = . %>% select(name, truth, predicted) %>% unique(),
+    aes(label = name, y = truth, x = predicted), color = "white"
+  )
+```
+
+```{r numeric-predictions-maverick-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="80%", dev=std_dev, fig.cap="Comparing the predicted numeric values with the true value distribution for the information extraction task with Llama 4 Maverick and five in-context learning examples. The dotted line is marking the value 30 EUR.", fig.align='center'}
+ticks <- seq(2,8,2)
+ooms <- 10^seq(0, 10)
+minor_breaks <- as.vector(ticks %o% ooms)
+
+ticks <- 1
+ooms <- 10^seq(0, 10)
+breaks <- as.vector(ticks %o% ooms)
+
+df_rot %>% 
+  pivot_longer(year_truth:previous_year_result) %>% 
+  mutate(
+    year = str_extract(name, ".*year"),
+    type = str_extract(name, "truth|result"),
+  ) %>% 
+  ggplot() +
+  # geom_violin(aes(x = name, y = log(value, 10))) +
+  geom_hline(yintercept = 30, linetype = "dotted") +
+  geom_violin(aes(x = type, y = value, fill = type)) +
+  # coord_cartesian(ylim = c(0, 10)) +
+  scale_fill_discrete(guide="none") +
+  ylab("EUR") +
+  xlab("value status") +
+  facet_nested(~year) +
+  scale_y_log10(breaks = breaks, minor_breaks=minor_breaks)
+
+```
 
 ### classification
 
 -   Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
 -   predictor: n_big_tables (tf or llm relevant?)
 -   Why it is important to have a good recall (or top n accuracy)
--   bad performance for Maverick with more models relied to FP8 model version? No. Same reults with FP16
-
-One could build an application that is not asking for a human intervention for reported confidences over 0.9 and then give the possibility to change the page to extract information from later on.
-
-For humans: Easily identifiable if page has a big table with numbers but not so easy to spot the Aktiva / Passiva label.
+-   
 
 ## Not covered
 
@@ -433,3 +684,12 @@ Vision model as baseline
 
 Ad-hocs for monitoring during the year
 
+## Tools
+
+Vlt egal oder outlook
+
+#### Vision Grid Transformer
+
+#### TableFormer
+
+SynthTabNet \<-- has it: - nested / hierarchical tables, where rows add up to another row? - identifying units and unit cols/rows

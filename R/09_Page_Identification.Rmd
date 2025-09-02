@@ -7,6 +7,8 @@ editor_options:
 \setcounter{chapter}{0}
 \renewcommand{\thechapter}{\Alph{chapter}}
 
+# (APPENDIX) Appendix {-}
+
 # Appendix A - Page identification report {#page-identification-report}
 \phantomsection
 \ChapFrame[Page identification report][bhtblue]
@@ -515,124 +517,6 @@ Delete or place somewhere else?:
     single document or a table of interest can span two pages.
 
 ## Classification with LLMs {#llm-page-identification}
-
-```{r page-identification-llm-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
-temp_list <- readRDS("data_storage/page_identification_llm.rds")
-df_binary <- temp_list$df_binary %>% mutate(
-        # model_family = sub("_.*", "", model),
-        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
-        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
-        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
-        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
-        model = str_remove(model, "-0-9-1")
-      )
-df_multi <- temp_list$df_multi %>% mutate(
-        # model_family = sub("_.*", "", model),
-        model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
-        model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
-        model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
-        model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family),
-        model = str_remove(model, "-0-9-1")
-      )
-
-method_families <- c("zero_shot", "law_context", "top_n_rag_examples", "n_random_examples", 'n_rag_examples')
-
-method_familiy_colors <- c(
-  "zero_shot" = "#e41a1c", 
-  "law_context" = "#377eb8", 
-  "top_n_rag_examples" = "#4daf4a", 
-  "n_random_examples" = "#984ea3", 
-  'n_rag_examples' = "#ff7f00"
-  )
-
-model_by_size_classification <- c('google_gemma-3-4b-it-0-9-1', 'google_gemma-3n-E4B-it-0-9-1', "google_gemma-3-12b-it-0-9-1",
-  "google_gemma-3-27b-it-0-9-1", "meta-llama_Llama-3.1-8B-Instruct", 
-  "meta-llama_Llama-3.1-70B-Instruct", "meta-llama_Llama-3.3-70B-Instruct",
-  "meta-llama_Llama-4-Scout-17B-16E-Instruct", "meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8",
-  "mistralai_Ministral-8B-Instruct-2410", "mistralai_Mistral-Small-3.1-24B-Instruct-2503",
-  "mistralai_Mistral-Large-Instruct-2411", "Qwen_Qwen2.5-0.5B-Instruct",
-  "Qwen_Qwen2.5-1.5B-Instruct", "Qwen_Qwen2.5-3B-Instruct", "Qwen_Qwen2.5-7B-Instruct",
-  "Qwen_Qwen2.5-14B-Instruct", "Qwen_Qwen2.5-32B-Instruct", "Qwen_Qwen2.5-72B-Instruct",
-  "Qwen_Qwen3-8B", "Qwen_Qwen3-30B-A3B-Instruct-2507", "Qwen_Qwen3-32B", "Qwen_Qwen3-235B-A22B-Instruct-2507",
-  "tiiuae_Falcon3-10B-Instruct", "microsoft_phi-4"
-  ) %>% gsub("^[^_]+_", "", .)
-
-df_binary <- df_binary %>% 
-  mutate(
-  n_examples = as.numeric(n_examples),
-  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
-  n_examples = if_else(method_family == "law_context", 1, n_examples),
-  method_family = factor(method_family, levels = method_families)
-) %>% mutate(model = gsub("^[^_]+_", "", model)) %>% 
-  filter(model %in% model_by_size_classification) %>% 
-  ungroup() # %>% 
-  # mutate(
-  #   model = str_replace(model, "_vllm", ""),
-  #   model_family = sub("_.*", "", model),
-  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
-  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
-  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
-  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
-  # )
-
-binary_task <- list()
-binary_task$n_models <- df_binary$model %>% unique() %>% length()
-binary_task$n_model_families <- df_binary$model_family %>% unique() %>% length()
-binary_task$n_method_families <- df_binary$method_family %>% unique() %>% length()
-
-top_performer_binary <- df_binary %>% 
-  filter(is.finite(f1_score), loop == 0) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>%
-  group_by(model_family, classification_type) %>% 
-  slice_max(n = 1, f1_score) %>% 
-  arrange(desc(f1_score)) %>% 
-  select(model_family, model, classification_type, method_family, n_examples, f1_score, norm_runtime) %>%
-  mutate(
-    f1_score = round(f1_score, 2),
-    norm_runtime = round(norm_runtime, 0),
-  ) %>% rename(
-    "runtime in s" = norm_runtime,
-  )
-
-top_performer_binary_median <- top_performer_binary %>% group_by(classification_type) %>% summarise(median = median(f1_score))
-top_performer_binary_median_guv <- top_performer_binary_median %>% filter(classification_type == "GuV") %>% pull(median)
-top_performer_binary_median_aktiva <- top_performer_binary_median %>% filter(classification_type == "Aktiva") %>% pull(median)
-top_performer_binary_median_passiva <- top_performer_binary_median %>% filter(classification_type == "Passiva") %>% pull(median)
-
-df_multi <- df_multi %>% 
-  mutate(
-  n_examples = as.numeric(n_examples),
-  n_examples = if_else(method_family == "zero_shot", 0, n_examples),
-  n_examples = if_else(method_family == "law_context", 1, n_examples),
-  method_family = factor(method_family, levels = method_families)
-) %>% mutate(model = gsub("^[^_]+_", "", model)) %>% 
-  filter(model %in% model_by_size_classification) %>% 
-  ungroup() #%>%
-  # mutate(
-  #   model = str_replace(model, "_vllm", ""),
-  #   model_family = sub("_.*", "", model),
-  #   model_family = if_else(str_detect(model, "Qwen2"), "Qwen 2.5", model_family),
-  #   model_family = if_else(str_detect(model, "Qwen3"), "Qwen 3", model_family),
-  #   model_family = if_else(str_detect(model, "Llama-3"), "Llama-3", model_family),
-  #   model_family = if_else(str_detect(model, "Llama-4"), "Llama-4", model_family)
-  # )
-
-top_performer_multu <- df_multi %>% 
-  unnest(metrics) %>% 
-  filter(metric_type %in% c("Aktiva", "Passiva", "GuV")) %>% 
-  filter(is.finite(f1_score), loop == 0) %>% 
-  filter(n_examples <= 3 | is.na(n_examples)) %>%
-  group_by(model_family, metric_type) %>% 
-  slice_max(n = 1, f1_score) %>% 
-  arrange(desc(f1_score)) %>% # head(10) %>% 
-  select(model_family, model, metric_type, method_family, n_examples, f1_score, norm_runtime) %>%
-  mutate(
-    f1_score = round(f1_score, 2),
-    norm_runtime = round(norm_runtime, 0),
-  ) %>% rename(
-    "runtime in s" = norm_runtime,
-  )
-```
 
 The third approach we present in this section, uses pretrained
 \acr{LLM}s to classify, if a given text extract is including any of the

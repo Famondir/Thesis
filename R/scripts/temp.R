@@ -787,3 +787,148 @@ df_t3 %>% group_by(filepath, classification_type, page) %>%
     position = position_dodge2()) + 
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(name~.)
+
+#### investigate content rot ####
+
+##### extraction #####
+
+df_rot <- df_real_table_extraction %>% 
+  filter(str_detect(model, "Mav"), n_examples == 5) %>% 
+  unnest(predictions)
+
+df_rot %>% 
+  pivot_longer(NA_true_positive:NA_true_negative) %>% 
+  group_by(name) %>% 
+  reframe(
+    mean = mean(value),
+    median = median(value)
+    ) %>% 
+  mutate(
+    predicted = !str_detect(name, "negative"),
+    truth = !(name %in% c("NA_true_negative", "NA_false_positive")),
+    upper_bond = ordered(ceiling(mean)),
+    median = ordered(median)
+  ) %>% 
+  ggplot() +
+  geom_tile(
+    aes(y = truth, x = predicted, fill = mean, color = median),
+    size=2, height = 0.98, width = 0.98
+    ) +
+  geom_text(
+    data = . %>% select(name, truth, predicted) %>% unique(),
+    aes(label = name, y = truth, x = predicted), color = "white"
+  )
+
+df_rot %>% 
+  pivot_longer(year_truth:previous_year_result) %>% 
+  ggplot() +
+  # geom_violin(aes(x = name, y = log(value, 10))) +
+  geom_boxplot(aes(x = name, y = log(value, 10))) +
+  coord_cartesian(ylim = c(0, 10)) +
+  ylab(expression(log[10]("EUR")))
+
+df_rot %>% 
+  pivot_longer(year_truth:previous_year_result) %>% 
+  mutate(
+    year = str_extract(name, ".*year"),
+    type = str_extract(name, "truth|result"),
+  ) %>% 
+  filter(type == "result", value < 1000) %>% 
+  ggplot() +
+  # geom_violin(aes(x = name, y = log(value, 10))) +
+  geom_histogram(aes(x = value, fill = type), binwidth = 100) +
+  coord_cartesian(xlim = c(0, 10000)) +
+  scale_fill_discrete(guide="none") +
+  ylab(expression(log[10]("EUR"))) +
+  xlab("value status") +
+  facet_nested(~year) +
+  scale_x_continuous(breaks = scales::pretty_breaks())
+
+df_rot %>% 
+  pivot_longer(year_truth:previous_year_result) %>% 
+  mutate(
+    year = str_extract(name, ".*year"),
+    type = str_extract(name, "truth|result"),
+  ) %>% 
+  filter(type == "result", !is.na(value)) %>% 
+  # mutate(value = as.integer(value)) %>% 
+  pull(value) %>% 
+  multimode::nmodes(bw = 1)
+  # DescTools::Mode()
+
+{
+  ticks <- 2:9
+  ooms <- 10^seq(0, 10)
+  minor_breaks <- as.vector(ticks %o% ooms)
+  
+  ticks <- 1
+  ooms <- 10^seq(0, 10)
+  breaks <- as.vector(ticks %o% ooms)
+  
+  df_rot %>% 
+    pivot_longer(year_truth:previous_year_result) %>% 
+    mutate(
+      year = str_extract(name, ".*year"),
+      type = str_extract(name, "truth|result"),
+    ) %>% 
+    ggplot() +
+    # geom_violin(aes(x = name, y = log(value, 10))) +
+    geom_violin(aes(x = type, y = value, fill = type)) +
+    # coord_cartesian(ylim = c(0, 10)) +
+    scale_fill_discrete(guide="none") +
+    ylab(expression(log[10]("EUR"))) +
+    xlab("value status") +
+    facet_nested(~year) +
+    scale_y_log10(breaks = breaks, minor_breaks=minor_breaks, labels=scales::scientific)
+  }
+
+##### binary #####
+
+df_rot_binary <- df_binary %>% 
+  filter(
+    str_detect(model, "Mav"), 
+    method_family %in% c("n_rag_examples", "n_random_examples")
+    ) %>% 
+  select(-filepath) %>% 
+  unnest(predictions)
+
+df_rot_binary %>% 
+  ggplot() +
+  geom_bar(aes(x = predicted_type != "no", fill = match)) +
+  facet_nested(classification_type~method_family+n_examples)
+
+##### multi #####
+
+df_rot_multi <- df_multi %>% 
+  filter(
+    str_detect(model, "Mav"), 
+    method_family %in% c("n_rag_examples", "n_random_examples")
+  ) %>% 
+  select(-filepath) %>% 
+  unnest(predictions)
+
+df_rot_multi %>% 
+  group_by(type, method_family, n_examples) %>%
+  mutate(
+    count_total = n()
+  ) %>% 
+  group_by(type, predicted_type, method_family, n_examples) %>% 
+  mutate(
+    count = n(),
+    percentage_correct = count/count_total
+  ) %>% 
+  ggplot() +
+  geom_tile(
+    aes(x = type, y = predicted_type, fill = percentage_correct, color = match),
+    size = 1, height = 0.9, width = 0.9
+    ) + 
+  facet_nested(method_family~n_examples) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  geom_text(
+    data = . %>% select(type, method_family, n_examples, percentage_correct) %>% unique(),
+    aes(label = round(percentage_correct, 2), y = predicted_type, x = type), color = "white"
+  ) +
+  theme(
+    legend.position = "bottom"
+  )
+  

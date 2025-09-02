@@ -113,101 +113,6 @@ The difference in the precision scores for the \acr{regex} approach on synthetic
 
 ## Extraction with LLMs {#extraction-with-llms-real-tables}
 
-```{r loading-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_extended_llm.rds", "data_storage/real_table_extraction_extended_synth.rds", "data_storage/real_table_extraction_extended_azure.rds"))}
-df_real_table_extraction <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %>% 
-  filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
-  mutate(
-    model = gsub("^[^_]+_", "", model),
-    company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])
-    ) %>% filter(company != "MEAB GmbH")
-df_real_table_extraction_synth <- readRDS("data_storage/real_table_extraction_extended_synth.rds") %>% 
-  mutate(
-    model = gsub("^[^_]+_", "", model),
-    company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])
-    ) %>% filter(company != "MEAB GmbH")
-df_real_table_extraction_azure <- readRDS("data_storage/real_table_extraction_extended_azure.rds") %>% 
-  mutate(
-    model = gsub("^[^_]+_", "", model),
-    company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])
-    ) %>% filter(company != "MEAB GmbH")
-
-model_by_size <- c(
-  'gemma-3-4b-it', #'gemma-3n-E4B-it', 
-  "gemma-3-12b-it", "gemma-3-27b-it",
-  "gpt-oss-20b", "gpt-oss-120b",
-  "Llama-3.1-8B-Instruct", "Llama-3.1-70B-Instruct", "Llama-3.3-70B-Instruct",
-  "Llama-4-Scout-17B-16E-Instruct", "Llama-4-Maverick-17B-128E-Instruct-FP8",
-  "Ministral-8B-Instruct-2410", "Mistral-Small-3.1-24B-Instruct-2503",
-  "Mistral-Large-Instruct-2411", "Qwen2.5-0.5B-Instruct",
-  "Qwen2.5-1.5B-Instruct", "Qwen2.5-3B-Instruct", "Qwen2.5-7B-Instruct",
-  "Qwen2.5-14B-Instruct", "Qwen2.5-32B-Instruct", "Qwen2.5-72B-Instruct",
-  "Qwen3-0.6B", "Qwen3-1.7B", "Qwen3-4B",
-  "Qwen3-8B", "Qwen3-14B", "Qwen3-30B-A3B-Instruct-2507", "Qwen3-32B",
-  "Qwen3-235B-A22B-Instruct-2507-FP8", "Qwen3-235B-A22B-Instruct-2507",
-  # "gpt-4.1-nano", "gpt-4.1-mini", "gpt-4.1",
-  "Falcon3-10B-Instruct", "phi-4"
-)
-
-method_order <- c("top_n_rag_examples", "n_random_examples", "top_n_rag_examples_out_of_sample", "static_example", "zero_shot" )
-
-norm_factors <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/runtime_factors_real_table_extraction.csv") %>% 
-  mutate(
-    model_name = model_name %>% str_replace("/", "_")
-  )
-norm_factors_few_examples <- norm_factors %>% filter((str_ends(filename, "binary.yaml") | str_ends(filename, "multi.yaml") | str_ends(filename, "vllm_batched.yaml")))
-
-df_real_table_extraction <- df_real_table_extraction %>% left_join(
-  norm_factors_few_examples %>% mutate(model_name = gsub("^[^_]+_", "", model_name)) %>% select(model_name, parameter_count, normalization_factor),
-  by = c("model" = "model_name")
-  ) %>% mutate(normalized_runtime = round(runtime*normalization_factor, 0))
-
-df_overview <- bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>% 
-  filter(out_of_company != TRUE | is.na(out_of_company), n_examples <= 5) %>% 
-  filter(model %in% model_by_size) %>%
-  filter(n_examples != 2) %>% 
-  mutate(
-    model = factor(model, levels = model_by_size),
-    method_family = factor(method_family, levels = method_order),
-    n_examples = fct_rev(ordered(paste("n =", n_examples)))
-    )
-
-units_real_tables <- read_csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% mutate(
-  filepath = paste0('/pvc/benchmark_truth/real_tables_extended/', company, '__', filename),
-  T_EUR = (T_in_year + T_in_previous_year)>0,
-  T_EUR_both = (T_in_year + T_in_previous_year)>1
-) %>% select(filepath, T_EUR, T_EUR_both)
-
-df_real_table_extraction_synth <- df_real_table_extraction_synth %>% left_join(units_real_tables)
-```
-
-where to put?:
-
--   GESOBAU AG and WBM GmbH bad, text selection with mouse odd
--   shift median upwards for GESOBAU: Qwen3, mitral, microsoft, Llama
--   shift median upwards for WBM: Llama 4
-
-```{r}
-df_real_table_extraction %>% filter(!str_detect(model, "oss")) %>% 
-  filter(n_examples == 3) %>% 
-  mutate(.before = 1, company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])) %>% 
-  group_by(company) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = company, y = percentage_correct_numeric)) + 
-  # geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) + 
-  facet_grid(model_family ~ .)
-
-df_real_table_extraction %>% filter(str_detect(model, "235B")) %>% 
-  filter(n_examples == 5, method_family == "top_n_rag_examples") %>% 
-  mutate(.before = 1, company = map_chr(filepath, ~str_split(str_split(., "/")[[1]][5], "__")[[1]][1])) %>% 
-  group_by(company) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = company, y = percentage_correct_numeric)) + 
-  geom_jitter(aes(x = company, y = percentage_correct_numeric), alpha= .5) +
-  scale_x_discrete(guide = guide_axis(angle = 30)) + 
-  facet_grid(model_family ~ .)
-```
-
 This section presents the results for the table extraction task performed with \acr{LLM}s on **Aktiva** tables. Subsection \@ref(real-table-extraction-results) compraes the performance of open source models on real tables. It also compares those results with the table extraction performance achieved with models by OpenAI.
 
 Subsection \@ref(synthetic-table-extraction) presents the results on synthetic **Aktiva** tables. Subsection \@ref(real-table-extraction-synth-context) shows a hybrid approach, where synthetic tables are used for the in-context learning, to extract real **Aktiva** tables. Finally, we summarize the results for all approaches in subsection \@ref(comparing-table-extraction-methods).
@@ -462,7 +367,7 @@ df_overview_gpt %>% mutate(n_pred = map_dbl(predictions, ~nrow(.)), .before = 1)
 ```
 
 ::: paragraph-start
-##### Out of company performance
+##### Examples from same company performance
 
 Table \@ref(tab:table-extraction-same-company-improvement-table) shows the improvement for the percentage of correct predictions total, when **Aktiva** tables from the same company as the target tables company are provided for the in-context learning. It shows that this improvement is biggest for goolge and Qwen and smallest for Llama models.
 :::

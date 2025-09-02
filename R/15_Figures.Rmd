@@ -265,7 +265,7 @@ design = matrix(c(
   21,22,23,24,25,26,27,28
   ), 5, 8, byrow = TRUE)
 
-df_overview %>% group_by(
+df_real_table_extraction %>% group_by(
   model, method, method_family, out_of_company, n_examples
   ) %>% 
   mutate(n_examples = str_remove(as.character(n_examples), "n = ")) %>% 
@@ -299,7 +299,7 @@ design = matrix(c(
   21,22,23,24,25,26,27,28
   ), 5, 8, byrow = TRUE)
 
-df_overview %>% group_by(
+df_real_table_extraction %>% group_by(
   model, method, method_family, out_of_company, n_examples
   ) %>% 
   mutate(n_examples = str_remove(as.character(n_examples), "n = ")) %>% 

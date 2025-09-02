@@ -16,9 +16,23 @@ Afterwards, subsection \@ref(llm-methods) describes the method of few-shot promp
 
 Section \@ref(other-concepts) presents the \acr{SHAP} framework. It is a unified explanation model for machine learning models and can be applied to complex models like deep neutral networks or random forests. The latter are briefly introduced as well. We use random forests and \acr{SHAP} to check our hypotheses on possible predictors for the information extraction task (see \@ref(research-questions)).
 
-## Information extraction / retrieval {#information-retrieval}
+## Natural language processing {#information-retrieval}
 
 closed-domain vs open-domain
+
+### Document Layout Analysis (edit this)
+
+An important step in the process of extracting information from documents is to recognize the layout of a document [@zhongPubLayNetLargestDataset2019].
+
+Getting the order of texts correct align captions to tables and figure identify headings, tables and figures
+
+One of the most popular datasets used for training and benchmarking is PubLayNet (see [PubLayNet on paperswithcode.com](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central [@zhongPubLayNetLargestDataset2019, p. 1]. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. \<-- is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?
+
+Manual annotated datasets often were limited to several hundred pages. Deep learning methods need a much larger training dataset. Previously optical character recognition (OCR) methods were used.
+
+Identify potentially interesting pages with text / regex search. Check if there is a table present on this page.
+
+Object detection
 
 ### Term frequency
 
@@ -69,11 +83,29 @@ hauptsächlich decoder (generieren)
 
 seit 2017
 
+#### Attention
+
+The most obvious challenge is computational cost. The amount of
+processing power required scales quadratically with the length of the
+input [@tahirUnderstandingLLMContext2025].
+
 #### Encoder
 
 Wichtig
 
+positional encoding important (and distinguishes from tf-idf): dog eats cat
+
+sinusoidal positional encoding, which uses sine and cosine functions of
+varying frequencies to create unique positional vectors, and Rotary
+Position Embedding (RoPE), which applies a rotation to the token
+embeddings based on their position [@khowajaAnalysisLlama4s2025]
+
 #### Decoder
+
+For each generated token, the attention mechanism needs to access the
+key and value vectors of all preceding tokens in the context window. To
+avoid recomputing these key and value vectors at each step, they are
+stored in the KV-cache. [@khowajaAnalysisLlama4s2025] However, the memory required to store the KV-cache scales linearly with the size of the context window.
 
 Wichtig
 
@@ -125,7 +157,7 @@ generation template strict (closed) vs open
 
 always selecting the most probable response (temp = 0), so numeric values are correct and classification as well
 
-## Other concepts {#other-concepts}
+## General machine learning and statistics {#other-concepts}
 
 ### Sample distribution visualization methods
 
@@ -258,37 +290,3 @@ However, the need for a high explainability of machine learning algorithms is mo
 -   lessons learned
 -   link to goal thesis
 -   link to next chapter
-
-## To place in chapters above
-
-## Table extraction tasks
-
-### Difficulties
-
--   Beispielbilder
-
-## Document Extraction Process
-
-### Document Layout Analysis
-
-An important step in the process of extracting information from documents is to recognize the layout of a document [@zhongPubLayNetLargestDataset2019].
-
-Getting the order of texts correct align captions to tables and figure identify headings, tables and figures
-
-One of the most popular datasets used for training and benchmarking is PubLayNet (see [PubLayNet on paperswithcode.com](https://paperswithcode.com/sota/document-layout-analysis-on-publaynet-val)). It contains over 360_000 document automatically annotated images from scientific articles publicly available on PubMed Central [@zhongPubLayNetLargestDataset2019, p. 1]. This was possible, because the articles have been provided in PDF and XML format. For the annotations most text categories (e.g. text, caption, footnote) have been aggregated into one category. \<-- is this a problem for later approaches where a visual and textual model work hand in hand to identify e.g. table captions?
-
-Manual annotated datasets often were limited to several hundred pages. Deep learning methods need a much larger training dataset. Previously optical character recognition (OCR) methods were used.
-
-Identify potentially interesting pages with text / regex search. Check if there is a table present on this page.
-
-Object detection
-
-## Tools
-
-Vlt egal oder outlook
-
-#### Vision Grid Transformer
-
-#### TableFormer
-
-SynthTabNet \<-- has it: - nested / hierarchical tables, where rows add up to another row? - identifying units and unit cols/rows

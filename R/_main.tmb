@@ -1,13 +1,13 @@
 \thumbcontents {Introduction}{\Huge {\textbf {1}}}{white}{bhtgray}{1}{thumbs.1}{0}
 \thumbcontents {Literature review}{\Huge {\textbf {2}}}{white}{bhtred}{5}{thumbs.2}{0}
 \thumbcontents {Methodology}{\Huge {\textbf {3}}}{white}{bhtblue}{15}{thumbs.3}{0}
-\thumbcontents {Implementation}{\Huge {\textbf {4}}}{white}{bhtyellow}{29}{thumbs.4}{0}
-\thumbcontents {Results}{\Huge {\textbf {5}}}{white}{bhtteal}{33}{thumbs.5}{0}
-\thumbcontents {Discussion}{\Huge {\textbf {6}}}{white}{bhtgray}{41}{thumbs.6}{0}
-\thumbcontents {Conclusion}{\Huge {\textbf {7}}}{white}{bhtred}{49}{thumbs.7}{0}
-\thumbcontents {References and glossary}{\Huge {\textbf {8}}}{white}{bhtyellow}{51}{thumbs.8}{0}
-\thumbcontents {Page identification report}{\Huge {\textbf {A}}}{white}{bhtblue}{65}{thumbs.9}{0}
-\thumbcontents {Information extraction report}{\Huge {\textbf {B}}}{white}{bhtteal}{87}{thumbs.10}{0}
-\thumbcontents {Error rate guidance report}{\Huge {\textbf {C}}}{white}{bhtgray}{103}{thumbs.11}{0}
-\thumbcontents {Feature effect analysis}{\Huge {\textbf {D}}}{white}{bhtred}{115}{thumbs.12}{0}
-\thumbcontents {Miscellaneous}{\Huge {\textbf {E}}}{white}{bhtyellow}{121}{thumbs.13}{0}
+\thumbcontents {Implementation}{\Huge {\textbf {4}}}{white}{bhtyellow}{31}{thumbs.4}{0}
+\thumbcontents {Results}{\Huge {\textbf {5}}}{white}{bhtteal}{35}{thumbs.5}{0}
+\thumbcontents {Discussion}{\Huge {\textbf {6}}}{white}{bhtgray}{43}{thumbs.6}{0}
+\thumbcontents {Conclusion}{\Huge {\textbf {7}}}{white}{bhtred}{57}{thumbs.7}{0}
+\thumbcontents {References and glossary}{\Huge {\textbf {8}}}{white}{bhtyellow}{59}{thumbs.8}{0}
+\thumbcontents {Page identification report}{\Huge {\textbf {A}}}{white}{bhtblue}{73}{thumbs.9}{0}
+\thumbcontents {Information extraction report}{\Huge {\textbf {B}}}{white}{bhtteal}{95}{thumbs.10}{0}
+\thumbcontents {Error rate guidance report}{\Huge {\textbf {C}}}{white}{bhtgray}{109}{thumbs.11}{0}
+\thumbcontents {Feature effect analysis}{\Huge {\textbf {D}}}{white}{bhtred}{121}{thumbs.12}{0}
+\thumbcontents {Miscellaneous}{\Huge {\textbf {E}}}{white}{bhtyellow}{127}{thumbs.13}{0}
