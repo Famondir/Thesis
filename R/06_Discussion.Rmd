@@ -10,7 +10,10 @@ editor_options:
 
 ## Page identification
 
-### General performance
+-   predictor: n_big_tables (tf or llm relevant?)
+-   Why it is important to have a good recall (or top n accuracy)
+
+### General performance {#general-performance-page-identification}
 
 ::: paragraph-start
 ##### Results
@@ -41,7 +44,7 @@ Another approach is, that the user provides documents and a list on which page t
 ::: paragraph-start
 ##### Limitations
 
-The term frequency and \acr{LLM} classification might perform worse, if the information searched for, is just making up a small part of the pages content. If the information is in a table we can use a visual table detection model, to identify all tables. Section \@ref(yolo) shows that this is a promising approach. Then we can use the retrieval augmantag few-shot approach to identify, which table is the correct one.
+The term frequency and \acr{LLM} classification might perform worse, if the information searched for, is just making up a small part of the pages content. If the information is placed in a table, we can use a visual table detection model, to identify all tables. Section \@ref(yolo) shows that this is a promising approach. Then we can use the retrieval augmented few-shot approach to identify, which table is the correct one.
 :::
 
 If the information is not even in a table, but part of a regular sentence, it might get difficult to find the correct page with this approach. Maybe the \acr{TOC} approach could be used for page range refinement in this case.
@@ -63,12 +66,24 @@ Do not include a obligatory step, to confirm the selected page, but start the in
 
 Save the examples already classified in a vector database and use those in future tasks. Include documents from the same company. Build the database document by document in the beginning, before starting with batch wise processing.
 
-::: paragraph-start
 ##### Possible improvement
 
--   Instead of the simple term frequency the \acr{TF-IDF} measure could be implemented.
+::: paragraph-start
+###### Term frequency approach
 
--   With more expertise and few shot learning the \acr{TOC} approach could perform better.
+Inspecting some of the pages that are ranked high and classified as **Aktiva** by the term frequency based random forest, we find, that the normalized sum of term occurrences, can lead to missclassification. For example, we find a page identified as **Aktiva**, that contains no single table but a long text. The term counts based on the **Aktiva** term list can be found in section \@ref(tf-missclassifications). The term 'Geschäfts' is present 19 times. The term 'Unternehmen' is present 10 times.
+:::
+
+Those terms are probably present very often all over the document. Thus, they should get less weight. Additionally it might be better to count, how many of the terms are present in a boolean manner, instead of counting them. Or a measure like the \acr{TF-IDF} could be implemented.
+
+We also find pages that are missclassified, because they have a high density of floats. Figure \@ref(fig:tf-many-floats) shows an example.
+
+Instead of using the normalized sum of term frequencies, sum of boolean indicators or the sum of \acr{TF-IDF} one could also use each single indicator as a feature for random forest.
+
+::: paragraph-start
+###### Table of contents understanding approach
+
+@liExtractingFinancialData2023 use a few-shot learning strategy with the \acr{TOC} approach. We implemented only a zero-shot strategy. With more expertise for and verbosity in the prompt building, this approach probably could perform better as reported here.
 :::
 
 ::: paragraph-start
@@ -153,13 +168,31 @@ small in sample extractions =\> 4000 county year ACFRs: 96 % (80_000 data points
 ##### Implications
 
 We have not investigated yet, if the 2 % wrong extracted numeric values are caused by not respecting currency units, or if there is another reason. A potential reason may be numeric values, that get stiched together during text extraction.
+:::
 
 -   invest more into table extraction?
 
-Checked other extraction libraries as well. Including Azure Document Intelligence and Dpcling, but results not better. In Markdown they get worse.
+Checked other extraction libraries as well. Including Azure Document Intelligence and Docling, but results not better. In Markdown they get worse.
+
+```{r}
+df_qwen235 <-  readRDS("data_storage/table_extraction_qwen3_235B_multiple_input_formats")
+
+table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% 
+  mutate(
+    filepath = paste0("/pvc/benchmark_truth/real_tables_extended/", company, "__", filename)
+  ) %>% as_tibble()
+
+df_qwen235 <- df_qwen235 %>% left_join(table_characteristics)
+
+df_qwen235 %>% group_by(model, method, extractor, input_format) %>% 
+  summarize(mean_total = mean(percentage_correct_total)) %>% 
+  group_by(model, extractor, input_format) %>% 
+  slice_max(n = 1, mean_total, with_ties = FALSE) %>% 
+  render_table()
+```
+
 
 Checking the extracted values takes up to three minutes. This totals in 300 minutes prediction checking. Thus, selecting a smaller model that is finishing after 2:30 minutes is not speeding up the process a lot. Once we get a sufficient good performance with the big models the prediction checking can be dropped. This would bring th real benefit.
-:::
 
 ::: paragraph-start
 ##### Limitations
@@ -288,6 +321,8 @@ table_same_company
 
 In general the approach seems not be prone to hallucinations. When we accidentally tried to extract values from a **Passiva** and **GuV** table, no prediction was made, because non of the row identifiers matches our strict schema.
 
+We have not specifically investigated, if an annual report of the following or previous year is more helpful than years further away. This would be plausible, because it serves the correct numeric and missing values for half of the information extract perfectly formatted as \acr{JSON}. Theoretically it should become trivial to extract all values correct and transform it accordingly to the currency units, if the previous and following years annual reports are presented as examples for the in-context learning. This should be investigated in future work.
+
 predictions for barrierefreie documents of WBM empty
 
 An odd text marking order in a PDF by dragging the mouse is no indicator for a bad text extract.
@@ -319,6 +354,8 @@ An odd text marking order in a PDF by dragging the mouse is no indicator for a b
 ```
 
 ### Error analysis
+
+-   check for halluzination vs wrong placed / repeated numbers
 
 -   new lines / splitted lines
 
@@ -352,6 +389,8 @@ tribble(
   dom = "t"
 )
 ```
+
+Inspecting the predictions of the first experiments for the classification task, yielded interesting information, tool. Qwen 2.5 consistently classified some pages right after of the listed **GuV** pages to be of type **GuV** as well. And it was correct. For the company *IBB* the **GuV** spreads over two pages. This led to an adjustment of the ground truth, including all pages of tables, that span multiple pages.
 
 #### Regular expression approach {#regex-synth-backend-discussion}
 
@@ -485,11 +524,6 @@ HTML might help =\> document parsing and table extraction
 :::
 
 ## Summary
-
-```{r hitl-error-handling, fig.cap="Showing the information extraction process in a HITL application. We propose to include user action only after the information extraction. If a wrong page is selected, this can be fixed and extraction runs again. Wrong extracted values and handling unknown row identifiers should be done in one place.", echo=FALSE, out.width="100%", fig.align='center'}
-
-knitr::include_graphics("images/HITL_flowchart_error_handling.png")
-```
 
 ## Limitations
 
@@ -642,54 +676,57 @@ df_rot %>%
 
 ```
 
-### classification
-
--   Qwen 2.5 hat zweiseitige GuV von IBB entdeckt und zur Anpassung der Ground Truth
--   predictor: n_big_tables (tf or llm relevant?)
--   Why it is important to have a good recall (or top n accuracy)
--   
-
 ## Not covered
 
--   OCR
--   fine-tuning
--   using something smaller (e.g. LSTMs) instead LLMs
--   building application, UX design (ref Ambacher 2024)
--   table extraction (either VLLMs (visual) or classic approaches \<-- tried tabula but was not successful (because of missing visual traits)?) to prevent wrong text flow and have clear cell borders
--   classification oriented models with softmax
+In this section we briefly mention the topics we have not covered in this thesis.
 
-in company document next / previous year more helpful than years further away?
+::: paragraph-start
+##### Table extraction and document parsing
 
-### Table detection / extraction
+There are classical libraries and recent machine learning models, that are specialised on extracting tables from documents. We tested *tabula* as a classical solution, but were not satisfied by its results. Without borders in the tables it rarely identified rows and columns correct.
+:::
 
-Can be used to narrow down set of possible pages
+We did not manage to implement recent models for this task, for example visual \acr{LLM}s. There are promising results for their performance on table extraction, but a easy to use version for *transformers* or *vLLM* is missing most of the time. We were surprised and glad to see, that our approach works well with the basic text extract and did not continue to pursue the attemt to use more sophisticate extraction tolls or models.
 
-Can be used to focus only on the table content (measure if correct area was identified would be necessary)
+::: paragraph-start
+##### Optical character recognition
 
-Vision model as baseline
+If documents have no textual information, because they are just a collection of (scanned) images, \acr{OCR} is a necessary step in data preparation, because all our approaches use the text extract. In the \acr{OCR} process the textual information of the image is converted into machine-readable text. \acr{OCR} systems often perform a document layout analysis too, in order to handle multi-column layouts and tables.
+:::
+
+::: paragraph-start
+##### Fine-tuning
+
+\acr{LLM}s can be fine tuned on specific tasks. For example, they can be trained to produce text of a specific style or on classification tasks. For classification tasks a softmax pooling layer is added. Another example is the object detection model Yolo 12 we are using. It is fine tuned on detecting tables.
+:::
+
+We do not perform fine tuning with \acr{LLM}s. Instead we are using in-context learning and test, if this yields sufficient results. It would be interesting to estimate, how many in-context prompts have to be queried, so that the energy consumption for the additional token processing is becoming greater than the energy consumption of a fine tuning.
+
+::: paragraph-start
+##### Training an encoder model
+
+Instead of fine tuning a \acr{LLM} it probably would be more efficient to train a smaller (encoder-only) model, e.g. \acr{BERT}.
+:::
+
+::: paragraph-start
+##### UX design study
+
+We have not performed a \acr{UX} design study so far. This might be performed in near future to create an application, using the information extraction processes investigated in this thesis, that can be used well by the employees of \acr{RHvB}. Participating potential users early in the process, is meaningful for successful software development [@UserParticipationSoftware2010] and can prevent developing unnecessary features or non intuitive, cumbersome processes. At the same time it can increase the willingness and motivation to use the final \acr{AI} driven product [@erridaDeterminantsOrganizationalChange2021].
+:::
 
 ## Outlook
 
--   ensemble from multiple models or are errors systematic? (e.g. Wohnungsbaugenossenschaften splitting some rows in multiple and none is picked?)
--   check for halluzination vs wrong placed / repeated numbers
--   no perfect score even with synthetic data
 -   flexible extraction (name something, find it, get it)
 -   UI
     -   checking results / correct errors; col by col; match entities
     -   add unused entries (backlog? extra table?)
+    -   e.g. Wohnungsbaugenossenschaften splitting some rows in multiple and none is picked?
     -   possibilities for rerun / flagging the source of issue
 -   ml health check / benchmark framework
     -   test new models performance
     -   check if new examples might be harmful (repredicting)
 
-Ad-hocs for monitoring during the year
+```{r hitl-error-handling, fig.cap="Showing the information extraction process in a HITL application. We propose to include user action only after the information extraction. If a wrong page is selected, this can be fixed and extraction runs again. Wrong extracted values and handling unknown row identifiers should be done in one place.", echo=FALSE, out.width="100%", fig.align='center'}
 
-## Tools
-
-Vlt egal oder outlook
-
-#### Vision Grid Transformer
-
-#### TableFormer
-
-SynthTabNet \<-- has it: - nested / hierarchical tables, where rows add up to another row? - identifying units and unit cols/rows
+knitr::include_graphics("images/HITL_flowchart_error_handling.png")
+```

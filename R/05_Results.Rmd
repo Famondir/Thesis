@@ -163,7 +163,7 @@ This section is presenting the results of four approaches to identify the page[^
 -   Subsection \@ref(llm-page-identification) presents the findings of a text classification approach using \acr{LLM}s.
 -   Subsection \@ref(tf-classifier) presents the findings of a term-frequency approach.
 
-In subsection \@ref(comparison-page-identification) the results get compared and summarized. Subsection \@ref() proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
+In subsection \@ref(comparison-page-identification) the results get compared and summarized. Subsection \@ref(general-performance-page-identification) proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
 
 ###  {.unlisted .unnumbered}
 

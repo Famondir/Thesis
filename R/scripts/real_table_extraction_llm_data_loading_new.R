@@ -1002,6 +1002,8 @@ df_qwen235 %>% saveRDS("data_storage/table_extraction_qwen3_235B_multiple_input_
 
 ###### plotting ######
 
+df_qwen235 <-  readRDS("data_storage/table_extraction_qwen3_235B_multiple_input_formats")
+
 library(ggh4x)
 
 table_characteristics <- read.csv("../benchmark_truth/real_tables_extended/table_characteristics_more_examples.csv") %>% 
@@ -1035,6 +1037,8 @@ df_qwen235 %>% group_by(model, method, extractor, input_format) %>%
   summarize(mean_total = mean(percentage_correct_total)) %>% 
   group_by(model, extractor, input_format) %>% 
   slice_max(n = 1, mean_total, with_ties = FALSE)
+
+###### company specific confusion matrices ######
 
 df_best <- df_qwen235 %>% filter(input_format == "text", extractor == "pdfium") %>% 
   group_by(method) %>% 

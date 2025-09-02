@@ -72,4 +72,6 @@ acronyms:
       longname: explainable artificial intelligence
     - shortname: XGBoost
       longname: Extreme Gradient Boosting
+    - shortname: BERT
+      longname: Bidirectional Encoder Representations from Transformers
 ---

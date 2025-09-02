@@ -1634,3 +1634,126 @@ ktiva
 19.149.805
 Jahresabschluss  | Jahresbilanz'
 ```
+
+## Term frequency missclassifications {#tf-missclassifications}
+
+Term counts for '../Geschaeftsberichte/GESOBAU AG/GESOBAU_Geschaeftsbericht_2012.pdf' page 36:
+
+```{verbatim}
+{'Vorjahr': 0,
+
+ 'Bau': 3,
+
+ 'Aktive': 1,
+
+ 'Immaterielle': 0,
+
+ 'Kassenbestand': 0,
+
+ 'Lieferungen': 0,
+
+ 'Hilfs': 0,
+
+ 'Anteile': 0,
+
+ 'Vermögensverrechnung': 0,
+
+ 'Rechten': 0,
+
+ 'Betriebsstoffe': 0,
+
+ 'Geschäfts': 19,
+
+ 'Beteiligungen': 0,
+
+ 'Wertpapiere': 0,
+
+ 'Betriebs': 0,
+
+ 'Sachanlagen': 0,
+
+ 'Lizenzen': 0,
+
+ 'Umlaufvermögen': 0,
+
+ 'Vorräte': 0,
+
+ 'Kreditinstituten': 0,
+
+ 'Grundstücke': 0,
+
+ 'Schecks': 0,
+
+ 'Unterschiedsbetrag': 0,
+
+ 'Aktiver': 1,
+
+ 'Werte': 0,
+
+ 'Guthaben': 0,
+
+ 'Konzessionen': 0,
+
+ 'Unternehmen': 10,
+
+ 'Leistungen': 1,
+
+ 'Werten': 0,
+
+ 'Aktiva': 0,
+
+ 'Ausleihungen': 0,
+
+ 'Anzahlungen': 0,
+
+ 'Finanzanlagen': 0,
+
+ 'Aktivseite': 0,
+
+ 'Maschinen': 0,
+
+ 'Anlagevermögens': 0,
+
+ 'Forderungen': 0,
+
+ 'Rechte': 0,
+
+ 'Anlagevermögen': 0,
+
+ 'Beteiligungsverhältnis': 0,
+
+ 'Firmenwert': 0,
+
+ 'Bundesbankguthaben': 0,
+
+ 'III': 1,
+
+ 'Erzeugnisse': 0,
+
+ 'Geschäftsjahr': 1,
+
+ 'Vermögensgegenstände': 0,
+
+ 'Geschäftsausstattung': 0,
+
+ 'Roh': 0,
+
+ 'Rechnungsabgrenzungsposten': 0,
+
+ 'Grundstücken': 0,
+
+ 'Steuern': 0,
+
+ 'Anlagen': 1,
+
+ 'Bauten': 1,
+
+ 'Schutzrechte': 0}
+```
+
+(ref:tf-many-floats-caption) Showing page 48 of '../Geschaeftsberichte/Berlinovo/geschaeftsbericht_berlinovo_2017_0.pdf' as a page with a high float frequency.
+
+```{r tf-many-floats, fig.cap="(ref:tf-many-floats-caption)", out.width="100%"}
+knitr::include_graphics("images/many_floats.png")
+```
+

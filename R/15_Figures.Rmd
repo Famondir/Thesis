@@ -456,6 +456,21 @@ df_overview_gpt %>%
   )
 ```
 
+#### Comparing input formats and text extration libraries
+
+```{r}
+df_qwen235 %>% group_by(model, method, extractor, input_format) %>% 
+  mutate(mean_total = mean(percentage_correct_total)) %>% 
+  group_by(model, extractor, input_format, filepath) %>% 
+  slice_max(n = 1, mean_total, with_ties = FALSE) %>% 
+  # select(model, method, extractor, input_format, mean_total, filepath) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = company, y = percentage_correct_total)) +
+  facet_nested(extractor+input_format~.) +
+  scale_x_discrete(guide = guide_axis(angle = 30))
+```
+
+
 #### Hypotheses
 
 ```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=16, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs", cache=cache_large_figures}

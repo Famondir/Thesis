@@ -7,8 +7,6 @@ editor_options:
 \setcounter{chapter}{0}
 \renewcommand{\thechapter}{\Alph{chapter}}
 
-# (APPENDIX) Appendix {-}
-
 # Appendix A - Page identification report {#page-identification-report}
 \phantomsection
 \ChapFrame[Page identification report][bhtblue]
