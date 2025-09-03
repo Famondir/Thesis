@@ -259,6 +259,51 @@ see Figure \@ref(fig:real-table-extraction-llm-shap-plot)
 create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables the LLM approach.")
 ```
 
+## Synthetic tables
+
+::: paragraph-start
+##### Hypotheses
+
+Table \@ref(tab:hypotheses-and-results-synth-table-extraction-llm-table) shows some unsupported hypotheses for predictors with strong effects. The observations suggest, that prompting the model to respect the currency units is decreasing its performance to predict the correct numeric values. This is understandable, if the task is reflected properly and we made a mistake there, when we formulated our hypothesis.
+:::
+
+If the model is not prompted to respect the currency units, it is presented with examples that just copy over the numeric values. And it gets evaluated if it copied the values correctly. If the model is prompted to respect the currency units, it is presented with examples, where the values not only get copied but also transformed. And they get evaluated if they do the transformation correct as well. Thus the task is harder, if numeric values should be respected and the effect is having a negative direction.
+
+Figure \@ref(fig:better-performance-for-value-transformation-with-html-and-md) shows that the transformation task is handled best, if the examples are provided with the *top_n_rag* strategy. It does not work with the *zero_shot* strategy. It also shows, that the performance is lower with the PDF *input_format* and that the models have difficulties, if the *unit_multiplier* is one million. This also shows a strong effect and is strongest for the PDF *input_format*. This is a general effect. We see in \@ref(fig:table-extraction-llm-confidence-lm-synth) that it can be different for single models like Qwen3-235B.
+
+old:
+
+HTML and Markdown better but expected interaction effects mostly not found - except: - columns help pdf - thinning least bad for pdf - pdf worst with numbers that have currency units (short numbers, maybe no 1000er delimiter) - enumeration positive for pdf (and interaction with log10 mult)
+
+line breaks are no problem
+
+zero shot gets confused by text around
+
+Markdown might be even better than HTML
+
+respecting units was bad - except for: Top n rag finds examples with same currency units (shorter numbers more important than currnency in header?)
+
+log10 multiplier has many interaction effects
+
+LLama 4 Maverick again problem with five examples
+
+Positive column count effect (different for real data)
+
+header span not reflected in html and markdown
+
+```{r hypotheses-and-results-synth-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the LLM approach.", detect = ":")
+```
+
+```{r better-performance-for-value-transformation-with-html-and-md, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the percentage of correct extracted numeric values grouped by input format, method family and the fact, if currency should be respected.", fig.width=10}
+df_synth_table_extraction %>% filter(method != "static_example") %>% 
+  mutate(respect_units = !ignore_units) %>% 
+  ggplot() + 
+  geom_boxplot(aes(y = percentage_correct_numeric, x = factor(unit_multiplier), fill = input_format), alpha = .7) + 
+  facet_nested(paste("respect units:", respect_units)~method_family)
+```
+
+
 ## Hybrid approach
 
 ::: paragraph-start

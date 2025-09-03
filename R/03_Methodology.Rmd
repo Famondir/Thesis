@@ -40,12 +40,12 @@ knitr::include_graphics("images/research_design.png")
 For this thesis we formulate two main research questions:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
-cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract these information from the document?</li></ol>")
+cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract this information from the document?</li></ol>")
 ```
 
 \begin{enumerate}[label={\textbf{Q\theenumi}}]
   \item How can we use LLMs effectively to locate specific information in a financial report?
-  \item How can we use LLMs effectively to extract these information from the document?
+  \item How can we use LLMs effectively to extract this information from the document?
 \end{enumerate}
 
 Each of this questions is investigated with its own methods and experiments. In the following we will use the term *page identification* to refer to the first research question and *information extraction* to refer to the second.
@@ -53,15 +53,43 @@ Each of this questions is investigated with its own methods and experiments. In 
 Additionally, we formulate a \acr{UX} motivated side research question:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
-cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?</li></ol>")
+cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?</li></ol>")
 ```
 
 \begin{enumerate}[label={\textbf{Q\theenumi}}]
   \setcounter{enumi}{3}
-  \item Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?
+  \item Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 \end{enumerate}
 
-The third question is refered to, using the term *error rate guidiance*.
+The third question is refereed to, using the term *error rate guidance*.
+
+### Hypotheses
+
+Subsequent we formulate our hypotheses for the research questions:
+
+H1.1: \acr{LLM}s can be used to locate specific information in a financial report, achieving a high F1 score.
+
+H1.2: \acr{LLM}s can be combined with other approaches to reduce the energy consumption, without lowering the systems recall.
+
+H2.1a: \acr{LLM}s can be used to correctly extract multiple numeric values from the assets table.
+
+H2.1b: \acr{LLM}s can match row identifiers and place the numeric values in the correct target row.
+
+H2.1c: \acr{LLM}s can identify unmatched row identifiers and report, that the value is missing.
+
+H2.2a: Model specific features have an effect on the extraction performance.
+
+H2.2.b: Prompt strategy specific features have an effect on the extraction performance.
+
+-   context from same company
+
+H2.2c: Table specific features have an effect on the extraction performance.
+
+-   What are characteristics of financial tables that make it hard for LLMs to identify / extract them? (How does the length and complexity of financial documents (e.g., multi-column layouts, nested tables) affect table extraction performance?)
+
+H3.1: The confidence score can be used to guide the user on which of the identified pages need to be checked and which can be trusted as they are.
+
+H3.2: The confidence score can be used to guide the user on which of the predicted values in the information extraction task need to be checked and which can be trusted as they are.
 
 ### Evaluation framework
 
@@ -444,6 +472,8 @@ found error types: including omissions when the LLM was instructed to extract a 
 failed to extract all of list, Too many hallucinated values when it was NA instead [@goughertyTestingReliabilityAIbased2024]
 
 [@grandiniMetricsMultiClassClassification2020]
+
+Numeric values are difficult to handle for langauge models in specific tasks. Copying numbers seems not to be a recent problem. How about transforming by multiplication with 1000?
 
 ### Baseline selection rationale
 

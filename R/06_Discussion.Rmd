@@ -321,7 +321,7 @@ table_same_company
 
 In general the approach seems not be prone to hallucinations. When we accidentally tried to extract values from a **Passiva** and **GuV** table, no prediction was made, because non of the row identifiers matches our strict schema.
 
-We have not specifically investigated, if an annual report of the following or previous year is more helpful than years further away. This would be plausible, because it serves the correct numeric and missing values for half of the information extract perfectly formatted as \acr{JSON}. Theoretically it should become trivial to extract all values correct and transform it accordingly to the currency units, if the previous and following years annual reports are presented as examples for the in-context learning. This should be investigated in future work.
+We have not specifically investigated, if an annual report of the following or previous year is more helpful than years further away. This would be plausible, because it serves the correct numeric and missing values for half of the information extract perfectly formatted as \acr{json}. Theoretically it should become trivial to extract all values correct and transform it accordingly to the currency units, if the previous and following years annual reports are presented as examples for the in-context learning. This should be investigated in future work.
 
 predictions for barrierefreie documents of WBM empty
 
@@ -716,6 +716,7 @@ We have not performed a \acr{UX} design study so far. This might be performed in
 
 ## Outlook
 
+-   XBRL reports instead of PDFs? employees need to know, that they exist and how to work with those
 -   flexible extraction (name something, find it, get it)
 -   UI
     -   checking results / correct errors; col by col; match entities

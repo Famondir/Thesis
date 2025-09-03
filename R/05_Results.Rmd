@@ -11,13 +11,13 @@ editor_options:
 This chapter presents the main results for the two main and our side research questions of this thesis:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
-cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract these information from the document?</li><li>Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?</li></ol>")
+cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract this information from the document?</li><li>Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?</li></ol>")
 ```
 
 \begin{enumerate}[label={\textbf{Q\theenumi}}]
   \item How can we use LLMs effectively to locate specific information in a financial report?
-  \item How can we use LLMs effectively to extract these information from the document?
-  \item Can we use additional information from the extraction process, to guide the user which values need to be checked and which can be trusted as they are?
+  \item How can we use LLMs effectively to extract this information from the document?
+  \item Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 \end{enumerate}
 
 Section \@ref(page-identification-introduction) presents the results for the first research question. Section \@ref(table-extraction-introduction) presents the results for the second question. Section \@ref(error-rate-guidance-results) shows the results for the side research question. Finally, we will summarize all results in section \@ref(summary-results).
