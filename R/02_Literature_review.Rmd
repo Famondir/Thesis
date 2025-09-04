@@ -34,7 +34,7 @@ Identify potentially interesting pages with text / regex search. Check if there 
 
 Object detection
 
-### Term frequency
+### Information retrieval (Term frequency)
 
 Term frequency $\mathrm{tf}_{t,d}$ is a very simple measure. It just counts the number of occurrences of a term in a document. Document is an abstraction in this case. It can be a sentence, a page or a file. Since longer documents might have higher term frequency for each term, it is useful to normalize the value by the document length $|d|$. This measure could be called term rate:
 
@@ -73,7 +73,9 @@ document layout analysis?
 
 ### Large Language Models {#llm-theory}
 
-Wichtig
+@minaeeLargeLanguageModels2025 give a broad overview on the field of language models. They discuss, how they are built, used and augmented. They present popular datasets, performance benchmarks and outline challenges and future directions. Their survey is neither limited on decoder-only nor large language models (\\acr{LLM}). But their time scope ends before 2024, so recent advancements are not reflected. (not a good introduction survey)
+
+For readers, who want to build understanding for modern \acr{LLM} we recommend to work through the book "Dive into Deep Learning" [@zhangDiveDeepLearning2023].
 
 #### Transformers
 
@@ -83,11 +85,17 @@ hauptsächlich decoder (generieren)
 
 seit 2017
 
+training on token prediction (base models); masking,
+
 #### Attention
 
-The most obvious challenge is computational cost. The amount of
-processing power required scales quadratically with the length of the
-input [@tahirUnderstandingLLMContext2025].
+The most obvious challenge is computational cost. The amount of processing power required scales quadratically with the length of the input [@tahirUnderstandingLLMContext2025].
+
+Sliding window attention (e.g., as popularized by Mistral) or Gemma 2; Sliding window attention is mainly used to improve computational performance [@raschkaInstructionPretrainingLLMs2025]
+
+Group-query attention (like in Llama 2 and 3)
+
+A key article is "Attention Is All You Need" that [@vaswaniAttentionAllYou2023]
 
 #### Encoder
 
@@ -95,17 +103,11 @@ Wichtig
 
 positional encoding important (and distinguishes from tf-idf): dog eats cat
 
-sinusoidal positional encoding, which uses sine and cosine functions of
-varying frequencies to create unique positional vectors, and Rotary
-Position Embedding (RoPE), which applies a rotation to the token
-embeddings based on their position [@khowajaAnalysisLlama4s2025]
+sinusoidal positional encoding, which uses sine and cosine functions of varying frequencies to create unique positional vectors, and Rotary Position Embedding (RoPE), which applies a rotation to the token embeddings based on their position [@khowajaAnalysisLlama4s2025]
 
 #### Decoder
 
-For each generated token, the attention mechanism needs to access the
-key and value vectors of all preceding tokens in the context window. To
-avoid recomputing these key and value vectors at each step, they are
-stored in the KV-cache. [@khowajaAnalysisLlama4s2025] However, the memory required to store the KV-cache scales linearly with the size of the context window.
+For each generated token, the attention mechanism needs to access the key and value vectors of all preceding tokens in the context window. To avoid recomputing these key and value vectors at each step, they are stored in the KV-cache. [@khowajaAnalysisLlama4s2025] However, the memory required to store the KV-cache scales linearly with the size of the context window.
 
 Wichtig
 
@@ -137,21 +139,43 @@ Googles gemma-3n-E4B uses a selective parameter activation as well. They use the
 
 Raus oder woanders hin: The Qwen3 models support two operating modes: A thining mode and a non-thinking mode. The thinking mode should yield better answers in complex tasks and the additional amount of processing can be controlled by setting a thinking budget [@qwenteamQwen3ThinkDeeper2025]. This thinking budget can be seen as the amount of tokens used for a step wise solution.
 
-#### Mixed modal
+#### Confidence scores
 
-[@teamChameleonMixedModalEarlyFusion2024]
+\acr{LLM} can return a log probability score together with each token it predicts. In fact, it can return the top k candidates for the next token with the corresponding log probabilities. The sum of individual log probabilities indicates how likely a sequence of tokens is, according to the \acr{LLM}. This sum can be interpreted as a kind of *confidence* the model has in a prediction [@berkovUnderstandingLLMLogprobs2025].
+
+@boseakEvaluatingLogLikelihoodConfidence2025 investigate the usage of log probabilities to score multiple choice answers. They show that the sum of log probabilities carries valuable information about model confidence, but its proper use is nuanced. The choice to use the raw sum or a length normalized sum of log probabilities can have a noticeable effect on accuracy and they give no recommandation which approach to use in general. @maEstimatingLLMUncertainty2025 argue that normalizing the probability scores is a reason why probability-based methods fail to identify reliability.
+
+@kangScalableBestofNSelection2025 compare different potential measures for a \acr{LLM}s' confidence for Best-of-N Selection tasks. The most simplest of these approaches uses the normalized log probabilities of the returned tokens. The negative exponent of this normalized sum is also called perplexity. It is widely used in LLM evaluations, even though it has been shown to fail in capturing a model's ability to understand long context. Nevertheless, @kangScalableBestofNSelection2025 show that perplexity can perform equally good as more sophisticated measures of confidence up to 16 choices.
+
+@kaufLogProbabilitiesAre2024 investigated, if log probabilities can be used to measure semantic plausibility of sentences. They compare pairs of sentences that are similar, but where one is describing a plausible scenario, whereas the other describes a unlikely one. The show, that comparing the sum of returned log probabilities of two sentences yields better results for a semantic plausibility comparison than prompting the model to make this decision explicitly.
 
 ### Methods for LLM application {#llm-methods}
 
-#### Few-shot Learning
+#### In-context Learning
 
-Wichtig
+Few-shot learning is a prompting strategy that enables \acr{LLM}s to solve a wide range of tasks, just by presenting some examples including the solutions. @brownLanguageModelsAre2020 calls the rapid adaption to the provided task and examples as "in-context learning". Already GPT-3 wass found to surpass state-of-the-art performance of fine-tuned models in some tasks.
+
+Besides few-shot learning there is zero-shot and one-shot learning. In zero-shot learning only the task is stated in the prompt and no examples are provided. In one-shot learning a single example is provided. In contrast, there is fine tuning, where the weights of a model are changed by gradient updating based on a large corpus of examples [@brownLanguageModelsAre2020].
+
+This reduces the need to create large datasets to fine tune a model on specific tasks. This brings a great flexibility and is resource efficient, reducing the computational costs for adapting the model to new tasks [@dongSurveyIncontextLearning2024]. Text classification and information extraction are two tasks that can be solved with few shot-learning [@zhaoCalibrateUseImproving2021]. But @zhaoCalibrateUseImproving2021 show, that at least with GPT-3, it can be important, in which order the examples are presented.
+
+Even though more examples can lead to better results [@kukaShotBasedPromptingZeroShot], @brownLanguageModelsAre2020 show, that the performance might not increase much more adding more than a second example. Furthermore, there is the threat of *context rot* [@kellyhongContextRotHow2025]. This means, the performance can decrease noticeably, when the context gets to long. Thus, the number of examples one should provide is not just constrained by the context width. Additionally, there is a threat of over-fitting on patterns that are not present in the actual task but in the examples if they are to homogeneous.
+
+Pattern recognition and self-attention
+
+@weiFinetunedLanguageModels2022 introduce instruction tuned models and show, that this approach noticeably improves the zero-shot performance. @chengInstructionPreTrainingLanguage2024 propose, that using synthesized, instruction enriched data during pre-training enhances the resulting pre-trained models capabilities and the additional improvements from instruction fine tuning alike.
 
 #### RAG
 
 Wichtig
 
 #### Guided and restricted decoding
+
+@willardEfficientGuidedGeneration2023 are stating, that they use xy to satisfy formatting requirements that are either hard or costly to capture through fine-tuning alone (or through prompting / few-shot learning), summarizing findings of many articles.
+
+"Most implementations of guided generation bias the score values used to determine the probabilities of the tokens in an LLM’s vocabulary. A common and sufficient approach involves repeated evaluations over the entire vocabulary in order to determine which tokens are valid–according to the constraints and previously sampled tokens–and setting the probabilities of invalid tokens to zero. This approach entails a fixed O(N ) cost for each token generated, where N is the size of the LLM’s vocabulary.
+
+We propose an approach that uses the finite state machine (FSM) for- mulation of regular expressions to both arbitrarily start and stop guided generation and allow the construction of an index with which the set of non- zero-probability tokens can be obtained efficiently at each step. The result is an algorithm that costs O(1) on average."
 
 generation template strict (closed) vs open
 
@@ -286,6 +310,14 @@ This value is called \acr{SHAP} feature importance. It can be interpreted simila
 However, the need for a high explainability of machine learning algorithms is more urgent than ever, since the EU's regulatory ecosystem is emphasizing the importance of \acr{XAI} [@nanniniOperationalizingExplainableArtificial2024].
 
 ## Summary (0.5 p)
+
+This chapter introduced us into recent architectures for \acr{LLM}s like Mixture-of-Expert. For basic concepts and the history of \acr{NLP} it recommends sources. \acr{LLM}s are body ofinvestigation in all answer all our research questions. In-context learning and retriever augmentation are the advanced prompting strategies we benchmark in the information extraction task.
+
+It gave an outline on general machine learning methods. On one hand it described decision trees, random forests and more advanced machine learning models that are an extention of the previously named one. We use random forests in the term frequency approach for the page identification task.
+
+On the other hand it introduced the \acr{SHAP} framework, as an attempt for model agnostic explanation models. The origins of the visualization method of boxplots and violin plots were shown. We use the \acr{SHAP} framework to interpret our hypotheses on possible predictors for the information extraction performance and compare the prerformance results among different experimental settings using boxplots.
+
+The next chapter presents our
 
 -   lessons learned
 -   link to goal thesis

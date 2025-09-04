@@ -46,6 +46,10 @@ h5, h6, h5+p, h6+p {
     margin: auto;
 }
 
+ol {
+    margin-bottom: 1em !important;
+}
+
 /*--- Folding ---*/
 
 .pre-detail p {

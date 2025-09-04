@@ -932,3 +932,8 @@ df_rot_multi %>%
     legend.position = "bottom"
   )
   
+#### error inspection ####
+
+df_multi %>% filter(str_detect(model, "Scout"), method == "3_rag_examples") %>% 
+  select(-filepath) %>% unnest(predictions) %>% 
+  filter(!match) %>% select(type)

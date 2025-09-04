@@ -26,6 +26,18 @@ Within the local environment we use *git* as well. Except for the gigabytes of r
 
 Table : what task in what environment? Seems not super important
 
+### Hardware normalization {#gpu-benchmark}
+
+To make the runtime of different \acr{LLM}s running on different amounts and types of \acr{GPU}s comparable, we conducted a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure \@ref(fig:gpu-benchmark-plot) shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning.
+
+The classification time with Qwen2.5-32B on \acr{GPU}s of type B200 is a little faster than running Qwen2.5-7B on the same amount of A100 \acr{GPU}s. We calculate normalized runtimes for our experiments, based on these runtime measures for small and larger \acr{LLM}s on different types and numbers of \acr{GPU}s. A minute of computation on a single B200 is comparable to 4:30 minutes of computation on a single A100.
+
+```{r gpu-benchmark-plot, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning."}
+df_gpu_benchmark <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/gpu_factors.csv")
+
+df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_type)) + geom_line(aes(linetype = model_name)) + geom_point()
+```
+
 ## Evaluation and Reporting
 
 We mostly use *R* for evaluation, visualization and reporting. We use the *bookdown* library[^04_implementation-1], to create a report, that is linked to our data and thus automatically includes new results and updates all figures and tables. This allows us to run small additional experiments until the very end of thesis writing.
@@ -66,9 +78,155 @@ We use *pdfium* for the text extraction for all tasks. Some approaches are run w
 
 Table : what task had additional extraction backends? Seems not super important
 
+## Ground truth database
+
+### Ground truth creation
+
+This section describes the ground truth creation process in detail. It describes our initial annotation process and what improvements are made, based on later iterations and findings from the experiments.
+
+::: paragraph-start
+##### Page identification
+
+For the page identification task the chosen documents are searched for the target pages either by using the search functionality, \acr{TOC} or scrolling through all pages. For each target page the filepath, page and type is listed in a csv file. For some reports there are multiple pages present for a single target type. In this case, both pages are added to the ground truth. Sometimes the **Aktiva** and **Passiva** page are on a single page. In this case a single entry is made and its type is *Aktiva&Passiva*. If a table spans two pages, both pages are recorded. Excluding pages that need \acr{OCR} processing we created 252 entries.
+:::
+
+For double checking all identified pages are extracted from their original PDF files and combined in a single file. Thus, problems with the numbers shown in the PDF viewer and the actual page number in the file are identified and resolved. After the first experiments pages, that have been classified as a target by multiple models, are checked. Thus, some additional target tables, that span two pages, are identified.
+
+Additionally we identified all pages, that contain any table for a previous sample, that is based on all the pages that are classified as target by the \acr{regex} approach. This ground truth is used to test the capabilities of various Python libraries, \acr{LLM}s and visual models to detect tables. Results can be found in the appendix in section \@ref(table-detection-benchmark).
+
+::: paragraph-start
+##### Information extraction
+
+For the information extraction task we copy the numeric values from the annual reports into csv files, replace the thousands separators and floating point delimiters and multiply those values by 1_000, if a currency unit is given for the column the value comes from. The csv files are already prefilled with all entities defined in the legal text, identified by their full hierarchy. Thus, we choose which line to put the value in, if the description in the annual report is different.
+:::
+
+There are cases, where a single line defined in the legal text is split up into multiple lines in the annual reports. In those cases we enter the sum into the according row in the csv file. If entities are found, that do not fit any entity given in the legal text, this entry is dropped. For the first iteration the csv files just contained the entities and column names but no values.
+
+In the second iteration we use the predictions of Qwen3-235B, check the values and mark mistakes, correct the values and log all mistakes found. In this iteration we check the ground truth created in the first iteration as well and correct mistakes made earlier.
+
+Additionally, we implemented an algorithm to generate synthetic **Aktiva** tables with systematically varied characteristics to enable experiments that focus those characteristics as possible predictors for the prediction performance. Additionally, this enables us to estimate an upper bound for the extraction task with real **Aktiva** tables.
+
+::: paragraph-start
+##### Error rate guidiance
+
+There is not ground truth for the calculated *confidence* scores. We will simply check, if the true and false predictions can be separated based on the returned *confidence scores*.
+:::
+
+### Ground truth database composition
+
+```{r count-benchmark-documents, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv", "./scripts/page_identification_preparations.R"))}
+source("./scripts/page_identification_preparations.R")
+
+num_multiple_tables_per_document <- df_targets_no_ocr %>%
+  anti_join(consecutive_pages, by = c("filepath", "page", "type")) %>% 
+  arrange(filepath, page) %>%
+  group_by(filepath, type) %>% 
+  summarise(count = n()) %>% 
+  filter(count > 1) %>%
+  group_by(filepath) %>% 
+  summarise(count = n()) %>% 
+  nrow()
+
+multiple_tables_per_type_and_document <- data_unnested %>%
+  anti_join(consecutive_pages, by = c("filepath", "page", "type")) %>% 
+  arrange(filepath, page) %>%
+  group_by(filepath, type) %>% 
+  summarise(count = n()) %>% 
+  filter(count > 1) %>% 
+  group_by(type) %>% 
+  summarise("multiple targets in document" = n())
+
+df_special_targets <- multiple_tables_per_type_and_document %>% left_join(consecutive_pages %>% group_by(type) %>% summarise("target two pages long" = n())) %>% mutate_if(is.numeric,coalesce,0)
+```
+
+This section describes the resulting ground truth database in detail separate for all our tasks. It shows how many documents from which companies are included and how the synthetic dataset is created.
+
+::: paragraph-start
+##### Page identification
+
+Figure \@ref(fig:document-base-page-identification) shows how the document base for the tasks in this section is composed. Overall `r num_documents` annual reports from `r num_companies` companies are used. For this thesis the tables of interest are those that show **Aktiva**, **Passiva** and **GuV**. Among the `r total_pages_no_ocr` pages `r num_tables` tables have to be identified on `r num_target_pages` pages. Figure \@ref(fig:document-base-page-identification) also gives an impression on how many pages the documents have. The documents of *IBB* tend to be longer. The documents of *Amt für Statistik Berlin-Brandenburg* tend to be shorter.
+:::
+
+```{r, eval = knitr::is_html_output(), echo=FALSE, warning=warning_flag, message=message_flag, results='asis', class.chunk='pre-detail'}
+cat("<p>You can have a look at the ground truth data unfolding the following details element.</p>")
+```
+
+```{r ground-truth-tables-of-interest, eval = knitr::is_html_output(), echo=FALSE, warning=warning_flag, message=message_flag, class.chunk='hideme', results='asis'}
+df_targets_no_ocr %>% render_table(
+  caption = "Showing all pages of interest with the target table type and filepath.",
+  ref = opts_current$get("label")
+  )
+```
+
+```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used."}
+df_pages %>% group_by(company) %>% mutate(
+  docs_per_company = n(), pages_per_company = sum(pages)
+  ) %>% 
+  ggplot() +
+  geom_col(aes(x = company, y = pages, fill = needs_ocr), color = "#00000033") +
+  geom_text(
+    data = . %>% group_by(company) %>% slice_head(n = 1),
+    aes(x = company, y = pages_per_company, label = docs_per_company, group = company),
+    stat = "identity",
+    vjust = -0.5,
+    size = 3
+  ) +
+  scale_x_discrete(
+    guide = guide_axis(angle = 45),
+    labels = scales::label_wrap(30)
+    )
+```
+
+Table \@ref(tab:display-multiple-tables-per-type-and-document) shows how many documents have multiple target tables per type and how many target tables span two pages. In total `r num_consecutive_pages` tables are distributed on two pages. In `r num_multiple_tables_per_document` documents there are multiple tables per type of interest. There are `r num_two_tables_on_one_page` pages with two target tables (**Aktiva** and **Passiva**) on it.
+
+```{r display-multiple-tables-per-type-and-document, echo=FALSE, warning=warning_flag, message=message_flag, results='asis'}
+df_special_targets %>% render_table(
+  caption = "Showing the number of documents with multiple target tables per type and the number of target tables that span two pages.",
+  ref = opts_current$get("label")
+  )
+```
+
+```{r table-extraction-preps, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/real_table_extraction_llm.rds')}
+old_doc_base <- readRDS("data_storage/real_table_extraction_llm.rds") %>% select(filepath) %>% unique()
+new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %>% select(filepath) %>% unique() %>% mutate(filepath = str_replace(filepath, "a__f", "af")) %>% filter(!str_detect(filepath, "MEAB GmbH"))
+```
+
+::: paragraph-start
+##### Information extraction {#information-extraction-data-sampling}
+
+For the manual information extraction we need up to 12 minutes per table. The maximum amount of values to copy and format (or type manually) among the tables used is 40. In addition to this manual process conceptional process can be necessary, because the values have to matched to the strict grammar. Sometimes we have to decide that there is no row a value fits in or there are multiple values that have to get summed up in order to calculate the value that fits in the predefined schema.
+:::
+
+This manual work was done for `r old_doc_base %>% nrow()` documents. For every company that published the detailed form of balance sheets a single document was included. Additionally documents were included for *Amt für Statistik und Brandenburg* to check, if a context learning approach is benefiting from documents from the same company.
+
+Later, the predictions of the \acr{LLM}s were used, to create additional `r new_doc_base %>% nrow()` ground truth tables. The old ground truth tables were checked in this this iteration and an error rate of 2.4 % was detected. Thus, the human reference score for percentage of correct predictions is 0.976. Figure \@ref(fig:table-extraction-doc-base) shows how many **Aktiva** tables are used for all tasks in this subsection, that use real data instead of synthetic data.
+
+```{r table-extraction-doc-base, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents.", fig.width=9}
+new_doc_base %>% rowwise() %>% 
+  mutate(
+    .before = 1, 
+    company = str_match(filepath, "/pvc/benchmark_truth/real_tables_extended/(.*)__")[2],
+    initial_doc_base = str_remove(filepath, "_extended") %in% old_doc_base$filepath
+    ) %>% ggplot() +
+  geom_bar(aes(x = company, fill = initial_doc_base)) +
+  scale_x_discrete(
+    guide = guide_axis(angle = 60),
+    labels = scales::label_wrap(30)
+    ) +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "top",
+    plot.margin = margin(l = 0)
+  )
+```
+
+To overcome the limited amount of real data and to allow the systematic investigation of potential predictors for the extraction performance, even if their occurrence is very unbalanced within the real data, synthetic **Aktiva** tables were created. Subsection \@ref(synthetic-table-extraction) gives a detailed description, which table features are varied systematically, resulting in 16_504 tables in three formats each.
+
 ## Data processing
 
-```{r, fig.cap="Showing the processing steps from input data to the results in this thesis.", out.width="100%", echo=FALSE}
+This section is describing the data flow for our \acr{LLM} using approaches. Figure \@ref(fig:data-flow-llm) is visualizing the different processing steps. On the blue area the data flow of the benchmark is presented, starting with the \acr{PDF} of an annual report as input and the benchmark results as output in \acr{json} format. The green area shows how R (Markdown) is used to visualize the results for analysis and interpretation as well as to document the results in this thesis.
+
+```{r data-flow-llm, fig.cap="Showing the processing steps from input data to the results in this thesis.", out.width="100%", echo=FALSE}
 knitr::include_graphics("images/unified_flowchart.png")
 ```
 

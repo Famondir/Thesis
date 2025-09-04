@@ -347,7 +347,7 @@ results_df_llm %>%
   render_table(
     alignment = "lllrr",
     caption = "Results of the table detection benchmark with LLMs",
-    ref = "display-results-df-llm"
+    ref = opts_current$get("label")
   )
 ```
 

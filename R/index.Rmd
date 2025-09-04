@@ -138,7 +138,7 @@ We use Github Copilot in VSCode for coding assistance. Mostly the GPT-4.1 is use
 
 We use perplexity.ai in our literature research process.
 
-We use [] for
+We use GPT-4.1 for improving our language.
 
 ## Goals and Learnings {.unlisted .unnumbered}
 

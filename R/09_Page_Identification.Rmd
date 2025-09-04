@@ -120,9 +120,6 @@ extraction speed.
 Code can be found at
 "benchmark_jobs/page_identification/page_identification_benchmark_regex.ipynb"
 
-Todo: \* look into details where they differ and if it is because of a
-line break or whitespace?
-
 ```{r display-metrics-regex-page-identification-all, echo=echo_flag, warning=warning_flag, message=message_flag, results=ifelse(knitr::is_html_output(), "asis", 'markup')}
 if (knitr::is_html_output()) {
   # Set caption
@@ -203,16 +200,6 @@ The code can be found in:
 
 -   "benchmark_jobs/page_identification/toc_extraction_qwen.ipynb"
 
-Discussion:
-
--   @liExtractingFinancialData2023 did not report any issues with this
-    approach. They use few-shot learning and Chain-of-Thought techniques
-    to help the \acr{LLM} to understand the task. They ask just for one
-    information at a time.
--   ChatGPT 4 vs Mistral 2410 8B (huge parameter difference)
--   For a lot of short annual reports one can find the tables of
-    interest within the first eight pages as well.
-
 ### Details for the approaches {#text-based-toc-understanding}
 
 ::: paragraph-start
@@ -232,7 +219,7 @@ pages (see Figure \@ref(fig:page-identification-toc-histogram)). In my
 approach the first step is to prompt the \acr{LLM} to identify and
 extract the \acr{TOC} in a given text extract\^[The prompt can be found
 in section \@ref(toc-understanding-promts)]. For the same documents
-Mistral 2410 8B finds\^[The strings extracted in this step have not been
+Ministral 2410 8B finds\^[The strings extracted in this step have not been
 checked in detail.]
 
 -   `r n_found_toc_5_pages` strings that should represent a table of
@@ -268,8 +255,10 @@ cat(toc_data$files_with_toc$markdown_toc[[1]])
 
 ### Results
 
+#### Comparison of the different approaches
+
 ::: paragraph-start
-##### Comparison of the different approaches: base prompt
+##### base prompt
 
 Table \@ref(tab:page-identification-toc-analysis-table) shows that the
 machine readable \acr{TOC} approach has the highest rate of correct page
@@ -346,7 +335,7 @@ df_toc_benchmark %>%
 ```
 
 ::: paragraph-start
-##### Comparison of the different approaches: advanved prompts
+##### advanved prompts
 
 As a first attempt, to increase the correct page range rate for
 **Passiva** I tried to specify, that assets and liabilities are part of
@@ -505,15 +494,6 @@ df_toc_benchmark_mr_degration_next_page %>%
   facet_wrap(~type, ncol = 1)
 ```
 
-Delete or place somewhere else?:
-
--   Thus it is safer to go with the 200 lines approach. But it also
-    takes longer. \@ref(tab:page-identification-toc-gpu-time-comparison)
-
--   Values can be higher than 80, the total number of PDF files, since
-    there can be multiple tables of interested for the same type in a
-    single document or a table of interest can span two pages.
-
 ## Classification with LLMs {#llm-page-identification}
 
 The third approach we present in this section, uses pretrained
@@ -524,7 +504,7 @@ On the one hand, a binary classification is used three times, to
 predict, if the text extract is including an **Aktiva**, **Passiva** or
 **GuV** table, once at a time. In this case the \acr{LLM} is forced to
 answer with either *yes* or *no*. On the other hand, the \acr{LLM}
-performed a \\acr{mcc]. For the \acr{mcc} the \acr{LLM} is forced to
+performed a \acr{mcc]. For the \acr{mcc} the \acr{LLM} is forced to
 answer *Aktiva*, *Passiva*, *GuV* or *other*. The prompts can be found
 in appendix in section \@ref(classification-prompts).
 
@@ -616,10 +596,10 @@ than the median F1 score for **Aktiva**
 F1 score for **Passiva**
 (`r round(top_performer_binary_median_passiva, 2)`).
 
-Mistral 8B Instruct 2410 is performing best for the binary
+Ministral 8B Instruct 2410 is performing best for the binary
 classification task for each target type. Llama-4-Scout-17B-16E-Instruct
 is performing second best for **Aktiva** and **GuV** and is close to the
-second best for **Passiva** as well. The runtime of Mistral 8B Instruct
+second best for **Passiva** as well. The runtime of Ministral 8B Instruct
 2410 is four times lower than the runtime of
 Llama-4-Scout-17B-16E-Instruct. In addition, the time to load
 Llama-4-Scout-17B-16E-Instruct into the VRAM is much
@@ -627,7 +607,7 @@ longer[^05_results-11], because it has a total of 109B parameters. It
 was surprising that Googles gemma models perform so bad[^05_results-12].
 
 [^05_results-11]: It takes around 30 minutes to setup a vllm instance
-    with Llama-4 Scout compared to 4:30 minutes setuptime for Mistral 8B
+    with Llama-4 Scout compared to 4:30 minutes setuptime for Ministral 8B
     2410.
 
 [^05_results-12]: This is not due to a temporary technical problems
@@ -640,8 +620,8 @@ top_performer_binary %>%
   render_table(alignment="llllrrr", caption="Overview of benchmarked LLMs for the binary classification tasks. Limiting the number of examples provided for the few shot approach to 3.", ref = opts_current$get("label"))
 ```
 
-Figure \@ref(fig:binary-classification-result-mistral-plot) shows, the
-classification performance for Mistral 8B 2410 in detail. It shows the
+Figure \@ref(fig:binary-classification-result-Ministral-plot) shows, the
+classification performance for Ministral 8B 2410 in detail. It shows the
 F1 score for each target type over the models runtime. It shows the
 results for the different prompting strategies (*method_families*) with
 differently colored shapes. The *zero_shot* strategy performs worst with
@@ -671,10 +651,10 @@ models is depending on the method family / example selection strategy
 and can be looked up in Table
 \@ref(tab:comparing-actual-number-of-in-context-examples).
 
-The best performing model, Mistral 8B 2410, was provided with mode
+The best performing model, Ministral 8B 2410, was provided with mode
 examples to investigate the effect of a richer context. The predictions
 do not get better by providing more and more examples. Figure
-\@ref(fig:binary-classification-result-mistral-plot) shows, that the
+\@ref(fig:binary-classification-result-Ministral-plot) shows, that the
 improvements get smaller naturally going from three to five examples
 while approaching an F1 score of 1.0.
 
@@ -690,7 +670,7 @@ is very inefficient.
     and two examples for each other type are provided, totaling at
     twelve examples.
 
-Figure \@ref(fig:binary-classification-result-mistral-plot) also shows,
+Figure \@ref(fig:binary-classification-result-Ministral-plot) also shows,
 that the results are stable[^05_results-15]. Running the benchmark three
 times shows similar results in the F1 score for each strategy. This is
 reflected by closely overlapping shapes of the same color with the same
@@ -700,7 +680,7 @@ number within.
     run five times indicating stable results. Running the experiments up
     to tree times in this very task indicate this as well.
 
-```{r binary-classification-result-mistral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410."}
+```{r binary-classification-result-Ministral-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Ministral-8B-Instruct-2410."}
 df_binary %>% filter(model == "Ministral-8B-Instruct-2410", loop < 3) %>% 
   filter(n_examples <= 5 | is.na(n_examples)) %>% 
   ggplot(aes(x = norm_runtime/60, y = f1_score)) +
@@ -718,7 +698,7 @@ df_binary %>% filter(model == "Ministral-8B-Instruct-2410", loop < 3) %>%
 ```
 
 Figure
-\@ref(fig:binary-classification-result-mistral-many-random-examples-plot)
+\@ref(fig:binary-classification-result-Ministral-many-random-examples-plot)
 shows the experiments for Ministral-8B-Instruct-2410 with *n_examples*
 greater or equal three. This time the actual number of examples provided
 to the \acr{LLM} are shown in the shapes to increase the comparability
@@ -729,7 +709,7 @@ the *top_n_rag_example* strategy stays lower than the F1 score of the
 This is mainly caused by lower precision scores, probably because there
 are no contrasting examples provided.
 
-```{r binary-classification-result-mistral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Mistral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
+```{r binary-classification-result-Ministral-many-random-examples-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing F1 score performance over normalized runtime for binary classification for Ministral-8B-Instruct-2410. Comparing the performance based on the real number of provided examples."}
 df_binary %>% left_join(df_classification_n_examples, by = c(
   "method_family" = "approach", 
   "n_examples" = "n_example", 
@@ -755,7 +735,7 @@ Figure \@ref(fig:binary-classification-performance-over-runtime) and
 Figure
 \@ref(fig:binary-classification-performance-over-runtime-full-time)
 shows the F1 performance over normalized rundtime for all benchmarked
-models. Comparing Mistral-8B-Instruct-2410 with
+models. Comparing Ministral-8B-Instruct-2410 with
 Mistral-124B-Instruct-2411 shows that one can spend over tenfold amount
 of computation power without getting better results.
 
@@ -822,7 +802,7 @@ df_multi %>%
 ```
 
 Figure
-\@ref(fig:performance-over-runtime-multi-classification-mistral-vs-llama-scout)
+\@ref(fig:performance-over-runtime-multi-classification-Ministral-vs-llama-scout)
 shows, the micro averaged F1 score for the three minority classes over
 the normalized runtime for two models. It shows the results for the
 different prompting strategies (*method_families*) with differently
@@ -852,7 +832,7 @@ moderate with the *law-context* strategy and *zero_shot*, too. Adding
 more examples does not improve the performance. Best with
 *top_n_rag_examples*
 
-```{r performance-over-runtime-multi-classification-mistral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
+```{r performance-over-runtime-multi-classification-Ministral-vs-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing F1 score micro averaged for the minority classes for two models over their normalized runtime."}
 df_selected <- df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities")
 
 df_selected %>% 

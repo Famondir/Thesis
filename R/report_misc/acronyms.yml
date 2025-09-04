@@ -25,9 +25,12 @@ acronyms:
       longname: Verordnung über die Rechnungslegung der Kreditinstitute, Finanzdienstleistungsinstitute und Wertpapierinstitute
     - shortname: PDF
       longname: Portable Document Format
+    - shortname: ESG
+      longname: environmental, social, and  governance
     - shortname: ACFR
       longname: Annual Comprehensive Financial Report
-    - shortname: mcc
+    - key: mcc
+      shortname: MCC
       longname: multi-class classification
     - key: vllm
       shortname: vLLM
@@ -74,4 +77,6 @@ acronyms:
       longname: Extreme Gradient Boosting
     - shortname: BERT
       longname: Bidirectional Encoder Representations from Transformers
+    - shortname: NLP
+      longname: natural language processing
 ---

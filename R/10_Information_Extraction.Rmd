@@ -263,7 +263,7 @@ perc_wrong_prediction_count <- round((df_overview_gpt %>% filter(!str_detect(mod
 Even though a lot of documents to process at \acr{RHvB} will not be public and thus must not be processed on public cloud infrastructure, the performance of models like OpenAI's GPT are interesting benchmark references within this thesis and for comparing these findings with other papers results. Therefore for this thesis the public available versions of annual reports have been used instead of the ones used internally or for public administration purposes. Those public available reports often are visually more appealing and more heterogeneous in their structure.
 :::
 
-Table \@ref(tab.table-extraction-llm-performance-total-gpt-ranking) shows the ranking for the best model-method combinations Qwen3 235B is performing best. gpt-4.1 and gpt-5-mini perform equally well and are almost as good as Qwen3 235B. All models but gpt-4.1-nano, gpt-5-nano and Qwen3-0.6B manage to beat the \acr{regex} threshold. Qwen3-0.6B performs better than the nano models once it gets provided with an example.
+Table \@ref(tab:table-extraction-llm-performance-total-gpt-ranking) shows the ranking for the best model-method combinations Qwen3 235B is performing best. gpt-4.1 and gpt-5-mini perform equally well and are almost as good as Qwen3 235B. All models but gpt-4.1-nano, gpt-5-nano and Qwen3-0.6B manage to beat the \acr{regex} threshold. Qwen3-0.6B performs better than the nano models once it gets provided with an example.
 
 Table \@ref(tab:costs-azure) shows the accumulated costs for the table extraction task for the models provided by Azure. Using gpt-4.1 is most expensive, followed by gpt-5-mini. Next is gpt-5-nano. This is caused by an unexpected high cost for output tokens. In general we find, that the ratio of output costs to input costs is much higher for gpt-5 models. Since gpt-5-mini gives consistently good results already with one provided example, this could be the most cost efficient strategy. But it takes gpt-5-mini more than three times longer to respond than gpt-4.1.
 
@@ -359,7 +359,7 @@ df_overview_gpt %>% filter(n_predicted_values != 58) %>%
   coord_cartesian(xlim= c(0,66))
 ```
 
-```{r table-extraction-llm-errors-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of predictions OpenAI's models made."}
+```{r table-extraction-llm-errors-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the number of predictions where not 58 values are returned grouped by model and prompting method."}
 df_overview_gpt %>% mutate(n_pred = map_dbl(predictions, ~nrow(.)), .before = 1) %>% filter(n_pred != 29) %>% # select(model, method, n_pred, filepath) %>% 
   ggplot() +
   geom_bar(aes(x = method_family, fill = n_examples)) + 
@@ -821,7 +821,7 @@ best_models_with_examples %>%
 ```
 
 ::: paragraph-start
-##### Learning to respect currency units
+##### Learning to respect currency units {#hybrid-learn-respect-units}
 
 Table \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table) shows, the difference in the percentage of correct predicted numeric values, if the \acr{LLM} is prompted to respect currency units and gets synthetic **Aktiva** tables that show how to cope with different currency units, separate for the number of columns with currency units. There are `r n_tables_n_cols %>% deframe() %>% .["1"]` tables that have *T€* in the previous year column and `r n_tables_n_cols %>% deframe() %>% .["2"]` tables that have all columns listed in *T€*.
 :::
@@ -834,7 +834,7 @@ Thus, synthetic data can be used to solve new tasks and substitute missing data 
 
 ```{r comparing-extraction-performance-synth-context-learning-respecting-units-table, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 df_real_table_extraction_synth_respect_units %>% 
-  filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>%
   group_by(model, method, method_family, respect_units, n_col_T_EUR) %>% 
   reframe(median_num = median(percentage_correct_numeric)) %>% 
   pivot_wider(names_from = respect_units, values_from = median_num, names_prefix = "units_") %>% 
@@ -858,7 +858,7 @@ df_real_table_extraction_synth_respect_units %>%
   # arrange(method_family) %>% 
   render_table(
     alignment = "lrrr",
-    caption = "Comparing extraction performance for real Aktiva extraction task dependent on the promt addition to respect currency units",
+    caption = "Comparing extraction performance for real Aktiva extraction task dependent on the promt addition to respect currency units and providing examples that show this transformation.",
     ref = opts_current$get("label"), dom="t")
   
 ```

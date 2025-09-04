@@ -60,10 +60,10 @@
 <link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
-<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 <link href="libs/dt-ext-rowgroup-1.13.6/css/rowGroup.dataTables.min.css" rel="stylesheet" />
 <script src="libs/dt-ext-rowgroup-1.13.6/js/dataTables.rowGroup.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -195,7 +195,7 @@ div.csl-indent {
 <li class="chapter" data-level="2.1" data-path="literature-review.html"><a href="literature-review.html#information-retrieval"><i class="fa fa-check"></i><b>2.1</b> Natural language processing</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="literature-review.html"><a href="literature-review.html#document-layout-analysis-edit-this"><i class="fa fa-check"></i><b>2.1.1</b> Document Layout Analysis (edit this)</a></li>
-<li class="chapter" data-level="2.1.2" data-path="literature-review.html"><a href="literature-review.html#term-frequency"><i class="fa fa-check"></i><b>2.1.2</b> Term frequency</a></li>
+<li class="chapter" data-level="2.1.2" data-path="literature-review.html"><a href="literature-review.html#information-retrieval-term-frequency"><i class="fa fa-check"></i><b>2.1.2</b> Information retrieval (Term frequency)</a></li>
 <li class="chapter" data-level="2.1.3" data-path="literature-review.html"><a href="literature-review.html#text-processing"><i class="fa fa-check"></i><b>2.1.3</b> Text processing</a></li>
 <li class="chapter" data-level="2.1.4" data-path="literature-review.html"><a href="literature-review.html#regular-expressions"><i class="fa fa-check"></i><b>2.1.4</b> Regular expressions</a></li>
 <li class="chapter" data-level="2.1.5" data-path="literature-review.html"><a href="literature-review.html#llm-theory"><i class="fa fa-check"></i><b>2.1.5</b> Large Language Models</a>
@@ -206,11 +206,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.1.5.4" data-path="literature-review.html"><a href="literature-review.html#decoder"><i class="fa fa-check"></i><b>2.1.5.4</b> Decoder</a></li>
 <li class="chapter" data-level="2.1.5.5" data-path="literature-review.html"><a href="literature-review.html#gpt-generative-pretrained-transformers"><i class="fa fa-check"></i><b>2.1.5.5</b> GPT (Generative Pretrained Transformers)</a></li>
 <li class="chapter" data-level="2.1.5.6" data-path="literature-review.html"><a href="literature-review.html#mixture-of-experts"><i class="fa fa-check"></i><b>2.1.5.6</b> Mixture of Experts</a></li>
-<li class="chapter" data-level="2.1.5.7" data-path="literature-review.html"><a href="literature-review.html#mixed-modal"><i class="fa fa-check"></i><b>2.1.5.7</b> Mixed modal</a></li>
+<li class="chapter" data-level="2.1.5.7" data-path="literature-review.html"><a href="literature-review.html#confidence-scores"><i class="fa fa-check"></i><b>2.1.5.7</b> Confidence scores</a></li>
 </ul></li>
 <li class="chapter" data-level="2.1.6" data-path="literature-review.html"><a href="literature-review.html#llm-methods"><i class="fa fa-check"></i><b>2.1.6</b> Methods for LLM application</a>
 <ul>
-<li class="chapter" data-level="2.1.6.1" data-path="literature-review.html"><a href="literature-review.html#few-shot-learning"><i class="fa fa-check"></i><b>2.1.6.1</b> Few-shot Learning</a></li>
+<li class="chapter" data-level="2.1.6.1" data-path="literature-review.html"><a href="literature-review.html#in-context-learning"><i class="fa fa-check"></i><b>2.1.6.1</b> In-context Learning</a></li>
 <li class="chapter" data-level="2.1.6.2" data-path="literature-review.html"><a href="literature-review.html#rag"><i class="fa fa-check"></i><b>2.1.6.2</b> RAG</a></li>
 <li class="chapter" data-level="2.1.6.3" data-path="literature-review.html"><a href="literature-review.html#guided-and-restricted-decoding"><i class="fa fa-check"></i><b>2.1.6.3</b> Guided and restricted decoding</a></li>
 </ul></li>
@@ -230,12 +230,16 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="methodology.html"><a href="methodology.html#research-questions"><i class="fa fa-check"></i><b>3.2.1</b> Research questions</a></li>
 <li class="chapter" data-level="3.2.2" data-path="methodology.html"><a href="methodology.html#hypotheses"><i class="fa fa-check"></i><b>3.2.2</b> Hypotheses</a></li>
-<li class="chapter" data-level="3.2.3" data-path="methodology.html"><a href="methodology.html#evaluation-framework"><i class="fa fa-check"></i><b>3.2.3</b> Evaluation framework</a></li>
-<li class="chapter" data-level="3.2.4" data-path="methodology.html"><a href="methodology.html#evaluation-research"><i class="fa fa-check"></i><b>3.2.4</b> Evaluation research</a></li>
+<li class="chapter" data-level="3.2.3" data-path="methodology.html"><a href="methodology.html#evaluation-research"><i class="fa fa-check"></i><b>3.2.3</b> Evaluation research</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="methodology.html"><a href="methodology.html#evaluation-strategy"><i class="fa fa-check"></i><b>3.3</b> Evaluation Strategy</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="methodology.html"><a href="methodology.html#metrics"><i class="fa fa-check"></i><b>3.3.1</b> Metrics</a></li>
+<li class="chapter" data-level="3.3.1" data-path="methodology.html"><a href="methodology.html#evaluation-framework-and-metrics"><i class="fa fa-check"></i><b>3.3.1</b> Evaluation framework and metrics</a>
+<ul>
+<li class="chapter" data-level="3.3.1.1" data-path="methodology.html"><a href="methodology.html#page-identification"><i class="fa fa-check"></i><b>3.3.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="3.3.1.2" data-path="methodology.html"><a href="methodology.html#information-extraction"><i class="fa fa-check"></i><b>3.3.1.2</b> Information extraction</a></li>
+<li class="chapter" data-level="3.3.1.3" data-path="methodology.html"><a href="methodology.html#error-rate-guidance"><i class="fa fa-check"></i><b>3.3.1.3</b> Error rate guidance</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3.2" data-path="methodology.html"><a href="methodology.html#benchmarking"><i class="fa fa-check"></i><b>3.3.2</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="3.4" data-path="methodology.html"><a href="methodology.html#data-strategy"><i class="fa fa-check"></i><b>3.4</b> Data Strategy</a>
@@ -250,30 +254,33 @@ div.csl-indent {
 <li class="chapter" data-level="3.5.1" data-path="methodology.html"><a href="methodology.html#llm-overview"><i class="fa fa-check"></i><b>3.5.1</b> LLM overview</a></li>
 <li class="chapter" data-level="3.5.2" data-path="methodology.html"><a href="methodology.html#approaches"><i class="fa fa-check"></i><b>3.5.2</b> Approaches</a>
 <ul>
-<li class="chapter" data-level="3.5.2.1" data-path="methodology.html"><a href="methodology.html#page-identification-4"><i class="fa fa-check"></i><b>3.5.2.1</b> Page identification</a></li>
-<li class="chapter" data-level="3.5.2.2" data-path="methodology.html"><a href="methodology.html#information-extraction-3"><i class="fa fa-check"></i><b>3.5.2.2</b> Information extraction</a></li>
+<li class="chapter" data-level="3.5.2.1" data-path="methodology.html"><a href="methodology.html#page-identification-2"><i class="fa fa-check"></i><b>3.5.2.1</b> Page identification</a></li>
+<li class="chapter" data-level="3.5.2.2" data-path="methodology.html"><a href="methodology.html#information-extraction-2"><i class="fa fa-check"></i><b>3.5.2.2</b> Information extraction</a></li>
 </ul></li>
-<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#gpu-benchmark"><i class="fa fa-check"></i><b>3.5.3</b> Hardware normalization</a></li>
-<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.4</b> Error analysis</a></li>
-<li class="chapter" data-level="3.5.5" data-path="methodology.html"><a href="methodology.html#baseline-selection-rationale"><i class="fa fa-check"></i><b>3.5.5</b> Baseline selection rationale</a></li>
-<li class="chapter" data-level="3.5.6" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.6</b> Evaluation methods</a></li>
-</ul></li>
-<li class="chapter" data-level="3.6" data-path="methodology.html"><a href="methodology.html#ethical-practical-considerations-eher-am-ende-oder-weg"><i class="fa fa-check"></i><b>3.6</b> Ethical &amp; Practical Considerations (eher am Ende oder weg?)</a>
+<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.3</b> Error analysis</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="methodology.html"><a href="methodology.html#pdf-extraction-limitations"><i class="fa fa-check"></i><b>3.6.1</b> PDF extraction limitations</a></li>
-<li class="chapter" data-level="3.6.2" data-path="methodology.html"><a href="methodology.html#computational-constraints"><i class="fa fa-check"></i><b>3.6.2</b> Computational constraints</a></li>
-<li class="chapter" data-level="3.6.3" data-path="methodology.html"><a href="methodology.html#generalizability-scope"><i class="fa fa-check"></i><b>3.6.3</b> Generalizability scope</a></li>
-<li class="chapter" data-level="3.6.4" data-path="methodology.html"><a href="methodology.html#ethical-considerations"><i class="fa fa-check"></i><b>3.6.4</b> Ethical considerations</a></li>
+<li class="chapter" data-level="3.5.3.1" data-path="methodology.html"><a href="methodology.html#page-identificaion"><i class="fa fa-check"></i><b>3.5.3.1</b> Page identificaion</a></li>
+<li class="chapter" data-level="3.5.3.2" data-path="methodology.html"><a href="methodology.html#inforamtion-extraction"><i class="fa fa-check"></i><b>3.5.3.2</b> Inforamtion extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.4</b> Evaluation methods</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="implementation.html"><a href="implementation.html"><i class="fa fa-check"></i><b>4</b> Implementation</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="implementation.html"><a href="implementation.html#environments"><i class="fa fa-check"></i><b>4.1</b> Environments</a></li>
+<li class="chapter" data-level="4.1" data-path="implementation.html"><a href="implementation.html#environments"><i class="fa fa-check"></i><b>4.1</b> Environments</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="implementation.html"><a href="implementation.html#gpu-benchmark"><i class="fa fa-check"></i><b>4.1.1</b> Hardware normalization</a></li>
+</ul></li>
 <li class="chapter" data-level="4.2" data-path="implementation.html"><a href="implementation.html#evaluation-and-reporting"><i class="fa fa-check"></i><b>4.2</b> Evaluation and Reporting</a></li>
 <li class="chapter" data-level="4.3" data-path="implementation.html"><a href="implementation.html#software-packages"><i class="fa fa-check"></i><b>4.3</b> Software Packages</a></li>
 <li class="chapter" data-level="4.4" data-path="implementation.html"><a href="implementation.html#speedup-with-vllm-and-batching"><i class="fa fa-check"></i><b>4.4</b> Speedup with vLLM and batching</a></li>
 <li class="chapter" data-level="4.5" data-path="implementation.html"><a href="implementation.html#text-extraction"><i class="fa fa-check"></i><b>4.5</b> Text extraction</a></li>
-<li class="chapter" data-level="4.6" data-path="implementation.html"><a href="implementation.html#data-processing"><i class="fa fa-check"></i><b>4.6</b> Data processing</a></li>
+<li class="chapter" data-level="4.6" data-path="implementation.html"><a href="implementation.html#ground-truth-database"><i class="fa fa-check"></i><b>4.6</b> Ground truth database</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="implementation.html"><a href="implementation.html#ground-truth-creation"><i class="fa fa-check"></i><b>4.6.1</b> Ground truth creation</a></li>
+<li class="chapter" data-level="4.6.2" data-path="implementation.html"><a href="implementation.html#ground-truth-database-composition"><i class="fa fa-check"></i><b>4.6.2</b> Ground truth database composition</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="implementation.html"><a href="implementation.html#data-processing"><i class="fa fa-check"></i><b>4.7</b> Data processing</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
 <ul>
@@ -296,37 +303,50 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#page-identification-5"><i class="fa fa-check"></i><b>6.1</b> Page identification</a>
+<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#answer-research-questions"><i class="fa fa-check"></i><b>6.1</b> Research questions</a>
 <ul>
-<li class="chapter" data-level="6.1.1" data-path="discussion.html"><a href="discussion.html#general-performance-page-identification"><i class="fa fa-check"></i><b>6.1.1</b> General performance</a></li>
-<li class="chapter" data-level="6.1.2" data-path="discussion.html"><a href="discussion.html#energy-usage-and-runtime-1"><i class="fa fa-check"></i><b>6.1.2</b> Energy usage and runtime</a></li>
-</ul></li>
-<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#information-extraction-4"><i class="fa fa-check"></i><b>6.2</b> Information extraction</a>
+<li class="chapter" data-level="6.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-5"><i class="fa fa-check"></i><b>6.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-4"><i class="fa fa-check"></i><b>6.1.2</b> Information extraction</a>
 <ul>
-<li class="chapter" data-level="6.2.1" data-path="discussion.html"><a href="discussion.html#general-performance"><i class="fa fa-check"></i><b>6.2.1</b> General performance</a></li>
-<li class="chapter" data-level="6.2.2" data-path="discussion.html"><a href="discussion.html#company-specific-results"><i class="fa fa-check"></i><b>6.2.2</b> Company specific results</a></li>
-<li class="chapter" data-level="6.2.3" data-path="discussion.html"><a href="discussion.html#error-analysis-1"><i class="fa fa-check"></i><b>6.2.3</b> Error analysis</a>
-<ul>
-<li class="chapter" data-level="6.2.3.1" data-path="discussion.html"><a href="discussion.html#ground-truth-creation"><i class="fa fa-check"></i><b>6.2.3.1</b> Ground truth creation</a></li>
-<li class="chapter" data-level="6.2.3.2" data-path="discussion.html"><a href="discussion.html#regex-synth-backend-discussion"><i class="fa fa-check"></i><b>6.2.3.2</b> Regular expression approach</a></li>
+<li class="chapter" data-level="6.1.2.1" data-path="discussion.html"><a href="discussion.html#extraction-performace-hypotheses-evaluation"><i class="fa fa-check"></i><b>6.1.2.1</b> Possibilty</a></li>
+<li class="chapter" data-level="6.1.2.2" data-path="discussion.html"><a href="discussion.html#extraction-performace-predictor-hypotheses-evaluation"><i class="fa fa-check"></i><b>6.1.2.2</b> Feature effects</a></li>
+<li class="chapter" data-level="6.1.2.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-1"><i class="fa fa-check"></i><b>6.1.2.3</b> Error rate guidance</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-1"><i class="fa fa-check"></i><b>6.3</b> Error rate guidance</a></li>
-<li class="chapter" data-level="6.4" data-path="discussion.html"><a href="discussion.html#feature-effect-analysis"><i class="fa fa-check"></i><b>6.4</b> Feature effect analysis</a>
+<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#general-performance-page-identification"><i class="fa fa-check"></i><b>6.2</b> General performance</a>
 <ul>
-<li class="chapter" data-level="6.4.1" data-path="discussion.html"><a href="discussion.html#general-performance-1"><i class="fa fa-check"></i><b>6.4.1</b> General performance</a></li>
-</ul></li>
-<li class="chapter" data-level="6.5" data-path="discussion.html"><a href="discussion.html#summary-1"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
-<li class="chapter" data-level="6.6" data-path="discussion.html"><a href="discussion.html#limitations-4"><i class="fa fa-check"></i><b>6.6</b> Limitations</a>
+<li class="chapter" data-level="6.2.1" data-path="discussion.html"><a href="discussion.html#page-identification-6"><i class="fa fa-check"></i><b>6.2.1</b> Page identification</a>
 <ul>
-<li class="chapter" data-level="6.6.1" data-path="discussion.html"><a href="discussion.html#context-rot"><i class="fa fa-check"></i><b>6.6.1</b> Context rot</a>
+<li class="chapter" data-level="6.2.1.1" data-path="discussion.html"><a href="discussion.html#efficency-discussion"><i class="fa fa-check"></i><b>6.2.1.1</b> Energy usage and runtime</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2.2" data-path="discussion.html"><a href="discussion.html#alternative-input-formats-extraction"><i class="fa fa-check"></i><b>6.2.2</b> Information extraction</a></li>
+<li class="chapter" data-level="6.2.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-2"><i class="fa fa-check"></i><b>6.2.3</b> Error rate guidance</a></li>
+<li class="chapter" data-level="6.2.4" data-path="discussion.html"><a href="discussion.html#same-company-evaluation"><i class="fa fa-check"></i><b>6.2.4</b> Company specific results</a></li>
+<li class="chapter" data-level="6.2.5" data-path="discussion.html"><a href="discussion.html#error-analysis-1"><i class="fa fa-check"></i><b>6.2.5</b> Error analysis</a>
 <ul>
-<li class="chapter" data-level="6.6.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-6"><i class="fa fa-check"></i><b>6.6.1.1</b> Page identification</a></li>
-<li class="chapter" data-level="6.6.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-5"><i class="fa fa-check"></i><b>6.6.1.2</b> Information extraction</a></li>
+<li class="chapter" data-level="6.2.5.1" data-path="discussion.html"><a href="discussion.html#ground-truth-creation-1"><i class="fa fa-check"></i><b>6.2.5.1</b> Ground truth creation</a></li>
+<li class="chapter" data-level="6.2.5.2" data-path="discussion.html"><a href="discussion.html#regex-synth-backend-discussion"><i class="fa fa-check"></i><b>6.2.5.2</b> Regular expression approach</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2.6" data-path="discussion.html"><a href="discussion.html#openai-discussion"><i class="fa fa-check"></i><b>6.2.6</b> OpenAI models</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="discussion.html"><a href="discussion.html#summary-1"><i class="fa fa-check"></i><b>6.3</b> Summary</a></li>
+<li class="chapter" data-level="6.4" data-path="discussion.html"><a href="discussion.html#detail-discussion"><i class="fa fa-check"></i><b>6.4</b> Limitations</a>
+<ul>
+<li class="chapter" data-level="6.4.1" data-path="discussion.html"><a href="discussion.html#content-rot"><i class="fa fa-check"></i><b>6.4.1</b> Context rot</a>
+<ul>
+<li class="chapter" data-level="6.4.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-7"><i class="fa fa-check"></i><b>6.4.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="6.4.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-5"><i class="fa fa-check"></i><b>6.4.1.2</b> Information extraction</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6.7" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.7</b> Not covered</a></li>
-<li class="chapter" data-level="6.8" data-path="discussion.html"><a href="discussion.html#outlook"><i class="fa fa-check"></i><b>6.8</b> Outlook</a></li>
+<li class="chapter" data-level="6.5" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.5</b> Not covered</a></li>
+<li class="chapter" data-level="6.6" data-path="discussion.html"><a href="discussion.html#outlook"><i class="fa fa-check"></i><b>6.6</b> Outlook</a></li>
+<li class="chapter" data-level="6.7" data-path="discussion.html"><a href="discussion.html#ethical-practical-considerations"><i class="fa fa-check"></i><b>6.7</b> Ethical &amp; Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="6.7.1" data-path="discussion.html"><a href="discussion.html#pdf-extraction-limitations"><i class="fa fa-check"></i><b>6.7.1</b> PDF extraction limitations</a></li>
+<li class="chapter" data-level="6.7.2" data-path="discussion.html"><a href="discussion.html#computational-constraints"><i class="fa fa-check"></i><b>6.7.2</b> Computational constraints</a></li>
+<li class="chapter" data-level="6.7.3" data-path="discussion.html"><a href="discussion.html#generalizability-scope"><i class="fa fa-check"></i><b>6.7.3</b> Generalizability scope</a></li>
+<li class="chapter" data-level="6.7.4" data-path="discussion.html"><a href="discussion.html#ethical-considerations"><i class="fa fa-check"></i><b>6.7.4</b> Ethical considerations</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="discussion.html"><a href="discussion.html#conclusion"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -337,7 +357,10 @@ div.csl-indent {
 <li class="chapter" data-level="8.2" data-path="page-identification-report.html"><a href="page-identification-report.html#toc-understanding"><i class="fa fa-check"></i><b>8.2</b> Table of Contents understanding</a>
 <ul>
 <li class="chapter" data-level="8.2.1" data-path="page-identification-report.html"><a href="page-identification-report.html#text-based-toc-understanding"><i class="fa fa-check"></i><b>8.2.1</b> Details for the approaches</a></li>
-<li class="chapter" data-level="8.2.2" data-path="page-identification-report.html"><a href="page-identification-report.html#results-5"><i class="fa fa-check"></i><b>8.2.2</b> Results</a></li>
+<li class="chapter" data-level="8.2.2" data-path="page-identification-report.html"><a href="page-identification-report.html#results-5"><i class="fa fa-check"></i><b>8.2.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="8.2.2.1" data-path="page-identification-report.html"><a href="page-identification-report.html#comparison-of-the-different-approaches"><i class="fa fa-check"></i><b>8.2.2.1</b> Comparison of the different approaches</a></li>
+</ul></li>
 <li class="chapter" data-level="8.2.3" data-path="page-identification-report.html"><a href="page-identification-report.html#machine-readable-toc-approach-specific-results"><i class="fa fa-check"></i><b>8.2.3</b> Machine readable TOC approach specific results</a></li>
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="page-identification-report.html"><a href="page-identification-report.html#llm-page-identification"><i class="fa fa-check"></i><b>8.3</b> Classification with LLMs</a>
@@ -361,7 +384,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="10" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html"><i class="fa fa-check"></i><b>10</b> Appendix C - Error rate guidance report</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#page-identification-7"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
+<li class="chapter" data-level="10.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#page-identification-8"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
 <ul>
 <li class="chapter" data-level="10.1.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#binary-classification-2"><i class="fa fa-check"></i><b>10.1.1</b> Binary classification</a></li>
 <li class="chapter" data-level="10.1.2" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#multi-class-classification-2"><i class="fa fa-check"></i><b>10.1.2</b> Multi-class classification</a></li>
@@ -373,12 +396,12 @@ div.csl-indent {
 <li class="chapter" data-level="10.2.3" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#hybrid-aproach"><i class="fa fa-check"></i><b>10.2.3</b> Hybrid aproach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html"><i class="fa fa-check"></i><b>11</b> Appendix D - Feature effect analysis</a>
+<li class="chapter" data-level="11" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html"><i class="fa fa-check"></i><b>11</b> Appendix D - Feature effect analysis</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#regular-expressions-5"><i class="fa fa-check"></i><b>11.1</b> Regular expressions</a></li>
-<li class="chapter" data-level="11.2" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#real-tables-4"><i class="fa fa-check"></i><b>11.2</b> Real tables</a></li>
-<li class="chapter" data-level="11.3" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#synthetic-tables-4"><i class="fa fa-check"></i><b>11.3</b> Synthetic tables</a></li>
-<li class="chapter" data-level="11.4" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#hybrid-approach-3"><i class="fa fa-check"></i><b>11.4</b> Hybrid approach</a></li>
+<li class="chapter" data-level="11.1" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#regular-expressions-5"><i class="fa fa-check"></i><b>11.1</b> Regular expressions</a></li>
+<li class="chapter" data-level="11.2" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#real-tables-4"><i class="fa fa-check"></i><b>11.2</b> Real tables</a></li>
+<li class="chapter" data-level="11.3" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#synthetic-tables-4"><i class="fa fa-check"></i><b>11.3</b> Synthetic tables</a></li>
+<li class="chapter" data-level="11.4" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#hybrid-approach-3"><i class="fa fa-check"></i><b>11.4</b> Hybrid approach</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html"><i class="fa fa-check"></i><b>12</b> Appendix E - Miscellaneous</a>
 <ul>
@@ -413,37 +436,37 @@ div.csl-indent {
 <li class="chapter" data-level="13.2.1" data-path="tables.html"><a href="tables.html#hybrid-approach-4"><i class="fa fa-check"></i><b>13.2.1</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>14</b> Figures</a>
+<li class="chapter" data-level="14" data-path="figure-collection.html"><a href="figure-collection.html"><i class="fa fa-check"></i><b>14</b> Figures</a>
 <ul>
-<li class="chapter" data-level="14.1" data-path="figures.html"><a href="figures.html#page-identification-8"><i class="fa fa-check"></i><b>14.1</b> Page identification</a>
+<li class="chapter" data-level="14.1" data-path="figure-collection.html"><a href="figure-collection.html#page-identification-9"><i class="fa fa-check"></i><b>14.1</b> Page identification</a>
 <ul>
-<li class="chapter" data-level="14.1.1" data-path="figures.html"><a href="figures.html#regex-baseline"><i class="fa fa-check"></i><b>14.1.1</b> Regex baseline</a></li>
-<li class="chapter" data-level="14.1.2" data-path="figures.html"><a href="figures.html#toc-understanding-1"><i class="fa fa-check"></i><b>14.1.2</b> TOC understanding</a></li>
-<li class="chapter" data-level="14.1.3" data-path="figures.html"><a href="figures.html#classification-1"><i class="fa fa-check"></i><b>14.1.3</b> Classification</a>
+<li class="chapter" data-level="14.1.1" data-path="figure-collection.html"><a href="figure-collection.html#regex-baseline"><i class="fa fa-check"></i><b>14.1.1</b> Regex baseline</a></li>
+<li class="chapter" data-level="14.1.2" data-path="figure-collection.html"><a href="figure-collection.html#toc-understanding-1"><i class="fa fa-check"></i><b>14.1.2</b> TOC understanding</a></li>
+<li class="chapter" data-level="14.1.3" data-path="figure-collection.html"><a href="figure-collection.html#classification-1"><i class="fa fa-check"></i><b>14.1.3</b> Classification</a>
 <ul>
-<li class="chapter" data-level="14.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>14.1.3.1</b> Binary</a></li>
-<li class="chapter" data-level="14.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-3"><i class="fa fa-check"></i><b>14.1.3.2</b> Multi-class classification</a></li>
+<li class="chapter" data-level="14.1.3.1" data-path="figure-collection.html"><a href="figure-collection.html#binary"><i class="fa fa-check"></i><b>14.1.3.1</b> Binary</a></li>
+<li class="chapter" data-level="14.1.3.2" data-path="figure-collection.html"><a href="figure-collection.html#multi-class-classification-3"><i class="fa fa-check"></i><b>14.1.3.2</b> Multi-class classification</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="14.2" data-path="figures.html"><a href="figures.html#table-extraction-1"><i class="fa fa-check"></i><b>14.2</b> Table extraction</a>
+<li class="chapter" data-level="14.2" data-path="figure-collection.html"><a href="figure-collection.html#table-extraction-1"><i class="fa fa-check"></i><b>14.2</b> Table extraction</a>
 <ul>
-<li class="chapter" data-level="14.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>14.2.1</b> Regex approach</a>
+<li class="chapter" data-level="14.2.1" data-path="figure-collection.html"><a href="figure-collection.html#regex-approach"><i class="fa fa-check"></i><b>14.2.1</b> Regex approach</a>
 <ul>
-<li class="chapter" data-level="14.2.1.1" data-path="figures.html"><a href="figures.html#real-tables-5"><i class="fa fa-check"></i><b>14.2.1.1</b> Real tables</a></li>
-<li class="chapter" data-level="14.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables-5"><i class="fa fa-check"></i><b>14.2.1.2</b> Synthetic tables</a></li>
+<li class="chapter" data-level="14.2.1.1" data-path="figure-collection.html"><a href="figure-collection.html#real-tables-5"><i class="fa fa-check"></i><b>14.2.1.1</b> Real tables</a></li>
+<li class="chapter" data-level="14.2.1.2" data-path="figure-collection.html"><a href="figure-collection.html#synthetic-tables-5"><i class="fa fa-check"></i><b>14.2.1.2</b> Synthetic tables</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.2" data-path="figures.html"><a href="figures.html#real-tables-6"><i class="fa fa-check"></i><b>14.2.2</b> Real tables</a>
+<li class="chapter" data-level="14.2.2" data-path="figure-collection.html"><a href="figure-collection.html#real-tables-6"><i class="fa fa-check"></i><b>14.2.2</b> Real tables</a>
 <ul>
-<li class="chapter" data-level="14.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>14.2.2.1</b> Examples from same company</a></li>
-<li class="chapter" data-level="14.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>14.2.2.2</b> OpenAI models</a></li>
-<li class="chapter" data-level="14.2.2.3" data-path="figures.html"><a href="figures.html#comparing-input-formats-and-text-extration-libraries"><i class="fa fa-check"></i><b>14.2.2.3</b> Comparing input formats and text extration libraries</a></li>
-<li class="chapter" data-level="14.2.2.4" data-path="figures.html"><a href="figures.html#hypotheses-6"><i class="fa fa-check"></i><b>14.2.2.4</b> Hypotheses</a></li>
+<li class="chapter" data-level="14.2.2.1" data-path="figure-collection.html"><a href="figure-collection.html#examples-from-same-company"><i class="fa fa-check"></i><b>14.2.2.1</b> Examples from same company</a></li>
+<li class="chapter" data-level="14.2.2.2" data-path="figure-collection.html"><a href="figure-collection.html#openai-models-1"><i class="fa fa-check"></i><b>14.2.2.2</b> OpenAI models</a></li>
+<li class="chapter" data-level="14.2.2.3" data-path="figure-collection.html"><a href="figure-collection.html#comparing-input-formats-and-text-extration-libraries"><i class="fa fa-check"></i><b>14.2.2.3</b> Comparing input formats and text extration libraries</a></li>
+<li class="chapter" data-level="14.2.2.4" data-path="figure-collection.html"><a href="figure-collection.html#hypotheses-6"><i class="fa fa-check"></i><b>14.2.2.4</b> Hypotheses</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-6"><i class="fa fa-check"></i><b>14.2.3</b> Synthetic tables</a>
+<li class="chapter" data-level="14.2.3" data-path="figure-collection.html"><a href="figure-collection.html#synthetic-tables-6"><i class="fa fa-check"></i><b>14.2.3</b> Synthetic tables</a>
 <ul>
-<li class="chapter" data-level="14.2.3.1" data-path="figures.html"><a href="figures.html#confidence-4"><i class="fa fa-check"></i><b>14.2.3.1</b> Confidence</a></li>
+<li class="chapter" data-level="14.2.3.1" data-path="figure-collection.html"><a href="figure-collection.html#confidence-4"><i class="fa fa-check"></i><b>14.2.3.1</b> Confidence</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-5"><i class="fa fa-check"></i><b>14.2.4</b> Hybrid approach</a></li>
+<li class="chapter" data-level="14.2.4" data-path="figure-collection.html"><a href="figure-collection.html#hybrid-approach-5"><i class="fa fa-check"></i><b>14.2.4</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="15" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>15</b> Layout testing</a></li>
@@ -469,19 +492,18 @@ div.csl-indent {
 <p>This chapter describes the research design of this thesis. In the subsequent sections it elaborates</p>
 <div id="problem-definition" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Problem Definition<a href="methodology.html#problem-definition" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This thesis aims to evaluate a framework for information extraction from financial reports using advanced computing algorithms as <a href="glossary.html#acronyms_LLM">LLM</a>s, presented by <span class="citation">H. Li, Gao, et al. (<a href="#ref-liExtractingFinancialData2023">2023</a>)</span>. We apply this framework on German annual reports of multiple companies and focus on using open source <a href="glossary.html#acronyms_LLM">LLM</a>s. This task requires two problems to be solved:</p>
+<p>This thesis aims to evaluate a framework for information extraction from financial reports using advanced computing algorithms, such as <a href="glossary.html#acronyms_LLM">LLM</a>s, presented by <span class="citation">H. Li, Gao, et al. (<a href="#ref-liExtractingFinancialData2023">2023</a>)</span>. We apply this framework on German annual reports of multiple companies and focus on using open-weight <a href="glossary.html#acronyms_LLM">LLM</a>s. This task requires two problems to be solved:</p>
 <ol style="list-style-type: decimal">
 <li>The information to extract has to be located in the document.</li>
-<li>The information has to be extracted correct and in form that allows further processing in down stream tasks.</li>
+<li>The information has to be extracted correct and a in format that allows further processing in down stream tasks.</li>
 </ol>
-<p>We limit the information of interest on the data found in the balance sheet and profit and loss statement. Both are found on separate pages and have a table-like structure. The information of interest is ordered by a hierarchy defined in <span class="citation">HGB (<a href="#ref-hgbHandelsgesetzbuchImBundesgesetzblatt2025">2025</a>)</span>. The information to extract are numeric values.</p>
+<p>We limit the information of interest on the data found in the balance sheet and profit and loss statement. Both are found on separate pages and have a table-like structure. The information extracted should reflect the hierarchy defined in <span class="citation">HGB (<a href="#ref-hgbHandelsgesetzbuchImBundesgesetzblatt2025">2025</a>)</span>. The information to extract consists of numeric values.</p>
 <p>Since the information of interest is placed on separated pages, the first problem is to find the pages that contain the balance sheet and profit and loss statement. We do not attempt to select a specific part of the page, where the data can be found. Thus, this becomes a classification task, if a page contains the information of interest. Spatial information is not processed.</p>
-<p>The second problem is an information extraction task. Potential information has to be identified, its entity has to recognized and finally its numeric value has to be extracted. In this thesis no special techniques for the table extraction sub field are used.</p>
+<p>The second problem is an information extraction task. Potential information has to be identified, its entity has to be recognized and finally its numeric value has to be extracted. In this thesis no special techniques specialized on table extraction are used. We just use a plain text extract.</p>
 </div>
 <div id="research-design-philosophy" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Research Design &amp; Philosophy<a href="methodology.html#research-design-philosophy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The research design for this thesis is set up, following the guideline found in <span class="citation">Wohlin et al. (<a href="#ref-wohlinExperimentationSoftwareEngineering2024">2024</a>)</span> and Figure <a href="methodology.html#fig:reasearch-design-image">3.1</a> shows the decisions made. According to <span class="citation">Collis &amp; Hussey (<a href="#ref-collisBusinessResearchPractical2014">2014</a>)</span> research classification the outcome of this thesis is applied research, focusing on solving a practical problem. Its purpose is evaluation research, comparing different approaches with each other. The data collected in our experiments is of quantitative nature and its evaluation uses (semi-)quantitative methods.</p>
-<p>Research logic? Methods fit deductive. But I start with a very specific problem. Literature describing basic approaches?</p>
+<p>The research design for this thesis is set up, following the guideline found in <span class="citation">Wohlin et al. (<a href="#ref-wohlinExperimentationSoftwareEngineering2024">2024</a>)</span>. Figure <a href="methodology.html#fig:reasearch-design-image">3.1</a> shows the decisions made following this guideline. According to <span class="citation">Collis &amp; Hussey (<a href="#ref-collisBusinessResearchPractical2014">2014</a>)</span> research classification the outcome of this thesis is applied research, focusing on solving a practical problem. Its purpose is evaluation research, comparing different approaches with each other (<em>benchmarking</em>). The data collected in our experiments is of quantitative nature and its evaluation uses (semi-)quantitative methods.</p>
 
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:reasearch-design-image"></span>
 <img src="images/research_design.png" alt="Showing the decisions made regarding the research design. (The figure is adapted from Wohlin &amp; Aurum (2015). The copyright for the original figure is held by Springer Science+Business Media New York 2014.)" width="100%" />
@@ -507,215 +529,104 @@ How can we use LLMs effectively to extract this information from the document?
 Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 </li>
 </ol>
-<p>The third question is refereed to, using the term <em>error rate guidance</em>.</p>
+<p>The third question is refereed to using the term <em>error rate guidance</em>.</p>
 </div>
 <div id="hypotheses" class="section level3 hasAnchor" number="3.2.2">
 <h3><span class="header-section-number">3.2.2</span> Hypotheses<a href="methodology.html#hypotheses" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Subsequent we formulate our hypotheses for the research questions:</p>
-<p>H1.1: <a href="glossary.html#acronyms_LLM">LLM</a>s can be used to locate specific information in a financial report, achieving a high F1 score.</p>
-<p>H1.2: <a href="glossary.html#acronyms_LLM">LLM</a>s can be combined with other approaches to reduce the energy consumption, without lowering the systems recall.</p>
-<p>H2.1a: <a href="glossary.html#acronyms_LLM">LLM</a>s can be used to correctly extract multiple numeric values from the assets table.</p>
-<p>H2.1b: <a href="glossary.html#acronyms_LLM">LLM</a>s can match row identifiers and place the numeric values in the correct target row.</p>
-<p>H2.1c: <a href="glossary.html#acronyms_LLM">LLM</a>s can identify unmatched row identifiers and report, that the value is missing.</p>
-<p>H2.2a: Model specific features have an effect on the extraction performance.</p>
-<p>H2.2.b: Prompt strategy specific features have an effect on the extraction performance.</p>
-<ul>
-<li>context from same company</li>
-</ul>
-<p>H2.2c: Table specific features have an effect on the extraction performance.</p>
-<ul>
-<li>What are characteristics of financial tables that make it hard for LLMs to identify / extract them? (How does the length and complexity of financial documents (e.g., multi-column layouts, nested tables) affect table extraction performance?)</li>
-</ul>
-<p>H3.1: The confidence score can be used to guide the user on which of the identified pages need to be checked and which can be trusted as they are.</p>
-<p>H3.2: The confidence score can be used to guide the user on which of the predicted values in the information extraction task need to be checked and which can be trusted as they are.</p>
+<p>Subsequent we formulate our hypotheses for the research questions. Regarding to the <em>page identification</em> task we propose:</p>
+<p><strong>H1.1:</strong> <a href="glossary.html#acronyms_LLM">LLM</a>s can be used to locate specific information in a financial report, achieving a high F1 score.</p>
+<p><strong>H1.2:</strong> <a href="glossary.html#acronyms_LLM">LLM</a>s can be combined with other approaches to reduce the energy consumption, without lowering the systems recall.</p>
+<p>For the <em>information extraction</em> task we define two groups of hypotheses. The first group proposes, that <a href="glossary.html#acronyms_LLM">LLM</a>s can match entities, extract numeric values without mistakes and is not hallucinating if values are not present:</p>
+<p><strong>H2.1a:</strong> <a href="glossary.html#acronyms_LLM">LLM</a>s can be used to correctly extract multiple numeric values from the assets table.</p>
+<p><strong>H2.1b:</strong> <a href="glossary.html#acronyms_LLM">LLM</a>s can match row identifiers and place the numeric values in the correct target row.</p>
+<p><strong>H2.1c:</strong> <a href="glossary.html#acronyms_LLM">LLM</a>s can identify unmatched row identifiers and report, that the value is missing.</p>
+<p>The second group of hypotheses proposes, that there are three sources for potential predictors for the information extraction performance: model specific, prompting specific and table specific ones.</p>
+<p><strong>H2.2a:</strong> Model specific features have an effect on the extraction performance.</p>
+<p><strong>H2.2.b:</strong> Prompt strategy specific features have an effect on the extraction performance.</p>
+<p><strong>H2.2c:</strong> Table specific features have an effect on the extraction performance.</p>
+<p>Model specific predictors are the model family and the parameter size. Predictors related to the prompting strategies are related to in-context learning decisions, e.g. how many examples should be presented, how should those examples be chosen and is it permitted to use examples from the same company as the current subjects tasks document. Example for table characteristics investigated are the number of columns, visual separation and if there is a currency unit - i.e. <em>T€</em> - given.</p>
+<p>A list of all investigated predictors and their assumed directions of effect on multiple measures of the information extraction task can be found in the hypotheses evaluation tables in chapter <a href="feature-effect-analysis.html#feature-effect-analysis">11</a>.</p>
+<p>The hypotheses for our side research question name the <em>confidence score</em> as concrete target for our investigations.</p>
+<p><strong>H3.1:</strong> The confidence score can be used to guide the user on which of the identified pages need to be checked and which can be trusted as they are.</p>
+<p><strong>H3.2:</strong> The confidence score can be used to guide the user on which of the predicted values in the information extraction task need to be checked and which can be trusted as they are.</p>
 </div>
-<div id="evaluation-framework" class="section level3 hasAnchor" number="3.2.3">
-<h3><span class="header-section-number">3.2.3</span> Evaluation framework<a href="methodology.html#evaluation-framework" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="page-identification" class="section level5 hasAnchor paragraph-start" number="3.2.3.0.1">
-<h5><span class="header-section-number">3.2.3.0.1</span> Page identification<a href="methodology.html#page-identification" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>The page identification task is successful, if a page is correctly classified to contain the information of interest. The balance sheet is composed of the assets (<em>Aktiva</em>) and liabilities (<em>Passiva</em>) table. Together with the profit an loss statement (<em>Gewinn- und Verlustrechnung, GuV</em>) they form the three target classes. The fourth class is called <em>other</em>. Subsequently will will use the German terms for the target classes (or table types): <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong>.</p>
-</div>
-<div id="information-extraction" class="section level5 hasAnchor paragraph-start" number="3.2.3.0.2">
-<h5><span class="header-section-number">3.2.3.0.2</span> Information extraction<a href="methodology.html#information-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>The information extraction task if successful, if the correct numeric value is extracted with the correct entity identifier in the correct <a href="glossary.html#acronyms_json">json (JavaScript Object Notation)</a> format. If a value, defined by the legal text, is not present <em>null</em> should be returned with the corresponding entity identifier. The entity identifier can be composed of up to three labels, representing the hierarchy defined in the legal text.</p>
-</div>
-<div id="error-rate-guidance" class="section level5 hasAnchor paragraph-start" number="3.2.3.0.3">
-<h5><span class="header-section-number">3.2.3.0.3</span> Error rate guidance<a href="methodology.html#error-rate-guidance" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>A error rate guided result checking process can be implemented, if we can use extraction task related information, to identify thrust worthy. This means, we could white list these values and red flag the remaining ones. Thus, we could guide the users attention in the error checking process on those values, that empirically tend to have a high chance to be faulty.</p>
-</div>
-</div>
-<div id="evaluation-research" class="section level3 hasAnchor" number="3.2.4">
-<h3><span class="header-section-number">3.2.4</span> Evaluation research<a href="methodology.html#evaluation-research" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We compare different approaches to solve the two tasks, searching for the most effective setup, to solve the problems. A task is considered effective if it achieves good results while being as computationally efficient as possible. As a baseline for each task a <a href="glossary.html#acronyms_regex">regex (regular expression)</a> based approach is set up. Regular expressions are chosen as baseline because they are computationally efficient. The results are compared with the authors performance as well.</p>
-<p>The results should be used to implement an application that is used by the employees of <a href="glossary.html#acronyms_RHvB">RHvB</a> in future.</p>
+<div id="evaluation-research" class="section level3 hasAnchor" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> Evaluation research<a href="methodology.html#evaluation-research" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We follow the process of evaluation research, in order to investigate our research questions. We compare different approaches to solve the two tasks, searching for the most effective setup, to solve the problems. A setup is considered effective if it achieves good results while being as computationally efficient as possible.</p>
+<p>As a baseline for each task a <a href="glossary.html#acronyms_regex">regex (regular expression)</a> based approach is set up. Regular expressions are chosen as baseline because they are computationally efficient. The results are compared with the authors human performance as well. The results will be used to implement an application that is used by the employees of <a href="glossary.html#acronyms_RHvB">RHvB</a> in future.</p>
 </div>
 </div>
 <div id="evaluation-strategy" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Evaluation Strategy<a href="methodology.html#evaluation-strategy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="metrics" class="section level3 hasAnchor" number="3.3.1">
-<h3><span class="header-section-number">3.3.1</span> Metrics<a href="methodology.html#metrics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="page-identification-1" class="section level5 hasAnchor paragraph-start" number="3.3.1.0.1">
-<h5><span class="header-section-number">3.3.1.0.1</span> Page identification<a href="methodology.html#page-identification-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>This section defines, under which conditions we consider a task to be successfully solved and which metric we use to measure the outcome.</p>
+<div id="evaluation-framework-and-metrics" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Evaluation framework and metrics<a href="methodology.html#evaluation-framework-and-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="page-identification" class="section level4 hasAnchor" number="3.3.1.1">
+<h4><span class="header-section-number">3.3.1.1</span> Page identification<a href="methodology.html#page-identification" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The page identification task is successful, if a page is correctly classified to contain the information of interest. The balance sheet is composed of the assets (<em>Aktiva</em>) and liabilities (<em>Passiva</em>) table. Together with the profit an loss statement (<em>Gewinn- und Verlustrechnung, GuV</em>) they form the three target classes. The fourth class is called <em>other</em>. Subsequently will will use the German terms for the target classes (or table types): <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong>.</p>
+<div id="metrics" class="section level5 hasAnchor paragraph-start" number="3.3.1.1.1">
+<h5><span class="header-section-number">3.3.1.1.1</span> Metrics<a href="methodology.html#metrics" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>The distribution of target classes and pages of type <em>other</em> is highly imbalanced. At most two pages per target class are found in documents with up to 152 pages. Thus, following <span class="citation">Saito &amp; Rehmsmeier (<a href="#ref-saitoPrecisionRecallPlotMore2015">2015</a>)</span> suggestion, we report measures as precision, recall and F1 score instead of accuracy, to describe the approaches performances.</p>
 </div>
 <p>In a <a href="glossary.html#acronyms_HITL">HITL</a> application the recall value might be of higher interest than the F1 score. More precisely, in those cases the number of pages to check until the correct page is found is of interest. Thus, the top k recall is reported additionally, if the approach permits to rank the classified pages according to a score.</p>
-<p>Precision-recall curve</p>
-<div id="information-extraction-1" class="section level5 hasAnchor paragraph-start" number="3.3.1.0.2">
-<h5><span class="header-section-number">3.3.1.0.2</span> Information extraction<a href="methodology.html#information-extraction-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use two measures to describe the approaches performances for the information extraction task. First, we check how many of the predicted numeric value are matching the numeric values in the ground truth. The only permitted differences are based on the number of trailing zeros. We do not check for partial correctness, since the real life application requires totally correct extracted numbers.</p>
+<p>An alternative measure for the F1 score would be the <a href="glossary.html#acronyms_AUC">AUC (area under the curve)</a> score precision-recall curve.</p>
 </div>
-<p>Second, we report the F1 score for correctly predicting values as missing and thus returning <em>null</em>. The distribution of missing values and given numeric values is not very imbalanced. Nevertheless, we report the F1 score to establish a comparability with the results od the page identification task.</p>
-<div id="error-rate-guidiance" class="section level5 hasAnchor paragraph-start" number="3.3.1.0.3">
-<h5><span class="header-section-number">3.3.1.0.3</span> Error rate guidiance<a href="methodology.html#error-rate-guidiance" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<div id="information-extraction" class="section level4 hasAnchor" number="3.3.1.2">
+<h4><span class="header-section-number">3.3.1.2</span> Information extraction<a href="methodology.html#information-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The information extraction task if successful, if the correct numeric value is extracted with the correct entity identifier in the correct <a href="glossary.html#acronyms_json">json (JavaScript Object Notation)</a> format. If a value, defined by the legal text, is not present <em>null</em> should be returned with the corresponding entity identifier. The entity identifier can be composed of up to three labels, representing the hierarchy defined in the legal text.</p>
+<div id="metrics-1" class="section level5 hasAnchor paragraph-start" number="3.3.1.2.1">
+<h5><span class="header-section-number">3.3.1.2.1</span> Metrics<a href="methodology.html#metrics-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>We use two measures to describe the approaches performances for the information extraction task. First, we check how many of the predicted numeric values are matching the numeric values in the ground truth. The only permitted differences are based on the number of trailing zeros. We do not check for partial correctness, since the real life application requires totally correct extracted numbers.</p>
+</div>
+<p>Second, we report the F1 score for correctly predicting values as missing and thus returning <em>null</em>. The distribution of missing values and given numeric values is not imbalanced. Nevertheless, we report the F1 score to establish a comparability with the results of the page identification task.</p>
+</div>
+<div id="error-rate-guidance" class="section level4 hasAnchor" number="3.3.1.3">
+<h4><span class="header-section-number">3.3.1.3</span> Error rate guidance<a href="methodology.html#error-rate-guidance" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>An error rate guided result checking process can be implemented, if we can use extraction task related information, to identify a prediction trust worthy. This means, we could white list these values and red flag the remaining ones. Thus, we could guide the users attention in the error checking process on those values, that empirically tend to have a high chance to be faulty.</p>
+<div id="metrics-2" class="section level5 hasAnchor paragraph-start" number="3.3.1.3.1">
+<h5><span class="header-section-number">3.3.1.3.1</span> Metrics<a href="methodology.html#metrics-2" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>In this thesis we focus our attention on a criteria, which we name <em>confidence</em>. We calculate the <em>confidence</em> score for answers received from <a href="glossary.html#acronyms_LLM">LLM</a> based on the non-normalized sum of token log probabilities <span class="citation">(<a href="#ref-boseakEvaluatingLogLikelihoodConfidence2025">Boseak, 2025</a>)</span>:</p>
 </div>
 <p><span class="math display" id="eq:confidence">\[\begin{equation}
 confidence = \exp \left( \sum logprob(token_i) \right)
 \tag{3.1}
 \end{equation}\]</span></p>
-<p>For the classification tasks this is equal to the normalized sum, since the answer is either containing just one token or the subsequent tokens have a log probability of 0, because the fully answer is determined by the first token.</p>
-<p>We are using the non-normalized sum of token log probabilities as well, because we want a single uncertain digit to flag the whole numeric value as as unreliable. This means, that shorter answers tend to have higher <em>confidence</em> scores. This is especially true for predicting <em>null</em>. Thus, we investigate the prediction of numeric values and <em>null</em> separated.</p>
+<p>For the classification tasks this is equal to the normalized (averaged) sum, since the answer is either containing just one token or the subsequent tokens have a log probability of 0, because the answer is fully determined by the first token.</p>
+<p>We are using the non-normalized sum of token log probabilities for the information extraction task too, because we want a single uncertain digit to flag the whole numeric value as unreliable. This means, that shorter answers tend to have higher <em>confidence</em> scores. This is especially true for predicting <em>null</em>. Thus, we investigate the prediction of numeric values and <em>null</em> separated.</p>
+<p>We group predictions based on their confidence scores in intervals with a range of 0.05 and calculate the empirical error rate for each interval. We hope to find a error rate (close to) zero for the highest confidence intervals and a noticeable proportion of predictions falling into those intervals.</p>
+</div>
 </div>
 <div id="benchmarking" class="section level3 hasAnchor" number="3.3.2">
 <h3><span class="header-section-number">3.3.2</span> Benchmarking<a href="methodology.html#benchmarking" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Comparing the performance of different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the <em>zero shot</em> strategy. Comparing the runtime or energy consumption gets possible with the <a href="glossary.html#acronyms_GPU">GPU (graphics processing unit)</a> benchmark data (see section <a href="methodology.html#gpu-benchmark">3.5.3</a>)</p>
+<p>Comparing the performance of different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the <em>zero shot</em> strategy. Comparing the runtime or energy consumption gets possible with the <a href="glossary.html#acronyms_GPU">GPU (graphics processing unit)</a> benchmark data (see section <a href="implementation.html#gpu-benchmark">4.1.1</a>)</p>
 </div>
 </div>
 <div id="data-strategy" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Data Strategy<a href="methodology.html#data-strategy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The population of annual reports of interest for the work at the <a href="glossary.html#acronyms_RHvB">RHvB</a> is composed of all annual reports of companies, where the state of Berlin holds a share. There are often multiple versions of those annual reports: one that is publicly available and targeting share- and stakeholders. The structure and layout of there reports is quite heterogeneous. Often there is a second version that is used internally or for communications with public administrations. They often consist of plain text and tables and shows neither diagrams nor photos.</p>
+<p>The population of annual reports of interest for the work at the <a href="glossary.html#acronyms_RHvB">RHvB</a> is composed of all annual reports of companies, where the state of Berlin holds a share. There are often multiple versions of those annual reports: one that is publicly available and targeting share- and stakeholders. The structure and layout of these reports is quite heterogeneous. Often there is a second version that is used internally or for communications with public administrations. They often consist of plain text and tables and show neither diagrams nor photos.</p>
 <p>Since the evaluations are run on the <a href="glossary.html#acronyms_BHT">BHT (Berliner Hochschule für Technik)</a> cluster and partially in the Azure cloud, we work with the publicly available reports, while at <a href="glossary.html#acronyms_RHvB">RHvB</a> the internal documents are more common. The annual reports mostly are downloaded from the companies websites. Some documents are accessed via <a href="https://www.bundesanzeiger.de">Bundesanzeiger</a> or the <a href="https://digital.zlb.de">digitale Landesbibliothek Berlin</a>.</p>
 <p>For the page identification task all kinds of pages from the annual reports are used. For the information extraction only pages with <strong>Aktiva</strong> tables are used. In addition, a set of self-generated synthetic <strong>Aktiva</strong> tables is used for the information extraction task. It is created to systematically investigate potential effects of characteristics financial tables could have.</p>
 <div id="sampling-methodology" class="section level3 hasAnchor" number="3.4.1">
 <h3><span class="header-section-number">3.4.1</span> Sampling methodology<a href="methodology.html#sampling-methodology" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="methodology.html#cb1-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;./scripts/page_identification_preparations.R&quot;</span>)</span>
-<span id="cb1-2"><a href="methodology.html#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="methodology.html#cb1-3" tabindex="-1"></a>num_multiple_tables_per_document <span class="ot">&lt;-</span> df_targets_no_ocr <span class="sc">%&gt;%</span></span>
-<span id="cb1-4"><a href="methodology.html#cb1-4" tabindex="-1"></a>  <span class="fu">anti_join</span>(consecutive_pages, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;filepath&quot;</span>, <span class="st">&quot;page&quot;</span>, <span class="st">&quot;type&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-5"><a href="methodology.html#cb1-5" tabindex="-1"></a>  <span class="fu">arrange</span>(filepath, page) <span class="sc">%&gt;%</span></span>
-<span id="cb1-6"><a href="methodology.html#cb1-6" tabindex="-1"></a>  <span class="fu">group_by</span>(filepath, type) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-7"><a href="methodology.html#cb1-7" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-8"><a href="methodology.html#cb1-8" tabindex="-1"></a>  <span class="fu">filter</span>(count <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1-9"><a href="methodology.html#cb1-9" tabindex="-1"></a>  <span class="fu">group_by</span>(filepath) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-10"><a href="methodology.html#cb1-10" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-11"><a href="methodology.html#cb1-11" tabindex="-1"></a>  <span class="fu">nrow</span>()</span>
-<span id="cb1-12"><a href="methodology.html#cb1-12" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="methodology.html#cb1-13" tabindex="-1"></a>multiple_tables_per_type_and_document <span class="ot">&lt;-</span> data_unnested <span class="sc">%&gt;%</span></span>
-<span id="cb1-14"><a href="methodology.html#cb1-14" tabindex="-1"></a>  <span class="fu">anti_join</span>(consecutive_pages, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;filepath&quot;</span>, <span class="st">&quot;page&quot;</span>, <span class="st">&quot;type&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-15"><a href="methodology.html#cb1-15" tabindex="-1"></a>  <span class="fu">arrange</span>(filepath, page) <span class="sc">%&gt;%</span></span>
-<span id="cb1-16"><a href="methodology.html#cb1-16" tabindex="-1"></a>  <span class="fu">group_by</span>(filepath, type) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-17"><a href="methodology.html#cb1-17" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-18"><a href="methodology.html#cb1-18" tabindex="-1"></a>  <span class="fu">filter</span>(count <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-19"><a href="methodology.html#cb1-19" tabindex="-1"></a>  <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-20"><a href="methodology.html#cb1-20" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">&quot;multiple targets in document&quot;</span> <span class="ot">=</span> <span class="fu">n</span>())</span>
-<span id="cb1-21"><a href="methodology.html#cb1-21" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="methodology.html#cb1-22" tabindex="-1"></a>df_special_targets <span class="ot">&lt;-</span> multiple_tables_per_type_and_document <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(consecutive_pages <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(type) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="st">&quot;target two pages long&quot;</span> <span class="ot">=</span> <span class="fu">n</span>())) <span class="sc">%&gt;%</span> <span class="fu">mutate_if</span>(is.numeric,coalesce,<span class="dv">0</span>)</span></code></pre></div>
-</details>
-<div id="page-identification-2" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.1">
-<h5><span class="header-section-number">3.4.1.0.1</span> Page identification<a href="methodology.html#page-identification-2" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>Figure <a href="methodology.html#fig:document-base-page-identification">3.2</a> shows how the document base for the tasks in this section is composed<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. Overall 74 annual reports from 7 companies are used. For this thesis the tables of interest are those that show <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong>. Among the 4981 pages 265 tables have to be identified on 251 pages. Figure <a href="methodology.html#fig:document-base-page-identification">3.2</a> also gives an impression on how many pages the documents have. The documents of <em>IBB</em> tend to be longer. The documents of <em>Amt für Statistik Berlin-Brandenburg</em> tend to be shorter.</p>
+<p>The reports are selected with the goal of reflecting the heterogeneity of the population of documents within the chosen sample.</p>
+<div id="page-identification-1" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.1">
+<h5><span class="header-section-number">3.4.1.0.1</span> Page identification<a href="methodology.html#page-identification-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>For the page identification task companies from different fields of business are selected and all publicly annual reports downloaded. The companies chosen are found in the first row of Figure <a href="introduction.html#fig:beteiligungsunternehmen">1.1</a>.</p>
 </div>
-<div class="pre-detail">
-<p>
-You can have a look at the ground truth data unfolding the following details element.
-</p>
+<p>The assumption is, that each company within a branch can represent the document style for other representants of the same branch and that the position within a column has no implications for the annual reports styles. Realizing that the <em>degewo AG</em> reports would require <a href="glossary.html#acronyms_OCR">OCR (optical character recognition)</a> preprocessing we additionally downloaded reports for <em>GESOBAU AG</em>. A description of the resulting data set can be found in section @ref().</p>
+<div id="information-extraction-1" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.2">
+<h5><span class="header-section-number">3.4.1.0.2</span> Information extraction<a href="methodology.html#information-extraction-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>For the information retrieval task the publicly available reports for all companies are downloaded. A amount of documents chosen for each company is more balanced than for the first task. A description of the resulting data set can be found in section @ref().</p>
 </div>
-<div class="hideme">
-<table>
-<caption>
-<span id="tab:ground-truth-tables-of-interest">Table 3.1: </span>Showing all pages of interest with the target table type and filepath.
-</caption>
-</table>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-466e948e0220302de23e" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-466e948e0220302de23e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","221","222","223","224","225","226","227","228","229","230","231","232","233","234","235","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251"],["../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2022_<wbr>low.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2023_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2023_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2023_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2020.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2020_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2020_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2020_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2023.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2021_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2021_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2021_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2019.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2019.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2019.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2019.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2022_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2022_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2022_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2019_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/2019_<wbr>Geschaeftsbericht_<wbr>BBB.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/Berliner Bäder Betriebe/GB_<wbr>BBB_<wbr>Infra_<wbr>2021.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2023.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2023.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2023.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/IBB/ibb-geschaeftsbericht-2021.pdf","../Geschaeftsberichte/IBB/ibb-geschaeftsbericht-2021.pdf","../Geschaeftsberichte/IBB/ibb-geschaeftsbericht-2021.pdf","../Geschaeftsberichte/IBB/ibb-geschaeftsbericht-2021.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>digitaler_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>digitaler_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>digitaler_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>digitaler_<wbr>geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2007.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2007.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2007.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2007.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2008.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2008.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2008.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2008.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2011.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2011.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2011.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2011.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2010.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2010.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2010.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2010.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2009.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2009.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2009.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2009.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2004.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2004.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2004.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2004.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2024.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2024.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2024.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2024.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2024.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2006.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2006.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2006.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2006.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2005.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2005.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2005.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2005.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/IBB/ibb_<wbr>geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2022.pdf","../Geschaeftsberichte/IBB/ibb-jahresabschluss-und-lagebericht-2022.pdf","../Geschaeftsberichte/Berlinovo/geschaeftsbericht_<wbr>berlinovo_<wbr>2017_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/geschaeftsbericht_<wbr>berlinovo_<wbr>2017_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/geschaeftsbericht_<wbr>berlinovo_<wbr>2017_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/040815_<wbr>berlinovo_<wbr>gb_<wbr>online_<wbr>rz.pdf","../Geschaeftsberichte/Berlinovo/040815_<wbr>berlinovo_<wbr>gb_<wbr>online_<wbr>rz.pdf","../Geschaeftsberichte/Berlinovo/040815_<wbr>berlinovo_<wbr>gb_<wbr>online_<wbr>rz.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2016_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2016_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2016_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023_<wbr>barrierearm.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023_<wbr>barrierearm.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023_<wbr>barrierearm.pdf","../Geschaeftsberichte/Berlinovo/020712_<wbr>BIH_<wbr>Jaresabschluss_<wbr>2010_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/020712_<wbr>BIH_<wbr>Jaresabschluss_<wbr>2010_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/020712_<wbr>BIH_<wbr>Jaresabschluss_<wbr>2010_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/210512_<wbr>BIH_<wbr>Jahresabschluss_<wbr>2011_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/210512_<wbr>BIH_<wbr>Jahresabschluss_<wbr>2011_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/210512_<wbr>BIH_<wbr>Jahresabschluss_<wbr>2011_<wbr>online.pdf","../Geschaeftsberichte/Berlinovo/070813_<wbr>GB_<wbr>berlinovo_<wbr>2012_<wbr>screen%2520-%2520Korrekturfassung.pdf","../Geschaeftsberichte/Berlinovo/070813_<wbr>GB_<wbr>berlinovo_<wbr>2012_<wbr>screen%2520-%2520Korrekturfassung.pdf","../Geschaeftsberichte/Berlinovo/070813_<wbr>GB_<wbr>berlinovo_<wbr>2012_<wbr>screen%2520-%2520Korrekturfassung.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>bf_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>bf_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>bf_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2023.pdf","../Geschaeftsberichte/Berlinovo/200514_<wbr>gb_<wbr>2013_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/200514_<wbr>gb_<wbr>2013_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/200514_<wbr>gb_<wbr>2013_<wbr>online_<wbr>2.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2015_<wbr>online_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2015_<wbr>online_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb_<wbr>2015_<wbr>online_<wbr>0.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb2019_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb2019_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2021.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2021.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>Finanzbericht_<wbr>2021.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/Finanzbericht_<wbr>Berlinovo_<wbr>2022_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb2018_<wbr>s.pdf","../Geschaeftsberichte/Berlinovo/berlinovo_<wbr>gb2018_<wbr>s.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2019_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2019_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2019_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2021_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2021_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2021_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2023_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2023_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2023_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2011_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2011_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2011_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2018_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2018_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2018_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2022_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2022_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2022_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2016_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2016_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2016_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2009_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2009_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2009_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2014_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2014_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2014_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2007_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2007_<wbr>BBB.pdf","../Geschaeftsberichte/Amt für Statistik Berlin-Brandenburg/AP_<wbr>Geschaeftsbericht_<wbr>DE_<wbr>2007_<wbr>BBB.pdf","../Geschaeftsberichte/degewo AG/212131_<wbr>degewo_<wbr>2022_<wbr>Konzernlagebericht_<wbr>Konzernabschluss.pdf","../Geschaeftsberichte/degewo AG/212131_<wbr>degewo_<wbr>2022_<wbr>Konzernlagebericht_<wbr>Konzernabschluss.pdf","../Geschaeftsberichte/degewo AG/212131_<wbr>degewo_<wbr>2022_<wbr>Konzernlagebericht_<wbr>Konzernabschluss.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss_<wbr>2021_<wbr>BEN_<wbr>GmbH.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss_<wbr>2021_<wbr>BEN_<wbr>GmbH.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss-BEN-GmbH-2023.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss-BEN-GmbH-2023.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss-BEN-GmbH-2023.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/Jahresabschluss-BEN-GmbH-2023.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/SIGNATURE_<wbr>DEE00084236.1.1_<wbr>550912_<wbr>Endexemplar_<wbr>20230331.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/SIGNATURE_<wbr>DEE00084236.1.1_<wbr>550912_<wbr>Endexemplar_<wbr>20230331.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/SIGNATURE_<wbr>DEE00084236.1.1_<wbr>550912_<wbr>Endexemplar_<wbr>20230331.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/SIGNATURE_<wbr>DEE00084236.1.1_<wbr>550912_<wbr>Endexemplar_<wbr>20230331.pdf","../Geschaeftsberichte/Berlin Energie und Netzholding/SIGNATURE_<wbr>DEE00084236.1.1_<wbr>550912_<wbr>Endexemplar_<wbr>20230331.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2019.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2018.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2020.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2021.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2021.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaftsbericht_<wbr>2023_<wbr>bf.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaftsbericht_<wbr>2023_<wbr>bf.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2012.pdf","../Geschaeftsberichte/GESOBAU AG/Gesch%C3%A4ftsbericht_<wbr>2022_<wbr>bf.pdf","../Geschaeftsberichte/GESOBAU AG/Gesch%C3%A4ftsbericht_<wbr>2022_<wbr>bf.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2013.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2015.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2024.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2024.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Gesch%C3%A4ftsbericht_<wbr>2024.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2014.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2016.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2017.pdf","../Geschaeftsberichte/GESOBAU AG/GESOBAU_<wbr>Geschaeftsbericht_<wbr>2017.pdf"],["10","11","13","28","29","31","16","17","19","10","11","13","28","29","31","36","37","39","7","8","10","25","26","28","34","35","37","6","7","15","16","20","21","23","20","21","10","11","13","26","27","29","42","43","44","45","4","5","6","55","56","57","58","98","99","100","101","74","75","76","77","69","70","71","72","14","15","16","17","74","75","76","77","72","73","74","75","115","116","117","118","116","117","118","119","106","107","108","109","44","45","46","47","44","45","46","47","89","90","91","92","66","67","68","69","32","33","34","36","37","68","69","70","71","66","67","68","69","44","45","46","47","47","48","49","50","4","5","50","51","52","60","61","62","53","54","55","44","45","46","20","21","22","20","21","22","50","51","52","42","43","44","44","45","46","50","51","52","62","63","64","37","38","40","41","42","42","43","44","32","33","32","33","34","8","9","10","7","8","9","18","19","20","28","29","30","8","9","10","32","33","34","26","27","28","24","25","26","16","17","18","30","31","33","9","10","21","23","42","43","20","21","23","42","43","54","55","56","52","53","54","29","30","34","35","38","39","40","41","42","32","33","40","41","42","40","41","42","62","63","64","40","41","42","42","43","44","62","52","53","54"],["Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva&Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva&Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva&Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","Aktiva","Passiva","GuV","GuV","Aktiva","Passiva","GuV"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>filepath<\/th>\n      <th>page<\/th>\n      <th>type<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"filepath","targets":1},{"name":"page","targets":2},{"name":"type","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="methodology.html#cb2-1" tabindex="-1"></a>df_pages <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(company) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb2-2"><a href="methodology.html#cb2-2" tabindex="-1"></a>  <span class="at">docs_per_company =</span> <span class="fu">n</span>(), <span class="at">pages_per_company =</span> <span class="fu">sum</span>(pages)</span>
-<span id="cb2-3"><a href="methodology.html#cb2-3" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a href="methodology.html#cb2-4" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb2-5"><a href="methodology.html#cb2-5" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> company, <span class="at">y =</span> pages, <span class="at">fill =</span> needs_ocr), <span class="at">color =</span> <span class="st">&quot;#00000033&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="methodology.html#cb2-6" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
-<span id="cb2-7"><a href="methodology.html#cb2-7" tabindex="-1"></a>    <span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(company) <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">1</span>),</span>
-<span id="cb2-8"><a href="methodology.html#cb2-8" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> company, <span class="at">y =</span> pages_per_company, <span class="at">label =</span> docs_per_company, <span class="at">group =</span> company),</span>
-<span id="cb2-9"><a href="methodology.html#cb2-9" tabindex="-1"></a>    <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
-<span id="cb2-10"><a href="methodology.html#cb2-10" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
-<span id="cb2-11"><a href="methodology.html#cb2-11" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb2-12"><a href="methodology.html#cb2-12" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb2-13"><a href="methodology.html#cb2-13" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(</span>
-<span id="cb2-14"><a href="methodology.html#cb2-14" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">45</span>),</span>
-<span id="cb2-15"><a href="methodology.html#cb2-15" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_wrap</span>(<span class="dv">30</span>)</span>
-<span id="cb2-16"><a href="methodology.html#cb2-16" tabindex="-1"></a>    )</span></code></pre></div>
-</details>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:document-base-page-identification"></span>
-<img src="_main_files/figure-html/document-base-page-identification-1.png" alt="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used." width="672" />
-<p class="caption">
-Figure 3.2: Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used.
-</p>
-</div>
-<p>Table <a href="methodology.html#tab:display-multiple-tables-per-type-and-document">3.2</a> shows how many documents have multiple target tables per type and how many target tables span two pages. In total 21 tables are distributed on two pages. In 8 documents there are multiple tables per type of interest. There are 14 pages with two target tables (<strong>Aktiva</strong> and <strong>Passiva</strong>) on it.</p>
-<table>
-<caption>
-<span id="tab:display-multiple-tables-per-type-and-document">Table 3.2: </span>Showing the number of documents with multiple target tables per type and the number of target tables that span two pages.
-</caption>
-</table>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-cad98bda4ea6b5f3d0f6" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-cad98bda4ea6b5f3d0f6">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Aktiva","GuV","Passiva"],["7","8","7"],["1","20","0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>type<\/th>\n      <th>multiple targets in document<\/th>\n      <th>target two pages long<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"type","targets":1},{"name":"multiple targets in document","targets":2},{"name":"target two pages long","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-<div id="information-extraction-data-sampling" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.2">
-<h5><span class="header-section-number">3.4.1.0.2</span> Information extraction<a href="methodology.html#information-extraction-data-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>For the manual information extraction we need up to 12 minutes per table. The maximum amount of values to copy and format (or type manually) among the tables used is 40. In addition to this manual process conceptional process can be necessary, because the values have to matched to the strict grammar. Sometimes we have to decide that there is no row a value fits in or there are multiple values that have to get summed up in order to calculate the value that fits in the predefined schema.</p>
-</div>
-<p>This manual work was done for 36 documents. For every company that published the detailed form of balance sheets a single document was included. Additionally documents were included for <em>Amt für Statistik und Brandenburg</em> to check, if a context learning approach is benefiting from documents from the same company.</p>
-<p>Later, the predictions of the <a href="glossary.html#acronyms_LLM">LLM</a>s were used, to create additional 106 ground truth tables. The old ground truth tables were checked in this this iteration and an error rate of 2.4 % was detected. Thus, the human reference score for percentage of correct predictions is 0.976. Figure <a href="methodology.html#fig:table-extraction-doc-base">3.3</a> shows how many <strong>Aktiva</strong> tables are used for all tasks in this subsection, that use real data instead of synthetic data.</p>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="methodology.html#cb3-1" tabindex="-1"></a>new_doc_base <span class="sc">%&gt;%</span> <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href="methodology.html#cb3-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb3-3"><a href="methodology.html#cb3-3" tabindex="-1"></a>    <span class="at">.before =</span> <span class="dv">1</span>, </span>
-<span id="cb3-4"><a href="methodology.html#cb3-4" tabindex="-1"></a>    <span class="at">company =</span> <span class="fu">str_match</span>(filepath, <span class="st">&quot;/pvc/benchmark_truth/real_tables_extended/(.*)__&quot;</span>)[<span class="dv">2</span>],</span>
-<span id="cb3-5"><a href="methodology.html#cb3-5" tabindex="-1"></a>    <span class="at">initial_doc_base =</span> <span class="fu">str_remove</span>(filepath, <span class="st">&quot;_extended&quot;</span>) <span class="sc">%in%</span> old_doc_base<span class="sc">$</span>filepath</span>
-<span id="cb3-6"><a href="methodology.html#cb3-6" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb3-7"><a href="methodology.html#cb3-7" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> company, <span class="at">fill =</span> initial_doc_base)) <span class="sc">+</span></span>
-<span id="cb3-8"><a href="methodology.html#cb3-8" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(</span>
-<span id="cb3-9"><a href="methodology.html#cb3-9" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">angle =</span> <span class="dv">60</span>),</span>
-<span id="cb3-10"><a href="methodology.html#cb3-10" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_wrap</span>(<span class="dv">30</span>)</span>
-<span id="cb3-11"><a href="methodology.html#cb3-11" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb3-12"><a href="methodology.html#cb3-12" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb3-13"><a href="methodology.html#cb3-13" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb3-14"><a href="methodology.html#cb3-14" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>,</span>
-<span id="cb3-15"><a href="methodology.html#cb3-15" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">l =</span> <span class="dv">0</span>)</span>
-<span id="cb3-16"><a href="methodology.html#cb3-16" tabindex="-1"></a>  )</span></code></pre></div>
-</details>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:table-extraction-doc-base"></span>
-<img src="_main_files/figure-html/table-extraction-doc-base-1.png" alt="Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents." width="100%" />
-<p class="caption">
-Figure 3.3: Showing the number of documents used for the table extraction task. The number of Aktiva tables is equal to the number documents.
-</p>
-</div>
-<p>To overcome the limited amount of real data and to allow the systematic investigation of potential predictors for the extraction performance, even if their occurrence is very unbalanced within the real data, synthetic <strong>Aktiva</strong> tables were created. Subsection <a href="appendix-b---information-extraction-report.html#synthetic-table-extraction">9.2.2</a> gives a detailed description, which table features are varied systematically, resulting in 16_504 tables in three formats each.</p>
-<div id="error-rate-guidiance-1" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.3">
-<h5><span class="header-section-number">3.4.1.0.3</span> Error rate guidiance<a href="methodology.html#error-rate-guidiance-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>We excluded all companies, that do not report their assets table in the most detailed fashion defined by the legal text, because these asset tables do not match with the strict schema we use. This decision excludes the reports of well known companies as BVG and BSR.</p>
+<div id="error-rate-guidiance" class="section level5 hasAnchor paragraph-start" number="3.4.1.0.3">
+<h5><span class="header-section-number">3.4.1.0.3</span> Error rate guidiance<a href="methodology.html#error-rate-guidiance" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>We investigate the third research question on the two datasets described above, instead of creating a separate dataset.</p>
 </div>
 </div>
 <div id="ground-truth-creation-process" class="section level3 hasAnchor" number="3.4.2">
 <h3><span class="header-section-number">3.4.2</span> Ground truth creation process<a href="methodology.html#ground-truth-creation-process" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The ground truth for both tasks is created by by manual labor of the authors. The results of early experiments are used to check the ground truth for mistakes or missed items.</p>
-<div id="page-identification-3" class="section level5 hasAnchor paragraph-start" number="3.4.2.0.1">
-<h5><span class="header-section-number">3.4.2.0.1</span> Page identification<a href="methodology.html#page-identification-3" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>For the page identification task the chosen documents are searched for the target pages either by using the search functionality, <a href="glossary.html#acronyms_TOC">TOC</a> or scrolling through all pages. For each target page the filepath, page and type is listed in a csv file. For some reports there are multiple pages present for a single target type. In this case, both pages are added to the ground truth. Sometimes the <strong>Aktiva</strong> and <strong>Passiva</strong> page are on a single page. In this case a single entry is made and its type is <em>Aktiva&amp;Passiva</em>. If a table spans two pages, both pages are recorded. Excluding pages that need <a href="glossary.html#acronyms_OCR">OCR (optical character recognition)</a> processing we created 252 entries.</p>
-</div>
-<p>For double checking all identified pages are extracted from their original PDF files and combined in a single file. Thus, problems with the numbers shown in the PDF viewer and the actual page number in the file are identified and resolved. After the first experiments pages, that have been classified as a target by multiple models, are checked. Thus, some additional target tables, that span two pages, are identified.</p>
-<div id="information-extraction-2" class="section level5 hasAnchor paragraph-start" number="3.4.2.0.2">
-<h5><span class="header-section-number">3.4.2.0.2</span> Information extraction<a href="methodology.html#information-extraction-2" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>For the information extraction task we copy the numeric values from the annual reports into csv files, replace the thousands separators and floating point delimiters and multiply those values by 1_000, if a currency unit is given for the column the value comes from. The csv files are already prefilled with all entities defined in the legal text, identified by their full hierarchy. Thus, we choose which line to put the value in, if the description in the annual report is different.</p>
-</div>
-<p>There are cases, where a single line defined in the legal text is split up into multiple lines in the annual reports. In those cases we enter the sum into the according row in the csv file. If entities are found, that do not fit any entity given in the legal text, this entry is dropped. For the first iteration the csv files just contained the entities and column names but no values.</p>
-<p>In the second iteration we use the predictions of Qwen3-235B, check the values and mark mistakes, correct the values and log all mistakes found. In this iteration we check the ground truth created in the first iteration as well and correct mistakes made earlier.</p>
-<div id="error-rate-guidiance-2" class="section level5 hasAnchor paragraph-start" number="3.4.2.0.3">
-<h5><span class="header-section-number">3.4.2.0.3</span> Error rate guidiance<a href="methodology.html#error-rate-guidiance-2" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>There is not ground truth for the calculated <em>confidence</em> scores. We will simply check, if the true and false predictions can be separated based on the returned <em>confidence scores</em>.</p>
-</div>
+<p>The ground truth for both tasks is created by manual annotation through the authors. The results of early experiments are used to check the ground truth for mistakes or missed items. Found issues get resolved. Details on the ground truth creation processes can be found in section @ref()</p>
 </div>
 <div id="preprocessing" class="section level3 hasAnchor" number="3.4.3">
 <h3><span class="header-section-number">3.4.3</span> Preprocessing<a href="methodology.html#preprocessing" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -733,106 +644,107 @@ Figure 3.3: Showing the number of documents used for the table extraction task. 
 <div id="llm-overview" class="section level3 hasAnchor" number="3.5.1">
 <h3><span class="header-section-number">3.5.1</span> LLM overview<a href="methodology.html#llm-overview" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="methodology.html#cb4-1" tabindex="-1"></a>df_llm_overview <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data_storage/model_usage_extraction.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href="methodology.html#cb4-2" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">tolower</span>(model_family), parameter_count) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="methodology.html#cb4-3" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">parameter =</span> parameter_count) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="methodology.html#cb4-4" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.character, <span class="sc">~</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(.), <span class="st">&quot;&quot;</span>, .)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href="methodology.html#cb4-5" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.character, <span class="sc">~</span><span class="fu">if_else</span>(. <span class="sc">==</span> <span class="st">&quot;X&quot;</span>, <span class="st">&quot;✓&quot;</span>, .))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="methodology.html#cb1-1" tabindex="-1"></a>df_llm_overview <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data_storage/model_usage_extraction.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href="methodology.html#cb1-2" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">tolower</span>(model_family), parameter_count) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="methodology.html#cb1-3" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">parameter =</span> parameter_count) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="methodology.html#cb1-4" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.character, <span class="sc">~</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(.), <span class="st">&quot;&quot;</span>, .)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="methodology.html#cb1-5" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.character, <span class="sc">~</span><span class="fu">if_else</span>(. <span class="sc">==</span> <span class="st">&quot;X&quot;</span>, <span class="st">&quot;✓&quot;</span>, .))</span></code></pre></div>
 </details>
-<p>Table <a href="methodology.html#tab:llm-overview">3.3</a> gives an overview on all <a href="glossary.html#acronyms_LLM">LLM</a>s used for the tasks in this thesis. It shows the passive parameter count in billions for each <a href="glossary.html#acronyms_LLM">LLM</a> and shows in which specific approach it is used with a tick. Overall 37 models from 10 model families are used.</p>
+<p>Table <a href="methodology.html#tab:llm-overview">3.1</a> gives an overview on all <a href="glossary.html#acronyms_LLM">LLM</a>s used for the tasks in this thesis. It shows the passive parameter count in billions for each <a href="glossary.html#acronyms_LLM">LLM</a> and shows in which specific approach it is used with a tick. Overall 37 models from 10 model families are used. If available, we use a instruction fine tuned version of the models.</p>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="methodology.html#cb5-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> df_llm_overview <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a href="methodology.html#cb5-2" tabindex="-1"></a>  <span class="fu">render_table</span>(</span>
-<span id="cb5-3"><a href="methodology.html#cb5-3" tabindex="-1"></a>    <span class="at">alignment=</span><span class="st">&quot;lrccccc&quot;</span>, </span>
-<span id="cb5-4"><a href="methodology.html#cb5-4" tabindex="-1"></a>    <span class="at">caption=</span><span class="st">&quot;Overview of benchmarked LLMs for all tasks. Parameter shows passive parametercount in billions.&quot;</span>, </span>
-<span id="cb5-5"><a href="methodology.html#cb5-5" tabindex="-1"></a>    <span class="at">ref =</span> opts_current<span class="sc">$</span><span class="fu">get</span>(<span class="st">&quot;label&quot;</span>),</span>
-<span id="cb5-6"><a href="methodology.html#cb5-6" tabindex="-1"></a>    <span class="at">colgroups =</span> <span class="fu">c</span>(<span class="st">&quot; &quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;information extraction&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, <span class="st">&quot;page identification&quot;</span> <span class="ot">=</span> <span class="dv">2</span>),</span>
-<span id="cb5-7"><a href="methodology.html#cb5-7" tabindex="-1"></a>    <span class="at">row_group_col =</span> <span class="dv">1</span>,</span>
-<span id="cb5-8"><a href="methodology.html#cb5-8" tabindex="-1"></a>    <span class="at">force_kable =</span> <span class="cn">FALSE</span></span>
-<span id="cb5-9"><a href="methodology.html#cb5-9" tabindex="-1"></a>    )</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="methodology.html#cb2-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> df_llm_overview <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="methodology.html#cb2-2" tabindex="-1"></a>  <span class="fu">render_table</span>(</span>
+<span id="cb2-3"><a href="methodology.html#cb2-3" tabindex="-1"></a>    <span class="at">alignment=</span><span class="st">&quot;lrccccc&quot;</span>, </span>
+<span id="cb2-4"><a href="methodology.html#cb2-4" tabindex="-1"></a>    <span class="at">caption=</span><span class="st">&quot;Overview of benchmarked LLMs for all tasks. Parameter shows passive parametercount in billions.&quot;</span>, </span>
+<span id="cb2-5"><a href="methodology.html#cb2-5" tabindex="-1"></a>    <span class="at">ref =</span> opts_current<span class="sc">$</span><span class="fu">get</span>(<span class="st">&quot;label&quot;</span>),</span>
+<span id="cb2-6"><a href="methodology.html#cb2-6" tabindex="-1"></a>    <span class="at">colgroups =</span> <span class="fu">c</span>(<span class="st">&quot; &quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;information extraction&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, <span class="st">&quot;page identification&quot;</span> <span class="ot">=</span> <span class="dv">2</span>),</span>
+<span id="cb2-7"><a href="methodology.html#cb2-7" tabindex="-1"></a>    <span class="at">row_group_col =</span> <span class="dv">1</span>,</span>
+<span id="cb2-8"><a href="methodology.html#cb2-8" tabindex="-1"></a>    <span class="at">force_kable =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-9"><a href="methodology.html#cb2-9" tabindex="-1"></a>    )</span></code></pre></div>
 </details>
 <table>
 <caption>
-<span id="tab:llm-overview">Table 3.3: </span>Overview of benchmarked LLMs for all tasks. Parameter shows passive parametercount in billions.
+<span id="tab:llm-overview">Table 3.1: </span>Overview of benchmarked LLMs for all tasks. Parameter shows passive parametercount in billions.
 </caption>
 </table>
 <details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="methodology.html#cb6-1" tabindex="-1"></a><span class="cf">if</span>(knitr<span class="sc">::</span><span class="fu">is_latex_output</span>()) {</span>
-<span id="cb6-2"><a href="methodology.html#cb6-2" tabindex="-1"></a>  table <span class="ot">&lt;-</span> table <span class="sc">%&gt;%</span> <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">width =</span> <span class="st">&quot;5.8cm&quot;</span>)</span>
-<span id="cb6-3"><a href="methodology.html#cb6-3" tabindex="-1"></a>}</span>
-<span id="cb6-4"><a href="methodology.html#cb6-4" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="methodology.html#cb6-5" tabindex="-1"></a>table</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="methodology.html#cb3-1" tabindex="-1"></a><span class="cf">if</span>(knitr<span class="sc">::</span><span class="fu">is_latex_output</span>()) {</span>
+<span id="cb3-2"><a href="methodology.html#cb3-2" tabindex="-1"></a>  table <span class="ot">&lt;-</span> table <span class="sc">%&gt;%</span> <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">width =</span> <span class="st">&quot;5.8cm&quot;</span>)</span>
+<span id="cb3-3"><a href="methodology.html#cb3-3" tabindex="-1"></a>}</span>
+<span id="cb3-4"><a href="methodology.html#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="methodology.html#cb3-5" tabindex="-1"></a>table</span></code></pre></div>
 </details>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-63f84426e659a2861c6b" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-63f84426e659a2861c6b">{"x":{"filter":"none","vertical":false,"class":"display","extensions":["RowGroup"],"data":[["chat-gpt","chat-gpt","chat-gpt","chat-gpt","chat-gpt","google","google","google","google","Llama-3","Llama-3","Llama-3","Llama-4","Llama-4","microsoft","mistralai","mistralai","mistralai","openai","openai","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","tiiuae"],["gpt-4.1","gpt-4.1-mini","gpt-4.1-nano","gpt-5-mini","gpt-5-nano","gemma-3-4b-it","gemma-3n-E4B-it","gemma-3-12b-it","gemma-3-27b-it","Llama-3.1-8B-Instruct","Llama-3.1-70B-Instruct","Llama-3.3-70B-Instruct","Llama-4-Scout-17B-16E-Instruct","Llama-4-Maverick-17B-128E-Instruct-FP8","phi-4","Ministral-8B-Instruct-2410","Mistral-Small-3.1-24B-Instruct-2503","Mistral-Large-Instruct-2411","gpt-oss-20b","gpt-oss-120b","Qwen2.5-0.5B-Instruct","Qwen2.5-1.5B-Instruct","Qwen2.5-3B-Instruct","Qwen2.5-7B-Instruct","Qwen2.5-14B-Instruct","Qwen2.5-32B-Instruct","Qwen2.5-72B-Instruct","Qwen3-0.6B","Qwen3-1.7B","Qwen3-4B","Qwen3-8B","Qwen3-14B","Qwen3-30B-A3B-Instruct-2507","Qwen3-32B","Qwen3-235B-A22B-Instruct-2507-FP8","Qwen3-235B-A22B-Instruct-2507","Falcon3-10B-Instruct"],[null,null,null,null,null,"4","4","12","27","8","70","70","109","402","15","8","24","124","20","120","0.5","1.5","3","7","14","32","72","0.6","1.7","4","8","14","30","32","235","235","10"],["✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","✓"],["","","","","","","","✓","✓","✓","✓","✓","✓","✓","","✓","✓","✓","","","","","","✓","","","✓","","","","✓","","✓","✓","✓","✓",""],["","","","","","","","✓","✓","✓","","","✓","","","✓","","✓","","","","","","","","","","","","","✓","","","","✓","",""],["","","","","","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","","✓","✓","✓","✓","✓","✓","✓","","","","✓","","✓","✓","","✓","✓"],["","","","","","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","","✓","✓","✓","✓","✓","✓","✓","","","","✓","","✓","✓","","✓","✓"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th colspan=\"1\" rowspan=\"2\">model_family<\/th>\n      <th colspan=\"1\" rowspan=\"2\">model<\/th>\n      <th colspan=\"1\" rowspan=\"2\">parameter<\/th>\n      <th colspan=\"3\" rowspan=\"1\">information extraction<\/th>\n      <th colspan=\"2\" rowspan=\"1\">page identification<\/th>\n    <\/tr>\n    <tr>\n      <th>real tables<\/th>\n      <th>synth tables<\/th>\n      <th>hybrid<\/th>\n      <th>binary<\/th>\n      <th>multi-class<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","rowGroup":{"dataSrc":0},"ordering":false,"columnDefs":[{"visible":false,"targets":0},{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-right"},{"targets":3,"className":"dt-center"},{"targets":4,"className":"dt-center"},{"targets":5,"className":"dt-center"},{"targets":6,"className":"dt-center"},{"targets":7,"className":"dt-center"},{"name":"model family","targets":0},{"name":"model","targets":1},{"name":"parameter","targets":2},{"name":"real tables","targets":3},{"name":"synth tables","targets":4},{"name":"hybrid","targets":5},{"name":"binary","targets":6},{"name":"multi-class","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d7f36c395f368dd6c206" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d7f36c395f368dd6c206">{"x":{"filter":"none","vertical":false,"class":"display","extensions":["RowGroup"],"data":[["chat-gpt","chat-gpt","chat-gpt","chat-gpt","chat-gpt","google","google","google","google","Llama-3","Llama-3","Llama-3","Llama-4","Llama-4","microsoft","mistralai","mistralai","mistralai","openai","openai","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 2.5","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","Qwen 3","tiiuae"],["gpt-4.1","gpt-4.1-mini","gpt-4.1-nano","gpt-5-mini","gpt-5-nano","gemma-3-4b-it","gemma-3n-E4B-it","gemma-3-12b-it","gemma-3-27b-it","Llama-3.1-8B-Instruct","Llama-3.1-70B-Instruct","Llama-3.3-70B-Instruct","Llama-4-Scout-17B-16E-Instruct","Llama-4-Maverick-17B-128E-Instruct-FP8","phi-4","Ministral-8B-Instruct-2410","Mistral-Small-3.1-24B-Instruct-2503","Mistral-Large-Instruct-2411","gpt-oss-20b","gpt-oss-120b","Qwen2.5-0.5B-Instruct","Qwen2.5-1.5B-Instruct","Qwen2.5-3B-Instruct","Qwen2.5-7B-Instruct","Qwen2.5-14B-Instruct","Qwen2.5-32B-Instruct","Qwen2.5-72B-Instruct","Qwen3-0.6B","Qwen3-1.7B","Qwen3-4B","Qwen3-8B","Qwen3-14B","Qwen3-30B-A3B-Instruct-2507","Qwen3-32B","Qwen3-235B-A22B-Instruct-2507-FP8","Qwen3-235B-A22B-Instruct-2507","Falcon3-10B-Instruct"],[null,null,null,null,null,"4","4","12","27","8","70","70","109","402","15","8","24","124","20","120","0.5","1.5","3","7","14","32","72","0.6","1.7","4","8","14","30","32","235","235","10"],["✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","✓"],["","","","","","","","✓","✓","✓","✓","✓","✓","✓","","✓","✓","✓","","","","","","✓","","","✓","","","","✓","","✓","✓","✓","✓",""],["","","","","","","","✓","✓","✓","","","✓","","","✓","","✓","","","","","","","","","","","","","✓","","","","✓","",""],["","","","","","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","","✓","✓","✓","✓","✓","✓","✓","","","","✓","","✓","✓","","✓","✓"],["","","","","","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","","","✓","✓","✓","✓","✓","✓","✓","","","","✓","","✓","✓","","✓","✓"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th colspan=\"1\" rowspan=\"2\">model_family<\/th>\n      <th colspan=\"1\" rowspan=\"2\">model<\/th>\n      <th colspan=\"1\" rowspan=\"2\">parameter<\/th>\n      <th colspan=\"3\" rowspan=\"1\">information extraction<\/th>\n      <th colspan=\"2\" rowspan=\"1\">page identification<\/th>\n    <\/tr>\n    <tr>\n      <th>real tables<\/th>\n      <th>synth tables<\/th>\n      <th>hybrid<\/th>\n      <th>binary<\/th>\n      <th>multi-class<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"dom":"tiprfl","rowGroup":{"dataSrc":0},"ordering":false,"columnDefs":[{"visible":false,"targets":0},{"targets":0,"className":"dt-left"},{"targets":1,"className":"dt-left"},{"targets":2,"className":"dt-right"},{"targets":3,"className":"dt-center"},{"targets":4,"className":"dt-center"},{"targets":5,"className":"dt-center"},{"targets":6,"className":"dt-center"},{"targets":7,"className":"dt-center"},{"name":"model family","targets":0},{"name":"model","targets":1},{"name":"parameter","targets":2},{"name":"real tables","targets":3},{"name":"synth tables","targets":4},{"name":"hybrid","targets":5},{"name":"binary","targets":6},{"name":"multi-class","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="approaches" class="section level3 hasAnchor" number="3.5.2">
 <h3><span class="header-section-number">3.5.2</span> Approaches<a href="methodology.html#approaches" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="page-identification-4" class="section level4 hasAnchor" number="3.5.2.1">
-<h4><span class="header-section-number">3.5.2.1</span> Page identification<a href="methodology.html#page-identification-4" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="page-identification-2" class="section level4 hasAnchor" number="3.5.2.1">
+<h4><span class="header-section-number">3.5.2.1</span> Page identification<a href="methodology.html#page-identification-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <div id="regular-expressions-1" class="section level5 hasAnchor paragraph-start" number="3.5.2.1.1">
 <h5><span class="header-section-number">3.5.2.1.1</span> Regular expressions<a href="methodology.html#regular-expressions-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We develop multiple sets of regular expressions and filter out all pages that do not fulfill all regular expressions of a given set. There are different sets for each target type, <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong>. The sets also differ in how versatile they can cope with additional white space introduced by a imperfect text extraction and how many different words for a given term are accepted. Figure <a href="methodology.html#fig:regex-filter">3.4</a> shows an example for two sets of regular expressions to identify a <strong>Aktiva</strong> page.</p>
+<p>We develop multiple sets of regular expressions and filter out all pages that do not fulfill all regular expressions of a given set. There are different sets for each target type, <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong>. The sets also differ in how versatile they can cope with additional white space introduced by a imperfect text extraction and how many different words for a given term are accepted. Figure <a href="methodology.html#fig:regex-filter">3.2</a> shows an example for two sets of regular expressions to identify a <strong>Aktiva</strong> page.</p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:regex-filter"></span>
 <img src="images/regex_filtering.png" alt="Comparing the prediction of two different sets of regular expressions on dummy pages. The simple one has a lower recall, while the  expended one has a lower precision." width="100%" />
 <p class="caption">
-Figure 3.4: Comparing the prediction of two different sets of regular expressions on dummy pages. The simple one has a lower recall, while the expended one has a lower precision.
+Figure 3.2: Comparing the prediction of two different sets of regular expressions on dummy pages. The simple one has a lower recall, while the expended one has a lower precision.
 </p>
 </div>
 <div id="table-of-contents-understanding" class="section level5 hasAnchor paragraph-start" number="3.5.2.1.2">
 <h5><span class="header-section-number">3.5.2.1.2</span> Table of Contents Understanding<a href="methodology.html#table-of-contents-understanding" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use a <a href="glossary.html#acronyms_LLM">LLM</a> to extract the <a href="glossary.html#acronyms_TOC">TOC</a> from the first pages from a document or use the embedded <a href="glossary.html#acronyms_TOC">TOC</a> and prompt a <a href="glossary.html#acronyms_LLM">LLM</a> to identify the pages where the <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong> are located. Figure <a href="methodology.html#fig:toc-screenshot">3.5</a> shows a screenshot of a annual report with an embedded TOC and its TOC in text form.</p>
+<p>We use a <a href="glossary.html#acronyms_LLM">LLM</a> to extract the <a href="glossary.html#acronyms_TOC">TOC</a> from the first pages from a document or use the embedded <a href="glossary.html#acronyms_TOC">TOC</a> and prompt a <a href="glossary.html#acronyms_LLM">LLM</a> to identify the pages where the <strong>Aktiva</strong>, <strong>Passiva</strong> and <strong>GuV</strong> are located. Figure <a href="methodology.html#fig:toc-screenshot">3.3</a> shows a screenshot of a annual report with an embedded TOC and its TOC in text form.</p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:toc-screenshot"></span>
 <img src="images/toc.png" alt="Showing a screenshot of a annual report with an embedded TOC (left) and its TOC in text form (right). The embeded TOC is not listing all entries from the TOC in text form." width="100%" />
 <p class="caption">
-Figure 3.5: Showing a screenshot of a annual report with an embedded TOC (left) and its TOC in text form (right). The embeded TOC is not listing all entries from the TOC in text form.
+Figure 3.3: Showing a screenshot of a annual report with an embedded TOC (left) and its TOC in text form (right). The embeded TOC is not listing all entries from the TOC in text form.
 </p>
 </div>
 <div id="large-language-model-classification" class="section level5 hasAnchor paragraph-start" number="3.5.2.1.3">
 <h5><span class="header-section-number">3.5.2.1.3</span> Large Language Model Classification<a href="methodology.html#large-language-model-classification" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use <a href="glossary.html#acronyms_LLM">LLM</a>s to classify if the text extract of a given page is containing a <strong>Aktiva</strong>, <strong>Passiva</strong> or <strong>GuV</strong> table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type.</p>
+<p>We use <a href="glossary.html#acronyms_LLM">LLM</a>s to classify if the text extract of a given page is containing a <strong>Aktiva</strong>, <strong>Passiva</strong> or <strong>GuV</strong> table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type. We use a sampling temperature of zero, because we neither want creative nor variable answers, but just the most probable class and exact copied numbers.</p>
 </div>
-<p>We test a wide range of open-weight models and compare different prompting techniques. Figure <a href="methodology.html#fig:prompt-setup-classification">3.6</a> shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.</p>
+<p>We test a wide range of open-weight models and compare different prompting techniques. Figure <a href="methodology.html#fig:prompt-setup-classification">3.4</a> shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:prompt-setup-classification"></span>
 <img src="images/promt_building_classification.png" alt="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM." width="100%" />
 <p class="caption">
-Figure 3.6: Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM.
+Figure 3.4: Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM.
 </p>
 </div>
 <div id="term-frequency-ranking" class="section level5 hasAnchor paragraph-start" number="3.5.2.1.4">
 <h5><span class="header-section-number">3.5.2.1.4</span> Term frequency Ranking<a href="methodology.html#term-frequency-ranking" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use normalized term frequencies and normalized float frequency to as features for a classification using a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data. Figure <a href="methodology.html#fig:tf-flowchart">3.7</a> visualizes, how the prediction works in this approach.</p>
+<p>We use normalized term frequencies and normalized float frequency to as features for a classification using a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data. Figure <a href="methodology.html#fig:tf-flowchart">3.5</a> visualizes, how the prediction works in this approach.</p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:tf-flowchart"></span>
 <img src="images/tf_flowchart.png" alt="Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class." width="100%" />
 <p class="caption">
-Figure 3.7: Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class.
+Figure 3.5: Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class.
 </p>
 </div>
 </div>
-<div id="information-extraction-3" class="section level4 hasAnchor" number="3.5.2.2">
-<h4><span class="header-section-number">3.5.2.2</span> Information extraction<a href="methodology.html#information-extraction-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div id="information-extraction-2" class="section level4 hasAnchor" number="3.5.2.2">
+<h4><span class="header-section-number">3.5.2.2</span> Information extraction<a href="methodology.html#information-extraction-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <div id="regular-expressions-2" class="section level5 hasAnchor paragraph-start" number="3.5.2.2.1">
 <h5><span class="header-section-number">3.5.2.2.1</span> Regular expressions<a href="methodology.html#regular-expressions-2" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use regular expressions to extract the numeric values for matching row identifiers. The regular expressions handle line breaks between words in the row identifiers, but not within a word. They can handle multiple signs of white space. Besides that, they try to fully match the labels from the legal text with the text extract, ignoring upper case. They extract numbers with “.” as thousands separator. Figure <a href="methodology.html#fig:regex-extractor">3.8</a> is visualizing those capabilities.</p>
+<p>We use regular expressions to extract the numeric values for matching row identifiers. The regular expressions handle line breaks between words in the row identifiers, but not within a word. They can handle multiple signs of white space. Besides that, they try to fully match the labels from the legal text with the text extract, ignoring upper case. They extract numbers with “.” as thousands separator. Figure <a href="methodology.html#fig:regex-extractor">3.6</a> is visualizing those capabilities.</p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:regex-extractor"></span>
 <img src="images/regex_extracting.png" alt="Visualizing the extraction results for different text examples. Texts in green boxes are matching our regular expression. Texts in red boxes do not, because of the red text part." width="100%" />
 <p class="caption">
-Figure 3.8: Visualizing the extraction results for different text examples. Texts in green boxes are matching our regular expression. Texts in red boxes do not, because of the red text part.
+Figure 3.6: Visualizing the extraction results for different text examples. Texts in green boxes are matching our regular expression. Texts in red boxes do not, because of the red text part.
 </p>
 </div>
 <div id="real-tables" class="section level5 hasAnchor paragraph-start" number="3.5.2.2.2">
 <h5><span class="header-section-number">3.5.2.2.2</span> Real tables<a href="methodology.html#real-tables" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<p>We use <a href="glossary.html#acronyms_LLM">LLM</a>s to extract the numeric values of real <strong>Aktiva</strong> tables with restricted generation. The <a href="glossary.html#acronyms_LLM">LLM</a> has to group row identifiers and corresponding numeric values and match the row identifier with the labels of the schema. If a row identifier is unknown, the values have to be discarded. If a label is not present among the row identifiers, the model predicts <em>null</em>. All values are extracted in one pass. We do not include any instruction, how to proceed with currency units, that might be given for certain columns.</p>
+<p>We use <a href="glossary.html#acronyms_LLM">LLM</a>s to extract the numeric values of real <strong>Aktiva</strong> tables with restricted generation. We use a sampling temperature of zero, because we neither want creative nor variable answers, but just the most probable class and exact copied numbers.</p>
 </div>
-<p>We test a wide range of open-weight models and compare different prompting techniques. Figure <a href="methodology.html#fig:prompt-setup-extraction">3.9</a> shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing a synthetic <strong>Aktiva</strong> table as example. We test models from OpenAIs GPT family in addition to the open-weight models.</p>
+<p>The <a href="glossary.html#acronyms_LLM">LLM</a> has to group row identifiers and corresponding numeric values and match the row identifier with the labels of the schema. If a row identifier is unknown, the values have to be discarded. If a label is not present among the row identifiers, the model predicts <em>null</em>. All values are extracted in one pass. We do not include any instruction, how to proceed with currency units, that might be given for certain columns.</p>
+<p>We test a wide range of open-weight models and compare different prompting techniques. Figure <a href="methodology.html#fig:prompt-setup-extraction">3.7</a> shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing a synthetic <strong>Aktiva</strong> table as example. We test models from OpenAIs GPT family in addition to the open-weight models.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:prompt-setup-extraction"></span>
 <img src="images/promt_building_extraction.png" alt="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM for the information extraction task." width="100%" />
 <p class="caption">
-Figure 3.9: Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM for the information extraction task.
+Figure 3.7: Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM for the information extraction task.
 </p>
 </div>
 <div id="synthetic-tables" class="section level5 hasAnchor paragraph-start" number="3.5.2.2.3">
@@ -845,72 +757,47 @@ Figure 3.9: Showing the basic structure of the prompts and which strategies are 
 </div>
 </div>
 </div>
-<div id="gpu-benchmark" class="section level3 hasAnchor" number="3.5.3">
-<h3><span class="header-section-number">3.5.3</span> Hardware normalization<a href="methodology.html#gpu-benchmark" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To make the runtime of different <a href="glossary.html#acronyms_LLM">LLM</a>s running on different amounts and types of <a href="glossary.html#acronyms_GPU">GPU</a>s comparable, we conducted a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure <a href="methodology.html#fig:gpu-benchmark-plot">3.10</a> shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning.</p>
-<p>The classification time with Qwen2.5-32B on <a href="glossary.html#acronyms_GPU">GPU</a>s of type B200 is a little faster than running Qwen2.5-7B on the same amount of A100 <a href="glossary.html#acronyms_GPU">GPU</a>s. We calculate normalized runtimes for our experiments, based on these runtime measures for small and larger <a href="glossary.html#acronyms_LLM">LLM</a>s on different types and numbers of <a href="glossary.html#acronyms_GPU">GPU</a>s. A minute of computation on a single B200 is comparable to 4:30 minutes of computation on a single A100.</p>
-<details class=chunk-details><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="methodology.html#cb7-1" tabindex="-1"></a>df_gpu_benchmark <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;../benchmark_jobs/page_identification/gpu_benchmark/gpu_factors.csv&quot;</span>)</span>
-<span id="cb7-2"><a href="methodology.html#cb7-2" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="methodology.html#cb7-3" tabindex="-1"></a>df_gpu_benchmark <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> gpu_number, <span class="at">y =</span> runtime_in_s, <span class="at">color =</span> gpu_type)) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> model_name)) <span class="sc">+</span> <span class="fu">geom_point</span>()</span></code></pre></div>
-</details>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:gpu-benchmark-plot"></span>
-<img src="_main_files/figure-html/gpu-benchmark-plot-1.png" alt="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning." width="672" />
-<p class="caption">
-Figure 3.10: Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning.
-</p>
+<div id="error-analysis" class="section level3 hasAnchor" number="3.5.3">
+<h3><span class="header-section-number">3.5.3</span> Error analysis<a href="methodology.html#error-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To better understand the limitations of the evaluated models and find ways to further improve the system, we will conduct a detailed error analysis. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.</p>
+<div id="page-identificaion" class="section level4 hasAnchor" number="3.5.3.1">
+<h4><span class="header-section-number">3.5.3.1</span> Page identificaion<a href="methodology.html#page-identificaion" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Content rot: We will first quantify the types of misclassifications using confusion matrices and error rate statistics.</p>
+<p>TF: Additionally, we will manually inspect a sample of erroneous predictions to identify common causes, such as ambiguous table layouts, or model misinterpretations.</p>
+<p><span class="citation">(<a href="#ref-grandiniMetricsMultiClassClassification2020">Grandini et al., 2020</a>)</span></p>
 </div>
-</div>
-<div id="error-analysis" class="section level3 hasAnchor" number="3.5.4">
-<h3><span class="header-section-number">3.5.4</span> Error analysis<a href="methodology.html#error-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The ultimate goal is to fully automate the information extraction task at hand. Thus, it is important to analyse potential errors, to identify obstacles that hinder performance and find ways to further improve the system.</p>
-<p>We expect to find issues with wrong extracted or hallucinated numbers, wrong entity recognition and false positive <em>null</em> values. Not respected units</p>
-<p>Quantitative / stratified: We will compare the error rates based on the different variables of the experiments. For the approaches using <a href="glossary.html#acronyms_LLM">LLM</a>s to solve the problem there are model specific, prompting strategy specific and example specific variables.</p>
-<p>Qualitative: Finally, we investigate some of the erroneous extracted examples manually, and try to identify the underlying issues.</p>
-<p>Tools and criteria</p>
-<p>Reporting</p>
-<p>Example:</p>
-<p>To better understand the limitations of the evaluated models, we will conduct a detailed error analysis. We will first quantify the types of errors (e.g., false positives, false negatives, misclassifications) using confusion matrices and error rate statistics. Additionally, we will manually inspect a sample of erroneous predictions to identify common causes, such as ambiguous table layouts, OCR errors, or model misinterpretations. Errors will be categorized by document type and extraction task to reveal systematic weaknesses. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.</p>
+<div id="inforamtion-extraction" class="section level4 hasAnchor" number="3.5.3.2">
+<h4><span class="header-section-number">3.5.3.2</span> Inforamtion extraction<a href="methodology.html#inforamtion-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Under construction!</p>
 <p>99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports <span class="citation">(<a href="#ref-liExtractingFinancialData2023">H. Li, Gao, et al., 2023</a>)</span> In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)</p>
 <p>found error types: including omissions when the LLM was instructed to extract a list of line items, misjudgment of units (such as thousands or millions), and incorrect identification of rows and columns</p>
 <p>failed to extract all of list, Too many hallucinated values when it was NA instead <span class="citation">(<a href="#ref-goughertyTestingReliabilityAIbased2024">Gougherty &amp; Clipp, 2024</a>)</span></p>
-<p><span class="citation">(<a href="#ref-grandiniMetricsMultiClassClassification2020">Grandini et al., 2020</a>)</span></p>
+<p>For the information extraction task, we expect to find issues with wrong extracted numeric values due to disrespecting currency units or hallucinated numbers, if a value is absent. We further expect wrong entity recognition and thus wrong row identification matching.</p>
+<p>Error rates will be compared among different experimental setups to reveal systematic weaknesses in a stratified analysis.</p>
+<p>Finally, we investigate some of the erroneous extracted examples manually, and try to identify the underlying issues.</p>
+<p>Tools and criteria</p>
+<p>Reporting</p>
+<p>Example:</p>
 <p>Numeric values are difficult to handle for langauge models in specific tasks. Copying numbers seems not to be a recent problem. How about transforming by multiplication with 1000?</p>
 </div>
-<div id="baseline-selection-rationale" class="section level3 hasAnchor" number="3.5.5">
-<h3><span class="header-section-number">3.5.5</span> Baseline selection rationale<a href="methodology.html#baseline-selection-rationale" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>see section Evaluation research</p>
 </div>
-<div id="evaluation-methods" class="section level3 hasAnchor" number="3.5.6">
-<h3><span class="header-section-number">3.5.6</span> Evaluation methods<a href="methodology.html#evaluation-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<ul>
-<li><p>box plots</p></li>
-<li><p>PR-curve</p></li>
-<li><p>random forest + SHAP</p></li>
-</ul>
-<p>XGBoost not used finally, because calculation <a href="glossary.html#acronyms_SHAP">SHAP</a> values for XGBoost model took to long for just a first glimpse on what might influence the extraction. lm also fitted and not used</p>
+<div id="evaluation-methods" class="section level3 hasAnchor" number="3.5.4">
+<h3><span class="header-section-number">3.5.4</span> Evaluation methods<a href="methodology.html#evaluation-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix <a href="figure-collection.html#figure-collection">14</a>. These visuals have a high information density and enable us to compare a lot of results - including distributional information - at once. A 43” screen with 4k resolution is important for this process.</p>
+<p>We prefer this process over comparing many rows with measures of location (e.g. mean and median) and measures of distribution shapes (e.g. standard deviation, median absolute deviation, skewness). For presenting the results in chapter <a href="results.html#results">5</a> we compress a selection of results in tabular form, because it is easier to grasp. Some interesting observations are discussed in chapter <a href="discussion.html#discussion">6</a>. But a lot of information is still kept in the visuals.</p>
+<div id="boxplots-1" class="section level5 hasAnchor paragraph-start" number="3.5.4.0.1">
+<h5><span class="header-section-number">3.5.4.0.1</span> Boxplots<a href="methodology.html#boxplots-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>We use a lot of boxplots to compare the distributions of sample of results. We also inspect violin plots or add a point jitter to the graphics during the inspection, to check for multi-modality. If we find intersting details, we keep those for the presented graphics. If not, we just present the boxplots.</p>
 </div>
+<div id="shap-1" class="section level5 hasAnchor paragraph-start" number="3.5.4.0.2">
+<h5><span class="header-section-number">3.5.4.0.2</span> SHAP<a href="methodology.html#shap-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>For interpreting the <a href="glossary.html#acronyms_SHAP">SHAP</a> values, we use bar plots showing the mean absolute shapley values as feature importance, which can be interpreted as an indicator of effect strength. Furthermore, we use bee swarm plots (also called summary plot) and dependency plots, to investigate if we can name a direction for the effect and identify interesting interaction patterns. Further information can be found in chapter 18 of the book “<a href="https://christophm.github.io/interpretable-ml-book/shap.html">Interpretable Machine Learning</a>” <span class="citation">(<a href="#ref-molnarInterpretableMachineLearning2025">Molnar, 2025</a>)</span>.</p>
 </div>
-<div id="ethical-practical-considerations-eher-am-ende-oder-weg" class="section level2 hasAnchor" number="3.6">
-<h2><span class="header-section-number">3.6</span> Ethical &amp; Practical Considerations (eher am Ende oder weg?)<a href="methodology.html#ethical-practical-considerations-eher-am-ende-oder-weg" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="pdf-extraction-limitations" class="section level3 hasAnchor" number="3.6.1">
-<h3><span class="header-section-number">3.6.1</span> PDF extraction limitations<a href="methodology.html#pdf-extraction-limitations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Pdfminer informs that the text of some annual reports from <em>IBB</em> and <em>Berlinovo</em> should not be extracted. This information is given in a meta data field of the PDF. We use the text extract from these documents for our study anyway.</p>
-<p>Errors catched by <a href="glossary.html#acronyms_HITL">HITL</a> approach before they have down stream implications.</p>
+<div id="random-forest-1" class="section level5 hasAnchor paragraph-start" number="3.5.4.0.3">
+<h5><span class="header-section-number">3.5.4.0.3</span> random forest<a href="methodology.html#random-forest-1" class="anchor-section" aria-label="Anchor link to header"></a></h5>
+<p>We build a random forest classifier in the term frequency approach for the page identification task, to evaluate our hypotheses <strong>H2.2</strong>. We perform no hyper parameter optimization. We want to get a first glimpse on what might influence the extraction instead of getting the best possible performance. We are not modelling causal relationships at all.</p>
 </div>
-<div id="computational-constraints" class="section level3 hasAnchor" number="3.6.2">
-<h3><span class="header-section-number">3.6.2</span> Computational constraints<a href="methodology.html#computational-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The extraction with <a href="glossary.html#acronyms_LLM">LLM</a>s is computationally demanding and should be run on <a href="glossary.html#acronyms_GPU">GPU</a>s. To run model that yields the best results four H200 <a href="glossary.html#acronyms_GPU">GPU</a>s are needed.</p>
-</div>
-<div id="generalizability-scope" class="section level3 hasAnchor" number="3.6.3">
-<h3><span class="header-section-number">3.6.3</span> Generalizability scope<a href="methodology.html#generalizability-scope" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The approach tested here is probably using on other companies annual reports as well. To extract information that is only filling a small part of a page the framework may has to be adjusted. The page identification could be trickier with some approaches if only a single key word is searched.</p>
-</div>
-<div id="ethical-considerations" class="section level3 hasAnchor" number="3.6.4">
-<h3><span class="header-section-number">3.6.4</span> Ethical considerations<a href="methodology.html#ethical-considerations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The extraction of numeric information is not the same as making decisions. It probably isn’t affected by any bias, that is discriminating humans.</p>
-<p>The automatisation of information extraction is potentially replacing low requirements work places. At <a href="glossary.html#acronyms_RHvB">RHvB</a> there are no jobs for such a task anymore. More free time for other tasks. Shifting to more complex tasks.</p>
-<p>AI Act does probably not apply, since decisions are not made on individual level?: Are there restrictions on the use of automated decision-making? Yes, <strong>individuals should not be subject to a decision that is based solely on automated processing</strong> (such as algorithms) and that is legally binding or which significantly affects them.</p>
+<p>We do not use XGBoost for the final analysis, because calculating the <a href="glossary.html#acronyms_SHAP">SHAP</a> values for XGBoost model took to long. Linear and logistic regression models are fitted as well, but not used for the final analysis.</p>
 
 </div>
 </div>
@@ -938,6 +825,9 @@ HGB. (2025). <em>Handelsgesetzbuch in der im <span>Bundesgesetzblatt Teil III</s
 <div id="ref-liExtractingFinancialData2023" class="csl-entry">
 Li, H., Gao, H. (Harry)., Wu, C., &amp; Vasarhelyi, M. A. (2023). <em>Extracting <span>Financial Data</span> from <span>Unstructured Sources</span>: <span>Leveraging Large Language Models</span></em> ({{SSRN Scholarly Paper}} 4567607). Social Science Research Network. <a href="https://doi.org/10.2139/ssrn.4567607">https://doi.org/10.2139/ssrn.4567607</a>
 </div>
+<div id="ref-molnarInterpretableMachineLearning2025" class="csl-entry">
+Molnar, C. (2025). <em>Interpretable machine learning: A guide for making black box models explainable</em> (Third edition). Christoph Molnar.
+</div>
 <div id="ref-saitoPrecisionRecallPlotMore2015" class="csl-entry">
 Saito, T., &amp; Rehmsmeier, M. (2015). The <span>Precision-Recall Plot Is More Informative</span> than the <span>ROC Plot When Evaluating Binary Classifiers</span> on <span>Imbalanced Datasets</span>. <em>PLOS ONE</em>, <em>10</em>(3), e0118432. <a href="https://doi.org/10.1371/journal.pone.0118432">https://doi.org/10.1371/journal.pone.0118432</a>
 </div>
@@ -947,12 +837,6 @@ Wohlin, C., &amp; Aurum, A. (2015). Towards a decision-making structure for sele
 <div id="ref-wohlinExperimentationSoftwareEngineering2024" class="csl-entry">
 Wohlin, C., Runeson, P., Höst, M., Ohlsson, M. C., Regnell, B., &amp; Wesslén, A. (2024). <em>Experimentation in <span>Software Engineering</span></em>. Springer Berlin Heidelberg. <a href="https://doi.org/10.1007/978-3-662-69306-3">https://doi.org/10.1007/978-3-662-69306-3</a>
 </div>
-</div>
-<div class="footnotes">
-<hr />
-<ol start="3">
-<li id="fn3"><p>I downloaded all publicly available annual reports for some of the companies shown in the first row of Figure <a href="introduction.html#fig:beteiligungsunternehmen">1.1</a>. I assumed that this will give a representative sample of document structures for the other companies of the same type. Realizing that the degewo AG reports would require ocr preprocessing I additionally downloaded reports for GESOBAU AG. This approach could have been more systematic. For the second task I downloaded reports for all companies available and tried to use a balanced amount of reports per company.<a href="methodology.html#fnref3" class="footnote-back">↩︎</a></p></li>
-</ol>
 </div>
 <script>
 // Lightbox functionality for displaying images in a modal view

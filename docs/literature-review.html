@@ -60,10 +60,10 @@
 <link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
-<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 <link href="libs/dt-ext-rowgroup-1.13.6/css/rowGroup.dataTables.min.css" rel="stylesheet" />
 <script src="libs/dt-ext-rowgroup-1.13.6/js/dataTables.rowGroup.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -195,7 +195,7 @@ div.csl-indent {
 <li class="chapter" data-level="2.1" data-path="literature-review.html"><a href="literature-review.html#information-retrieval"><i class="fa fa-check"></i><b>2.1</b> Natural language processing</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="literature-review.html"><a href="literature-review.html#document-layout-analysis-edit-this"><i class="fa fa-check"></i><b>2.1.1</b> Document Layout Analysis (edit this)</a></li>
-<li class="chapter" data-level="2.1.2" data-path="literature-review.html"><a href="literature-review.html#term-frequency"><i class="fa fa-check"></i><b>2.1.2</b> Term frequency</a></li>
+<li class="chapter" data-level="2.1.2" data-path="literature-review.html"><a href="literature-review.html#information-retrieval-term-frequency"><i class="fa fa-check"></i><b>2.1.2</b> Information retrieval (Term frequency)</a></li>
 <li class="chapter" data-level="2.1.3" data-path="literature-review.html"><a href="literature-review.html#text-processing"><i class="fa fa-check"></i><b>2.1.3</b> Text processing</a></li>
 <li class="chapter" data-level="2.1.4" data-path="literature-review.html"><a href="literature-review.html#regular-expressions"><i class="fa fa-check"></i><b>2.1.4</b> Regular expressions</a></li>
 <li class="chapter" data-level="2.1.5" data-path="literature-review.html"><a href="literature-review.html#llm-theory"><i class="fa fa-check"></i><b>2.1.5</b> Large Language Models</a>
@@ -206,11 +206,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.1.5.4" data-path="literature-review.html"><a href="literature-review.html#decoder"><i class="fa fa-check"></i><b>2.1.5.4</b> Decoder</a></li>
 <li class="chapter" data-level="2.1.5.5" data-path="literature-review.html"><a href="literature-review.html#gpt-generative-pretrained-transformers"><i class="fa fa-check"></i><b>2.1.5.5</b> GPT (Generative Pretrained Transformers)</a></li>
 <li class="chapter" data-level="2.1.5.6" data-path="literature-review.html"><a href="literature-review.html#mixture-of-experts"><i class="fa fa-check"></i><b>2.1.5.6</b> Mixture of Experts</a></li>
-<li class="chapter" data-level="2.1.5.7" data-path="literature-review.html"><a href="literature-review.html#mixed-modal"><i class="fa fa-check"></i><b>2.1.5.7</b> Mixed modal</a></li>
+<li class="chapter" data-level="2.1.5.7" data-path="literature-review.html"><a href="literature-review.html#confidence-scores"><i class="fa fa-check"></i><b>2.1.5.7</b> Confidence scores</a></li>
 </ul></li>
 <li class="chapter" data-level="2.1.6" data-path="literature-review.html"><a href="literature-review.html#llm-methods"><i class="fa fa-check"></i><b>2.1.6</b> Methods for LLM application</a>
 <ul>
-<li class="chapter" data-level="2.1.6.1" data-path="literature-review.html"><a href="literature-review.html#few-shot-learning"><i class="fa fa-check"></i><b>2.1.6.1</b> Few-shot Learning</a></li>
+<li class="chapter" data-level="2.1.6.1" data-path="literature-review.html"><a href="literature-review.html#in-context-learning"><i class="fa fa-check"></i><b>2.1.6.1</b> In-context Learning</a></li>
 <li class="chapter" data-level="2.1.6.2" data-path="literature-review.html"><a href="literature-review.html#rag"><i class="fa fa-check"></i><b>2.1.6.2</b> RAG</a></li>
 <li class="chapter" data-level="2.1.6.3" data-path="literature-review.html"><a href="literature-review.html#guided-and-restricted-decoding"><i class="fa fa-check"></i><b>2.1.6.3</b> Guided and restricted decoding</a></li>
 </ul></li>
@@ -230,12 +230,16 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="methodology.html"><a href="methodology.html#research-questions"><i class="fa fa-check"></i><b>3.2.1</b> Research questions</a></li>
 <li class="chapter" data-level="3.2.2" data-path="methodology.html"><a href="methodology.html#hypotheses"><i class="fa fa-check"></i><b>3.2.2</b> Hypotheses</a></li>
-<li class="chapter" data-level="3.2.3" data-path="methodology.html"><a href="methodology.html#evaluation-framework"><i class="fa fa-check"></i><b>3.2.3</b> Evaluation framework</a></li>
-<li class="chapter" data-level="3.2.4" data-path="methodology.html"><a href="methodology.html#evaluation-research"><i class="fa fa-check"></i><b>3.2.4</b> Evaluation research</a></li>
+<li class="chapter" data-level="3.2.3" data-path="methodology.html"><a href="methodology.html#evaluation-research"><i class="fa fa-check"></i><b>3.2.3</b> Evaluation research</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="methodology.html"><a href="methodology.html#evaluation-strategy"><i class="fa fa-check"></i><b>3.3</b> Evaluation Strategy</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="methodology.html"><a href="methodology.html#metrics"><i class="fa fa-check"></i><b>3.3.1</b> Metrics</a></li>
+<li class="chapter" data-level="3.3.1" data-path="methodology.html"><a href="methodology.html#evaluation-framework-and-metrics"><i class="fa fa-check"></i><b>3.3.1</b> Evaluation framework and metrics</a>
+<ul>
+<li class="chapter" data-level="3.3.1.1" data-path="methodology.html"><a href="methodology.html#page-identification"><i class="fa fa-check"></i><b>3.3.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="3.3.1.2" data-path="methodology.html"><a href="methodology.html#information-extraction"><i class="fa fa-check"></i><b>3.3.1.2</b> Information extraction</a></li>
+<li class="chapter" data-level="3.3.1.3" data-path="methodology.html"><a href="methodology.html#error-rate-guidance"><i class="fa fa-check"></i><b>3.3.1.3</b> Error rate guidance</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3.2" data-path="methodology.html"><a href="methodology.html#benchmarking"><i class="fa fa-check"></i><b>3.3.2</b> Benchmarking</a></li>
 </ul></li>
 <li class="chapter" data-level="3.4" data-path="methodology.html"><a href="methodology.html#data-strategy"><i class="fa fa-check"></i><b>3.4</b> Data Strategy</a>
@@ -250,30 +254,33 @@ div.csl-indent {
 <li class="chapter" data-level="3.5.1" data-path="methodology.html"><a href="methodology.html#llm-overview"><i class="fa fa-check"></i><b>3.5.1</b> LLM overview</a></li>
 <li class="chapter" data-level="3.5.2" data-path="methodology.html"><a href="methodology.html#approaches"><i class="fa fa-check"></i><b>3.5.2</b> Approaches</a>
 <ul>
-<li class="chapter" data-level="3.5.2.1" data-path="methodology.html"><a href="methodology.html#page-identification-4"><i class="fa fa-check"></i><b>3.5.2.1</b> Page identification</a></li>
-<li class="chapter" data-level="3.5.2.2" data-path="methodology.html"><a href="methodology.html#information-extraction-3"><i class="fa fa-check"></i><b>3.5.2.2</b> Information extraction</a></li>
+<li class="chapter" data-level="3.5.2.1" data-path="methodology.html"><a href="methodology.html#page-identification-2"><i class="fa fa-check"></i><b>3.5.2.1</b> Page identification</a></li>
+<li class="chapter" data-level="3.5.2.2" data-path="methodology.html"><a href="methodology.html#information-extraction-2"><i class="fa fa-check"></i><b>3.5.2.2</b> Information extraction</a></li>
 </ul></li>
-<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#gpu-benchmark"><i class="fa fa-check"></i><b>3.5.3</b> Hardware normalization</a></li>
-<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.4</b> Error analysis</a></li>
-<li class="chapter" data-level="3.5.5" data-path="methodology.html"><a href="methodology.html#baseline-selection-rationale"><i class="fa fa-check"></i><b>3.5.5</b> Baseline selection rationale</a></li>
-<li class="chapter" data-level="3.5.6" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.6</b> Evaluation methods</a></li>
-</ul></li>
-<li class="chapter" data-level="3.6" data-path="methodology.html"><a href="methodology.html#ethical-practical-considerations-eher-am-ende-oder-weg"><i class="fa fa-check"></i><b>3.6</b> Ethical &amp; Practical Considerations (eher am Ende oder weg?)</a>
+<li class="chapter" data-level="3.5.3" data-path="methodology.html"><a href="methodology.html#error-analysis"><i class="fa fa-check"></i><b>3.5.3</b> Error analysis</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="methodology.html"><a href="methodology.html#pdf-extraction-limitations"><i class="fa fa-check"></i><b>3.6.1</b> PDF extraction limitations</a></li>
-<li class="chapter" data-level="3.6.2" data-path="methodology.html"><a href="methodology.html#computational-constraints"><i class="fa fa-check"></i><b>3.6.2</b> Computational constraints</a></li>
-<li class="chapter" data-level="3.6.3" data-path="methodology.html"><a href="methodology.html#generalizability-scope"><i class="fa fa-check"></i><b>3.6.3</b> Generalizability scope</a></li>
-<li class="chapter" data-level="3.6.4" data-path="methodology.html"><a href="methodology.html#ethical-considerations"><i class="fa fa-check"></i><b>3.6.4</b> Ethical considerations</a></li>
+<li class="chapter" data-level="3.5.3.1" data-path="methodology.html"><a href="methodology.html#page-identificaion"><i class="fa fa-check"></i><b>3.5.3.1</b> Page identificaion</a></li>
+<li class="chapter" data-level="3.5.3.2" data-path="methodology.html"><a href="methodology.html#inforamtion-extraction"><i class="fa fa-check"></i><b>3.5.3.2</b> Inforamtion extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5.4" data-path="methodology.html"><a href="methodology.html#evaluation-methods"><i class="fa fa-check"></i><b>3.5.4</b> Evaluation methods</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="implementation.html"><a href="implementation.html"><i class="fa fa-check"></i><b>4</b> Implementation</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="implementation.html"><a href="implementation.html#environments"><i class="fa fa-check"></i><b>4.1</b> Environments</a></li>
+<li class="chapter" data-level="4.1" data-path="implementation.html"><a href="implementation.html#environments"><i class="fa fa-check"></i><b>4.1</b> Environments</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="implementation.html"><a href="implementation.html#gpu-benchmark"><i class="fa fa-check"></i><b>4.1.1</b> Hardware normalization</a></li>
+</ul></li>
 <li class="chapter" data-level="4.2" data-path="implementation.html"><a href="implementation.html#evaluation-and-reporting"><i class="fa fa-check"></i><b>4.2</b> Evaluation and Reporting</a></li>
 <li class="chapter" data-level="4.3" data-path="implementation.html"><a href="implementation.html#software-packages"><i class="fa fa-check"></i><b>4.3</b> Software Packages</a></li>
 <li class="chapter" data-level="4.4" data-path="implementation.html"><a href="implementation.html#speedup-with-vllm-and-batching"><i class="fa fa-check"></i><b>4.4</b> Speedup with vLLM and batching</a></li>
 <li class="chapter" data-level="4.5" data-path="implementation.html"><a href="implementation.html#text-extraction"><i class="fa fa-check"></i><b>4.5</b> Text extraction</a></li>
-<li class="chapter" data-level="4.6" data-path="implementation.html"><a href="implementation.html#data-processing"><i class="fa fa-check"></i><b>4.6</b> Data processing</a></li>
+<li class="chapter" data-level="4.6" data-path="implementation.html"><a href="implementation.html#ground-truth-database"><i class="fa fa-check"></i><b>4.6</b> Ground truth database</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="implementation.html"><a href="implementation.html#ground-truth-creation"><i class="fa fa-check"></i><b>4.6.1</b> Ground truth creation</a></li>
+<li class="chapter" data-level="4.6.2" data-path="implementation.html"><a href="implementation.html#ground-truth-database-composition"><i class="fa fa-check"></i><b>4.6.2</b> Ground truth database composition</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="implementation.html"><a href="implementation.html#data-processing"><i class="fa fa-check"></i><b>4.7</b> Data processing</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
 <ul>
@@ -296,37 +303,50 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="6" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>6</b> Discussion</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#page-identification-5"><i class="fa fa-check"></i><b>6.1</b> Page identification</a>
+<li class="chapter" data-level="6.1" data-path="discussion.html"><a href="discussion.html#answer-research-questions"><i class="fa fa-check"></i><b>6.1</b> Research questions</a>
 <ul>
-<li class="chapter" data-level="6.1.1" data-path="discussion.html"><a href="discussion.html#general-performance-page-identification"><i class="fa fa-check"></i><b>6.1.1</b> General performance</a></li>
-<li class="chapter" data-level="6.1.2" data-path="discussion.html"><a href="discussion.html#energy-usage-and-runtime-1"><i class="fa fa-check"></i><b>6.1.2</b> Energy usage and runtime</a></li>
-</ul></li>
-<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#information-extraction-4"><i class="fa fa-check"></i><b>6.2</b> Information extraction</a>
+<li class="chapter" data-level="6.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-5"><i class="fa fa-check"></i><b>6.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="6.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-4"><i class="fa fa-check"></i><b>6.1.2</b> Information extraction</a>
 <ul>
-<li class="chapter" data-level="6.2.1" data-path="discussion.html"><a href="discussion.html#general-performance"><i class="fa fa-check"></i><b>6.2.1</b> General performance</a></li>
-<li class="chapter" data-level="6.2.2" data-path="discussion.html"><a href="discussion.html#company-specific-results"><i class="fa fa-check"></i><b>6.2.2</b> Company specific results</a></li>
-<li class="chapter" data-level="6.2.3" data-path="discussion.html"><a href="discussion.html#error-analysis-1"><i class="fa fa-check"></i><b>6.2.3</b> Error analysis</a>
-<ul>
-<li class="chapter" data-level="6.2.3.1" data-path="discussion.html"><a href="discussion.html#ground-truth-creation"><i class="fa fa-check"></i><b>6.2.3.1</b> Ground truth creation</a></li>
-<li class="chapter" data-level="6.2.3.2" data-path="discussion.html"><a href="discussion.html#regex-synth-backend-discussion"><i class="fa fa-check"></i><b>6.2.3.2</b> Regular expression approach</a></li>
+<li class="chapter" data-level="6.1.2.1" data-path="discussion.html"><a href="discussion.html#extraction-performace-hypotheses-evaluation"><i class="fa fa-check"></i><b>6.1.2.1</b> Possibilty</a></li>
+<li class="chapter" data-level="6.1.2.2" data-path="discussion.html"><a href="discussion.html#extraction-performace-predictor-hypotheses-evaluation"><i class="fa fa-check"></i><b>6.1.2.2</b> Feature effects</a></li>
+<li class="chapter" data-level="6.1.2.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-1"><i class="fa fa-check"></i><b>6.1.2.3</b> Error rate guidance</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-1"><i class="fa fa-check"></i><b>6.3</b> Error rate guidance</a></li>
-<li class="chapter" data-level="6.4" data-path="discussion.html"><a href="discussion.html#feature-effect-analysis"><i class="fa fa-check"></i><b>6.4</b> Feature effect analysis</a>
+<li class="chapter" data-level="6.2" data-path="discussion.html"><a href="discussion.html#general-performance-page-identification"><i class="fa fa-check"></i><b>6.2</b> General performance</a>
 <ul>
-<li class="chapter" data-level="6.4.1" data-path="discussion.html"><a href="discussion.html#general-performance-1"><i class="fa fa-check"></i><b>6.4.1</b> General performance</a></li>
-</ul></li>
-<li class="chapter" data-level="6.5" data-path="discussion.html"><a href="discussion.html#summary-1"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
-<li class="chapter" data-level="6.6" data-path="discussion.html"><a href="discussion.html#limitations-4"><i class="fa fa-check"></i><b>6.6</b> Limitations</a>
+<li class="chapter" data-level="6.2.1" data-path="discussion.html"><a href="discussion.html#page-identification-6"><i class="fa fa-check"></i><b>6.2.1</b> Page identification</a>
 <ul>
-<li class="chapter" data-level="6.6.1" data-path="discussion.html"><a href="discussion.html#context-rot"><i class="fa fa-check"></i><b>6.6.1</b> Context rot</a>
+<li class="chapter" data-level="6.2.1.1" data-path="discussion.html"><a href="discussion.html#efficency-discussion"><i class="fa fa-check"></i><b>6.2.1.1</b> Energy usage and runtime</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2.2" data-path="discussion.html"><a href="discussion.html#alternative-input-formats-extraction"><i class="fa fa-check"></i><b>6.2.2</b> Information extraction</a></li>
+<li class="chapter" data-level="6.2.3" data-path="discussion.html"><a href="discussion.html#error-rate-guidance-2"><i class="fa fa-check"></i><b>6.2.3</b> Error rate guidance</a></li>
+<li class="chapter" data-level="6.2.4" data-path="discussion.html"><a href="discussion.html#same-company-evaluation"><i class="fa fa-check"></i><b>6.2.4</b> Company specific results</a></li>
+<li class="chapter" data-level="6.2.5" data-path="discussion.html"><a href="discussion.html#error-analysis-1"><i class="fa fa-check"></i><b>6.2.5</b> Error analysis</a>
 <ul>
-<li class="chapter" data-level="6.6.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-6"><i class="fa fa-check"></i><b>6.6.1.1</b> Page identification</a></li>
-<li class="chapter" data-level="6.6.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-5"><i class="fa fa-check"></i><b>6.6.1.2</b> Information extraction</a></li>
+<li class="chapter" data-level="6.2.5.1" data-path="discussion.html"><a href="discussion.html#ground-truth-creation-1"><i class="fa fa-check"></i><b>6.2.5.1</b> Ground truth creation</a></li>
+<li class="chapter" data-level="6.2.5.2" data-path="discussion.html"><a href="discussion.html#regex-synth-backend-discussion"><i class="fa fa-check"></i><b>6.2.5.2</b> Regular expression approach</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2.6" data-path="discussion.html"><a href="discussion.html#openai-discussion"><i class="fa fa-check"></i><b>6.2.6</b> OpenAI models</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="discussion.html"><a href="discussion.html#summary-1"><i class="fa fa-check"></i><b>6.3</b> Summary</a></li>
+<li class="chapter" data-level="6.4" data-path="discussion.html"><a href="discussion.html#detail-discussion"><i class="fa fa-check"></i><b>6.4</b> Limitations</a>
+<ul>
+<li class="chapter" data-level="6.4.1" data-path="discussion.html"><a href="discussion.html#content-rot"><i class="fa fa-check"></i><b>6.4.1</b> Context rot</a>
+<ul>
+<li class="chapter" data-level="6.4.1.1" data-path="discussion.html"><a href="discussion.html#page-identification-7"><i class="fa fa-check"></i><b>6.4.1.1</b> Page identification</a></li>
+<li class="chapter" data-level="6.4.1.2" data-path="discussion.html"><a href="discussion.html#information-extraction-5"><i class="fa fa-check"></i><b>6.4.1.2</b> Information extraction</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6.7" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.7</b> Not covered</a></li>
-<li class="chapter" data-level="6.8" data-path="discussion.html"><a href="discussion.html#outlook"><i class="fa fa-check"></i><b>6.8</b> Outlook</a></li>
+<li class="chapter" data-level="6.5" data-path="discussion.html"><a href="discussion.html#not-covered"><i class="fa fa-check"></i><b>6.5</b> Not covered</a></li>
+<li class="chapter" data-level="6.6" data-path="discussion.html"><a href="discussion.html#outlook"><i class="fa fa-check"></i><b>6.6</b> Outlook</a></li>
+<li class="chapter" data-level="6.7" data-path="discussion.html"><a href="discussion.html#ethical-practical-considerations"><i class="fa fa-check"></i><b>6.7</b> Ethical &amp; Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="6.7.1" data-path="discussion.html"><a href="discussion.html#pdf-extraction-limitations"><i class="fa fa-check"></i><b>6.7.1</b> PDF extraction limitations</a></li>
+<li class="chapter" data-level="6.7.2" data-path="discussion.html"><a href="discussion.html#computational-constraints"><i class="fa fa-check"></i><b>6.7.2</b> Computational constraints</a></li>
+<li class="chapter" data-level="6.7.3" data-path="discussion.html"><a href="discussion.html#generalizability-scope"><i class="fa fa-check"></i><b>6.7.3</b> Generalizability scope</a></li>
+<li class="chapter" data-level="6.7.4" data-path="discussion.html"><a href="discussion.html#ethical-considerations"><i class="fa fa-check"></i><b>6.7.4</b> Ethical considerations</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="discussion.html"><a href="discussion.html#conclusion"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -337,7 +357,10 @@ div.csl-indent {
 <li class="chapter" data-level="8.2" data-path="page-identification-report.html"><a href="page-identification-report.html#toc-understanding"><i class="fa fa-check"></i><b>8.2</b> Table of Contents understanding</a>
 <ul>
 <li class="chapter" data-level="8.2.1" data-path="page-identification-report.html"><a href="page-identification-report.html#text-based-toc-understanding"><i class="fa fa-check"></i><b>8.2.1</b> Details for the approaches</a></li>
-<li class="chapter" data-level="8.2.2" data-path="page-identification-report.html"><a href="page-identification-report.html#results-5"><i class="fa fa-check"></i><b>8.2.2</b> Results</a></li>
+<li class="chapter" data-level="8.2.2" data-path="page-identification-report.html"><a href="page-identification-report.html#results-5"><i class="fa fa-check"></i><b>8.2.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="8.2.2.1" data-path="page-identification-report.html"><a href="page-identification-report.html#comparison-of-the-different-approaches"><i class="fa fa-check"></i><b>8.2.2.1</b> Comparison of the different approaches</a></li>
+</ul></li>
 <li class="chapter" data-level="8.2.3" data-path="page-identification-report.html"><a href="page-identification-report.html#machine-readable-toc-approach-specific-results"><i class="fa fa-check"></i><b>8.2.3</b> Machine readable TOC approach specific results</a></li>
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="page-identification-report.html"><a href="page-identification-report.html#llm-page-identification"><i class="fa fa-check"></i><b>8.3</b> Classification with LLMs</a>
@@ -361,7 +384,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="10" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html"><i class="fa fa-check"></i><b>10</b> Appendix C - Error rate guidance report</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#page-identification-7"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
+<li class="chapter" data-level="10.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#page-identification-8"><i class="fa fa-check"></i><b>10.1</b> Page identification</a>
 <ul>
 <li class="chapter" data-level="10.1.1" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#binary-classification-2"><i class="fa fa-check"></i><b>10.1.1</b> Binary classification</a></li>
 <li class="chapter" data-level="10.1.2" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#multi-class-classification-2"><i class="fa fa-check"></i><b>10.1.2</b> Multi-class classification</a></li>
@@ -373,12 +396,12 @@ div.csl-indent {
 <li class="chapter" data-level="10.2.3" data-path="appendix-c---error-rate-guidance-report.html"><a href="appendix-c---error-rate-guidance-report.html#hybrid-aproach"><i class="fa fa-check"></i><b>10.2.3</b> Hybrid aproach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html"><i class="fa fa-check"></i><b>11</b> Appendix D - Feature effect analysis</a>
+<li class="chapter" data-level="11" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html"><i class="fa fa-check"></i><b>11</b> Appendix D - Feature effect analysis</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#regular-expressions-5"><i class="fa fa-check"></i><b>11.1</b> Regular expressions</a></li>
-<li class="chapter" data-level="11.2" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#real-tables-4"><i class="fa fa-check"></i><b>11.2</b> Real tables</a></li>
-<li class="chapter" data-level="11.3" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#synthetic-tables-4"><i class="fa fa-check"></i><b>11.3</b> Synthetic tables</a></li>
-<li class="chapter" data-level="11.4" data-path="appendix-d---feature-effect-analysis.html"><a href="appendix-d---feature-effect-analysis.html#hybrid-approach-3"><i class="fa fa-check"></i><b>11.4</b> Hybrid approach</a></li>
+<li class="chapter" data-level="11.1" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#regular-expressions-5"><i class="fa fa-check"></i><b>11.1</b> Regular expressions</a></li>
+<li class="chapter" data-level="11.2" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#real-tables-4"><i class="fa fa-check"></i><b>11.2</b> Real tables</a></li>
+<li class="chapter" data-level="11.3" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#synthetic-tables-4"><i class="fa fa-check"></i><b>11.3</b> Synthetic tables</a></li>
+<li class="chapter" data-level="11.4" data-path="feature-effect-analysis.html"><a href="feature-effect-analysis.html#hybrid-approach-3"><i class="fa fa-check"></i><b>11.4</b> Hybrid approach</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="appendix-e---miscellaneous.html"><a href="appendix-e---miscellaneous.html"><i class="fa fa-check"></i><b>12</b> Appendix E - Miscellaneous</a>
 <ul>
@@ -413,37 +436,37 @@ div.csl-indent {
 <li class="chapter" data-level="13.2.1" data-path="tables.html"><a href="tables.html#hybrid-approach-4"><i class="fa fa-check"></i><b>13.2.1</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="figures.html"><a href="figures.html"><i class="fa fa-check"></i><b>14</b> Figures</a>
+<li class="chapter" data-level="14" data-path="figure-collection.html"><a href="figure-collection.html"><i class="fa fa-check"></i><b>14</b> Figures</a>
 <ul>
-<li class="chapter" data-level="14.1" data-path="figures.html"><a href="figures.html#page-identification-8"><i class="fa fa-check"></i><b>14.1</b> Page identification</a>
+<li class="chapter" data-level="14.1" data-path="figure-collection.html"><a href="figure-collection.html#page-identification-9"><i class="fa fa-check"></i><b>14.1</b> Page identification</a>
 <ul>
-<li class="chapter" data-level="14.1.1" data-path="figures.html"><a href="figures.html#regex-baseline"><i class="fa fa-check"></i><b>14.1.1</b> Regex baseline</a></li>
-<li class="chapter" data-level="14.1.2" data-path="figures.html"><a href="figures.html#toc-understanding-1"><i class="fa fa-check"></i><b>14.1.2</b> TOC understanding</a></li>
-<li class="chapter" data-level="14.1.3" data-path="figures.html"><a href="figures.html#classification-1"><i class="fa fa-check"></i><b>14.1.3</b> Classification</a>
+<li class="chapter" data-level="14.1.1" data-path="figure-collection.html"><a href="figure-collection.html#regex-baseline"><i class="fa fa-check"></i><b>14.1.1</b> Regex baseline</a></li>
+<li class="chapter" data-level="14.1.2" data-path="figure-collection.html"><a href="figure-collection.html#toc-understanding-1"><i class="fa fa-check"></i><b>14.1.2</b> TOC understanding</a></li>
+<li class="chapter" data-level="14.1.3" data-path="figure-collection.html"><a href="figure-collection.html#classification-1"><i class="fa fa-check"></i><b>14.1.3</b> Classification</a>
 <ul>
-<li class="chapter" data-level="14.1.3.1" data-path="figures.html"><a href="figures.html#binary"><i class="fa fa-check"></i><b>14.1.3.1</b> Binary</a></li>
-<li class="chapter" data-level="14.1.3.2" data-path="figures.html"><a href="figures.html#multi-class-classification-3"><i class="fa fa-check"></i><b>14.1.3.2</b> Multi-class classification</a></li>
+<li class="chapter" data-level="14.1.3.1" data-path="figure-collection.html"><a href="figure-collection.html#binary"><i class="fa fa-check"></i><b>14.1.3.1</b> Binary</a></li>
+<li class="chapter" data-level="14.1.3.2" data-path="figure-collection.html"><a href="figure-collection.html#multi-class-classification-3"><i class="fa fa-check"></i><b>14.1.3.2</b> Multi-class classification</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="14.2" data-path="figures.html"><a href="figures.html#table-extraction-1"><i class="fa fa-check"></i><b>14.2</b> Table extraction</a>
+<li class="chapter" data-level="14.2" data-path="figure-collection.html"><a href="figure-collection.html#table-extraction-1"><i class="fa fa-check"></i><b>14.2</b> Table extraction</a>
 <ul>
-<li class="chapter" data-level="14.2.1" data-path="figures.html"><a href="figures.html#regex-approach"><i class="fa fa-check"></i><b>14.2.1</b> Regex approach</a>
+<li class="chapter" data-level="14.2.1" data-path="figure-collection.html"><a href="figure-collection.html#regex-approach"><i class="fa fa-check"></i><b>14.2.1</b> Regex approach</a>
 <ul>
-<li class="chapter" data-level="14.2.1.1" data-path="figures.html"><a href="figures.html#real-tables-5"><i class="fa fa-check"></i><b>14.2.1.1</b> Real tables</a></li>
-<li class="chapter" data-level="14.2.1.2" data-path="figures.html"><a href="figures.html#synthetic-tables-5"><i class="fa fa-check"></i><b>14.2.1.2</b> Synthetic tables</a></li>
+<li class="chapter" data-level="14.2.1.1" data-path="figure-collection.html"><a href="figure-collection.html#real-tables-5"><i class="fa fa-check"></i><b>14.2.1.1</b> Real tables</a></li>
+<li class="chapter" data-level="14.2.1.2" data-path="figure-collection.html"><a href="figure-collection.html#synthetic-tables-5"><i class="fa fa-check"></i><b>14.2.1.2</b> Synthetic tables</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.2" data-path="figures.html"><a href="figures.html#real-tables-6"><i class="fa fa-check"></i><b>14.2.2</b> Real tables</a>
+<li class="chapter" data-level="14.2.2" data-path="figure-collection.html"><a href="figure-collection.html#real-tables-6"><i class="fa fa-check"></i><b>14.2.2</b> Real tables</a>
 <ul>
-<li class="chapter" data-level="14.2.2.1" data-path="figures.html"><a href="figures.html#examples-from-same-company"><i class="fa fa-check"></i><b>14.2.2.1</b> Examples from same company</a></li>
-<li class="chapter" data-level="14.2.2.2" data-path="figures.html"><a href="figures.html#openai-models-1"><i class="fa fa-check"></i><b>14.2.2.2</b> OpenAI models</a></li>
-<li class="chapter" data-level="14.2.2.3" data-path="figures.html"><a href="figures.html#comparing-input-formats-and-text-extration-libraries"><i class="fa fa-check"></i><b>14.2.2.3</b> Comparing input formats and text extration libraries</a></li>
-<li class="chapter" data-level="14.2.2.4" data-path="figures.html"><a href="figures.html#hypotheses-6"><i class="fa fa-check"></i><b>14.2.2.4</b> Hypotheses</a></li>
+<li class="chapter" data-level="14.2.2.1" data-path="figure-collection.html"><a href="figure-collection.html#examples-from-same-company"><i class="fa fa-check"></i><b>14.2.2.1</b> Examples from same company</a></li>
+<li class="chapter" data-level="14.2.2.2" data-path="figure-collection.html"><a href="figure-collection.html#openai-models-1"><i class="fa fa-check"></i><b>14.2.2.2</b> OpenAI models</a></li>
+<li class="chapter" data-level="14.2.2.3" data-path="figure-collection.html"><a href="figure-collection.html#comparing-input-formats-and-text-extration-libraries"><i class="fa fa-check"></i><b>14.2.2.3</b> Comparing input formats and text extration libraries</a></li>
+<li class="chapter" data-level="14.2.2.4" data-path="figure-collection.html"><a href="figure-collection.html#hypotheses-6"><i class="fa fa-check"></i><b>14.2.2.4</b> Hypotheses</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.3" data-path="figures.html"><a href="figures.html#synthetic-tables-6"><i class="fa fa-check"></i><b>14.2.3</b> Synthetic tables</a>
+<li class="chapter" data-level="14.2.3" data-path="figure-collection.html"><a href="figure-collection.html#synthetic-tables-6"><i class="fa fa-check"></i><b>14.2.3</b> Synthetic tables</a>
 <ul>
-<li class="chapter" data-level="14.2.3.1" data-path="figures.html"><a href="figures.html#confidence-4"><i class="fa fa-check"></i><b>14.2.3.1</b> Confidence</a></li>
+<li class="chapter" data-level="14.2.3.1" data-path="figure-collection.html"><a href="figure-collection.html#confidence-4"><i class="fa fa-check"></i><b>14.2.3.1</b> Confidence</a></li>
 </ul></li>
-<li class="chapter" data-level="14.2.4" data-path="figures.html"><a href="figures.html#hybrid-approach-5"><i class="fa fa-check"></i><b>14.2.4</b> Hybrid approach</a></li>
+<li class="chapter" data-level="14.2.4" data-path="figure-collection.html"><a href="figure-collection.html#hybrid-approach-5"><i class="fa fa-check"></i><b>14.2.4</b> Hybrid approach</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="15" data-path="layout-testing.html"><a href="layout-testing.html"><i class="fa fa-check"></i><b>15</b> Layout testing</a></li>
@@ -482,8 +505,8 @@ div.csl-indent {
 <p>Identify potentially interesting pages with text / regex search. Check if there is a table present on this page.</p>
 <p>Object detection</p>
 </div>
-<div id="term-frequency" class="section level3 hasAnchor" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> Term frequency<a href="literature-review.html#term-frequency" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="information-retrieval-term-frequency" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Information retrieval (Term frequency)<a href="literature-review.html#information-retrieval-term-frequency" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Term frequency <span class="math inline">\(\mathrm{tf}_{t,d}\)</span> is a very simple measure. It just counts the number of occurrences of a term in a document. Document is an abstraction in this case. It can be a sentence, a page or a file. Since longer documents might have higher term frequency for each term, it is useful to normalize the value by the document length <span class="math inline">\(|d|\)</span>. This measure could be called term rate:</p>
 <p><span class="math display" id="eq:term-rate">\[\begin{equation}
 \mathrm{tr}_t = \frac{\mathrm{tf}_{t,d}}{|d|}
@@ -513,34 +536,31 @@ div.csl-indent {
 </div>
 <div id="llm-theory" class="section level3 hasAnchor" number="2.1.5">
 <h3><span class="header-section-number">2.1.5</span> Large Language Models<a href="literature-review.html#llm-theory" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Wichtig</p>
+<p><span class="citation">Minaee et al. (<a href="#ref-minaeeLargeLanguageModels2025">2025</a>)</span> give a broad overview on the field of language models. They discuss, how they are built, used and augmented. They present popular datasets, performance benchmarks and outline challenges and future directions. Their survey is neither limited on decoder-only nor large language models (\acr{LLM}). But their time scope ends before 2024, so recent advancements are not reflected. (not a good introduction survey)</p>
+<p>For readers, who want to build understanding for modern <a href="glossary.html#acronyms_LLM">LLM</a> we recommend to work through the book “Dive into Deep Learning” <span class="citation">(<a href="#ref-zhangDiveDeepLearning2023">A. Zhang et al., 2023</a>)</span>.</p>
 <div id="transformers" class="section level4 hasAnchor" number="2.1.5.1">
 <h4><span class="header-section-number">2.1.5.1</span> Transformers<a href="literature-review.html#transformers" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Wichtig</p>
 <p>hauptsächlich decoder (generieren)</p>
 <p>seit 2017</p>
+<p>training on token prediction (base models); masking,</p>
 </div>
 <div id="attention" class="section level4 hasAnchor" number="2.1.5.2">
 <h4><span class="header-section-number">2.1.5.2</span> Attention<a href="literature-review.html#attention" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>The most obvious challenge is computational cost. The amount of
-processing power required scales quadratically with the length of the
-input <span class="citation">(<a href="#ref-tahirUnderstandingLLMContext2025">Tahir, 2025</a>)</span>.</p>
+<p>The most obvious challenge is computational cost. The amount of processing power required scales quadratically with the length of the input <span class="citation">(<a href="#ref-tahirUnderstandingLLMContext2025">Tahir, 2025</a>)</span>.</p>
+<p>Sliding window attention (e.g., as popularized by Mistral) or Gemma 2; Sliding window attention is mainly used to improve computational performance <span class="citation">(<a href="#ref-raschkaInstructionPretrainingLLMs2025">Raschka, 2025</a>)</span></p>
+<p>Group-query attention (like in Llama 2 and 3)</p>
+<p>A key article is “Attention Is All You Need” that <span class="citation">(<a href="#ref-vaswaniAttentionAllYou2023">Vaswani et al., 2023</a>)</span></p>
 </div>
 <div id="encoder" class="section level4 hasAnchor" number="2.1.5.3">
 <h4><span class="header-section-number">2.1.5.3</span> Encoder<a href="literature-review.html#encoder" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Wichtig</p>
 <p>positional encoding important (and distinguishes from tf-idf): dog eats cat</p>
-<p>sinusoidal positional encoding, which uses sine and cosine functions of
-varying frequencies to create unique positional vectors, and Rotary
-Position Embedding (RoPE), which applies a rotation to the token
-embeddings based on their position <span class="citation">(<a href="#ref-khowajaAnalysisLlama4s2025">Khowaja, 2025</a>)</span></p>
+<p>sinusoidal positional encoding, which uses sine and cosine functions of varying frequencies to create unique positional vectors, and Rotary Position Embedding (RoPE), which applies a rotation to the token embeddings based on their position <span class="citation">(<a href="#ref-khowajaAnalysisLlama4s2025">Khowaja, 2025</a>)</span></p>
 </div>
 <div id="decoder" class="section level4 hasAnchor" number="2.1.5.4">
 <h4><span class="header-section-number">2.1.5.4</span> Decoder<a href="literature-review.html#decoder" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>For each generated token, the attention mechanism needs to access the
-key and value vectors of all preceding tokens in the context window. To
-avoid recomputing these key and value vectors at each step, they are
-stored in the KV-cache. <span class="citation">(<a href="#ref-khowajaAnalysisLlama4s2025">Khowaja, 2025</a>)</span> However, the memory required to store the KV-cache scales linearly with the size of the context window.</p>
+<p>For each generated token, the attention mechanism needs to access the key and value vectors of all preceding tokens in the context window. To avoid recomputing these key and value vectors at each step, they are stored in the KV-cache. <span class="citation">(<a href="#ref-khowajaAnalysisLlama4s2025">Khowaja, 2025</a>)</span> However, the memory required to store the KV-cache scales linearly with the size of the context window.</p>
 <p>Wichtig</p>
 <p>Token sampling, temperature 0</p>
 </div>
@@ -565,16 +585,24 @@ Figure 2.1: Showing schemas of the dense and sparse mixture of experts architect
 <p>Googles gemma-3n-E4B uses a selective parameter activation as well. They use the prefix E for effective instead of A for active <span class="citation">(<a href="#ref-googleGemma3nModel">Google, n.d.</a>)</span>. In gemma-3n there are parameters to handle input of different types - text, vision and audio - and they get loaded and activated as necessary. This allows a multi modal functionality. It additionally caches the <a href="glossary.html#acronyms_PLE">PLE (Per-Layer Embedding)</a> in fast storage (RAM) instead of keeping it in the model memory space (VRAM), allowing to run models in low resource environments.</p>
 <p>Raus oder woanders hin: The Qwen3 models support two operating modes: A thining mode and a non-thinking mode. The thinking mode should yield better answers in complex tasks and the additional amount of processing can be controlled by setting a thinking budget <span class="citation">(<a href="#ref-qwenteamQwen3ThinkDeeper2025">Qwen Team, 2025</a>)</span>. This thinking budget can be seen as the amount of tokens used for a step wise solution.</p>
 </div>
-<div id="mixed-modal" class="section level4 hasAnchor" number="2.1.5.7">
-<h4><span class="header-section-number">2.1.5.7</span> Mixed modal<a href="literature-review.html#mixed-modal" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p><span class="citation">(<a href="#ref-teamChameleonMixedModalEarlyFusion2024">Team, 2024</a>)</span></p>
+<div id="confidence-scores" class="section level4 hasAnchor" number="2.1.5.7">
+<h4><span class="header-section-number">2.1.5.7</span> Confidence scores<a href="literature-review.html#confidence-scores" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><a href="glossary.html#acronyms_LLM">LLM</a> can return a log probability score together with each token it predicts. In fact, it can return the top k candidates for the next token with the corresponding log probabilities. The sum of individual log probabilities indicates how likely a sequence of tokens is, according to the <a href="glossary.html#acronyms_LLM">LLM</a>. This sum can be interpreted as a kind of <em>confidence</em> the model has in a prediction <span class="citation">(<a href="#ref-berkovUnderstandingLLMLogprobs2025">Berkov, 2025</a>)</span>.</p>
+<p><span class="citation">Boseak (<a href="#ref-boseakEvaluatingLogLikelihoodConfidence2025">2025</a>)</span> investigate the usage of log probabilities to score multiple choice answers. They show that the sum of log probabilities carries valuable information about model confidence, but its proper use is nuanced. The choice to use the raw sum or a length normalized sum of log probabilities can have a noticeable effect on accuracy and they give no recommandation which approach to use in general. <span class="citation">Ma et al. (<a href="#ref-maEstimatingLLMUncertainty2025">2025</a>)</span> argue that normalizing the probability scores is a reason why probability-based methods fail to identify reliability.</p>
+<p><span class="citation">Kang et al. (<a href="#ref-kangScalableBestofNSelection2025">2025</a>)</span> compare different potential measures for a <a href="glossary.html#acronyms_LLM">LLM</a>s’ confidence for Best-of-N Selection tasks. The most simplest of these approaches uses the normalized log probabilities of the returned tokens. The negative exponent of this normalized sum is also called perplexity. It is widely used in LLM evaluations, even though it has been shown to fail in capturing a model’s ability to understand long context. Nevertheless, <span class="citation">Kang et al. (<a href="#ref-kangScalableBestofNSelection2025">2025</a>)</span> show that perplexity can perform equally good as more sophisticated measures of confidence up to 16 choices.</p>
+<p><span class="citation">Kauf et al. (<a href="#ref-kaufLogProbabilitiesAre2024">2024</a>)</span> investigated, if log probabilities can be used to measure semantic plausibility of sentences. They compare pairs of sentences that are similar, but where one is describing a plausible scenario, whereas the other describes a unlikely one. The show, that comparing the sum of returned log probabilities of two sentences yields better results for a semantic plausibility comparison than prompting the model to make this decision explicitly.</p>
 </div>
 </div>
 <div id="llm-methods" class="section level3 hasAnchor" number="2.1.6">
 <h3><span class="header-section-number">2.1.6</span> Methods for LLM application<a href="literature-review.html#llm-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="few-shot-learning" class="section level4 hasAnchor" number="2.1.6.1">
-<h4><span class="header-section-number">2.1.6.1</span> Few-shot Learning<a href="literature-review.html#few-shot-learning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Wichtig</p>
+<div id="in-context-learning" class="section level4 hasAnchor" number="2.1.6.1">
+<h4><span class="header-section-number">2.1.6.1</span> In-context Learning<a href="literature-review.html#in-context-learning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Few-shot learning is a prompting strategy that enables <a href="glossary.html#acronyms_LLM">LLM</a>s to solve a wide range of tasks, just by presenting some examples including the solutions. <span class="citation">Brown et al. (<a href="#ref-brownLanguageModelsAre2020">2020</a>)</span> calls the rapid adaption to the provided task and examples as “in-context learning”. Already GPT-3 wass found to surpass state-of-the-art performance of fine-tuned models in some tasks.</p>
+<p>Besides few-shot learning there is zero-shot and one-shot learning. In zero-shot learning only the task is stated in the prompt and no examples are provided. In one-shot learning a single example is provided. In contrast, there is fine tuning, where the weights of a model are changed by gradient updating based on a large corpus of examples <span class="citation">(<a href="#ref-brownLanguageModelsAre2020">Brown et al., 2020</a>)</span>.</p>
+<p>This reduces the need to create large datasets to fine tune a model on specific tasks. This brings a great flexibility and is resource efficient, reducing the computational costs for adapting the model to new tasks <span class="citation">(<a href="#ref-dongSurveyIncontextLearning2024">Dong et al., 2024</a>)</span>. Text classification and information extraction are two tasks that can be solved with few shot-learning <span class="citation">(<a href="#ref-zhaoCalibrateUseImproving2021">Zhao et al., 2021</a>)</span>. But <span class="citation">Zhao et al. (<a href="#ref-zhaoCalibrateUseImproving2021">2021</a>)</span> show, that at least with GPT-3, it can be important, in which order the examples are presented.</p>
+<p>Even though more examples can lead to better results <span class="citation">(<a href="#ref-kukaShotBasedPromptingZeroShot">Kuka", n.d.</a>)</span>, <span class="citation">Brown et al. (<a href="#ref-brownLanguageModelsAre2020">2020</a>)</span> show, that the performance might not increase much more adding more than a second example. Furthermore, there is the threat of <em>context rot</em> <span class="citation">(<a href="#ref-kellyhongContextRotHow2025">Kelly Hong &amp; Anton Troynikov, 2025</a>)</span>. This means, the performance can decrease noticeably, when the context gets to long. Thus, the number of examples one should provide is not just constrained by the context width. Additionally, there is a threat of over-fitting on patterns that are not present in the actual task but in the examples if they are to homogeneous.</p>
+<p>Pattern recognition and self-attention</p>
+<p><span class="citation">Wei et al. (<a href="#ref-weiFinetunedLanguageModels2022">2022</a>)</span> introduce instruction tuned models and show, that this approach noticeably improves the zero-shot performance. <span class="citation">Cheng et al. (<a href="#ref-chengInstructionPreTrainingLanguage2024">2024</a>)</span> propose, that using synthesized, instruction enriched data during pre-training enhances the resulting pre-trained models capabilities and the additional improvements from instruction fine tuning alike.</p>
 </div>
 <div id="rag" class="section level4 hasAnchor" number="2.1.6.2">
 <h4><span class="header-section-number">2.1.6.2</span> RAG<a href="literature-review.html#rag" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -582,6 +610,9 @@ Figure 2.1: Showing schemas of the dense and sparse mixture of experts architect
 </div>
 <div id="guided-and-restricted-decoding" class="section level4 hasAnchor" number="2.1.6.3">
 <h4><span class="header-section-number">2.1.6.3</span> Guided and restricted decoding<a href="literature-review.html#guided-and-restricted-decoding" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><span class="citation">Willard &amp; Louf (<a href="#ref-willardEfficientGuidedGeneration2023">2023</a>)</span> are stating, that they use xy to satisfy formatting requirements that are either hard or costly to capture through fine-tuning alone (or through prompting / few-shot learning), summarizing findings of many articles.</p>
+<p>“Most implementations of guided generation bias the score values used to determine the probabilities of the tokens in an LLM’s vocabulary. A common and sufficient approach involves repeated evaluations over the entire vocabulary in order to determine which tokens are valid–according to the constraints and previously sampled tokens–and setting the probabilities of invalid tokens to zero. This approach entails a fixed O(N ) cost for each token generated, where N is the size of the LLM’s vocabulary.</p>
+<p>We propose an approach that uses the finite state machine (FSM) for- mulation of regular expressions to both arbitrarily start and stop guided generation and allow the construction of an index with which the set of non- zero-probability tokens can be obtained efficiently at each step. The result is an algorithm that costs O(1) on average.”</p>
 <p>generation template strict (closed) vs open</p>
 <p>always selecting the most probable response (temp = 0), so numeric values are correct and classification as well</p>
 </div>
@@ -697,6 +728,10 @@ mean\left(|SHAP|\right) = \frac{1}{n} \sum_{k=1}^n | \phi_{i}^{\left( k \right)}
 </div>
 <div id="summary-0.5-p" class="section level2 hasAnchor" number="2.3">
 <h2><span class="header-section-number">2.3</span> Summary (0.5 p)<a href="literature-review.html#summary-0.5-p" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This chapter introduced us into recent architectures for <a href="glossary.html#acronyms_LLM">LLM</a>s like Mixture-of-Expert. For basic concepts and the history of <a href="glossary.html#acronyms_NLP">NLP (natural language processing)</a> it recommends sources. <a href="glossary.html#acronyms_LLM">LLM</a>s are body ofinvestigation in all answer all our research questions. In-context learning and retriever augmentation are the advanced prompting strategies we benchmark in the information extraction task.</p>
+<p>It gave an outline on general machine learning methods. On one hand it described decision trees, random forests and more advanced machine learning models that are an extention of the previously named one. We use random forests in the term frequency approach for the page identification task.</p>
+<p>On the other hand it introduced the <a href="glossary.html#acronyms_SHAP">SHAP</a> framework, as an attempt for model agnostic explanation models. The origins of the visualization method of boxplots and violin plots were shown. We use the <a href="glossary.html#acronyms_SHAP">SHAP</a> framework to interpret our hypotheses on possible predictors for the information extraction performance and compare the prerformance results among different experimental settings using boxplots.</p>
+<p>The next chapter presents our</p>
 <ul>
 <li>lessons learned</li>
 <li>link to goal thesis</li>
@@ -710,8 +745,17 @@ mean\left(|SHAP|\right) = \frac{1}{n} \sum_{k=1}^n | \phi_{i}^{\left( k \right)}
 <div id="ref-amgenscholarsprogramHowInterpretViolin" class="csl-entry">
 Amgen Scholars Program. (n.d.). <em>How to <span>Interpret Violin Charts</span></em>. https://www.labxchange.org/library/items/lb:LabXchange:46f64d7a:html:1.
 </div>
+<div id="ref-berkovUnderstandingLLMLogprobs2025" class="csl-entry">
+Berkov, M. (2025). Understanding <span>LLM Logprobs</span>. In <em>Thinking Sand</em>.
+</div>
+<div id="ref-boseakEvaluatingLogLikelihoodConfidence2025" class="csl-entry">
+Boseak, C. (2025). Evaluating <span>Log-Likelihood</span> for <span>Confidence Estimation</span> in <span>LLM-Based Multiple-Choice Question Answering</span>. <em>Innovative Journal of Applied Science</em>, <em>02</em>(04). <a href="https://doi.org/10.70844/ijas.2025.2.29">https://doi.org/10.70844/ijas.2025.2.29</a>
+</div>
 <div id="ref-breimanRandomForests2001" class="csl-entry">
 Breiman, L. (2001). Random <span>Forests</span>. <em>Machine Learning</em>, <em>45</em>(1), 5–32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a>
+</div>
+<div id="ref-brownLanguageModelsAre2020" class="csl-entry">
+Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G., Askell, A., Agarwal, S., Herbert-Voss, A., Krueger, G., Henighan, T., Child, R., Ramesh, A., Ziegler, D. M., Wu, J., Winter, C., … Amodei, D. (2020). <em>Language <span>Models</span> are <span>Few-Shot Learners</span></em> (arXiv:2005.14165). arXiv. <a href="https://doi.org/10.48550/arXiv.2005.14165">https://doi.org/10.48550/arXiv.2005.14165</a>
 </div>
 <div id="ref-burnwalComprehensiveSurveyPrediction2023" class="csl-entry">
 Burnwal, Y., &amp; Jaiswal, Dr. R. C. (2023). A <span>Comprehensive Survey</span> on <span>Prediction Models</span> and the <span>Impact</span> of <span>XGBoost</span>. <em>International Journal for Research in Applied Science and Engineering Technology</em>, <em>11</em>(12), 1552–1556. <a href="https://doi.org/10.22214/ijraset.2023.57625">https://doi.org/10.22214/ijraset.2023.57625</a>
@@ -724,6 +768,12 @@ Carvalho, F., &amp; Guedes, G. P. (2020). <em><span>TF-IDFC-RF</span>: <span>A N
 </div>
 <div id="ref-chenXGBoostScalableTree2016" class="csl-entry">
 Chen, T., &amp; Guestrin, C. (2016). <span>XGBoost</span>: <span>A Scalable Tree Boosting System</span>. <em>Proceedings of the 22nd <span>ACM SIGKDD International Conference</span> on <span>Knowledge Discovery</span> and <span>Data Mining</span></em>, 785–794. <a href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a>
+</div>
+<div id="ref-chengInstructionPreTrainingLanguage2024" class="csl-entry">
+Cheng, D., Gu, Y., Huang, S., Bi, J., Huang, M., &amp; Wei, F. (2024). <em>Instruction <span>Pre-Training</span>: <span>Language Models</span> are <span>Supervised Multitask Learners</span></em> (arXiv:2406.14491). arXiv. <a href="https://doi.org/10.48550/arXiv.2406.14491">https://doi.org/10.48550/arXiv.2406.14491</a>
+</div>
+<div id="ref-dongSurveyIncontextLearning2024" class="csl-entry">
+Dong, Q., Li, L., Dai, D., Zheng, C., Ma, J., Li, R., Xia, H., Xu, J., Wu, Z., Chang, B., Sun, X., Li, L., &amp; Sui, Z. (2024). A <span>Survey</span> on <span class="nocase">In-context Learning</span>. In Y. Al-Onaizan, M. Bansal, &amp; Y.-N. Chen (Eds.), <em>Proceedings of the 2024 <span>Conference</span> on <span>Empirical Methods</span> in <span>Natural Language Processing</span></em> (pp. 1107–1128). Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/2024.emnlp-main.64">https://doi.org/10.18653/v1/2024.emnlp-main.64</a>
 </div>
 <div id="ref-googleGemma3nModel" class="csl-entry">
 Google. (n.d.). Gemma 3n model overview. In <em>Google AI for Developers</em>. https://ai.google.dev/gemma/docs/gemma-3n.
@@ -746,11 +796,23 @@ Huang, X., &amp; Marques-Silva, J. (2024). On the failings of <span>Shapley</spa
 <div id="ref-jhguchBoxPlot2025" class="csl-entry">
 Jhguch. (2025). Box plot. <em>Wikipedia</em>.
 </div>
+<div id="ref-kangScalableBestofNSelection2025" class="csl-entry">
+Kang, Z., Zhao, X., &amp; Song, D. (2025). <em>Scalable <span class="nocase">Best-of-N Selection</span> for <span>Large Language Models</span> via <span>Self-Certainty</span></em> (arXiv:2502.18581). arXiv. <a href="https://doi.org/10.48550/arXiv.2502.18581">https://doi.org/10.48550/arXiv.2502.18581</a>
+</div>
+<div id="ref-kaufLogProbabilitiesAre2024" class="csl-entry">
+Kauf, C., Chersoni, E., Lenci, A., Fedorenko, E., &amp; Ivanova, A. A. (2024). <em>Log <span>Probabilities Are</span> a <span>Reliable Estimate</span> of <span>Semantic Plausibility</span> in <span>Base</span> and <span>Instruction-Tuned Language Models</span></em> (arXiv:2403.14859). arXiv. <a href="https://doi.org/10.48550/arXiv.2403.14859">https://doi.org/10.48550/arXiv.2403.14859</a>
+</div>
+<div id="ref-kellyhongContextRotHow2025" class="csl-entry">
+Kelly Hong, &amp; Anton Troynikov. (2025). <em>Context <span>Rot</span>: <span>How Increasing Input Tokens Impacts LLM Performance</span></em>. https://research.trychroma.com/context-rot.
+</div>
 <div id="ref-khowajaAnalysisLlama4s2025" class="csl-entry">
 Khowaja, S. A. (2025). Analysis of <span>Llama</span> 4’s 10 <span>Million Token Context Window Claim</span>. In <em>Medium</em>.
 </div>
 <div id="ref-krzywinskiVisualizingSamplesBox2014" class="csl-entry">
 Krzywinski, M., &amp; Altman, N. (2014). Visualizing samples with box plots. <em>Nature Methods</em>, <em>11</em>(2), 119–120. <a href="https://doi.org/10.1038/nmeth.2813">https://doi.org/10.1038/nmeth.2813</a>
+</div>
+<div id="ref-kukaShotBasedPromptingZeroShot" class="csl-entry">
+Kuka", "Valeriia. (n.d.). <em>Shot-<span>Based Prompting</span>: <span>Zero-Shot</span>, <span>One-Shot</span>, and <span>Few-Shot Prompting</span></em>. https://learnprompting.org/docs/basics/few_shot.
 </div>
 <div id="ref-kulkarniPruningRandomForest2012" class="csl-entry">
 Kulkarni, V. Y., &amp; Sinha, P. K. (2012). Pruning of <span>Random Forest</span> classifiers: <span>A</span> survey and future directions. <em>2012 <span>International Conference</span> on <span>Data Science</span> &amp; <span>Engineering</span> (<span>ICDSE</span>)</em>, 64–68. <a href="https://doi.org/10.1109/ICDSE.2012.6282329">https://doi.org/10.1109/ICDSE.2012.6282329</a>
@@ -767,11 +829,17 @@ Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Kat
 <div id="ref-lundbergUnifiedApproachInterpreting2017" class="csl-entry">
 Lundberg, S., &amp; Lee, S.-I. (2017). <em>A <span>Unified Approach</span> to <span>Interpreting Model Predictions</span></em> (arXiv:1705.07874). arXiv. <a href="https://doi.org/10.48550/arXiv.1705.07874">https://doi.org/10.48550/arXiv.1705.07874</a>
 </div>
+<div id="ref-maEstimatingLLMUncertainty2025" class="csl-entry">
+Ma, H., Chen, J., Zhou, J. T., Wang, G., &amp; Zhang, C. (2025). <em>Estimating <span>LLM Uncertainty</span> with <span>Evidence</span></em> (arXiv:2502.00290). arXiv. <a href="https://doi.org/10.48550/arXiv.2502.00290">https://doi.org/10.48550/arXiv.2502.00290</a>
+</div>
 <div id="ref-manningIntroductionInformationRetrieval2008" class="csl-entry">
 Manning, C. D., Raghavan, P., &amp; Schütze, H. (2008). Introduction to <span>Information Retrieval</span>. In <em>Cambridge Aspire website</em>. https://www.cambridge.org/highereducation/books/introduction-to-information-retrieval/669D108D20F556C5C30957D63B5AB65C; Cambridge University Press. <a href="https://doi.org/10.1017/CBO9780511809071">https://doi.org/10.1017/CBO9780511809071</a>
 </div>
 <div id="ref-mienyeSurveyDecisionTrees2024" class="csl-entry">
 Mienye, I. D., &amp; Jere, N. (2024). A <span>Survey</span> of <span>Decision Trees</span>: <span>Concepts</span>, <span>Algorithms</span>, and <span>Applications</span>. <em>IEEE Access</em>, <em>12</em>, 86716–86727. <a href="https://doi.org/10.1109/ACCESS.2024.3416838">https://doi.org/10.1109/ACCESS.2024.3416838</a>
+</div>
+<div id="ref-minaeeLargeLanguageModels2025" class="csl-entry">
+Minaee, S., Mikolov, T., Nikzad, N., Chenaghlu, M., Socher, R., Amatriain, X., &amp; Gao, J. (2025). <em>Large <span>Language Models</span>: <span>A Survey</span></em> (arXiv:2402.06196). arXiv. <a href="https://doi.org/10.48550/arXiv.2402.06196">https://doi.org/10.48550/arXiv.2402.06196</a>
 </div>
 <div id="ref-molnarInterpretableMachineLearning2025" class="csl-entry">
 Molnar, C. (2025). <em>Interpretable machine learning: A guide for making black box models explainable</em> (Third edition). Christoph Molnar.
@@ -784,6 +852,9 @@ O’Sullivan, C. (2023). <em>The mathematics behind <span>Shapley Values</span><
 </div>
 <div id="ref-qwenteamQwen3ThinkDeeper2025" class="csl-entry">
 Qwen Team. (2025). Qwen3: <span>Think Deeper</span>, <span>Act Faster</span>. In <em>Qwen</em>. https://qwenlm.github.io/blog/qwen3/.
+</div>
+<div id="ref-raschkaInstructionPretrainingLLMs2025" class="csl-entry">
+Raschka, S. (2025). <em>Instruction <span>Pretraining LLMs</span></em>. https://magazine.sebastianraschka.com/p/instruction-pretraining-llms.
 </div>
 <div id="ref-rathiImportanceTermWeighting2023" class="csl-entry">
 Rathi, R. N., &amp; Mustafi, A. (2023). The importance of <span>Term Weighting</span> in semantic understanding of text: <span>A</span> review of techniques. <em>Multimedia Tools and Applications</em>, <em>82</em>(7), 9761–9783. <a href="https://doi.org/10.1007/s11042-022-12538-3">https://doi.org/10.1007/s11042-022-12538-3</a>
@@ -806,17 +877,29 @@ Shapley, L. S. (2016). 17. <span>A Value</span> for n-<span>Person Games</span>.
 <div id="ref-tahirUnderstandingLLMContext2025" class="csl-entry">
 Tahir. (2025). 🧠<span>Understanding LLM Context Windows</span>: <span>Tokens</span>, <span>Attention</span>, and <span>Challenges</span>. In <em>Medium</em>.
 </div>
-<div id="ref-teamChameleonMixedModalEarlyFusion2024" class="csl-entry">
-Team, C. (2024). <em>Chameleon: <span>Mixed-Modal Early-Fusion Foundation Models</span></em> (arXiv:2405.09818). arXiv. <a href="https://doi.org/10.48550/arXiv.2405.09818">https://doi.org/10.48550/arXiv.2405.09818</a>
+<div id="ref-vaswaniAttentionAllYou2023" class="csl-entry">
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., &amp; Polosukhin, I. (2023). <em>Attention <span>Is All You Need</span></em> (arXiv:1706.03762). arXiv. <a href="https://doi.org/10.48550/arXiv.1706.03762">https://doi.org/10.48550/arXiv.1706.03762</a>
+</div>
+<div id="ref-weiFinetunedLanguageModels2022" class="csl-entry">
+Wei, J., Bosma, M., Zhao, V. Y., Guu, K., Yu, A. W., Lester, B., Du, N., Dai, A. M., &amp; Le, Q. V. (2022). <em>Finetuned <span>Language Models Are Zero-Shot Learners</span></em> (arXiv:2109.01652). arXiv. <a href="https://doi.org/10.48550/arXiv.2109.01652">https://doi.org/10.48550/arXiv.2109.01652</a>
 </div>
 <div id="ref-wickham40YearsBoxplots2011" class="csl-entry">
 Wickham, H., &amp; Stryjewski, L. (2011). <em>40 years of boxplots</em>.
 </div>
+<div id="ref-willardEfficientGuidedGeneration2023" class="csl-entry">
+Willard, B. T., &amp; Louf, R. (2023). <em>Efficient <span>Guided Generation</span> for <span>Large Language Models</span></em> (arXiv:2307.09702). arXiv. <a href="https://doi.org/10.48550/arXiv.2307.09702">https://doi.org/10.48550/arXiv.2307.09702</a>
+</div>
 <div id="ref-yangFastTreeSHAPAccelerating2022" class="csl-entry">
 Yang, J. (2022). <em>Fast <span>TreeSHAP</span>: <span>Accelerating SHAP Value Computation</span> for <span>Trees</span></em> (arXiv:2109.09847). arXiv. <a href="https://doi.org/10.48550/arXiv.2109.09847">https://doi.org/10.48550/arXiv.2109.09847</a>
 </div>
+<div id="ref-zhangDiveDeepLearning2023" class="csl-entry">
+Zhang, A., Lipton, Z. C., Li, M., &amp; Smola, A. J. (2023). <em>Dive into <span>Deep Learning</span></em> (arXiv:2106.11342). arXiv. <a href="https://doi.org/10.48550/arXiv.2106.11342">https://doi.org/10.48550/arXiv.2106.11342</a>
+</div>
 <div id="ref-zhangMixtureExpertsLarge2025" class="csl-entry">
 Zhang, D., Song, J., Bi, Z., Yuan, Y., Wang, T., Yeong, J., &amp; Hao, J. (2025). <em>Mixture of <span>Experts</span> in <span>Large Language Models</span></em> (arXiv:2507.11181). arXiv. <a href="https://doi.org/10.48550/arXiv.2507.11181">https://doi.org/10.48550/arXiv.2507.11181</a>
+</div>
+<div id="ref-zhaoCalibrateUseImproving2021" class="csl-entry">
+Zhao, T. Z., Wallace, E., Feng, S., Klein, D., &amp; Singh, S. (2021). <em>Calibrate <span>Before Use</span>: <span>Improving Few-Shot Performance</span> of <span>Language Models</span></em> (arXiv:2102.09690). arXiv. <a href="https://doi.org/10.48550/arXiv.2102.09690">https://doi.org/10.48550/arXiv.2102.09690</a>
 </div>
 <div id="ref-zhongPubLayNetLargestDataset2019" class="csl-entry">
 Zhong, X., Tang, J., &amp; Yepes, A. J. (2019). <em><span>PubLayNet</span>: Largest dataset ever for document layout analysis</em> (arXiv:1908.07836). arXiv. <a href="https://doi.org/10.48550/arXiv.1908.07836">https://doi.org/10.48550/arXiv.1908.07836</a>

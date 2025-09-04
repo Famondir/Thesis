@@ -4,7 +4,7 @@ editor_options:
     wrap: none
 ---
 
-# Figures
+# Figures {#figure-collection}
 
 NA predicting
 
@@ -97,7 +97,7 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
     shape = guide_legend(nrow = 1)
   ) +
   labs(x = "normalized runtime in minutes") +
-  coord_cartesian(xlim = c(0, 60))
+  coord_cartesian(xlim = c(0, 60), ylim = c(0,1))
 ```
 
 Binary classification F1 score over runtime unlimited
@@ -121,7 +121,8 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
     color = guide_legend(nrow = 1),
     shape = guide_legend(nrow = 1)
   ) +
-  labs(x = "normalized runtime in minutes")
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(ylim = c(0,1))
 ```
 
 #### Multi-class classification
@@ -156,7 +157,7 @@ df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>%
     shape = guide_legend(nrow = 1)
   ) +
   labs(x = "normalized runtime in minutes") +
-  coord_cartesian(xlim = c(0, 60))
+  coord_cartesian(xlim = c(0, 60), ylim = c(0,1))
 ```
 
 Multi-class classification micro minorites F1 score over runtime
@@ -188,7 +189,8 @@ df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>%
     color = guide_legend(nrow = 1),
     shape = guide_legend(nrow = 1)
   ) +
-  labs(x = "normalized runtime in minutes")
+  labs(x = "normalized runtime in minutes") +
+  coord_cartesian(ylim = c(0,1))
 ```
 
 ```{r micro-pr-curve-llm-multi-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct."}
