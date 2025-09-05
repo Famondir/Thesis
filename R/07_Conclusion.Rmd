@@ -7,3 +7,13 @@ editor_options:
 # Conclusion {#conclusion}
 
 \ChapFrame[Conclusion][bhtred]
+
+This thesis investigated the use of large language models (LLMs) and related approaches for extracting financial information from German annual reports, with a focus on supporting the audit processes at the RHvB. We addressed three main research questions: how to effectively locate specific information in financial reports using LLMs, how to extract this information accurately, and whether additional information from the extraction process can guide users in verifying results.
+
+Our results demonstrate that LLMs can be used effectively to identify relevant pages and extract structured financial data, achieving performance close to or exceeding human benchmarks in many cases. Combining LLMs with term-frequency-based methods further improves efficiency, reducing computational costs without sacrificing performance. The experiments also show that open-weight models are viable alternatives to proprietary solutions, especially when data privacy is a concern.
+
+We found that LLMs are capable of extracting multiple numeric values from complex tables, matching entities, and handling missing or ambiguous data accurately. The use of confidence scores for guiding users in human-in-the-loop (HITL) workflows, highlighting which values require verification and which can be trusted, is found to be less successful. Other extraction metadata might help to achieve this goal.
+
+Our findings have practical implications for automating information retrieval in regulatory and financial contexts, particularly where documents are unstructured and machine readability is limited. The developed framework and evaluation strategies can be adapted to similar tasks in other domains.
+
+Future work could explore further improvements in system architectures, prompt engineering, and integration with advanced document layout analysis. Expanding the scope to more heterogeneous document types and new tasks, as well as refining HITL strategies, will help ensure robust and scalable solutions for real-world applications.
