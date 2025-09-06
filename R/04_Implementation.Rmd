@@ -12,73 +12,25 @@ editor_options:
 
 ## Environments
 
-The computations for this thesis are performed in two environments. Task that do not require a \acr{GPU} are run locally. You can find the specifications of the local device in section \@ref(local-machine). Other tasks are run on the Datexis Kubernetes cluster.
-
-Egal ab hier:
-
-The prototyping for these tasks is performed on the cluster as well. Therefore, a interactive docker image with SSH capabilities and Python has been created based on the \acr{vllm} docker image. In rare cases a \acr{vllm} server is deployed on the cluster and queried from the local machine during prototyping.
-
-The experiments run using the same images as the prototyping environment and connects to the persistent volume, where the scripts to run and data(bases) to use are located and saves the results on the persistent volume as well. We do backups of the folder holding the scripts and data to process and download the results via \acr{SSH} protocoll. We use *git* for version control but do not synchronize the data from the persistent volume with *GitHub*.
-
-We used 5 TB persistent storage. Most of the space is used for caching the \acr{LLM} sefetensors.
-
-Within the local environment we use *git* as well. Except for the gigabytes of result files everything is synchronized with *GitHub*.
-
-Table : what task in what environment? Seems not super important
-
-### Hardware normalization {#gpu-benchmark}
-
-To make the runtime of different \acr{LLM}s running on different amounts and types of \acr{GPU}s comparable, we conducted a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure \@ref(fig:gpu-benchmark-plot) shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning.
-
-The classification time with Qwen2.5-32B on \acr{GPU}s of type B200 is a little faster than running Qwen2.5-7B on the same amount of A100 \acr{GPU}s. We calculate normalized runtimes for our experiments, based on these runtime measures for small and larger \acr{LLM}s on different types and numbers of \acr{GPU}s. A minute of computation on a single B200 is comparable to 4:30 minutes of computation on a single A100.
-
-```{r gpu-benchmark-plot, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning."}
-df_gpu_benchmark <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/gpu_factors.csv")
-
-df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_type)) + geom_line(aes(linetype = model_name)) + geom_point()
-```
-
-## Evaluation and Reporting
-
-We mostly use *R* for evaluation, visualization and reporting. We use the *bookdown* library[^04_implementation-1], to create a report, that is linked to our data and thus automatically includes new results and updates all figures and tables. This allows us to run small additional experiments until the very end of thesis writing.
-
-[^04_implementation-1]: For the next project we probably will start using *Quarto* instead of *bookdown*. This is the new reporting framework of Posit, we became aware of too late.
-
-Furthermore, this allows us to create a \acr{PDF} version as well as a \acr{HTML} version of the thesis at the same time with low additional effort. The HTML version allows to use some helpful interactive elements as paginated tables with search and sorting capabilities, image light boxes and image sliders. Thus , a lot of information can be offered without occupying pages over pages with tables and figures. The \acr{HTML} version is more machine readable as well. Lacking machine readability is what makes the information extraction from PDFs mandatory in the first place and we want spare others these difficulties.
+The computations for this thesis are performed in two environments. Tasks that do not require a \acr{GPU} are run locally. You can find the specifications of the local device in section \@ref(local-machine). Other tasks are run on the Datexis Kubernetes cluster.
 
 ## Software Packages
 
-Macht das Sinn, das hier aufzulisten? Wenn ja, wie detailliert? Vielleiche auf eine requirements Datei je Sprache verweisen?
+::: paragraph-start
+##### Python
 
-Einmal die großen und was es macht
+We use \acr{vllm} and *chromadb* to set up our in-context learning \acr{LLM} pipeline. \acr{vllm} is a fast and easy to use framework to provide \acr{LLM}s locally or as service. *chromadb* is a vector database and key component of our \acr{RAG} architecture. It provides the \acr{LLM} with examples that are most similar regarding their vector representation.
+:::
 
--   Python
+For data wrangling we use *pandas*. For transferring data and saving results we use the *json* library. We extract texts from \acr{PDF}s mainly with *pypdfium2* and use *sklearn* for building random forest classifiers.
 
-    -   pandas
+::: paragraph-start
+##### R
 
-    -   numpy
+We use the *tidyverse* library for data wrangling and creating our visualizations with *ggplot*. We use *h2o* for building random forest models on the Datexis cluster and *shapviz* to interpret these models. *knitr* is used to create this thesis document.
+:::
 
-    -   scikit learn
-
-    -   vLLM
-
-    -   chroma DB
-
--   R
-
-    -   tidyverse
-
-## Speedup with vLLM and batching
-
-We run our final experiments with the \acr{vllm} library on Python, using its batch processing capabilities. Our first test used the *transformers* library directly and did not use batch processing. Section \@ref(vllm-batch-speed) shows the runtime reduction that is achieved with the final setup.
-
-## Text extraction
-
-We use *pdfium* for the text extraction for all tasks. Some approaches are run with the texts of other PDF extraction libraries as well.
-
-Table : what task had additional extraction backends? Seems not super important
-
-## Ground truth database
+## Ground truth datasets
 
 ### Ground truth creation
 
@@ -92,7 +44,7 @@ For the page identification task the chosen documents are searched for the targe
 
 For double checking all identified pages are extracted from their original PDF files and combined in a single file. Thus, problems with the numbers shown in the PDF viewer and the actual page number in the file are identified and resolved. After the first experiments pages, that have been classified as a target by multiple models, are checked. Thus, some additional target tables, that span two pages, are identified.
 
-Additionally we identified all pages, that contain any table for a previous sample, that is based on all the pages that are classified as target by the \acr{regex} approach. This ground truth is used to test the capabilities of various Python libraries, \acr{LLM}s and visual models to detect tables. Results can be found in the appendix in section \@ref(table-detection-benchmark).
+Additionally we identified all pages, that contain a table of any type in a earlier created sample of pages. This smaller sample is based on all pages that are classified as holding a table of type **Aktiva**, **Passiva** or **GuV** by the \acr{regex} approach. The true and false positive classified ones. This ground truth is used to test the capabilities of various Python libraries, \acr{LLM}s and visual models to detect tables. Results can be found in the appendix in section \@ref(table-detection-benchmark).
 
 ::: paragraph-start
 ##### Information extraction
@@ -230,7 +182,7 @@ This section is describing the data flow for our \acr{LLM} using approaches. Fig
 knitr::include_graphics("images/unified_flowchart.png")
 ```
 
-We start by extracting the text for each page from the annual reports, using PDF extraction libraries like *pdfium*. We do this once for each document and save all text extracts in a \acr{json} file together with the original file path and pagenumber.
+We start by extracting the text for each page from the annual reports, using PDF extraction libraries like *pdfium*, *pymupdf* or *pdfplumber*. We do this once for each document and save all text extracts in a \acr{json} file together with the original file path and pagenumber.
 
 For \acr{LLM} approaches we embed the texts in the prompt template. The (merged) texts are then processed by the algorithm, predicting, if the text is including a specific type of information or not. The predictions are compared with ground truth.
 
@@ -238,4 +190,29 @@ The results of this check are saved as \acr{json}. We save the result for every 
 
 The process for the information extraction is similar. One difference is, that the algorithm makes multiple predictions per text. Thus, we save not a single prediction and evaluation but a data frame with all predictions and all ground truth values per text. Saving the ground truth values in this data frame is not necessary but allows us a more convenient reevaluation.
 
-The (re)evaluation is done in *R* instead of *Python*, because we can seamlessly include it in our reporting engine.
+## Evaluation and Reporting
+
+We mostly use *R* for evaluation, visualization and reporting. We use the *bookdown* library[^04_implementation-1], to create a report, that is linked to our data and thus automatically includes new results and updates all figures and tables. This allows us to run small additional experiments until the very end of thesis writing.
+
+[^04_implementation-1]: For the next project we probably will start using *Quarto* instead of *bookdown*. This is the new reporting framework of Posit, we became aware of too late.
+
+Furthermore, this allows us to create a \acr{PDF} version as well as a \acr{HTML} version of the thesis at the same time with low additional effort. The HTML version allows to use some helpful interactive elements as paginated tables with search and sorting capabilities, image light boxes and image sliders. Thus , a lot of information can be offered without occupying pages over pages with tables and figures. The \acr{HTML} version is more machine readable as well.
+
+## Speedup with vLLM and batching
+
+We run our final experiments with the \acr{vllm} library on Python, using its batch processing capabilities. Our first test used the *transformers* library directly and did not use batch processing. Section \@ref(vllm-batch-speed) shows the runtime reduction that is achieved with the final setup.
+
+## Hardware normalization {#gpu-benchmark}
+
+To make the runtime of different \acr{LLM}s running on different amounts and types of \acr{GPU}s comparable, we conducted a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure \@ref(fig:gpu-benchmark-plot) shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning.
+
+The classification time with Qwen2.5-32B on \acr{GPU}s of type B200 is a little faster than running Qwen2.5-7B on the same amount of A100 \acr{GPU}s. We calculate normalized runtimes for our experiments, based on these runtime measures for small and larger \acr{LLM}s on different types and numbers of \acr{GPU}s. A minute of computation on a single B200 is comparable to 4:30 minutes of computation on a single A100.
+
+```{r gpu-benchmark-plot, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning."}
+df_gpu_benchmark <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/gpu_factors.csv")
+
+df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_type)) + geom_line(aes(linetype = model_name)) + geom_point()
+```
+
+## Summary
+

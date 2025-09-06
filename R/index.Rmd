@@ -32,7 +32,7 @@ output:
     config:
       toc:
         before: |
-          <li class="toc-logo"><a href="./"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
+          <li class="toc-logo"><a href="./index.html"><img src="images/BHT_Logo_horizontal_Anthrazit_transparent.svg"></a></li>
     includes:
       in_header:
         - report_misc/head.html
@@ -149,6 +149,8 @@ Several key goals were accomplished during this thesis. Notably, I succeeded in 
 There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an LLM model, training a small encoder-only model from scratch, and applying visual LLMs for document parsing.
 
 ## Dedication {.unlisted .unnumbered}
+
+We would like to express our sincere gratitude to Tom Röhr, whose unwavering support and insightful feedback have been invaluable throughout the development of this thesis.
 
 We would like to express our sincere gratitude to Micha for his valuable support in extending the ground truth dataset for the information extraction task.
 

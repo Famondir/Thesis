@@ -4,7 +4,7 @@ editor_options:
     wrap: none
 ---
 
-# Appendix C - Error rate guidance report
+# Appendix C - Error rate guidance report {#error-guidance-report}
 
 \phantomsection
 \ChapFrame[Error rate guidance report][bhtgray]
@@ -568,7 +568,7 @@ confidence_vs_truth_multi %>% rename(confidence = confidence_score) %>%
 
 ### Real tables
 
-```{r table-extraction-llm-confidence-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag}
+```{r table-extraction-llm-confidence-data-prep, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_extended_llm.rds"))}
 confidence_vs_truth_real <- df_real_table_extraction %>% 
   # filter(loop == 0) %>% 
   filter(model %in% c("Ministral-8B-Instruct-2410", "Qwen3-8B", "Qwen3-235B-A22B-Instruct-2507-FP8")) %>% 
@@ -730,7 +730,7 @@ confidence_intervals_synth %>%
   facet_nested(paste("respect units:", respect_units)+paste("predicted NA:", predicted_NA) ~ model)
 ```
 
-### Hybrid aproach
+### Hybrid approach {#hybrid-respect-units}
 
 ::: paragraph-start
 ##### Confidence

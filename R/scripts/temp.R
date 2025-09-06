@@ -937,3 +937,128 @@ df_rot_multi %>%
 df_multi %>% filter(str_detect(model, "Scout"), method == "3_rag_examples") %>% 
   select(-filepath) %>% unnest(predictions) %>% 
   filter(!match) %>% select(type)
+
+#### Graph ####
+
+library(igraph)
+library(networkD3)
+library(htmlwidgets)
+
+data <-  tribble(
+  ~from, ~to,
+  "RQ", "Q1",
+  "RQ", "Q2",
+  "RQ", "Q3",
+  "Q1", "Efficiency",
+  "Q1", "RAG:InCompany",
+  "Q2", "RAG:InCompany",
+  "EA", "EA:Ident",
+  "EA", "EA:Extract",
+  "EA:Ident", "Missclass",
+  "EA:Ident", "TopRank",
+  "EA:Ident", "ContextRot",
+  "EA:Extract", "ContextRot",
+  "Synth", "Perfect",
+  "EA:Extract", "Synth",
+  "Q2", "CoreCap",
+  "CoreCap", "Perfect",
+  "CoreCap", "NumTrans",
+  "EA:Extract", "NumTrans",
+  "EA:Extract", "Hallu",
+  "EA:Extract", "LabelMatch",
+  "EA:Extract", "Regex",
+  "Synth", "Regex",
+  "Q2", "Features",
+  "CoreCap", "LabelMatch",
+  "Features", "Format",
+  "Features", "RespUnits",
+  "Synth", "RespUnits",
+  "Hybrid", "RespUnits",
+  "Features", "ContextRot",
+  "Synth", "Format",
+  "Features", "RAG:InCompany",
+  "Features", "MLOps",
+  "Practical", "Ident",
+  "Ident", "Yolo",
+  "Ident", "ImproveIdent",
+  "EA:Ident", "ImproveIdent",
+  "Practical", "Extract",
+  "Ident", "Efficiency",
+  "EA:Extract", "Extract",
+  "EA:Extract", "ERG",
+  "Practical", "ERG",
+  "EA:Extract", "ByComp",
+  "ByComp", "NumTrans",
+  "NumTrans", "Hybrid",
+  "NumTrans", "RAG:InCompany",
+  "GroundTruth", "GroundTruth",
+  "GuidedOAI", "Extract",
+  "GuidedOAI", "Efficiency"
+)
+
+# p <- simpleNetwork(
+#   data, height="400px", width="400px",        
+#   Source = 1,                 # column number of source
+#   Target = 2,                 # column number of target
+#   linkDistance = 20,          # distance between node. Increase this value to have more space between nodes                   charge = -900,                # numeric value indicating either the strength of the node repulsion (negative value) or attraction (positive value)
+#   fontSize = 14,               # size of the node names
+#   fontFamily = "serif",       # font og node names                   
+#   linkColour = "#666",        # colour of edges, MUST be a common colour for the whole graph                     
+#   nodeColour = "#69b3a2",     # colour of nodes, MUST be a common colour for the whole graph
+#   opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
+#   zoom = T                    # Can you zoom on the figure?
+# )
+
+# htmlwidgets::createWidget("graph", x = p)
+# saveWidget(p, file=paste0( getwd(), "/networkInteractive1.html"))
+
+# library(sigmajs)
+
+nodes <- tibble(label = unlist(data) %>% unique()) %>% rowid_to_column("id") %>% mutate(
+  size = 1,
+  id = as.character(id)
+)
+edges <- data %>% left_join(
+  nodes %>% select(-size), by = c("to" = "label")
+  ) %>% mutate(
+  source = id
+  ) %>% select(-id) %>% 
+  left_join(
+  nodes %>% select(-size), by = c("from" = "label")
+  ) %>% mutate(
+  target = id
+  ) %>% select(-from, -to, -id) %>% 
+  rowid_to_column("id") %>% mutate(
+    id = as.character(id)
+  )
+
+edges <- edges %>% mutate(type = "arrow", size = 10)
+
+sigmajs::sigmajs(
+  width = "800px",
+  height = "800px"
+) %>%
+  sg_nodes(nodes, id, label, size) %>%
+  sg_edges(edges, id, source, target, type, size) %>%
+  sg_layout() %>%
+  sg_cluster(directed = TRUE) %>%
+  sg_drag_nodes() %>%
+  sg_neighbours()
+
+nodes <- sg_make_nodes(25) # 20 nodes
+edges <- sg_make_edges(nodes, 50) # 50 edges
+
+library(sgraph)
+library(igraph)
+
+# Create igraph object from edge list and node attributes
+g <- graph_from_data_frame(data, directed = TRUE)
+
+# Plot the graph
+plot(g, vertex.label = V(g)$label)
+
+sgraph::sigma_from_igraph(
+  g,
+  width = "800px",
+  height = "800px"
+  )

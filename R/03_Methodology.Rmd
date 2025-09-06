@@ -87,7 +87,7 @@ The second group of hypotheses proposes, that there are three sources for potent
 
 Model specific predictors are the model family and the parameter size. Predictors related to the prompting strategies are related to in-context learning decisions, e.g. how many examples should be presented, how should those examples be chosen and is it permitted to use examples from the same company as the current subjects tasks document. Example for table characteristics investigated are the number of columns, visual separation and if there is a currency unit - i.e. *T€* - given.
 
-A list of all investigated predictors and their assumed directions of effect on multiple measures of the information extraction task can be found in the hypotheses evaluation tables in chapter \@ref(feature-effect-analysis).
+A list of all investigated predictors and their assumed directions of effect on multiple measures of the information extraction task can be found in the hypotheses evaluation tables in Appendix \@ref(feature-effect-analysis).
 
 The hypotheses for our side research question name the *confidence score* as concrete target for our investigations.
 
@@ -323,7 +323,7 @@ We use \acr{LLM}s to extract the numeric values of synthetic **Aktiva** tables w
 We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with restricted generation, providing examples from synthetic **Aktiva** tables. The procedure is identical as with the real **Aktiva** tables. We extract all values with and without an explicit instruction on how to proceed with currency units. We limit our test on the open-weight models.
 :::
 
-### Error analysis
+### Error analysis {#error-analysis-methodology}
 
 To better understand the limitations of the evaluated models and find ways to further improve the system, we will conduct a detailed error analysis. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.
 
@@ -361,7 +361,7 @@ Numeric values are difficult to handle for langauge models in specific tasks. Co
 
 ### Evaluation methods
 
-We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix \@ref(figure-collection). These visuals have a high information density and enable us to compare a lot of results - including distributional information - at once. A 43" screen with 4k resolution is important for this process.
+We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix \@ref(figure-collection). These visuals have a high information density and enable us to compare a lot of results - including distributional information - at once^[A big screen with high resolution is helpful for this process.].
 
 We prefer this process over comparing many rows with measures of location (e.g. mean and median) and measures of distribution shapes (e.g. standard deviation, median absolute deviation, skewness). For presenting the results in chapter \@ref(results) we compress a selection of results in tabular form, because it is easier to grasp. Some interesting observations are discussed in chapter \@ref(discussion). But a lot of information is still kept in the visuals.
 

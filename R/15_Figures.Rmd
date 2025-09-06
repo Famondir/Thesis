@@ -632,7 +632,7 @@ confidence_intervals_synth_by_format %>%
 
 ### Hybrid approach
 
-```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing table extraction perfromance for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing percentage of correct extracted values overall for real Aktiva extraction task with synthetic and real examples for in-context learning"}
 bind_rows(
   df_real_table_extraction_synth %>% mutate(context = "synth"), 
   df_real_table_extraction %>% mutate(context = "real")
@@ -646,6 +646,44 @@ bind_rows(
   ) %>% 
   ggplot() +
   geom_boxplot(aes(fill=context, y = percentage_correct_total), alpha = .5) +
+  # scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model)
+```
+
+```{r compare-real-table-extraction-by-context-type-numeric, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing percentage of correct extracted numeric values for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+bind_rows(
+  df_real_table_extraction_synth %>% mutate(context = "synth"), 
+  df_real_table_extraction %>% mutate(context = "real")
+  ) %>% 
+  filter(model %in% best_models_with_examples$model) %>% 
+  filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  mutate(
+    # model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(fill=context, y = percentage_correct_numeric), alpha = .5) +
+  # scale_fill_manual(values = c("blue", "orange")) +
+  scale_x_discrete(guide = guide_axis(angle = 30)) +
+  facet_nested(method_family+n_examples~model)
+```
+
+```{r compare-real-table-extraction-by-context-type-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing the F1 score for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+bind_rows(
+  df_real_table_extraction_synth %>% mutate(context = "synth"), 
+  df_real_table_extraction %>% mutate(context = "real")
+  ) %>% 
+  filter(model %in% best_models_with_examples$model) %>% 
+  filter(method_family %in% c("top_n_rag_examples", "n_random_examples")) %>% 
+  mutate(
+    # model = factor(model, levels = model_by_size),
+    method_family = factor(method_family, levels = method_order),
+    n_examples = fct_rev(ordered(paste("n =", n_examples)))
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(fill=context, y = NA_F1), alpha = .5) +
   # scale_fill_manual(values = c("blue", "orange")) +
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family+n_examples~model)

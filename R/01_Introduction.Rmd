@@ -10,7 +10,7 @@ editor_options:
 
 \ChapFrame[Introduction][bhtgray]
 
-Information has always been generated, processed, and shared by humans. Initially, this sharing occurred synchronously through spoken language. Over time, humans developed ways to store information - first on clay tablets, then on paper, and most recently in digital files [@bentleyKnowingYouKnow2025]. As a result, the human knowledge base has grown steadily, document by document. The field of library and information science emerged to organize this expanding body of information and enable efficient access. Because information was originally shared only among humans, storage formats were optimized for human perception.
+Information has always been generated, processed, and shared by humans. Initially, this sharing occurred synchronously through spoken language. Over time, humans developed ways to store information - first on clay tablets, then on paper, and most recently in digital files [@bentleyKnowingYouKnow2025]. As a result, the human knowledge base has grown steadily, document by document. The field of library and information science emerged to organize this expanding body of information and enable efficient access. Since information was initially exchanged exclusively between humans, storage formats were designed to suit human perception and understanding.
 
 However, several fundamental changes have occurred. First, the rate of information generation is increasing rapidly, and the volume of relevant knowledge now grows faster than humans can absorb [@chamberlainKnowledgeNotEverything2020]. In science alone, each year brings forth more new information than any individual could possibly read [@hongChallengesAdvancesInformation2021]. Fortunately, recent advances in \acrfull{LLM}s provide tools to compress and summarize this information before it reaches the reader.
 
@@ -18,7 +18,9 @@ At the same time, generative \acrfull{AI} is accelerating the creation of new in
 
 Despite these changes, much published information remains optimized for human consumption, such as in \acr{PDF} documents. Algorithms can process information efficiently, but only if it is machine-readable. Since manual encoding by humans is inefficient and error-prone, the field of information retrieval has emerged to address this challenge. \acr{LLM}s can assist in retrieving information - even in structured formats - that can be used by other algorithms in downstream tasks.
 
-For older sources, this approach is often the only alternative For future information sharing, however, a more direct solution exists: providing data in a machine-readable format from the outset. Otherwise, we continue to face the "Last Mile Problem" [@liAddressingLastMile2023]. Since the format of received data can only be changed for information one owns, users must cope with the formats provided until the need for machine-readable data is recognized and addressed by data owners.
+For older sources, this approach is often the only alternative. For future information sharing, however, a more direct solution exists: providing data in a machine-readable format from the outset. Otherwise, we continue to face the "Last Mile Problem" [@liAddressingLastMile2023]. Since the format of received data can only be changed for information one owns, users must cope with the formats provided until the need for machine-readable data is recognized and addressed by data owners.
+
+Employees at \acr{RHvB} typically work with data supplied by other administrations and companies, which is rarely delivered in a machine-readable format. Therefore, we explore strategies to address the "Last Mile Problem" until all stakeholders in this process transition to modern data practices.
 
 Section \@ref(motivation) describes how the volume and format of information provided to the \acr{RHvB} present challenges for the audit process. Section \@ref(objectives) specifies these challenges as concrete real-world problems, from which we derive our research questions. Section \@ref(introduction-methodology) provides an overview of our methodology, and the thesis outline is presented in section \@ref(thesis-outline).
 
@@ -30,7 +32,7 @@ Regulatory processes may be initiated or informed by audit reports produced by t
 
 During the audit process, employees at the \acr{RHvB} must handle large amounts of information embedded in \acr{PDF} documents. Some of these are born-digital files, while others are simply scanned paper pages. For example, in the audit of the UEFA football championship, gigabytes of data are received. Extracting the information necessary for the audit is a significant challenge and would require substantial human resources. Algorithmic assistance is therefore highly desirable.
 
-Because the focus of each audit changes frequently, traditional rule-based approaches offer limited benefits when considering the time required to program such systems versus their actual usage. Leveraging the flexible automation capabilities of programming by example with \acr{LLM}s [@liProgrammingExampleSolved2024] appears promising. The need for automation is further heightened by the impending shortage of experienced staff due to a wave of retirements.
+Because the focus of each audit changes frequently, traditional rule-based approaches offer limited benefits when considering the time required to program such systems versus their actual usage. Leveraging the flexible automation capabilities of "programming by example" with \acr{LLM}s [@liProgrammingExampleSolved2024] appears promising. The need for automation is further heightened by the impending shortage of experienced staff due to a wave of retirements.
 
 ## Objectives {#objectives}
 
@@ -53,7 +55,7 @@ cat("<ol class='rs-questions'><li>How can we use LLMs effectively to locate spec
   \item How can we use LLMs effectively to extract this information from the document?
 \end{enumerate}
 
-Since the results of this thesis will be used to create an application with a \acrfull{HITL} approach, we also investigate an additional research question. Section \@ref(hitl) presents the concept for the application. The user should review the information extraction results and resolve issues that the system alone cannot handle. However, redundant double work should be minimized. Therefore, we formulate our third research question:
+Since the results of this thesis will be used to create an application with a \acrfull{HITL} approach, we also investigate an additional research question. The concept for the planned application can be seen in the Appendix \@ref(hitl). The user should review the information extraction results and resolve issues that the system alone cannot handle. However, redundant double work should be minimized. Therefore, we formulate our third research question:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
 cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?</li></ol>")
@@ -70,9 +72,15 @@ The following section briefly describes our methodology for investigating these 
 
 This thesis aims to provide recommendations on how to best solve the described extraction task. Accordingly, it is situated within the field of applied research. We benchmark a broad variety of approaches and conduct experiments to identify general predictors of task performance. Our investigation begins by implementing the framework described by @liExtractingFinancialData2023. Figure \@ref(fig:extraction-framework-flow-chart) illustrates the two stages they propose, which align with our main research questions.
 
-First, we examine different approaches to identifying the page that contains the target information and how to combine these methods efficiently. In addition to a \acr{regex}-based and a \acr{LLM}-driven \acr{TOC} approach, we test an \acr{LLM}-driven classification method as well as a term-frequency-based ranking approach.
+(ref:flow-chart-caption) Flowchart of the extraction framework of @liExtractingFinancialData2023
 
-Second, we evaluate whether \acr{LLM}s can effectively extract the target information using the appropriate prompting strategy. We extend their work by testing how well \acr{LLM}s can extract multiple values in a single prompt and by designing experiments to measure the effects of various influencing factors. In addition to model- and prompt-specific predictors, we systematically assess characteristics of the tabular structure.
+```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="(ref:flow-chart-caption)"}
+knitr::include_graphics("./images/extraction_framework_flow_chart.png")
+```
+
+First, we examine different approaches to identifying the page that contains the target information and how to combine these methods efficiently. In addition to a \acr{regex}-based and a \acr{LLM}-driven \acr{TOC} approach, we test a \acr{LLM}-driven classification method as well as a term-frequency-based ranking approach.
+
+Second, we evaluate whether \acr{LLM}s can effectively extract the target information using the appropriate prompting strategy. We extend @liExtractingFinancialData2023 work by testing how well \acr{LLM}s can extract multiple values in a single prompt and by designing experiments to measure the effects of various influencing factors. Beyond evaluating model- and prompt-specific predictors, we also systematically examine how features of the tabular structure influence information extraction performance.
 
 Furthermore, we test the upper limits of extraction performance using a synthetic dataset that is free of unknown target row identifiers. This allows us to determine whether a simple text extract is sufficient as input, or if additional effort - such as document layout analysis or specialized table extraction techniques - is required to accurately extract the structure of the assets table.
 

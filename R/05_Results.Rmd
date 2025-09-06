@@ -20,11 +20,11 @@ cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effe
   \item Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 \end{enumerate}
 
-Section \@ref(page-identification-introduction) presents the results for the first research question. Section \@ref(table-extraction-introduction) presents the results for the second question. Section \@ref(error-rate-guidance-results) shows the results for the side research question. Finally, we will summarize all results in section \@ref(summary-results).
+Section \@ref(page-identification-introduction) presents the results for the first research question. Section \@ref(table-extraction-introduction) presents the results for the second question. Section \@ref(error-rate-guidance-results) shows the results for the side research question. Finally, we will summarize all results in Section \@ref(summary-results).
 
 Each section will start with an overview about the specific sub tasks as well as about the models, methods and data used to investigate the research question.
 
-This chapter focusses on the presentation of results, that answer the question, if an approach can be used to solve a task. We discuss additional findings in chapter \@ref(discussion). The presentation of those additional results can be found in the appendix. We refer to the chapters of the appendix, that document our investigation and the results of the sub tasks in detail, at the beginning of each of the following sections.
+This chapter focuses on the presentation of results, that answer the question, if an approach can be used to solve a task. We discuss additional findings in Chapter \@ref(discussion). The presentation of those additional results can be found in the appendix. We refer to the chapters of the appendix, that document our investigation and the results of the sub tasks in detail, at the beginning of each of the following sections.
 
 ## Page identification {#page-identification-introduction}
 
@@ -146,15 +146,15 @@ top_performer_multu <- df_multi %>%
   )
 ```
 
-(ref:page-identification-intro-text) The first research question asks, how \acr{LLM}s can be used, to effectively locate specific information in a financial report. The task for this thesis is identifying the pages where the balance sheet (*Bilanz*) and the profit-and-loss-and-statement (*Gewinn- und Verlustrechnung, GuV*) are located. The balance sheet is composed of two tables showing the assets (*Aktiva*) and liabilities (*Passiva*) of a company. Often these two tables are on separate pages. Hereafter, the German terms **Aktiva**, **Passiva** and **GuV** will be used.
+(ref:page-identification-intro-text) The first research question asks, how \acr{LLM}s can be used, to effectively locate specific information in a financial report. The task for this thesis is to identify the pages where the balance sheet (*Bilanz*) and the profit-and-loss-and-statement (*Gewinn- und Verlustrechnung, GuV*) are located. The balance sheet is composed of two tables showing the assets (*Aktiva*) and liabilities (*Passiva*) of a company. Often, these two tables are on separate pages. Hereafter, the German terms **Aktiva**, **Passiva** and **GuV** will be used.
 
 (ref:page-identification-intro-text)
 
 @liExtractingFinancialData2023 describes two ways to identify the relevant pages (see Figure \@ref(fig:extraction-framework-flow-chart)). For longer documents they propose to use the \acr{TOC} to determine a page range that includes the information of interest. In addition, they develop target specific regular expressions and rules to filter out irrelevant pages[^05_results-1]. The result of this "Page Range Refinement" is then passed to the \acr{LLM} to extract information from.
 
-[^05_results-1]: Personal opinion: Developing well performing regular expressions can be a very tedious and setting appropriate rules requires some domain knowledge. It can be worth the effort if there are a lot of documents with similar information to extract. For this thesis it took multiple months. At least, now there is kind of a pipeline one can reuse, exchanging the rules and key word lists. Thus the next similar task should be solved faster.
+[^05_results-1]: Our personal opinion: Developing well performing regular expressions can be a very tedious and setting appropriate rules requires some domain knowledge. It can be worth the effort if there are a lot of documents with similar information to extract. For this thesis it took multiple months. At least, now there is kind of a pipeline one can reuse, exchanging the rules and key word lists. Thus the next similar task should be solved faster.
 
-This section is presenting the results of four approaches to identify the page[^05_results-2] of interest. The detailed report on all experiments conducted in their results can be found in the appendix:
+This section presents the results of four approaches to identify the page[^05_results-2] of interest. The detailed report on all experiments conducted and their results can be found in the appendix:
 
 [^05_results-2]: In some cases the information of interest is spanning two pages. These rare cases are not covered from the approaches presented here, yet.
 
@@ -163,24 +163,19 @@ This section is presenting the results of four approaches to identify the page[^
 -   Subsection \@ref(llm-page-identification) presents the findings of a text classification approach using \acr{LLM}s.
 -   Subsection \@ref(tf-classifier) presents the findings of a term-frequency approach.
 
-In subsection \@ref(comparison-page-identification) the results get compared and summarized. Subsection \@ref(general-performance-page-identification) proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
+We compare and summarize the results in Subsection \@ref(comparison-page-identification). Subsection \@ref(efficency-discussion) proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
 
 ###  {.unlisted .unnumbered}
-
-Woanders hin oder weg:
-
--   Thus, we prompt the \acr{LLM} to classify if the text extract of a given page
--   for implementation: As described in \@ref(text-extraction-benchmark) open source libraries have been used to extract the text from the annual reports.
 
 ::: paragraph-start
 ##### Dataset describtion
 
-For the page identification task companies (mainly) from the first row of Figure \@ref(fig:beteiligungsunternehmen) have been selected, to build the ground truth from. The idea is that the documents of a companies within a category are more similar to each other, than to documents of companies of other categories. For the chosen companies all available annual reports are selected. Since one of the companies mainly published documents that require \acr{OCR} preprocessing, we include the documents of a second company for this category.
+For the page identification task, we selected companies (mainly) from the first row of Figure \@ref(fig:beteiligungsunternehmen), to build the ground truth from. The main motivation is that the documents of a companies within a category are more similar to each other, than to documents of companies of other categories. For the chosen companies all available annual reports are selected. Since one of the companies mainly published documents that require \acr{OCR} preprocessing, we include the documents of a second company for this category.
 :::
 
 ### Approaches
 
-The page identification task is broken down to a classification task for all of the approaches presented in this section but the \acr{TOC} understanding approach. This subsection briefly describes our approaches. A detailed report can be found in chapter \@ref(page-identification-report).
+For all approaches presented in this section except the \acr{TOC} understanding approach, the page identification task is formulated as a classification problem. This subsection briefly describes our approaches. A detailed report can be found in teh Appendix \@ref(page-identification-report).
 
 ::: paragraph-start
 ##### Regular expressions
@@ -197,15 +192,15 @@ We use a \acr{LLM} to extract the \acr{TOC} from the first pages from a document
 ::: paragraph-start
 ##### Large Language Model Classification
 
-We use \acr{LLM}s to classify if the text extract of a given page is containing a **Aktiva**, **Passiva** or **GuV** table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type.
+We use \acr{LLM}s to classify if the text extract of a given page contains a **Aktiva**, **Passiva** or **GuV** table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type.
 :::
 
-We test a wide range of open-weight models and compare different prompting techniques. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.
+We test a wide range of open-weight models and compare different prompting techniques. Besides a zero shot approach, we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.
 
 ::: paragraph-start
-##### Term frequency Ranking
+##### Term Frequency Ranking
 
-We use normalized term frequencies and normalized float frequency to as features for a classification using a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data.
+We use normalized term frequencies and normalized float frequency as features for a classification with a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data.
 :::
 
 ### Comparison {#comparison-page-identification}
@@ -232,7 +227,7 @@ df_df_page_identification_comparing_performance_formatted <- df_page_identificat
         ))
 ```
 
-This subsection presents the performance and efficiency for all four presented approaches and compare it with the the results a human achieves manually
+This subsection presents the performance and efficiency for all four presented approaches and compares it with the the results a human achieves manually
 
 ::: paragraph-start
 ##### Prediction performance
@@ -251,14 +246,16 @@ df_df_page_identification_comparing_performance_formatted %>%
     )
 ```
 
-The best F1 score is reached by Llama 4 Scout for the target types **Akiva** and **Passiva** in the multi-class classification approach. For **GuV** the best F1 score (0.985) is found with Ministral-8B-Instruct in the binary classification approach. Llama 4 Scout reaches a F1 score of 0.971 for target type **GuV** and multi-class classification.
+Llama 4 Scout reaches the best F1 score for the target types **Akiva** and **Passiva** in the multi-class classification approach. For **GuV** the best F1 score (0.985) is found with Ministral-8B-Instruct in the binary classification approach. Llama 4 Scout reaches a F1 score of 0.971 for target type **GuV** and multi-class classification.
 :::
 
 In the dataset preparation for the table extraction task (see section \@ref(information-extraction-data-sampling)) 107 **Aktiva** pages have been selected. In this manual process we made two mistakes, accidently selecting one **Passiva** and one **GuV** page. Thus the human baseline to compete with is 0.981. Thus, Llama 4 Scout is more precise than us.
 
-Furthermore, Llama 4 Scout reached a recall of 1.0 for all target types. This means, the results can be used downstream, even though the precision is not always perfect. The pages classified as target can be double checked by a human, without missing any page.
+Furthermore, Llama 4 Scout reaches a recall of 1.0 for all target types. This means, the results can be used downstream, even though the precision is not always perfect. The pages classified as target can be double checked by a human, without missing any page.
 
-The performance of approaches not using \acr{LLM}s is way worse. Only the term-frequency approach's results could be used downstream, because we find a recall of 1.0. Table \@ref(tab:page-identification-performance-overview-top-k-recall) shows the results of the top k recall for the term-frequency and \acr{LLM} approaches. The \acr{LLM}s always rate the correct **GuV** page highest. With Llama Scout 4 we find all target pages within the first two ranked pages. For the term-frequency approach a human sometimes has to check up to five pages.
+The performance of approaches that do not utilize \acr{LLM}s is substantially lower. Only the term-frequency approach yields results that are suitable for downstream use, as it achieves a recall of 1.0. Table \@ref(tab:page-identification-performance-overview-top-k-recall) shows the results of the top k recall for the term-frequency and \acr{LLM} approaches. For the term-frequency approach the ranking is based on the scores of the random forest classifier. For the \acr{LLM}s the ranking is based on the calculated confidence scores.
+
+The \acr{LLM}s always rate the correct **GuV** page highest. With Llama Scout 4 we find all target pages within the first two ranked pages. For the term-frequency approach a human sometimes has to check up to five pages.
 
 ```{r page-identification-performance-overview-top-k-recall, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 df_df_page_identification_comparing_performance_formatted %>% 
@@ -276,7 +273,7 @@ df_df_page_identification_comparing_performance_formatted %>%
 ::: paragraph-start
 ##### Energy usage and runtime
 
-Table \@ref(tab:page-identification-efficiency-overview-all) shows the runtime in seconds per document, estimated energy consumption in Joule per document and costs in **CENTS per 1000 documents**. The runtime for the \acr{LLM}s was normalized to seconds on a nvidia B200 and thus the TDP of 700 W is used to calculate the energy consumption. For the other approaches, running on my laptop (see section \@ref(local-machine)) a TDP of 28 Watts is used. For manual work by a human additional 60 W are added for the screen used. It is assumed that the \acr{LLM} is hosted locally.
+Table \@ref(tab:page-identification-efficiency-overview-all) shows the runtime in seconds per document, estimated energy consumption in Joule per document and costs in **CENTS per 1000 documents**. The runtime for the \acr{LLM}s was normalized to seconds on a NVIDIA B200 and thus the \acr{TDP} of 700 W is used to calculate the energy consumption. For the other approaches, running on a laptop (see section \@ref(local-machine)) a \acr{TDP} of 28 Watts is used. For manual work by a human additional 60 W are added for the screen used. It is assumed that the \acr{LLM} is hosted locally.
 :::
 
 ```{r page-identification-efficiency-overview-all, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -309,9 +306,9 @@ if(knitr::is_latex_output()) {
 table_energy
 ```
 
-Table \@ref(tab:page-identification-efficiency-overview-all) shows, that the regular expression approach is fastest and consumes least energy. Nevertheless, since the results are not sufficient another approach has to be chosen if the amount of manual labor should be reduced for the human inn the loop.
+Table \@ref(tab:page-identification-efficiency-overview-all) shows, that the regular expression approach is fastest and consumes least energy. Nevertheless, since the results are not sufficient, another approach has to be chosen, if the amount of manual labor should be reduced for the human inn the loop.
 
-Second place regarding all these criteria is the term-frequency approach, which guarantees a perfect recall, while reducing the number of pages to investigate to five per target type. This is similar to the number of pages a human has to investigate to find the \acr{TOC} of the document. And it is a reduction to 7.4 % of the average 67 pages the documents in this dataset have. The costs are still negligible.
+Second place, regarding all these criteria, is the term-frequency approach, which guarantees a perfect recall, while reducing the number of pages to investigate to five per target type. This is similar to the number of pages a human has to investigate to find the \acr{TOC} of the document. And it is a reduction to 7.4 % of the average 67 pages the documents in this dataset have. The costs are still negligible.
 
 The \acr{LLM} approaches have the highest runtime and energy consumption. This is the case, because they process every page with very computational demanding algorithms. For the \acr{TOC} approach \acr{LLM}s are used as well, but they process far less of the documents pages. Thus, their energy consumption is lower.
 
@@ -399,7 +396,7 @@ df_real_table_extraction_synth <- df_real_table_extraction_synth %>%
     )
 ```
 
-(ref:information-extraction-intro-text) The second research question asks, how \acr{LLM}s can be used, to effectively extract specific information from a financial report. The task for this thesis is to extract the numeric values for the assets (*Aktiva*) table, which is part of the balance sheet (*Bilanz*). Hereafter, the German term **Aktiva** will be used. We are limiting the scope even further than in subsection \@ref(page-identification-introduction), because it takes more time to manually create the first reference dataset.
+(ref:information-extraction-intro-text) The second research question asks, how \acr{LLM}s can be used, to effectively extract specific information from a financial report. The task for this thesis is to extract the numeric values for the assets (*Aktiva*) table, which is part of the balance sheet (*Bilanz*). Hereafter, the German term **Aktiva** will be used. We are limiting the scope even further than in Subsection \@ref(page-identification-introduction), because it takes more time to manually create the first reference dataset.
 
 (ref:information-extraction-intro-text)
 
@@ -408,20 +405,20 @@ df_real_table_extraction_synth <- df_real_table_extraction_synth %>%
 ::: paragraph-start
 ##### Structured output
 
-We are using a strict schema for the extraction process that is derived from the legal text [@hgbHandelsgesetzbuchImBundesgesetzblatt2025, §266]. Actually, there are three types of verbosity, that are defined in the law. Smaller companies are permitted to create less detailed balance sheets. Our schema is created based on the most detailed level. This is the form most often found in the document base[^05_results-3].
+We use a strict schema for the extraction process that is derived from the legal text [@hgbHandelsgesetzbuchImBundesgesetzblatt2025, §266]. Actually, there are three types of verbosity, that are defined in the law. Smaller companies are permitted to create less detailed balance sheets. Our schema is created based on the most detailed level. This is the form most often found in the document base[^05_results-3].
 :::
 
 [^05_results-3]: Unfortunately, well known companies as BVG and BSR publish a less detailed form. Thus, their documents are not included in the document base for this task.
 
-Using a strict schema has advantages for processing the results in downstream tasks - i.e. for adding the results to a relational database. It is also easier to compare the results with a ground truth if the names of all rows and their order is fixed. The schema is defined as \acr{ebnf} grammar and passed as an argument to \acr{vllm}.
+Using a strict schema has advantages for processing the results in downstream tasks - i.e. for adding the results to a relational database. It is also easier to compare the results with a ground truth, if the names of all rows and their order is fixed. The schema is defined as \acr{ebnf} grammar and passed as an argument to \acr{vllm}.
 
 ::: paragraph-start
 ##### Gound truth dataset
 
-For the information extraction task two datasets are used. First, a collection of 107 real **Aktiva** tables is created, going through two sampling iterations. In the first iteration a single report is selected for each company. In addition, all available reports from the first listed company are chosen, to test an in-company learning approach. In the second iteration more reports of the other companies are added, to increase the ground truth size and allow to test the in-company approach for all companies.
+For the information extraction we use two datasets. First, a collection of 107 real **Aktiva** tables is created, going through two sampling iterations. In the first iteration a single report is selected for each company. In addition, all available reports from the first listed company are chosen, to test an in-company learning approach. In the second iteration more reports of the other companies are added, to increase the ground truth size and to allow testing the in-company approach for all companies.
 :::
 
-Second, a dataset of 16_504 synthetic **Aktiva** tables is created. These tables are generated based on the extraction schema and filled with random numeric values. Different table characteristics are systematically combined, to investigate potential effects of these features on the extraction performance. The tables are created as \acr{PDF}, \acr{HTML} and Markdown files each. This dataset allows to estimate the extraction performance, if there are no unknown row identifiers present.
+Second, a dataset of 16_504 synthetic **Aktiva** tables is created. We generate these tables based on the extraction schema and fill them with random numeric values. Different table characteristics are systematically combined, to investigate potential effects of these features on the extraction performance. The tables are created as \acr{PDF}, \acr{HTML} and Markdown files each. This dataset allows to estimate the extraction performance, if there are no unknown row identifiers present.
 
 ### Approaches
 
@@ -453,7 +450,7 @@ We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with r
 
 ### Comparison {#comparing-table-extraction-methods}
 
-This subsection compares the results for the table extraction tasks. It will discuss the findings about performance and runtime and compare it with the results a human may achieve wit manual labor.
+This subsection compares the results for the table extraction tasks. It will discuss the findings about performance and runtime and compare it with the results a human may achieve wit manual labor. The detailed report on all experiments conducted in their results can be found in the Appendix \@ref(information-extraction-report). The evaluation of feature importance can be found in Appendix \@ref(feature-effect-analysis).
 
 ::: paragraph-start
 ##### Performance
@@ -467,7 +464,7 @@ On synthetic tables its mean performance is almost perfect, if currency units ge
 
 Qwen3-8B performed best among the small models \acr{LLM}s but shows over 4 % more wrong predictions than Qwen3-235B.
 
-Using synthetic examples, results in worse performance. But it can be used to show how to handle currency units.
+Using synthetic examples results in worse performance. But it can be used to show how to handle currency units.
 
 ```{r compare-extraction-performance, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 tribble(
@@ -512,19 +509,19 @@ Extracting the values from all 106 tables took Qwen3-235B around six minutes. Th
 The predictor that shows a strong effect in all approaches is currency unit. Reflecting this in the table extraction is a key factor to optimize the performance. For the approaches that use \acr{LLM}s most of the model and method related variables showed a strong effect. Using a versatile model and providing good learning examples is mandatory.
 :::
 
-Especially for the approaches that use synthetic tables show that the input format could also have a meaningful effect. It seems important to prevent erroneous text extraction and converting the extracted text in HTML might be helpful to eliminate last unclarities. But the question, if a perfect text extract would be as good as HTML or Markdown, is not answered yet.
+The findings from approaches utilizing synthetic tables suggest that the input format can have a substantial influence on extraction outcomes. It appears important to prevent errors during text extraction, and converting the extracted text to HTML may help resolve remaining ambiguities. However, it remains unclear whether a perfect text extract would perform as well as HTML or Markdown formats.
 
 ## Error rate guidance {#error-rate-guidance-results}
 
-(ref:error-rate-guidance-intro-text) The side research question asks, if it is possible to guide the users attention to predictions that have a higher empirical rate of errors. In this thesis we focus the confidence score reported with \acr{LLM}s responses.
+(ref:error-rate-guidance-intro-text) The side research question asks, if it is possible to guide the users attention to predictions that have a higher empirical rate of errors. In this thesis we focus on the confidence score calculated from the reported log probabilities.
 
 (ref:error-rate-guidance-intro-text)
 
-Subsection \@ref(page-identification-error-rate-results) presents the results found regarding our side research question for the page identification task. Subsection \@ref(information-extraction-error-rate-results) presents the results found regarding our side research question for the information extraction task.
+Subsection \@ref(page-identification-error-rate-results) presents the results found regarding our side research question for the page identification task. Subsection \@ref(information-extraction-error-rate-results) presents the results found regarding our side research question for the information extraction task. The detailed report can be found in the Appendix \@ref(error-guidance-report).
 
 ### Page identification {#page-identification-error-rate-results}
 
-We find, that the confidence score can be used in the page identification task, to identify confidence intervals, that contain no or only a few errors. The amount of predictions falling in these intervals varies among models and classification task and target class.
+We find, that the confidence score can be used in the page identification task, to identify confidence intervals, that contain no or only a few errors. The amount of predictions in these intervals varies among models, classification task and target class.
 
 ::: paragraph-start
 ##### Binary classification
@@ -537,10 +534,10 @@ Thus, it is possible to define a wide range of confidence intervals, where we fi
 ::: paragraph-start
 ##### Multi-class classification
 
-Distinguishing correct and wrong classifications based on the confidence score is still working well for the responses of Ministral-8B-Instruct, predicting **Aktiva** and **GuV**. For **Passiva** we find a single wrong prediciton in the highest confidence interval. For Llama 4 Scout it is working for the target classes **Aktiva** and **Passiva**. For Qwen 2.5 32B it works worst among those three - still well perfomring - models.
+Distinguishing correct and wrong classifications based on the confidence score is still working well for the responses of Ministral-8B-Instruct, predicting **Aktiva** and **GuV**. For **Passiva** we find a single wrong prediciton in the highest confidence interval. For Llama 4 Scout it is working for the target classes **Aktiva** and **Passiva**. For Qwen 2.5 32B it works worst among those three - still well performing - models.
 :::
 
-For Ministral we find a empirical error rate of zero for the highest confidence interval, except for **Passiva** For Llama we find an error rate lesst than 1 % for all classes. For Qwen 2.5 32B only **Passiva** has a high confidence interval with less than 1 % error rate. Most predictions are in the highest confidence score interval for all models again.
+For Ministral we find a empirical error rate of zero for the highest confidence interval, except for **Passiva**. For Llama we find an error rate lesst than 1 % for all classes. For Qwen 2.5 32B only **Passiva** has a high confidence interval with less than 1 % error rate. Most predictions are in the highest confidence score interval for all models again.
 
 ### Information extraction {#information-extraction-error-rate-results}
 
@@ -565,3 +562,7 @@ For the best predicting model Qwen3-235B-A22B-Instruct, we find an empirical err
 :::
 
 ## Summary {#summary-results}
+
+In summary, the results presented in this chapter demonstrate the effectiveness of \acr{LLM}s for both page identification and information extraction tasks in financial reports. \acr{LLM}-based approaches consistently outperform traditional methods, achieving high recall and precision, and enabling efficient automation of information extraction. The experiments further highlight the importance of input format and model selection, as well as the potential for guiding user attention through confidence scores.
+
+These findings provide a solid foundation for the subsequent discussion, where we interpret the results in the context of our research questions and hypotheses, analyze sources of error, and explore practical implications for future applications.

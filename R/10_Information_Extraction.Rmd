@@ -4,7 +4,7 @@ editor_options:
     wrap: none
 ---
 
-# Appendix B - Information extraction report
+# Appendix B - Information extraction report {#information-extraction-report}
 
 \phantomsection
 \ChapFrame[Information extraction report][bhtteal]
@@ -236,7 +236,7 @@ mutate_if(
     ref = opts_current$get("label"), dom="t")
 ```
 
-```{r, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds"))}
+```{r create-df-overview-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds"))}
 model_by_size_gpt <- c(
   "Qwen3-0.6B", "Qwen3-8B", "Qwen3-30B-A3B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8",
  "gpt-4.1-nano", "gpt-5-nano", "gpt-4.1-mini", "gpt-5-mini",

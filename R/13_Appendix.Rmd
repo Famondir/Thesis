@@ -990,14 +990,6 @@ regex_patterns_3 = {
 knitr::include_graphics("./images/acfr23_balance.pdf")
 ```
 
-## Extraction framework flow chart
-
-(ref:flow-chart-caption) Flowchart of the extraction framework of @auerDoclingTechnicalReport2024 
-
-```{r extraction-framework-flow-chart, out.width="100%", out.height="95%", out.extra='keepaspectratio', echo=echo_flag, warning=warning_flag, message=message_flag, fig.cap="(ref:flow-chart-caption)"}
-knitr::include_graphics("./images/extraction_framework_flow_chart.png")
-```
-
 ## Table extraction with regular expressions {#regex-extraction-mistakes}
 
 Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns\_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':

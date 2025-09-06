@@ -1,6 +1,8 @@
 ---
 acronyms:
   keys:
+    - shortname: TDP
+      longname: thermal design power
     - shortname: LLM
       longname: large language model
     - shortname: SHAP
@@ -79,4 +81,6 @@ acronyms:
       longname: Bidirectional Encoder Representations from Transformers
     - shortname: NLP
       longname: natural language processing
+    - shortname: XBRL
+      longname: eXtensible Bbusiness Reporting Language
 ---
