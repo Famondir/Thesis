@@ -410,7 +410,7 @@ We use a strict schema for the extraction process that is derived from the legal
 
 [^05_results-3]: Unfortunately, well known companies as BVG and BSR publish a less detailed form. Thus, their documents are not included in the document base for this task.
 
-Using a strict schema has advantages for processing the results in downstream tasks - i.e. for adding the results to a relational database. It is also easier to compare the results with a ground truth, if the names of all rows and their order is fixed. The schema is defined as \acr{ebnf} grammar and passed as an argument to \acr{vllm}.
+Using a strict schema has advantages for processing the results in downstream tasks, i.e. for adding the results to a relational database. It is also easier to compare the results with a ground truth, if the names of all rows and their order is fixed. The schema is defined as \acr{ebnf} grammar and passed as an argument to \acr{vllm}.
 
 ::: paragraph-start
 ##### Gound truth dataset
@@ -534,7 +534,7 @@ Thus, it is possible to define a wide range of confidence intervals, where we fi
 ::: paragraph-start
 ##### Multi-class classification
 
-Distinguishing correct and wrong classifications based on the confidence score is still working well for the responses of Ministral-8B-Instruct, predicting **Aktiva** and **GuV**. For **Passiva** we find a single wrong prediciton in the highest confidence interval. For Llama 4 Scout it is working for the target classes **Aktiva** and **Passiva**. For Qwen 2.5 32B it works worst among those three - still well performing - models.
+Distinguishing correct and wrong classifications based on the confidence score is still working well for the responses of Ministral-8B-Instruct, predicting **Aktiva** and **GuV**. For **Passiva** we find a single wrong prediciton in the highest confidence interval. For Llama 4 Scout it is working for the target classes **Aktiva** and **Passiva**. For Qwen 2.5 32B it works worst among those three — still well performing — models.
 :::
 
 For Ministral we find a empirical error rate of zero for the highest confidence interval, except for **Passiva**. For Llama we find an error rate lesst than 1 % for all classes. For Qwen 2.5 32B only **Passiva** has a high confidence interval with less than 1 % error rate. Most predictions are in the highest confidence score interval for all models again.

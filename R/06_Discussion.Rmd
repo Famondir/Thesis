@@ -66,7 +66,7 @@ The \acr{TOC} does not work as well as expected. @liExtractingFinancialData2023 
 We are surprised by the strong performance of Ministral-8B. It performs better, than other models of the Mistral family, that have been released more recent and have a larger parameter count. It shows one of the strongest performances with the *zero_shot* and *law_context*, too.
 :::
 
-We are also positive surprised of the strong performance of the recently released members of the Qwen3 family. The older Qwen3 models could not handle the classification tasks at all - with or without thinking mode[^06_discussion-1] - while the models of Qwen2.5 performed well. We identified the implementation of sparse \acr{MoE} layers to be an architectural difference between the more recent and older Qwen3 models.
+We are also positive surprised of the strong performance of the recently released members of the Qwen3 family. The older Qwen3 models could not handle the classification tasks at all — with or without thinking mode[^06_discussion-1] — while the models of Qwen2.5 performed well. We identified the implementation of sparse \acr{MoE} layers to be an architectural difference between the more recent and older Qwen3 models.
 
 [^06_discussion-1]: The Qwen3 models support two operating modes: A thining mode and a non-thinking mode. The thinking mode should yield better answers in complex tasks and the additional amount of processing can be controlled by setting a thinking budget [@qwenteamQwen3ThinkDeeper2025]. This thinking budget can be seen as the amount of tokens used for a step wise solution.
 
@@ -106,7 +106,7 @@ We will start discussing the hypotheses group **H2.1** in subsection \@ref(extra
 ::: paragraph-start
 ##### Results
 
-The best performing model - Qwen3-235B-A22B-Instruct - almost reaches human performance on real **Aktiva** tables, but is much faster. Both measures, percentage of correct numeric predictions (98.0 %) and F1 score (98.1 %), are not perfect yet and could be improved. It achieves perfect results on synthetic tables provided in \acr{HTML} format.
+The best performing model, Qwen3-235B-A22B-Instruct, almost reaches human performance on real **Aktiva** tables, but is much faster. Both measures, percentage of correct numeric predictions (98.0 %) and F1 score (98.1 %), are not perfect yet and could be improved. It achieves perfect results on synthetic tables provided in \acr{HTML} format.
 :::
 
 The prompting strategy *n_rag_examples* often works best, especially if \acr{icexs} are used. Section \@ref(same-company-evaluation) is discussing this finding for both tasks.
@@ -431,7 +431,7 @@ Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) sh
 ::: paragraph-start
 ##### Hybrid approach
 
-We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see section \@ref(hybrid-learn-respect-units)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit - i.e. Qwen3-8B.
+We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see section \@ref(hybrid-learn-respect-units)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
 :::
 
 We also see in our hybrid approach experiments, that the benefit of providing real tables as examples instead of synthetic ones is larger for extracting the numeric values than for matching the labels. Comparing Figure \@ref(fig:compare-real-table-extraction-by-context-type-numeric) and Figure \@ref(fig:compare-real-table-extraction-by-context-type-F1) shows that \acr{LLM}s yield good results for predicting *null* more consistently than extracting the correct numeric value when synthetic tables are provided as in-context learning examples.
@@ -516,7 +516,7 @@ We report the worsening performance of Llama 4 Maverick, when it gets to many ex
 
 *Context rot* is a term introduces in @kellyhongContextRotHow2025. They investigate an advanced *Needle in the Haystack* problem, including distractors and requiring the \acr{LLM}s to find semantic similarity instead of exact term matching. They find that the accuracy often starts to decrease with 10 k input tokens and more.
 
-Meta claims that Llama 4 Maverick has a context length 1 M (Llama 4 Scout even 10 M), where other models often are limited to 128 k, 32 k or less. We limited our input token length to 32 k in most cases and reached this limit multiple times. We find it remarkable, that Llama 4 Maverick already shows *context rot* at inputs of length 10 k - 100 times shorter than their context window.
+Meta claims that Llama 4 Maverick has a context length 1 M (Llama 4 Scout even 10 M), where other models often are limited to 128 k, 32 k or less. We limited our input token length to 32 k in most cases and reached this limit multiple times. We find it remarkable, that Llama 4 Maverick already shows *context rot* at inputs of length 10 k — 100 times shorter than their context window.
 
 @levySameTaskMore2024 demonstrate that \acr{LLM}s' reasoning performance can degrade at much shorter input lengths than their technical maximum. They also show that Mistral achieves the highest accuracy when the relevant information is positioned at the end of the prompt. However, it remains unclear how these findings apply to our experiments, as we do not include irrelevant information.
 
@@ -787,7 +787,7 @@ Regarding energy usage and runtime, our analysis demonstrates that smaller LLMs 
 
 It remains unclear whether the 2% of incorrectly extracted numeric values are due to unhandled currency units or other factors. One possible explanation is that faulty text extraction may cause numeric values to be concatenated. If this is the case, it raises the question of whether further investment in advanced table extraction methods is warranted.
 
-To further assess extraction performance, we evaluate text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text - generated by *Docling* and *pymupdf* - to preserve table structure information, and tested an \acr{OCR}-based approach using tesseract.
+To further assess extraction performance, we evaluate text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information, and tested an \acr{OCR}-based approach using tesseract.
 
 Table \@ref(tab:input-format-qwen235-evaluation) presents the aggregated results for the best prompting method with Qwen3-235B across all input types. No improvement was observed over the results obtained with text extracted by *pdfium*. In fact, performance declined when using Markdown generated by *pymupdf* or text produced via \acr{OCR}. Notably, Qwen3-235B performed equally well with Markdown generated by *Docling* as with other plain text extracts, indicating that the issue is not specific to the Markdown format.
 
@@ -834,7 +834,7 @@ To summarize, we recommend to invest resources into an end-to-end supply of mach
 ### Error rate guidance
 
 
-Implementing a measure to guide users' attention - indicating which predictions require review and which can be trusted - would be highly beneficial for the information extraction task. Verifying the extracted values for a single table can take up to three minutes, amounting to 300 minutes for the entire sample. This process is up to four times faster than manually transferring all values.
+Implementing a measure to guide users' attention, indicating which predictions require review and which can be trusted, would be highly beneficial for the information extraction task. Verifying the extracted values for a single table can take up to three minutes, amounting to 300 minutes for the entire sample. This process is up to four times faster than manually transferring all values.
 
 Choosing a smaller model that completes in 2:30 minutes rather than 3:00 minutes does not significantly accelerate the workflow, as error checking must still be performed on all values. Error checking could be omitted if perfect results are achieved, or if a reliable criterion is identified that allows predictions to be grouped into bins with a near-zero error rate.
 
@@ -860,7 +860,7 @@ This section briefly outlines topics that were not addressed within the scope of
 ::: paragraph-start
 ##### Table extraction and document parsing
 
-Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution, but its performance was unsatisfactory - particularly for tables without borders, where it often failed to correctly identify rows and columns.
+Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution, but its performance was unsatisfactory — particularly for tables without borders, where it often failed to correctly identify rows and columns.
 :::
 
 We were unable to implement more recent models for this task, such as visual \acr{LLM}s. Although promising results have been reported for these approaches, user-friendly implementations for *transformers* or *vLLM* are still often lacking. Notably, our method performed well using basic text extraction, so we did not pursue more advanced extraction tools or models further.
@@ -915,7 +915,7 @@ Furthermore, errors, that decisions could be based on, should be catched by an e
 
 ### Computational Constraints
 
-Information extraction using \acr{LLM}s is computationally intensive and ideally requires \acr{GPU} acceleration. For example, running Qwen3-235B-A32B-Instruct-FP8 - the model yielding the best extraction results - requires four H200 \acr{GPU}s. Similarly, Llama 4 Scout, which performed best in page identification, also needs four H200 \acr{GPU}s. Loading these models ad hoc is impractical due to setup times of approximately 30 minutes each. In contrast, Ministral-8B and Qwen3-8B can operate on a single NVIDIA 5090 RTX or A100.
+Information extraction using \acr{LLM}s is computationally intensive and ideally requires \acr{GPU} acceleration. For example, running Qwen3-235B-A32B-Instruct-FP8, the model yielding the best extraction results, requires four H200 \acr{GPU}s. Similarly, Llama 4 Scout, which performed best in page identification, also needs four H200 \acr{GPU}s. Loading these models ad hoc is impractical due to setup times of approximately 30 minutes each. In contrast, Ministral-8B and Qwen3-8B can operate on a single NVIDIA 5090 RTX or A100.
 
 ### Generalizability Scope
 

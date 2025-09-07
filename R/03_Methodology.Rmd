@@ -89,7 +89,7 @@ The second group of hypotheses proposes, that there are three sources for potent
 
 **H2.2c:** Table specific features have an effect on the extraction performance.
 
-Model specific predictors are the model family and the parameter size. Predictors related to the prompting strategies are related to in-context learning decisions, e.g. how many examples should be presented, how should those examples be chosen and is it permitted to use examples from the same company as the current subjects tasks document. Example for table characteristics investigated are the number of columns, visual separation and if there is a currency unit - i.e. *T€* - given.
+Model specific predictors are the model family and the parameter size. Predictors related to the prompting strategies are related to in-context learning decisions, e.g. how many examples should be presented, how should those examples be chosen and is it permitted to use examples from the same company as the current subjects tasks document. Example for table characteristics investigated are the number of columns, visual separation and if there is a currency unit given — i.e. *T€*.
 
 A list of all investigated predictors and their assumed directions of effect on multiple measures of the information extraction task can be found in the hypotheses evaluation tables in Appendix \@ref(feature-effect-analysis).
 
@@ -345,7 +345,7 @@ Based on the findings reported by @liExtractingFinancialData2023, we expect seve
 
 ### Evaluation methods
 
-We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix \@ref(figure-collection). These visuals have a high information density and enable us to compare a lot of results - including distributional information - at once^[A big screen with high resolution is helpful for this process.].
+We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix \@ref(figure-collection). These visuals have a high information density and enable us to compare a lot of results, including distributional information, at once^[A big screen with high resolution is helpful for this process.].
 
 We prefer this process over comparing many rows with measures of location (e.g. mean and median) and measures of distribution shapes (e.g. standard deviation, median absolute deviation, skewness). For presenting the results in chapter \@ref(results) we compress a selection of results in tabular form, because it is easier to grasp. Some interesting observations are discussed in chapter \@ref(discussion). But a lot of information is still kept in the visuals.
 

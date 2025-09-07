@@ -59,7 +59,7 @@ Methods of \acr{NLP} can enhance the process of information retrieval. Vector em
 
 In the context of this thesis, information retrieval techniques are applied to locate financial information from annual reports. Techniques for information extraction are used to generate responses formatted for downstream tasks.
 
-### Text processing
+### Text extraction
 
 Many information extraction tasks target information that is found in natural texts or tables. In order to use \acr{NLP} techniques it is a prerequisite to extract those texts. @adhikariComparativeStudyPDF2024 show in a benchmark study that *pypdfium* and *PyMuPDF* perform best among rule-based systems. But the transformer-based vision and document understanding tool *Nougat* [@blecherNougatNeuralOptical2023] performs even better.
 
@@ -71,51 +71,65 @@ Sometimes there is only a visual representation of texts, resulting from scanned
 
 An important step in the process of extracting information from complex documents is to recognize the layout of a document [@zhongPubLayNetLargestDataset2019]. Common tasks are determining the correct order of texts, correctly align captions to tables and figures, identifying headings, tables and figures. This can be used to separate the contents of smaller tables, that contain the information of interest, from surrounding text and thus strip potentially distracting content. @paulStateoftheArtModelArchitectures2025 gives a broad overview for state-of-the-art document layout analysis architectures and presents a comparison of different models performance.
 
-### Large Language Models {#llm-theory}
+## Large Language Models {#llm-theory}
 
-@minaeeLargeLanguageModels2025 give a broad overview on the field of language models. They discuss, how they are built, used and augmented. They present popular datasets, performance benchmarks and outline challenges and future directions. Their survey is neither limited on decoder-only nor large language models (\\acr{LLM}). But their time scope ends before 2024, so recent advancements are not reflected. (not a good introduction survey)
+@wangHistoryDevelopmentPrinciples2024 open their introductory survey on \acr{LLM}s history, development and principles with: "Language models serve as a cornerstone in [\acr{NLP}], utilizing mathematical methods to generalize language laws and knowledge for prediction and generation" [@wangHistoryDevelopmentPrinciples2024]. They clearly explain foundational concepts and simultaneously provide mathematical notation.
 
-For readers, who want to build understanding for modern \acr{LLM} we recommend to work through the book "Dive into Deep Learning" [@zhangDiveDeepLearning2023].
+Modern \acr{LLM} are generally build on the transformer architecture [@razaIndustrialApplicationsLarge2025], that is described in Section \@ref(transformers). They are the recent endpoint of an evolution from statistical language models, as n-grams, over neural language models and pre-trained language models [@wangHistoryDevelopmentPrinciples2024] and demonstrate high flexibility and capabilities that can be applied on a wide range of tasks and in various domains [@zhaoSurveyLargeLanguage2025].
+
+This becomes possible, because they are trained on vast, diverse datasets, providing the knowledge [@wangKnowledgeMechanismsLarge2024] and the abilities to become a general-purpose task solver [@zhaoSurveyLargeLanguage2025]. Figure \@ref(fig:fine-tuning-image) visualizes, that supervised fine-tuning can be used to imporve the performance of pre-trained \acr{LLM}s in specific tasks by leveraging task-specific labeled datasets [@tieSurveyPosttrainingLarge2025].
+
+(ref:fine-tuning-image-caption) Visualizing, how \acr{LLM}s are pre-trained on vast text corpora and fine-tuned on specific knowledge or tasks to adapt them for specific tasks. Source: @tieSurveyPosttrainingLarge2025
+
+```{r fine-tuning-image, fig.cap="(ref:fine-tuning-image-caption)", echo=FALSE, out.width="100%"}
+knitr::include_graphics("images/instruction_tuned_llm.png")
+```
+
+@tieSurveyPosttrainingLarge2025 discuss, that fine-tuning a model on instruction tasks makes it easier to elicit learned abilities for a variety of tasks and domains. This increases the applicability in every-day interaction, turning them into "zero-shot learners" [@weiFinetunedLanguageModels2022]. This means, that instruction fine-tuned models are able, to solve many tasks without the need of advanced prompting techniques as chain-of-thought [@zhaoSurveyLargeLanguage2025] or in-context learning [@brownLanguageModelsAre2020]. Nevertheless, we show in Section \@ref(in-context-learning), that these techniques stay still valuable to enable a model to perform new tasks.
+
+For readers, who want to build understanding for modern \acr{LLM}s we recommend to work through the book "Dive into Deep Learning" [@zhangDiveDeepLearning2023]. This book is starting with neural language models and guides the reader through the key stages of generative \acr{AI}, covering computer vision models, too. It comes with ready to execute code examples and helps building deep insight through accompanying exercises.
+
+### Architectural Foundations
 
 #### Transformers
 
-Wichtig
+The transformer architecture is introduced 2017 by @vaswaniAttentionAllYou2023 as a novel architecture that relies entirely on self-attention mechanisms to draw global dependencies between input and output. This allows for much more parallelization than previous architectures as recurrent neural networks or convolutional neural networks. This leads to significantly reduced training times, while achieving better performance.
 
-seit 2017
+::: paragraph-start
+##### Attention
 
-training on token prediction (base models); masking,
+@vaswaniAttentionAllYou2023 introduced the scaled dot-product attention and the self-attention mechanism. The self-attention mechanism allows each token in a sequence to attend to all other tokens, enabling the model to capture dependencies regardless of their distance in the sequence. This is particularly important for understanding context and relationships in language.
+:::
 
-#### Attention
+The most obvious challenge for the attention mechanisms is the computational cost. The amount of processing power required scales quadratically with the length of the input [@tahirUnderstandingLLMContext2025]. This limits the context window size of many \acr{LLM}s. A sliding window attention can be used to improve computational performance [@raschkaInstructionPretrainingLLMs2025], e.g. as popularized by Mistral or Gemma 2. Thus, newer models support larger context windows.
 
-The most obvious challenge is computational cost. The amount of processing power required scales quadratically with the length of the input [@tahirUnderstandingLLMContext2025].
+::: paragraph-start
+##### Processing Input
 
-Sliding window attention (e.g., as popularized by Mistral) or Gemma 2; Sliding window attention is mainly used to improve computational performance [@raschkaInstructionPretrainingLLMs2025]
+Before a transformer can process any input the text gets tokenized and embedded with a basic embedder. These embeddings then are combined with positional information using sinusoidal positional encoding [@wangHistoryDevelopmentPrinciples2024]. This happens in all transformers. Also in decoder only models.
+:::
 
-Group-query attention (like in Llama 2 and 3)
+::: paragraph-start
+###### Encoder
 
-A key article is "Attention Is All You Need" that [@vaswaniAttentionAllYou2023]
+The role of the encoder is to understand the input text deeply by attending to all parts of it simultaneously and transforming it into a feature-rich embedding space. This means, it is using an unmasked attention mechanism [@vaswaniAttentionAllYou2023]. The output of the encoder is a set of context-aware embeddings.
+:::
 
-#### Encoder
+::: paragraph-start
+###### Decoder
 
-Wichtig
+The decoder's role is to generate output tokens one-by-one autoregressively, attending both to previously generated tokens — via masked self-attention [@wangHistoryDevelopmentPrinciples2024] — and to the encoder's output — via cross-attention [@phdUnderstandingEncoderDecoder2025] — combining these to produce coherent, contextually relevant sequences.
+:::
 
-positional encoding important (and distinguishes from tf-idf): dog eats cat
+#### Generative Pretrained Transformers
 
-sinusoidal positional encoding, which uses sine and cosine functions of varying frequencies to create unique positional vectors, and Rotary Position Embedding (RoPE), which applies a rotation to the token embeddings based on their position [@khowajaAnalysisLlama4s2025]
+The term \acrfull{GPT} is introduced in @radfordImprovingLanguageUnderstanding2018 as the first transformer model, that combined unsupervised pre-training with subsequent supervised fine-tuning. Their general task-agnostic model outperformed discriminatively trained models that use architectures specifically crafted for each task [@radfordImprovingLanguageUnderstanding2018]. It only uses decoder components, and thus is designed for generating new tokens based on the input and the patterns learned during training. It has 117 million parameters.
 
-#### Decoder
+One year later @radfordLanguageModelsAre2019 showed with GPT-2, that scaling up the model and training dataset size significantly improves performance. They show, that the language model learns tasks without any explicit supervised fine-tuning. It has 1.5 billion parameters.
 
-For each generated token, the attention mechanism needs to access the key and value vectors of all preceding tokens in the context window. To avoid recomputing these key and value vectors at each step, they are stored in the KV-cache. [@khowajaAnalysisLlama4s2025] However, the memory required to store the KV-cache scales linearly with the size of the context window.
+GPT-3 is released 2020 by @brownLanguageModelsAre2020 and introduces the technique of *in-context learning* as described in Section \@ref(in-context-learning), demonstrating, that large decoder-only transformers can generalize to new tasks even without extensive fine-tuning. It has 175 billion parameters.
 
-Wichtig
-
-Token sampling, temperature 0
-
-#### GPT (Generative Pretrained Transformers)
-
-hauptsächlich decoder (generieren)
-
-Wichtig
+The next section describes an architectural component, that is introduced in the early 1990s by @jacobsAdaptiveMixturesLocal1991 and emerged within the field of language models in 2017 [@zhangMixtureExpertsLarge2025], gaining more popularity in the last years.
 
 #### Mixture of Experts
 
@@ -127,7 +141,7 @@ Figure \@ref(fig:moe-architecture) shows two main differences in the architectur
 
 The gate (also router) takes care of the distribution of tokens to the \acr{FFN}s. There is a high diversity of the routing algorithms and its goals are to "ensure expert diversity while minimizing redundant computation" [@zhangMixtureExpertsLarge2025]. There are algorithms that focus on load-balancing, domain specific routing and many more. Traditional \acr{MoE} assumes homogeneous experts, where load balancing might be the paramount goal. Recent advances explore more heterogeneous sets of experts and flexible routing strategies, that promise more efficiency [@zhangMixtureExpertsLarge2025].
 
-```{r moe-architecture, fig.cap="Showing schemas of the dense and sparse mixture of experts architecture.", echo=FALSE, out.width="100%"}
+```{r moe-architecture, fig.cap="Showing schemas of the dense and sparse mixture of experts architecture.", echo=FALSE, out.width="800%"}
 knitr::include_graphics("images/moe_architecture.png")
 ```
 
@@ -135,9 +149,15 @@ Most of the Qwen3 models have a dense \acr{MoE} architecture. Only the two model
 
 The Llama 4 models have a shared expert \acr{MoE} architecture. It combines a shared, fixed expert that processes every token and combines those results with results from a sparse \acr{MoE} layer.
 
-Googles gemma-3n-E4B uses a selective parameter activation as well. They use the prefix E for effective instead of A for active [@googleGemma3nModel]. In gemma-3n there are parameters to handle input of different types - text, vision and audio - and they get loaded and activated as necessary. This allows a multi modal functionality. It additionally caches the \acr{PLE} in fast storage (RAM) instead of keeping it in the model memory space (VRAM), allowing to run models in low resource environments.
+Googles gemma-3n-E4B uses a selective parameter activation as well. They use the prefix E for effective instead of A for active [@googleGemma3nModel]. In gemma-3n there are parameters to handle input of different types — text, vision and audio — and they get loaded and activated as necessary. This allows a multi modal functionality. It additionally caches the \acr{PLE} in fast storage (RAM) instead of keeping it in the model memory space (VRAM), allowing to run models in low resource environments.
 
-#### Confidence scores
+### Token Generation
+
+\acr{LLM}s generate text by predicting the next token based on the input and the context provided. This is done using a decoding strategy, that determines how the next token is selected from the probability distribution over the vocabulary. A basic approach is greedy decoding, where the token with the highest probability is always selected. @willardEfficientGuidedGeneration2023 present an algorithm for greedy sampling procedure. This can lead to repetitive and less diverse text. But it is useful, if the goal is to get the most probable answer, e.g. for classification tasks, or to exactly copy numeric values.
+
+Other strategies include beam search, which keeps track of multiple candidate sequences and selects the best one based on overall probability, and sampling methods like top-k and nucleus (top-p) sampling [@nasehStealingDecodingAlgorithms2023], which introduce randomness to generate more diverse and creative text. @jadhavArtSamplingControlling2021 is presenting multiple sampling strategies and presents the formulas for token probabilities with greedy sampling, with an without temperature parameter.
+
+### Confidence Scores
 
 A \acr{LLM} can return a log probability score together with each token it predicts. In fact, it can return the top k candidates for the next token with the corresponding log probabilities. The sum of individual log probabilities indicates how likely a sequence of tokens is, according to the \acr{LLM}. This sum can be interpreted as a kind of *confidence* the model has in a prediction [@berkovUnderstandingLLMLogprobs2025].
 
@@ -159,7 +179,7 @@ The classical alternative to in-context learning is model fine-tuning, in which 
 
 In-context learning reduces the need to create large datasets to fine-tune a model on specific tasks. This brings great flexibility and can be resource efficient by sparing the computational costs for adapting the model to new tasks [@dongSurveyIncontextLearning2024]. On the other hand, it can pay off to fine-tune a model, if a specific task has to be solved regularly, because for *in-context learning* additional tokens have to be processed every time. This can become energy costly and slows down the task processing.
 
-Text classification and information extraction are two tasks that can be solved with few shot-learning [@zhaoCalibrateUseImproving2021]. Hereby, the order in which the examples are presented is important - at least for GPT-3 [@zhaoCalibrateUseImproving2021].
+Text classification and information extraction are two tasks that can be solved with few shot-learning [@zhaoCalibrateUseImproving2021]. Hereby, the order in which the examples are presented is important — at least for GPT-3 [@zhaoCalibrateUseImproving2021].
 
 Although tutorials and blogs sometimes suggest that using more examples leads to better results [@kukaShotBasedPromptingZeroShot], @brownLanguageModelsAre2020 demonstrate that performance may not improve significantly when adding more than a second example.
 
@@ -173,17 +193,19 @@ Wichtig
 
 Guided decoding is a prompting technique, where a \acr{LLM} is instructed to respond in a specific format, e.g. as \acr{json} formatted string. It often is combined with *in-context* learning, to improve the probability, to get the format requested. One can provide examples of pre-structured templates, too. For \acr{json} one can request certain keys and properties for the corresponding values.
 
-Restricted decoding, on the other hand, is manipulating the
+Restricted decoding, on the other hand, is manipulating the decoding process itself. This can be done by biasing the score values used to determine the probabilities of the tokens in an \acr{LLM}s vocabulary [@willardEfficientGuidedGeneration2023]. Figure \@ref(fig:restricted-decoding-image) shows, how this bias changes the probabilities for possible tokens to zero. This procedure is also called masking, because the tokens get invisible for the token sampler.
 
-@willardEfficientGuidedGeneration2023 are stating, that they use XYZ? to satisfy formatting requirements that are either hard or costly to capture through fine-tuning alone (or through prompting / few-shot learning), summarizing findings of many articles.
+(ref:restricted-decoding-caption) Visualizing, how \acr{LLM}s are pre-trained on vast text corpora and fine-tuned on specific knowledge or tasks to adapt them for specific tasks. Source: @dongXGrammarFlexibleEfficient2025
 
-"Most implementations of guided generation bias the score values used to determine the probabilities of the tokens in an LLM’s vocabulary. A common and sufficient approach involves repeated evaluations over the entire vocabulary in order to determine which tokens are valid–according to the constraints and previously sampled tokens–and setting the probabilities of invalid tokens to zero. This approach entails a fixed O(N ) cost for each token generated, where N is the size of the LLM’s vocabulary.
+```{r restricted-decoding-image, fig.cap="(ref:restricted-decoding-caption)", echo=FALSE, out.width="70%"}
+knitr::include_graphics("images/restricted_decoding.png")
+```
 
-We propose an approach that uses the finite state machine (FSM) for- mulation of regular expressions to both arbitrarily start and stop guided generation and allow the construction of an index with which the set of non- zero-probability tokens can be obtained efficiently at each step. The result is an algorithm that costs O(1) on average."
+Masking tokens often is achieved by iterating over the whole vocabulary for each token generation, which has a cumpotational complexity of $\mathcal{O}(N)$ They show, that this can be done more efficiently with a finite state machine approach. Using an index, the complexity can be reduced to $\mathcal{O}(1)$.
 
-generation template strict (closed) vs open
+@willardEfficientGuidedGeneration2023 implemented their approach in the library *outlines*. The \acr{LLM} framework \acr{vllm} supports only the two libraries *guidance* [@GuidanceaiGuidance2025] and *xgrammar* [@dongXGrammarFlexibleEfficient2025], which implements an efficient pushdown automata approach to realize token sampling according to context free grammars.
 
-always selecting the most probable response (temp = 0), so numeric values are correct and classification as well
+@dochertyControllingYourLLM2025 demonstrates how the masking of tokens influences the probabilities for the next tokens and explains it with easy to grasp examples, helpful visualizations and is providing corresponding code snippets.
 
 ## General machine learning and statistics {#other-concepts}
 
@@ -193,9 +215,9 @@ always selecting the most probable response (temp = 0), so numeric values are co
 
 @wickham40YearsBoxplots2011 describe boxplots as "a compact distributional summary, displaying less detail than a histogram or kernel density, but also taking up less space. Boxplots use robust summary statistics that are always located at actual data points, are quickly computable (originally by hand), and have no tuning parameters. They are particularly useful for comparing distributions across groups."
 
-Figure \@ref(fig:boxplot-gauss) shows a box and whiskers plot and its components and compares it to a gaussian probability distribution. Half of all observations fall within the box and the median is marked by a thick line. Outliers are defined as observations that are outside the area marked with the (horizontal) lines -called whiskers - that potentially have small bars at their ends. Outliers can be shown by circles or dots.
+Figure \@ref(fig:boxplot-gauss) shows a box and whiskers plot and its components and compares it to a gaussian probability distribution. Half of all observations fall within the box and the median is marked by a thick line. Outliers are defined as observations that are outside the area marked with the (horizontal) lines, called whiskers, that potentially have small bars at their ends. Outliers can be shown by circles or dots.
 
-(ref:boxplot-gauss-caption) Showing a box and whiskers plot with its components - median, quartiles, whiskers and outliers - and compare it with a gaussian probability distribution. Graphic adjusted from @jhguchBoxPlot2025.
+(ref:boxplot-gauss-caption) Showing a box and whiskers plot with its components — median, quartiles, whiskers and outliers — and compare it with a gaussian probability distribution. Graphic adjusted from @jhguchBoxPlot2025.
 
 ```{r boxplot-gauss, echo=FALSE, fig.cap="(ref:boxplot-gauss-caption)", out.width="80%", fig.align = 'center'}
 knitr::include_graphics("images/Boxplot_vs_PDF.png")
@@ -229,7 +251,7 @@ The tree shown is used for a regression task and will predict the average of all
 knitr::include_graphics("images/tree_simple.png")
 ```
 
-Further benefits of decision trees - besides the good interpretability and computational efficiency - are the native capturing of interactions between features [@molnarInterpretableMachineLearning2025], without modeling this explicitly, as it would for example be necessary in a linear regression. Decision trees can be used for classification and regression. They even can incorporate linear functions as leafs, enabling them to better capture linear relationships [@raymaekersFastLinearModel2024].
+Further benefits of decision trees — besides the good interpretability and computational efficiency — are the native capturing of interactions between features [@molnarInterpretableMachineLearning2025], without modeling this explicitly, as it would for example be necessary in a linear regression. Decision trees can be used for classification and regression. They even can incorporate linear functions as leafs, enabling them to better capture linear relationships [@raymaekersFastLinearModel2024].
 
 Problems of decision trees are, that they lack resilience against data changes and have a tendency to overfitting. A method against overfitting is pruning [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees is another possibility, that results in the random forest algorithm, described in the next paragraph .
 

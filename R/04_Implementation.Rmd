@@ -195,7 +195,7 @@ knitr::include_graphics("images/unified_flowchart.png")
 
 We start by extracting the text for each page from the annual reports, using PDF extraction libraries like *pdfium* and *pymupdf*. We do this once for each document and save all text extracts page-wise in a \acr{json} file. We record the original file path and corresponding pagenumber as meta data.
 
-We embed the text extracts in the prompt template - either in the text section at the end or as an example in the blank section (see Figure \@ref(fig:prompt-setup-classification)). The prompt is then processed by the algorithm, predicting, if the text contains a specific type of information or not. The predictions are compared with the ground truth.
+We embed the text extracts in the prompt template — either in the text section at the end or as an example in the blank section (see Figure \@ref(fig:prompt-setup-classification)). The prompt is then processed by the algorithm, predicting, if the text contains a specific type of information or not. The predictions are compared with the ground truth.
 
 The results of this evaluation are saved as \acr{json}. We save the result for every individual evaluation, as well as calculated performance metrics and the runtime needed to process all texts as batch. This allows us to reevaluate or exclude specific results and recalculate the aggregated metrics later. All steps from the text extraction to the result saving are implemented in *Python*.
 

@@ -144,7 +144,7 @@ Additionally, GPT-4.1 was used to enhance the clarity and quality of language th
 
 ## Personal Goals and Learnings {.unlisted .unnumbered}
 
-Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats—a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large language models (LLMs), including leveraging restricted decoding to generate results suitable for downstream tasks.
+Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats — a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large language models (LLMs), including leveraging restricted decoding to generate results suitable for downstream tasks.
 
 There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an LLM model, training a small encoder-only model from scratch, and applying visual LLMs for document parsing.
 
