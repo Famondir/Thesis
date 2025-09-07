@@ -692,7 +692,7 @@ confidence_intervals_real %>%
   facet_grid(paste("predicted NA:", predicted_NA) ~ model)
 ```
 
-### Synthetic tables
+### Synthetic tables {#error-rat-guidance-synthetic}
 
 ::: paragraph-start
 ##### Confidence

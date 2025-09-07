@@ -4,7 +4,7 @@ editor_options:
     wrap: none
 ---
 
-# Conclusion {#conclusion}
+# Conclusion
 
 \ChapFrame[Conclusion][bhtred]
 

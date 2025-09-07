@@ -171,7 +171,7 @@ Wichtig
 
 #### Guided and restricted decoding
 
-Guided decoding is a prompting technique, where a \acr{LLM} is instructed to respond in a specific format, e.g. as \acr{JSON} formatted string. It often is combined with *in-context* learning, to improve the probability, to get the format requested. One can provide examples of pre-structured templates, too. For \acr{JSON} one can request certain keys and properties for the corresponding values.
+Guided decoding is a prompting technique, where a \acr{LLM} is instructed to respond in a specific format, e.g. as \acr{json} formatted string. It often is combined with *in-context* learning, to improve the probability, to get the format requested. One can provide examples of pre-structured templates, too. For \acr{json} one can request certain keys and properties for the corresponding values.
 
 Restricted decoding, on the other hand, is manipulating the
 

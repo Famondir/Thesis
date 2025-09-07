@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Extraction of tabular data from annual reports with LLMs</title>
-  <meta name="description" content="Extraction of tabular data from annual reports with LLMs" />
+  <title>7 Conclusion | Extraction of tabular data from annual reports with LLMs</title>
+  <meta name="description" content="7 Conclusion | Extraction of tabular data from annual reports with LLMs" />
   <meta name="generator" content="bookdown 0.43.2 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Extraction of tabular data from annual reports with LLMs" />
+  <meta property="og:title" content="7 Conclusion | Extraction of tabular data from annual reports with LLMs" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Extraction of tabular data from annual reports with LLMs" />
+  <meta name="twitter:title" content="7 Conclusion | Extraction of tabular data from annual reports with LLMs" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="introduction.html"/>
+<link rel="prev" href="discussion.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -499,50 +499,14 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Extraction of tabular data from annual reports with LLMs</h1>
-<p class="author"><em>Simon Schäfer</em></p>
-<p class="date"><em>September 8, 2025</em></p>
-</div>
-<div id="section" class="section level1 unlisted unnumbered">
-<h1 class="unlisted unnumbered"></h1>
-<div id="abstract" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Abstract<a href="index.html#abstract" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This thesis presents a comprehensive benchmark of information extraction from annual reports of German companies, focusing on the use of large language models (LLMs) to automate the retrieval of financial data from unstructured PDF documents. The study addresses two core challenges: identifying relevant pages containing financial tables and accurately extracting hierarchical tabular data for integration into relational databases.</p>
-<p>Multiple open-weight LLMs are evaluated using diverse prompting strategies and compared to alternative methods such as regular expressions and term-frequency approaches. The work builds on and extends previous research by applying these techniques to German-language documents and open-weight models.</p>
-<p>Results demonstrate that (even smaller) LLMs can reliably locate and extract financial information, supporting efficient audit processes. The findings highlight the potential of combining LLMs with rule-based methods to improve computational efficiency, and outline a practical workflow for a human-in-the-loop application for information extraction in regulatory and financial domains.</p>
-</div>
-<div id="zusammenfassung" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Zusammenfassung<a href="index.html#zusammenfassung" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Diese Arbeit präsentiert die Ergebnisse eines umfassenden Benchmarks von Methoden zur Extraktion von Informationen aus deutschen Jahresabschlussberichten. Wir legen den Fokus unserer Untersuchung auf die Nutzung von LLMs (<em>große Sprachmodelle</em>) für die Automatisierung des Auslesens von Finanzdaten aus unstrukturierten <a href="glossary.html#acronyms_PDF">PDF (Portable Document Format)</a> Dokumenten.</p>
-<p>Die Arbeit verfolgt zwei Hauptziele: das Identifizieren relevanter Seiten und das Extrahieren numerischer Werte aus hierarchischen tabellenartigen Strukturen. Dabei wird ein Format der extrahierten Daten sichergestellt, das das Einlesen in eine relationale Datenbank erlaubt.</p>
-<p>Die Performanz mehrerer open-weight <a href="glossary.html#acronyms_LLM">LLM (large language model)</a>s wird über verschiedene Prompting-Strategien hinweg und mit alternativen Methoden, beispielsweise reguläre Ausdrücke und Suchwortdichte-Maßen, verglichen. Die Arbeit baut auf vorherige Forschungsergebnisse auf und erweitert diese um die Anwendung auf deutschsprachigen Dokumenten und die Nutzung von open-weight Modellen.</p>
-<p>Die Ergebnisse zeigen, dass (auch kleinere) Sprachmodelle zuverlässlich Kennzahlen aus dem Finanzwesen lokalisieren und extrahieren und so die Prüfungstätigkeiten effizient unterstützen können. Die Ergebnisse zeigen Potential auf, <a href="glossary.html#acronyms_LLM">LLM</a>s mit regelbasierten Methoden zu kombinieren, um die Effizienz der Informationslokalisation zu erhöhen. Wir skizzieren ein <a href="glossary.html#acronyms_HITL">HITL (human-in-the-loop)</a>-basiertes Software-System für die Informationsextraktion im Bereich der Finanzkontrolle.</p>
-</div>
-<div id="reading-advices" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Reading advices<a href="index.html#reading-advices" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We recommend to read the thesis in its <a href="https://famondir.github.io/Thesis/">digital gitbook version</a> instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21” and has at least full HD resolution. The more, the merrier.</p>
-<p><span style="font-size: 1.5em;">😊</span> </p>
-</div>
-<div id="declaration-of-the-use-of-artificial-intelligence" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Declaration of the Use of Artificial Intelligence<a href="index.html#declaration-of-the-use-of-artificial-intelligence" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We utilized GitHub Copilot in Visual Studio Code to assist with coding tasks, primarily employing GPT-4.1 and occasionally Claude Sonnet 4.</p>
-<p>In addition to traditional literature research methods, such as using Google Scholar and tracking citations in academic papers, we also employed <a href="https://www.perplexity.ai/">perplexity.ai</a> to support our literature review process.</p>
-<p>Additionally, GPT-4.1 was used to enhance the clarity and quality of language throughout the thesis and to generate suggestions for summaries for various sections.</p>
-</div>
-<div id="personal-goals-and-learnings" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Personal Goals and Learnings<a href="index.html#personal-goals-and-learnings" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats—a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large language models (LLMs), including leveraging restricted decoding to generate results suitable for downstream tasks.</p>
-<p>There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an LLM model, training a small encoder-only model from scratch, and applying visual LLMs for document parsing.</p>
-</div>
-<div id="dedication" class="section level2 unlisted unnumbered hasAnchor">
-<h2>Dedication<a href="index.html#dedication" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We would like to express our sincere gratitude to Tom Röhr, whose unwavering support and insightful feedback have been invaluable throughout the development of this thesis.</p>
-<p>We would like to express our sincere gratitude to Micha for his valuable support in extending the ground truth dataset for the information extraction task.</p>
-<p>We also extend our heartfelt thanks to our family and friends for their unwavering support and patience throughout the past months.</p>
-<p></p>
+<div id="conclusion-7" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">7</span> Conclusion<a href="conclusion-7.html#conclusion-7" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This thesis investigated the use of large language models (LLMs) and related approaches for extracting financial information from German annual reports, with a focus on supporting the audit processes at the RHvB. We addressed three main research questions: how to effectively locate specific information in financial reports using LLMs, how to extract this information accurately, and whether additional information from the extraction process can guide users in verifying results.</p>
+<p>Our results demonstrate that LLMs can be used effectively to identify relevant pages and extract structured financial data, achieving performance close to or exceeding human benchmarks in many cases. Combining LLMs with term-frequency-based methods further improves efficiency, reducing computational costs without sacrificing performance. The experiments also show that open-weight models are viable alternatives to proprietary solutions, especially when data privacy is a concern.</p>
+<p>We found that LLMs are capable of extracting multiple numeric values from complex tables, matching entities, and handling missing or ambiguous data accurately. The use of confidence scores for guiding users in human-in-the-loop (HITL) workflows, highlighting which values require verification and which can be trusted, is found to be less successful. Other extraction metadata might help to achieve this goal.</p>
+<p>Our findings have practical implications for automating information retrieval in regulatory and financial contexts, particularly where documents are unstructured and machine readability is limited. The developed framework and evaluation strategies can be adapted to similar tasks in other domains.</p>
+<p>Future work could explore further improvements in system architectures, prompt engineering, and integration with advanced document layout analysis. Expanding the scope to more heterogeneous document types and new tasks, as well as refining HITL strategies, will help ensure robust and scalable solutions for real-world applications.</p>
 
-</div>
 </div>
 <script>
 // Lightbox functionality for displaying images in a modal view
@@ -805,8 +769,8 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
         </div>
       </div>
-
-<a href="introduction.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="discussion.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

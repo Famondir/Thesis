@@ -83,4 +83,11 @@ acronyms:
       longname: natural language processing
     - shortname: XBRL
       longname: eXtensible Bbusiness Reporting Language
+    - shortname: csv
+      longname: comma separated values
+    - key: icexs
+      shortname: in-company examples
+      longname: in-context learning examples from the same company as the task's subject's company
+    - shortname: ROPE
+      longname: Region of Practical Equivalence
 ---
