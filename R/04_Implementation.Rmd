@@ -6,9 +6,13 @@ editor_options:
 
 # Implementation {#implementation}
 
-(max 5p)
-
 \ChapFrame[Implementation][bhtyellow]
+
+This chapter describes the practical realization of the methods and workflows developed for automated page identification and information extraction in financial documents. It outlines the environment our experiments are conducted in, the software packages utilized, and the datasets created for benchmarking and evaluation.
+
+It presents details of the ground truth creation process, including annotation strategies and dataset composition. The data processing workflow is illustrated, highlighting the system experimental setup on the Datexis Kubernetes cluster as wellas the local environment, used for evaluation and reporting.
+
+By documenting the technical decisions and solutions adopted, this chapter provides a comprehensive overview of how the proposed methodology was translated into a functional system. We hope this will facilitate reproducibility and serve as a reference for future work. We especially want to recommend the use open-source scientific and technical publishing systems, like *R Markdown* and *Quarto*, to create documents that are directly linked to the data and code used for the analysis.
 
 ## Environments
 
@@ -223,3 +227,8 @@ df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_ty
 
 ## Summary
 
+This chapter documented our choices and steps taken for implementing an experimental setup to evaluate the foundation for an automated system for page identification in and information extraction from financial documents.
+
+Overall, the implementation successfully translated the proposed methodology into a functional and adaptable system, laying the foundation for subsequent evaluation and practical application.
+
+The next section presents the key results obtained from the experiments conducted using this implementation. It highlights the performance of different models and approaches for both page identification and information extraction tasks, providing insights into their effectiveness and potential areas for improvement.

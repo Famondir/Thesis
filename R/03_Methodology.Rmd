@@ -327,39 +327,21 @@ We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with r
 
 ### Error analysis {#error-analysis-methodology}
 
-To better understand the limitations of the evaluated models and to find ways to further improve the system, we will conduct a detailed error analysis. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.
+To better understand the limitations of the evaluated models and prompting strategies and to find ways to further improve the system, we will conduct a detailed error analysis. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.
 
-#### Page identificaion
+::: paragraph-start
+##### Page identificaion
 
-Content rot: We will first quantify the types of misclassifications using confusion matrices and error rate statistics.
+For page identification, the analysis will include investigation of misclassified pages using confusion matrices and error rate statistics to quantify types of misclassification.
+:::
 
-TF: Additionally, we will manually inspect a sample of erroneous predictions to identify common causes, such as ambiguous table layouts, or model misinterpretations.
+::: paragraph-start
+##### Information extraction
 
-[@grandiniMetricsMultiClassClassification2020]
+For information extraction, error rates will be analyzed across different experimental setups, with stratified analysis by company, table characteristics (such as currency units and input format), and instruction specifications. We will investigate the errors unique for guided and restricted generation approaches.
+:::
 
-#### Information extraction
-
-Under construction!
-
-99.5 % or 96 % accuracy for extracting financial data from Annual Comprehensive Financial Reports [@liExtractingFinancialData2023] In the untabulated test, GPT-4 achieved an average accuracy rate of 96.8%, and Claude 2 achieved 93.7%. Gemini had the lowest accuracy rate at 69%. (ebd.)
-
-found error types: including omissions when the LLM was instructed to extract a list of line items, misjudgment of units (such as thousands or millions), and incorrect identification of rows and columns
-
-failed to extract all of list, Too many hallucinated values when it was NA instead [@goughertyTestingReliabilityAIbased2024]
-
-For the information extraction task, we expect to find issues with wrong extracted numeric values due to disrespecting currency units or hallucinated numbers, if a value is absent. We further expect wrong entity recognition and thus wrong row identification matching.
-
-Error rates will be compared among different experimental setups to reveal systematic weaknesses in a stratified analysis.
-
-Finally, we investigate some of the erroneous extracted examples manually, and try to identify the underlying issues.
-
-Tools and criteria
-
-Reporting
-
-Example:
-
-Numeric values are difficult to handle for langauge models in specific tasks. Copying numbers seems not to be a recent problem. How about transforming by multiplication with 1000?
+Based on the findings reported by @liExtractingFinancialData2023, we expect several characteristic error types to occur in the information extraction process. These include omissions, where the model fails to extract all values of a list; confusion between thousands and millions; and incorrect identification of rows and columns within tables.
 
 ### Evaluation methods
 
@@ -389,3 +371,8 @@ We do not use XGBoost for the final analysis, because calculating the \acr{SHAP}
 
 ## Summary
 
+In this chapter, we outlined the methodological framework for automated page identification and information extraction in financial documents. We formulated the problem defnitions and research questions, along with specific hypotheses to be tested.
+
+We described the selection and preparation of datasets, the annotation strategies for ground truth creation, and the design of benchmarking tasks. The chapter presented the approaches used for data processing, prompt engineering, and evaluation metrics. We also presented the methods used for error analysis and interpretation of results.
+
+Having established the methodological foundation, the next chapter focuses on the practical realization of these concepts. It presents the technical implementation, describes the computational environments, and documents the software tools and workflows used to translate the proposed methodology into a functional system.
