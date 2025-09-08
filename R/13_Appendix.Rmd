@@ -159,7 +159,7 @@ Table \@ref(tab:display-data-text-extraction) shows, that *pdfium* and *pymupdf*
 
 Some examples for errorneous extracted texts with *pdfium* and *pdfminer* can be found in Section \@ref(regex-extraction-mistakes).
 
-time to ocr 107 images with pdf2image and pytesseract: 1:28+11:41
+time to ocr 106 images with pdf2image and pytesseract: 1:28+11:41
 
 ```{r display-data-text-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 render_table(data_text_extraction, alignment="lr", caption="Comparing extraction time (in seconds) for different Python package", ref = opts_current$get("label"), dom="t")

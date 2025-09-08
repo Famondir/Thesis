@@ -424,7 +424,7 @@ bind_rows(df_real_table_extraction, df_real_table_extraction_azure) %>%
 ```{r loading-synth-table-extraction-datasets, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("data_storage/synth_table_extraction_llm.rds")), cache.lazy = FALSE}
 df_synth_table_extraction <- readRDS("data_storage/synth_table_extraction_llm.rds") %>%
   mutate(model = if_else(model == "Qwen3-235B-A22B-Instruct-2507", "Qwen3-235B-A22B-Instruct-2507-FP8", model)) %>% 
-  sample_frac(size = .05) %>% 
+  # sample_frac(size = .05) %>% 
   filter(!model %in% c("deepseek-ai_DeepSeek-R1-Distill-Qwen-32B", 'google_gemma-3n-E4B-it')) %>% 
   mutate(
     model = gsub("^[^_]+_", "", model)

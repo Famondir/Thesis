@@ -237,7 +237,7 @@ Importantly, providing at least one or two relevant examples is more beneficial 
 
 #### Error Rate Guidance
 
-We posed the following \acr{UX} inspired side research question and hypotheses:
+We posed the following \acrfull{UX} inspired side research question and hypotheses:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
 cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?</li></ol>")
@@ -466,7 +466,7 @@ Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) (see appendix) further shows
 
 Nevertheless, even without a strict schema, GPT-4-1 and GPT-5 perform nearly as well as Qwen3-235B. This indicates that a guided decoding approach may be effective too, and that a strict schema is not essential for larger models. Future research should explore the conditions under which open-weight models can be used with guided decoding rather than a strict schema.
 
-Unfortunately, batch processing was not available with the closed-weight models, resulting in runtimes of 30 to 135 minutes. Notably, GPT-5-nano exhibited the longest runtime and generated significantly more output tokens than the other models.  We suspect that it may become trapped in repetitive output, exhausting the entire token limit, or operates similarly to the gpt-oss models, which employ the new harmony response format: this format produces many tokens in a *chain of thought* stream before returning the requested \acr{json} formatted table string in the *final* stream. While this may offer insights into the model's reasoning processes, it substantially increases response time. We would welcome the option to disable the *chain of thought* stream and receive only the final answer, as is possible with Qwen3.
+Unfortunately, batch processing was not available with the closed-weight models, resulting in runtimes of 30 to 135 minutes. Notably, GPT-5-nano exhibited the longest runtime and generated significantly more output tokens than the other models. We suspect that it may become trapped in repetitive output, exhausting the entire token limit, or operates similarly to the gpt-oss models, which employ the new harmony response format: this format produces many tokens in a *chain of thought* stream before returning the requested \acr{json} formatted table string in the *final* stream. While this may offer insights into the model's reasoning processes, it substantially increases response time. We would welcome the option to disable the *chain of thought* stream and receive only the final answer, as is possible with Qwen3.
 
 #### Error Types
 
@@ -768,7 +768,7 @@ Thus, when comparing full manual processing and full \acr{LLM}-driven classifica
 
 Factors not yet considered in this comparison include:
 
--   Costs to purchase and maintain hardware (e.g., a GPU cluster).
+-   Costs to purchase and maintain hardware (e.g., a \acrfull{GPU} cluster).
 -   Higher costs per runtime/token if \acr{LLM} compute is purchased from cloud providers.
 -   Payment and insurance costs for human workers (e.g., student assistants).
 -   Training time and energy consumption for training either
@@ -783,7 +783,7 @@ To calculate cloud computing costs, it is important to know how many tokens are 
 -   Binary classification with 3 random examples: 6.5k input tokens
 -   Multi-class classification with 3 random examples: 11k input tokens
 
-Assuming GPT-4.1-mini hosted in the Azure cloud is used instead of running the \acr{LLM} locally, we estimate a price of 118.80 € for multi-class classification of 1_000 documents, assuming a cost of $0.4 per 1M input tokens and 27 pages per document. For a human employee, payment and insurance costs must be added to energy costs. Even for a student worker, this amounts to 0.5 cents per second, totaling 319.80 € for identifying target pages in 1_000 documents (assuming 15 € per hour and 10% additional insurance costs).
+Assuming GPT-4.1-mini hosted in the Azure cloud is used instead of running the \acr{LLM} locally, we estimate a price of 118.80 € for multi-class classification of 1_000 documents, assuming a cost of \$0.4 per 1M input tokens and 27 pages per document. For a human employee, payment and insurance costs must be added to energy costs. Even for a student worker, this amounts to 0.5 cents per second, totaling 319.80 € for identifying target pages in 1_000 documents (assuming 15 € per hour and 10% additional insurance costs).
 
 This comparison is valid only if the software for automated document processing is already available. Otherwise, development costs must also be considered, which are difficult to estimate and depend on the required software quality. For example, hiring a software developer at a rate of 80 € per hour for 160 hours would add 12.80 € per document for a batch of 1_000 documents, or 12_800 € in total. Estimating my own development time for this project at 1_400 hours and a salary of 50 € per hour, the total cost would amount to 70_000 €. Notably, the software is still not fully completed.
 
@@ -803,7 +803,7 @@ If development costs are considered as well, manual processing may be more econo
 
 It remains unclear whether the 2% of incorrectly extracted numeric values are due to unhandled currency units or other factors. One possible explanation is that faulty text extraction may cause numeric values to be concatenated. If so, it raises the question of whether further investment in advanced table extraction methods is warranted.
 
-To further assess extraction performance, we evaluated text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information and tested an \acr{OCR}-based approach using tesseract.
+To further assess extraction performance, we evaluated text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information and tested an \acrfull{OCR}-based approach using tesseract.
 
 Table \@ref(tab:input-format-qwen235-evaluation) presents aggregated results for the best prompting method with Qwen3-235B across all input types. No improvement was observed over results obtained with text extracted by *pdfium*. In fact, performance declined when using Markdown generated by *pymupdf* or text produced via \acr{OCR}. Notably, Qwen3-235B performed equally well with Markdown generated by *Docling* as with other plain text extracts, indicating that the issue is not specific to the Markdown format.
 
