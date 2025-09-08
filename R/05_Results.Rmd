@@ -200,7 +200,7 @@ We test a wide range of open-weight models and compare different prompting techn
 ::: paragraph-start
 ##### Term Frequency Ranking
 
-We use normalized term frequencies and normalized float frequency as features for a classification with a random forest. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data.
+We use normalized term frequencies and normalized float frequency as features for a classification with a \acr{RF}. The predicted scores are used to build a ranking, which page most probably contains the target pages. Undersampling is used during training, to handle the unbalanced data.
 :::
 
 ### Comparison {#comparison-page-identification}
@@ -253,7 +253,7 @@ In the dataset preparation for the table extraction task (see Section \@ref(info
 
 Furthermore, Llama 4 Scout reaches a recall of 1.0 for all target types. This means, the results can be used downstream, even though the precision is not always perfect. The pages classified as target can be double checked by a human, without missing any page.
 
-The performance of approaches that do not utilize \acr{LLM}s is substantially lower. Only the term-frequency approach yields results that are suitable for downstream use, as it achieves a recall of 1.0. Table \@ref(tab:page-identification-performance-overview-top-k-recall) shows the results of the top k recall for the term-frequency and \acr{LLM} approaches. For the term-frequency approach the ranking is based on the scores of the random forest classifier. For the \acr{LLM}s the ranking is based on the calculated confidence scores.
+The performance of approaches that do not utilize \acr{LLM}s is substantially lower. Only the term-frequency approach yields results that are suitable for downstream use, as it achieves a recall of 1.0. Table \@ref(tab:page-identification-performance-overview-top-k-recall) shows the results of the top k recall for the term-frequency and \acr{LLM} approaches. For the term-frequency approach the ranking is based on the scores of the \acr{RF} classifier. For the \acr{LLM}s the ranking is based on the calculated confidence scores.
 
 The \acr{LLM}s always rate the correct **GuV** page highest. With Llama Scout 4 we find all target pages within the first two ranked pages. For the term-frequency approach a human sometimes has to check up to five pages.
 

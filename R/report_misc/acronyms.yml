@@ -1,6 +1,8 @@
 ---
 acronyms:
   keys:
+    - shortname: RF
+      longname: random forest
     - shortname: TDP
       longname: thermal design power
     - shortname: LLM

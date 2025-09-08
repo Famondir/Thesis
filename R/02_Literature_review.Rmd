@@ -12,7 +12,7 @@ This chapter presents literature relevant to our research questions and provides
 
 Section \@ref(llm-theory) then explains the mechanisms and architectures of modern \acrfull{LLM}s, with particular attention to the \acr{MoE} architecture. It also discusses the prompting strategy *in-context learning*, which leverages the "programming by example" paradigm and explores how \acr{RAG} integrates into this framework. We also demonstrate how guided decoding can be used to generate structured responses suitable for downstream tasks.
 
-Section \@ref(other-concepts) introduces the \acr{SHAP} framework, a unified model for explaining machine learning predictions, applicable to complex models such as deep neural networks and random forests. The latter are briefly described as well. We employ random forests and \acr{SHAP} to test our hypotheses regarding potential predictors for the information extraction task. Our hypotheses are stated in Section \@ref(research-questions).
+Section \@ref(other-concepts) introduces the \acr{SHAP} framework, a unified model for explaining machine learning predictions, applicable to complex models such as deep neural networks and \acr{RF}s. The latter are briefly described as well. We employ \acr{RF} and \acr{SHAP} to test our hypotheses regarding potential predictors for the information extraction task. Our hypotheses are stated in Section \@ref(research-questions).
 
 ## Computer Science {#computer-science}
 
@@ -73,7 +73,7 @@ An essential step in extracting information from complex documents is recognizin
 
 ## Large Language Models {#llm-theory}
 
-This section shows the strengts and capabilities of modern \acr{LLM}s. It describes their architectural foundations and key mechanisms. Additionally, it covers important techniques such as in-context learning and retrieval-augmented generation, which enhance the performance of \acr{LLM}s on various tasks.
+This section shows the strengths and capabilities of modern \acrfull{LLM}s. It describes their architectural foundations and key mechanisms. Additionally, it covers important techniques such as in-context learning and retrieval-augmented generation, which enhance the performance of \acr{LLM}s on various tasks.
 
 ### Capabilities
 
@@ -129,7 +129,7 @@ The decoder generates output tokens sequentially in an autoregressive manner, at
 
 This section describes an architectural component first introduced in the early 1990s by @jacobsAdaptiveMixturesLocal1991, which emerged within the field of language models in 2017 [@zhangMixtureExpertsLarge2025] and has gained increasing popularity in recent years.
 
-Many recent \acr{LLM}s employ a \acr{MoE} architecture. Notable examples include Llama 4, Qwen3 and GPT-4-1. @zhangMixtureExpertsLarge2025 and @caiSurveyMixtureExperts2025a provide comprehensive overviews of various \acr{MoE} architectures. While @zhangMixtureExpertsLarge2025 highlights models released this year and their applications, @caiSurveyMixtureExperts2025a offers a more detailed discussion of architectural types. Additionally, @grootendorstVisualGuideMixture2024 presents a practical guide to \acr{MoE} with numerous helpful illustrations.
+Many recent \acr{LLM}s employ a \acrfull{MoE} architecture. Notable examples include Llama 4, Qwen3 and GPT-4-1. @zhangMixtureExpertsLarge2025 and @caiSurveyMixtureExperts2025a provide comprehensive overviews of various \acr{MoE} architectures. While @zhangMixtureExpertsLarge2025 highlights models released this year and their applications, @caiSurveyMixtureExperts2025a offers a more detailed discussion of architectural types. Additionally, @grootendorstVisualGuideMixture2024 presents a practical guide to \acr{MoE} with numerous helpful illustrations.
 
 The fundamental concept behind \acr{MoE} models is to integrate multiple smaller, specialized \acr{FFN}s to achieve superior predictive performance. The \acr{MoE} "paradigm offers a compelling method to significantly expand model capacity while avoiding a corresponding surge in computational demands during training and inference phases" [@caiSurveyMixtureExperts2025a, p. 21].
 
@@ -221,7 +221,7 @@ Masking tokens is often achieved by iterating over the entire vocabulary for eac
 
 ### Sample distribution visualization methods
 
-##### Boxplots
+#### Boxplots
 
 @wickham40YearsBoxplots2011 describe boxplots as "a compact distributional summary, displaying less detail than a histogram or kernel density, but also taking up less space. Boxplots use robust summary statistics that are always located at actual data points, are quickly computable (originally by hand) and have no tuning parameters. They are particularly useful for comparing distributions across groups."
 
@@ -235,7 +235,7 @@ knitr::include_graphics("images/Boxplot_vs_PDF.png")
 
 The median and quartiles are less sensitive to outliers than the mean and standard deviation of a sample. Therefore, they are more suitable for distributions that are asymmetric or irregularly shaped, as well as for samples with extreme outliers [@krzywinskiVisualizingSamplesBox2014]. Boxplots can be used with as few as five observations. However, even for large samples $(n \geq 50)$, whisker positions can vary considerably.
 
-##### Violin plots
+#### Violin plots
 
 There are variations that attempt to convey the sample size in a box plot, either by adjusting the width of the box or by introducing notches to indicate the confidence interval for the median [@wickham40YearsBoxplots2011].
 
@@ -249,7 +249,7 @@ knitr::include_graphics("images/violin_plots_horizontal.png")
 
 ### Tree based machine learning algorithms
 
-Random forests are an ensemble supervised machine learning technique composed of multiple decision trees [@kulkarniRandomForestClassifiers2013]. @mienyeSurveyDecisionTrees2024 provide a detailed overview of decision trees and their high-performing ensemble algorithms. Tree-based machine learning algorithms have gained significant popularity due to their simplicity and strong interpretability [@mienyeSurveyDecisionTrees2024].
+\acr{RF}s are an ensemble supervised machine learning technique composed of multiple decision trees [@kulkarniRandomForestClassifiers2013]. @mienyeSurveyDecisionTrees2024 provide a detailed overview of decision trees and their high-performing ensemble algorithms. Tree-based machine learning algorithms have gained significant popularity due to their simplicity and strong interpretability [@mienyeSurveyDecisionTrees2024].
 
 #### Decision tree
 
@@ -265,9 +265,9 @@ knitr::include_graphics("images/tree_simple.png")
 
 Additional advantages of decision trees — beyond their interpretability and computational efficiency — include their ability to natively capture interactions between features [@molnarInterpretableMachineLearning2025], without requiring explicit modeling as in linear regression. Decision trees can be used for both classification and regression tasks. They can even incorporate linear functions as leafs, enabling them to better capture linear relationships [@raymaekersFastLinearModel2024].
 
-However, decision trees lack resilience to data changes and tend to overfit. Pruning is a common method to mitigate overfitting [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees, as in the random forest algorithm described in the next section, is another approach to address these limitations.
+However, decision trees lack resilience to data changes and tend to overfit. Pruning is a common method to mitigate overfitting [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees, as in the \acr{RF} algorithm described in the next section, is another approach to address these limitations.
 
-Problems of decision trees are, that they lack resilience against data changes and have a tendency to overfitting. A method against overfitting is pruning [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees is another possibility, that results in the random forest algorithm, described in the next paragraph .
+Problems of decision trees are, that they lack resilience against data changes and have a tendency to overfitting. A method against overfitting is pruning [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees is another possibility, that results in the \acr{RF} algorithm, described in the next paragraph .
 
 @rivera-lopezInductionDecisionTrees2022 focus on decision trees and describe several types, including distinctions based on the splitting procedure (see Figure \@ref(fig:advanced-tree-splitting)). In addition to axis-parallel splitting, they present oblique and non-linear splitting criteria and provide a state-of-the-art review with a summary analysis of metaheuristics-based approaches for decision tree induction.
 
@@ -277,15 +277,15 @@ Problems of decision trees are, that they lack resilience against data changes a
 knitr::include_graphics("images/tree_types.jpg")
 ```
 
-#### Random forest
+#### Random Forest
 
-A random forest employs the principle of bagging at the level of both features and observations. It begins by creating basic decision trees using different subsets of features and applies bootstrapping to select randomized sets of observations for training each tree. The final prediction is determined by voting (for classification) or averaging (for regression) the predictions of all trees in the ensemble.
+A \acrfull{RF} employs the principle of bagging at the level of both features and observations. It begins by creating basic decision trees using different subsets of features and applies bootstrapping to select randomized sets of observations for training each tree. The final prediction is determined by voting (for classification) or averaging (for regression) the predictions of all trees in the ensemble.
 
-Tree induction can be parallelized, making random forests efficient on modern hardware. They can handle thousands of features and large datasets [@breimanRandomForests2001]. Methods exist to address imbalanced datasets. Just as decision trees can be pruned to combat overfitting, random forests can be pruned by removing entire trees to improve learning and classification performance [@kulkarniPruningRandomForest2012]
+Tree induction can be parallelized, making \acr{RF}s efficient on modern hardware. They can handle thousands of features and large datasets [@breimanRandomForests2001]. Methods exist to address imbalanced datasets. Just as decision trees can be pruned to combat overfitting, \acr{RF} can be pruned by removing entire trees to improve learning and classification performance [@kulkarniPruningRandomForest2012]
 
-Random forests are "powerful learning ensemble[s] given [their] predictive performance, flexibility and ease of use" [@haddouchiSurveyTaxonomyMethods2024]. While decision trees are considered *white boxes* due to their interpretability, random forests are regarded as *black boxes*. Although decisions can be traced without complex mathematics, the process is tedious, as it requires propagating through many decision trees, recording their predictions and then averaging them.
+\acr{RF}s are "powerful learning ensemble[s] given [their] predictive performance, flexibility and ease of use" [@haddouchiSurveyTaxonomyMethods2024]. While decision trees are considered *white boxes* due to their interpretability, \acr{RF}s are regarded as *black boxes*. Although decisions can be traced without complex mathematics, the process is tedious, as it requires propagating through many decision trees, recording their predictions and then averaging them.
 
-The classification of random forests as black-box models restricts their deployment in many fields of application [@haddouchiSurveyTaxonomyMethods2024]. One feature-oriented tool for explainability is the \acr{SHAP} framework, presented in Section \@ref(shap). It enables local explanation, global overview and pattern discovery for random forests [@haddouchiSurveyTaxonomyMethods2024].
+The classification of \acr{RF}s as black-box models restricts their deployment in many fields of application [@haddouchiSurveyTaxonomyMethods2024]. One feature-oriented tool for explainability is the \acr{SHAP} framework, presented in Section \@ref(shap). It enables local explanation, global overview and pattern discovery for \acr{RF}[@haddouchiSurveyTaxonomyMethods2024].
 
 #### Gradient boosted decision trees
 

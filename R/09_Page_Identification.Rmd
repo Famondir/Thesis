@@ -578,13 +578,13 @@ The key word list is generated removing the stop words from the law about **Akti
 
 This approach sums the counts of each word from the key word list per page in a first variable. In a second variable it counts the number of floats on each page. These two variables are then divided by the number of words found on the page. These densities are used to rank all pages from a single document. This is done with a unique key word list for each target type.
 
-A random forest is trained to determine which density should be weighted to what amount. Because of the imbalanced data set undersampling is used when the training data set is created[^09_page_identification-13]. A single random forest is trained because the density of floats and specific words is assumed to be similar. The actual type of the page is not taken into account. The model just knows if the page is a page of any target type, based on the term and float density. This trippels the data points of the target class.
+A \acr{RF} is trained to determine which density should be weighted to what amount. Because of the imbalanced data set undersampling is used when the training data set is created[^09_page_identification-13]. A single \acr{RF} is trained because the density of floats and specific words is assumed to be similar. The actual type of the page is not taken into account. The model just knows if the page is a page of any target type, based on the term and float density. This trippels the data points of the target class.
 
-[^09_page_identification-13]: The random forest build with undersampling performs much better as a classifier, that is trained using n oversamples train dataset.
+[^09_page_identification-13]: The \acr{RF} build with undersampling performs much better as a classifier, that is trained using n oversamples train dataset.
 
-This single random forest performs much better than random forests that are trained using the dataset for each target type separatly. The performance is tested on all data points not included in the undersampled train dataset. Thus the test dataset is again highly imbalanced.
+This single \acr{RF} performs much better than \acr{RF}s that are trained using the dataset for each target type separatly. The performance is tested on all data points not included in the undersampled train dataset. Thus the test dataset is again highly imbalanced.
 
-The random forest performs a binary classification task. But instead of the actual classifications, the predicted scores are used to rank the pages. Instead of precision or recall the metric used for the evaluation is top k recall. It is of interest which value of k is required to get a recall of 100 %.
+The \acr{RF} performs a binary classification task. But instead of the actual classifications, the predicted scores are used to rank the pages. Instead of precision or recall the metric used for the evaluation is top k recall. It is of interest which value of k is required to get a recall of 100 %.
 
 The code can be found at: "benchmark_jobs/page_identification/term_frequency.ipynb"
 
@@ -649,7 +649,7 @@ df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].ran
 
 low precision llm linked to position of correct page? numeric frequency?
 
-Figure \@ref(fig:forest-map-tf-2-predictors) shows how the test data points are distributed in the two dimensional value map for the random forest with two predictors. The target pages have a *float_frequncy* between 0.2 and 0.5 and pages with a *term_frequency* value over 0.07 get classified as target. One target page shows a lower *term_frequency* and thus does not get ranked correct. (recall, precision?)
+Figure \@ref(fig:forest-map-tf-2-predictors) shows how the test data points are distributed in the two dimensional value map for the \acr{RF} with two predictors. The target pages have a *float_frequncy* between 0.2 and 0.5 and pages with a *term_frequency* value over 0.07 get classified as target. One target page shows a lower *term_frequency* and thus does not get ranked correct. (recall, precision?)
 
 ```{python forest-map-tf-2-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-2preds.sav'), results='hold', fig.cap="Classification map showing which score a data point gets based on its term and float frequency and which type the data points in the test dataset actually have.", out.width="100%"}
 import shap
@@ -700,9 +700,9 @@ plt.legend()
 plt.show()
 ```
 
-A second random forest is trained supplementing the two predictors *term density* and *float density* with two additional predictors: *date count* and *integer count*. Figure \@ref(fig:top-n-recall-term-frequency) shows the top n recall for both random forests. On the left side the top n recall on the imbalanced test dataset is shown. On the right side the performance on the train dataset.
+A second \acr{RF} is trained supplementing the two predictors *term density* and *float density* with two additional predictors: *date count* and *integer count*. Figure \@ref(fig:top-n-recall-term-frequency) shows the top n recall for both \acr{RF}s. On the left side the top n recall on the imbalanced test dataset is shown. On the right side the performance on the train dataset.
 
-Both random forests perform similar on the train dataset. The random forest with four predictors reaches perfect recall faster for **Aktiva** on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the random forest with four predictors. With the random forest with two predictors it needs $n = 7$.
+Both \acr{RF}s perform similar on the train dataset. The \acr{RF} with four predictors reaches perfect recall faster for **Aktiva** on the test dataset. Thus, with $n = 5$ 100 % recall is reached for the \acr{RF} with four predictors. With the \acr{RF} with two predictors it needs $n = 7$.
 
 ```{r top-n-recall-term-frequency, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Comparing the top n recall on training and test dataset among the random forest with two and four predictors.", out.width="100%"}
 df_2_predictors_test <- read_csv("/home/simon/Documents/data_science/Thesis/benchmark_results/page_identification/term_frequency_results_2_predictors_test.csv") %>% 
@@ -800,7 +800,7 @@ df_train_split["rank"] = df_train_split.groupby(["filepath", "type"])["score"].r
 df_test_split["rank"] = df_test_split.groupby(["filepath", "type"])["score"].rank(ascending=False, method="first")
 ```
 
-Figure \@ref(fig:shap-tf-4-predictors) shows that the two additional predictors *date_count* and *integer_count* have little importance. But since it is computationally cheap to determine their value and the effiency of a random forest classifier, there is little reason not to use them.
+Figure \@ref(fig:shap-tf-4-predictors) shows that the two additional predictors *date_count* and *integer_count* have little importance. But since it is computationally cheap to determine their value and the effiency of a \acr{RF} classifier, there is little reason not to use them.
 
 ```{python shap-tf-4-predictors, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/rf-tf-preds.sav'), fig.cap="Beeswarm plot of SHAP importance values for the four predictors of the second random forest classifier.", out.width="100%"}
 import shap

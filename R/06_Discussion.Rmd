@@ -306,7 +306,7 @@ To prevent those few incorrect classifications, the system may need more example
 
 #### Term frequency approach {#error-analysis-tf}
 
-Inspecting some of the pages that are ranked high and wrongly classified as **Aktiva** by the term frequency based random forest, we find, that the normalized sum of term occurrences can lead to missclassification. For example, we find a page identified as **Aktiva**, that contains no single table but a long text. The full term count list based on the **Aktiva** term list can be found in the Appendix \@ref(tf-missclassifications).
+Inspecting some of the pages that are ranked high and wrongly classified as **Aktiva** by the term frequency based \acr{RF}, we find, that the normalized sum of term occurrences can lead to missclassification. For example, we find a page identified as **Aktiva**, that contains no single table but a long text. The full term count list based on the **Aktiva** term list can be found in the Appendix \@ref(tf-missclassifications).
 
 The term 'Geschäfts' is present 19 times. The term 'Unternehmen' is present 10 times. Those terms are probably present very often all over the document. Thus, they should get less weight. The \acr{BM25} measure is attributing less weight to common terms and includes an saturation term, too. @kongOpenTabAdvancingLarge2024 shows, that \acr{BM25} can be used effectively to identify relevant tables.
 
@@ -430,7 +430,7 @@ Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) sh
 ::: paragraph-start
 ##### Hybrid approach
 
-We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see Section \@ref(hybrid-learn-respect-units)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
+We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see Section \@ref(real-table-extraction-synth-context)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
 :::
 
 We also see in our hybrid approach experiments, that the benefit of providing real tables as examples instead of synthetic ones is larger for extracting the numeric values than for matching the labels. Comparing Figure \@ref(fig:compare-real-table-extraction-by-context-type-numeric) and Figure \@ref(fig:compare-real-table-extraction-by-context-type-F1) shows that \acr{LLM}s yield good results for predicting *null* more consistently than extracting the correct numeric value when synthetic tables are provided as in-context learning examples.
@@ -727,7 +727,7 @@ knitr::include_graphics("images/HITL_flowchart_error_handling.png")
 
 #### Transfering the system to new problems
 
-Expanding the system to new application areas should be straightforward, even for non-expert users. For the term frequency approach, a pipeline can be established where users input a list of keywords and receive a page ranking based on term frequency metrics. Users can refine the keyword list or directly select relevant pages to create a ground truth. If additional metrics are needed (such as float frequency), the system can automatically train a random forest classifier.
+Expanding the system to new application areas should be straightforward, even for non-expert users. For the term frequency approach, a pipeline can be established where users input a list of keywords and receive a page ranking based on term frequency metrics. Users can refine the keyword list or directly select relevant pages to create a ground truth. If additional metrics are needed (such as float frequency), the system can automatically train a \acr{RF} classifier.
 
 Alternatively, users can provide documents along with a list indicating which pages contain the desired information. This data can serve as the foundation for a retrieval-augmented few-shot classifier, which will improve as more pages are classified.
 
@@ -742,7 +742,7 @@ If the information is not placed in a table, but part of a regular sentence, it 
 ::: paragraph-start
 ##### Term frequency approach {#tf-practical-recommendation}
 
-Drawing on the error analysis for the term frequency approach (see Section \@ref(error-analysis-tf)), we recommend using either the sum of boolean indicators or the sum of \acr{BM25} scores instead of the normalized sum of term frequencies. Alternatively, each individual indicator could be used as a feature for the random forest classifier; however, this would require a larger training and test dataset to avoid overfitting due to the increased number of features.
+Drawing on the error analysis for the term frequency approach (see Section \@ref(error-analysis-tf)), we recommend using either the sum of boolean indicators or the sum of \acr{BM25} scores instead of the normalized sum of term frequencies. Alternatively, each individual indicator could be used as a feature for the \acr{RF} classifier; however, this would require a larger training and test dataset to avoid overfitting due to the increased number of features.
 :::
 
 ::: paragraph-start

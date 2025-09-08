@@ -206,9 +206,9 @@ We perform no manual data cleaning, because this will not be done from the emplo
 
 ### Data splitting
 
-When we train a machine learning model, we split the data into train and a test set. We do not use a validation set, because we do not compare models using an extended hyper-parameter variation strategy. Instead we just report the performance found for the models build with default settings. We build two random forests for the term frequency approach in the page identification task and additional ones for evaluating the hypotheses for the information extraction task.
+When we train a machine learning model, we split the data into train and a test set. We do not use a validation set, because we do not compare models using an extended hyper-parameter variation strategy. Instead we just report the performance found for the models build with default settings. We build two \acr{RF}s for the term frequency approach in the page identification task and additional ones for evaluating the hypotheses for the information extraction task.
 
-Building the term frequency random forest, we face a highly imbalanced dataset. We apply undersampling for the training and evaluate the model on the imbalanced test set.
+Building the term frequency \acr{RF}, we face a highly imbalanced dataset. We apply undersampling for the training and evaluate the model on the imbalanced test set.
 
 ## Experimental Framework
 
@@ -280,7 +280,7 @@ knitr::include_graphics("images/promt_building_classification.png")
 ::: paragraph-start
 ##### Term frequency Ranking
 
-We use normalized term frequencies and normalized float frequency as features for classification with a random forest. We use the predicted scores to build a ranking, for which page most probably contains the target pages. To handle the unbalanced data we use an undersampling approach for the training dataset creation. Figure \@ref(fig:tf-flowchart) visualizes, how the prediction works in this approach.
+We use normalized term frequencies and normalized float frequency as features for classification with a \acr{RF}. We use the predicted scores to build a ranking, for which page most probably contains the target pages. To handle the unbalanced data we use an undersampling approach for the training dataset creation. Figure \@ref(fig:tf-flowchart) visualizes, how the prediction works in this approach.
 :::
 
 ```{r tf-flowchart, fig.cap="Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class.", echo=FALSE, out.width="100%", fig.align='center'}
@@ -364,9 +364,9 @@ For interpreting the \acr{SHAP} values, we use bar plots showing the mean absolu
 :::
 
 ::: paragraph-start
-##### random forest
+##### Random Forests
 
-We build a random forest classifier in the term frequency approach for the page identification task, to evaluate our hypotheses **H2.2**. We perform no hyper parameter optimization. We want to get a first glimpse on what might influence the extraction instead of getting the best possible performance. We are not modelling causal relationships at all.
+We build a \acr{RF} classifier in the term frequency approach for the page identification task, to evaluate our hypotheses **H2.2**. We perform no hyper parameter optimization. We want to get a first glimpse on what might influence the extraction instead of getting the best possible performance. We are not modelling causal relationships at all.
 :::
 
 We do not use XGBoost for the final analysis, because calculating the \acr{SHAP} values for XGBoost model took to long. Linear and logistic regression models are fitted as well, but not used for the final analysis.

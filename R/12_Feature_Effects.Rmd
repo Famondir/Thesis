@@ -14,7 +14,7 @@ editor_options:
 ::: paragraph-start
 ##### Hypotheses
 
-The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the *shapviz* library based on the \acr{SHAP} values calculated for a random forest.
+The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the *shapviz* library based on the \acr{SHAP} values calculated for a \acr{RF}.
 :::
 
 ```{r real-table-extraction-regex-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_regex_h2o_results_sample_50000_shap_2000.rds')}
@@ -88,10 +88,10 @@ synth_table_extraction_regex_shap_num_details_plot <- p1d | p1c
 ::: paragraph-start
 ###### Real dataset
 
-The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the shapviz library based on the \acr{SHAP} values calculated with a random forest.
+The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the shapviz library based on the \acr{SHAP} values calculated with a \acr{RF}.
 :::
 
-Table \@ref(tab:hypotheses-and-results-real-table-extraction-regex-table) shows in the first column the predictors included in the random forests. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for two aggregated measures (F1 score and percentage of correct numeric predictions) and one value based measure (binomial correctness rating).
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-regex-table) shows in the first column the predictors included in the \acr{RF}s. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for two aggregated measures (F1 score and percentage of correct numeric predictions) and one value based measure (binomial correctness rating).
 
 Predictors that are marked with an asterisk only have five or less representatives. Thus, those results are not reliable. Bold set hypotheses show the predictors, that showed the highest mean \acr{SHAP} values. For all measures but the binomial this means the effect is at least 0.025. For the binomial measure the effect of a predictor with bold hypothesis is at least 0.05. Results with red text highlight hypotheses that are not supported by the visual evaluation.
 
@@ -137,7 +137,7 @@ synth_table_extraction_regex_shap_num_details_plot +
 ::: paragraph-start
 ##### Hypotheses
 
-The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the shapviz library based on the \acr{SHAP} values calculated with a random forest.
+The formulated hypotheses have been evaluated visually using the dependence and beeswarm plots from the shapviz library based on the \acr{SHAP} values calculated with a \acr{RF}.
 :::
 
 ```{r real-table-extraction-llm-shap-loading, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", cache=TRUE, cache.extra = tools::md5sum('data_storage/h2o/real_table_extraction_h2o_results_sample_50000_shap_2000.rds')}
@@ -181,7 +181,7 @@ real_table_extraction_llm_shap_plot <- (p1a | p1b) /
 real_table_extraction_llm_shap_num_details_plot <- p1c | p1d
 ```
 
-Table \@ref(tab:hypotheses-and-results-real-table-extraction-llm-table) shows in the first column the predictors included in the random forests. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for two aggregated measures (F1 score and percentage of correct numeric predictions) and two value based measures (binomial correctness rating and reported confidence for the prediction).
+Table \@ref(tab:hypotheses-and-results-real-table-extraction-llm-table) shows in the first column the predictors included in the \acr{RF}s. Subsequent groups of two columns show the hypotheses and the found effects of those predictors for two aggregated measures (F1 score and percentage of correct numeric predictions) and two value based measures (binomial correctness rating and reported confidence for the prediction).
 
 Predictors that are marked with an asterix only have five or less representatives. Thus, those results are not reliable. Bold set hypotheses show the predictors, that showed the highest mean \acr{SHAP} values. For all measures but the binomial this means the effect is at least 0.025. For the binomial measure the effect of a predictor with bold hypothesis is at least 0.05. Results with red text highlight hypotheses that are not supported by the visual evaluation.
 
