@@ -44,3 +44,5 @@ benchmark_truth/real_tables_extended/*
 Python/openai_classifying_test/azure_test.ipynb
 Python/openai_classifying_test/hide_azure_test.ipynb
 !docs/*.pdf
+remote_thesis_backup/.gitignore
+remote_thesis_backup/chroma_db/*
