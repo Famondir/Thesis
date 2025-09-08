@@ -191,6 +191,26 @@
   \setlength{\headwidth}{\textwidth}
 }
 
+\newcommand{\setASHeaderLayout}{
+  % \restoregeometry
+  % \hmm  
+  \clearpage
+  \pdfpagewidth=210mm
+  \pdfpageheight=60mm
+  \newgeometry{
+    % paperwidth=297mm,
+    % paperheight=210mm,
+    left=2cm,
+    top=2cm,
+    textwidth=17cm,
+    textheight=2cm,
+    twoside=false
+  }
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+  \setlength{\headwidth}{\textwidth}
+}
+
 \newcommand{\setASLandscapeLayout}{
   % \restoregeometry
   % \hmm  

@@ -8,7 +8,7 @@ editor_options:
 
 NA predicting
 
-```{r display-extraction-metrics-full-NA, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", dev=std_dev, fig.cap="Displaying the performance metrics a LLMs response would have, if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables."}
+```{r display-extraction-metrics-full-NA, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=4, out.width="100%", dev=std_dev, fig.cap="Displaying the performance metrics a LLMs response would have, if all predictions are 'null'. The area between the two dashed lines shows the number of numeric values found in the real Aktiva tables."}
 metrics <- list()
 
 for (i in 1:29) {
@@ -31,13 +31,17 @@ metrics %>% tibble() %>% unnest_wider(".") %>%
   )
 ```
 
+\clearpage
+
 ## Page identification
 
 ### Regex baseline
 
-```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=6, out.width="100%", dev=std_dev, fig.cap="Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", cache=cache_large_figures}
+```{r display-metrics-plot-regex-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, figwidth=8, fig.height=7, out.width="100%", dev=std_dev, fig.cap="Comparing page identification metrics for different regular expressions for each classification task by type of the target table.", cache=cache_large_figures}
 metrics_plot_regex_page_identification
 ```
+
+\clearpage
 
 ### TOC understanding
 
@@ -67,7 +71,7 @@ balanced_df_toc_benchmark %>% ggplot() +
 
 #### Binary
 
-Binary classification F1 score over runtime limited to 60 minutes
+\setAELandscapeLayout
 
 ```{r binary-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
 design = "
@@ -100,8 +104,6 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
   coord_cartesian(xlim = c(0, 60), ylim = c(0,1))
 ```
 
-Binary classification F1 score over runtime unlimited
-
 ```{r binary-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing F1 score over normalized runtime for binary classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
 df_binary %>% filter(classification_type == "Aktiva") %>% 
   filter(loop == 0) %>% filter(model %in% model_by_size_classification) %>% 
@@ -125,9 +127,11 @@ df_binary %>% filter(classification_type == "Aktiva") %>%
   coord_cartesian(ylim = c(0,1))
 ```
 
+\setASHeaderLayout
+
 #### Multi-class classification
 
-Multi-class classification micro minorites F1 score over runtime limited to 60 minutes
+\setAELandscapeLayout
 
 ```{r multi-classification-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 60 minutes of runtime.", cache=cache_large_figures}
 design = "
@@ -160,8 +164,6 @@ df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>%
   coord_cartesian(xlim = c(0, 60), ylim = c(0,1))
 ```
 
-Multi-class classification micro minorites F1 score over runtime
-
 ```{r multi-classification-performance-over-runtime-full-time, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing F1 score over normalized runtime for multi-class classification task. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded.", cache=cache_large_figures}
 design = "
 ABCD##X
@@ -193,6 +195,8 @@ df_multi %>% unnest(metrics) %>% filter(metric_type == "micro_minorities") %>%
   coord_cartesian(ylim = c(0,1))
 ```
 
+\setDefaultLayout
+
 ```{r micro-pr-curve-llm-multi-llama-scout, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=8, dev=std_dev, fig.cap="Showing the precsion-recall-curve for Llama-4-Scout-17B-16E-Instruct."}
 model_name <- "Llama-4-Scout-17B-16E-Instruct"
 method_name <- "3_rag_examples"
@@ -210,6 +214,8 @@ wrap_elements(p_aktiva) / wrap_elements(p_passiva) / wrap_elements(p_guv) +
   plot_layout(heights = c(2, 2, 3)) +
   plot_annotation(title = str_c(model_name, " with ", method_name))
 ```
+
+\setASHeaderLayout
 
 ## Table extraction
 
@@ -238,25 +244,39 @@ df_overview_synth %>% mutate(target_data = "synth") %>%
   )
 ```
 
+\setASHeaderLayout
+
 ### Regex approach
 
 #### Real tables
 
-```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach", cache=cache_large_figures}
+\setAEPortraitLayout
+
+```{r real-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=14, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with regular expression approach", cache=cache_large_figures}
 real_table_extraction_regex_shap_plot
 ```
 
+\setASHeaderLayout
+
 #### Synthetic tables 
 
-```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=12, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach", cache=cache_large_figures}
+\setAEPortraitLayout
+
+```{r synth-table-extraction-regex-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=14, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for synth table extraction with regular expression approach", cache=cache_large_figures}
 synth_table_extraction_regex_shap_plot
 ```
 
-```{r synth-table-extraction-regex-dependence-plot-backend, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', dev=std_dev, fig.cap="Showing the interactions of the extraction backend pdfium with the table characteristics for F1 score.", cache=cache_large_figures}
+\setAEPortraitLayout
+
+```{r synth-table-extraction-regex-dependence-plot-backend, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", fig.height=6, fig.width=10, out.extra='keepaspectratio', dev=std_dev, fig.cap="Showing the interactions of the extraction backend pdfium with the table characteristics for F1 score.", cache=cache_large_figures}
 shap_f1_extraction_backend
 ```
 
+\setASHeaderLayout
+
 ### Real tables
+
+\setAELandscapeLayout
 
 ```{r real-table-extraction-performance-over-runtime, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing percentage of correct predictions total over the normalized runtime. The normalized runtime is given in minutes of processing on a single B200. The time to load the model into the VRAM is excluded. Focussing on small models showing only 5 minutes of runtime.", cache=cache_large_figures}
 design = matrix(c(
@@ -361,7 +381,11 @@ df_overview %>%
   )
 ```
 
+\setASHeaderLayout
+
 #### Examples from same company
+
+\setAELandscapeLayout
 
 ```{r table-extraction-llm-performance-total-overview-out-of-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Comparing the overall extraction performance depending on the condition if examples from the same company can be used.", cache=TRUE, cache.extra = tools::md5sum(c("data_storage/real_table_extraction_llm.rds", "data_storage/real_table_extraction_azure.rds")), cache=cache_large_figures}
 model_selection <- c(model_by_size, "gpt-4.1-nano", "gpt-5-nano", "gpt-4.1-mini", "gpt-5-mini", "gpt-4.1")
@@ -417,7 +441,11 @@ p1 /
   p2
 ```
 
+\setASHeaderLayout
+
 #### OpenAI models
+
+\setDefaultLayout
 
 ```{r table-extraction-llm-performance-total-gpt, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=10, dev=std_dev, fig.cap="Comparing the percentage of correct predictions overall for OpenAi's LLMs with some Qwen 3 models"}
 df_overview_gpt %>% 
@@ -428,7 +456,8 @@ df_overview_gpt %>%
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
   theme(
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+    legend.position = "bottom"
   )
 ```
 
@@ -440,7 +469,8 @@ df_overview_gpt %>%
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
   theme(
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+    legend.position = "bottom"
   )
 ```
 
@@ -454,13 +484,18 @@ df_overview_gpt %>%
   scale_x_discrete(guide = guide_axis(angle = 30)) +
   facet_nested(method_family + n_examples ~ .) +
   theme(
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+    legend.position = "bottom"
   )
 ```
 
+\setASHeaderLayout
+
 #### Comparing input formats and text extration libraries
 
-```{r}
+\setAELandscapeLayout
+
+```{r real-table-extraction-qwen235-by-company-unput-type-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=9, fig.width=16, dev=std_dev, fig.cap="Percentage of correct predictions total with Qwen-235B grouped by company and input type.", cache=cache_large_figures}
 df_qwen235 %>% group_by(model, method, extractor, input_format) %>% 
   mutate(mean_total = mean(percentage_correct_total)) %>% 
   group_by(model, extractor, input_format, filepath) %>% 
@@ -472,8 +507,11 @@ df_qwen235 %>% group_by(model, method, extractor, input_format) %>%
   scale_x_discrete(guide = guide_axis(angle = 30))
 ```
 
+\setASHeaderLayout
 
 #### Hypotheses
+
+\setAEPortraitLayout
 
 ```{r real-table-extraction-llm-shap-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.width=12, fig.height=16, dev=std_dev, fig.cap="Mean absolute SHAP values and beeswarm plots for real table extraction with LLMs", cache=cache_large_figures}
 for (i in 1:4) {
@@ -488,7 +526,11 @@ real_table_extraction_llm_shap_plot + plot_annotation(tag_levels = c('A', '1'), 
 ) & theme(plot.title = element_text(size = 22))
 ```
 
+\setASHeaderLayout
+
 ### Synthetic tables
+
+\setAELandscapeLayout
 
 ```{r synth-table-extraction-llm-performance-total-overview, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, fig.width=20, dev=std_dev, fig.cap="Percentage of correct extracted or as missing categorized values for table extraction task on synthetic Aktiva tables", cache=cache_large_figures}
 df_overview_synth %>% 
@@ -526,9 +568,13 @@ df_overview_synth %>%
   )
 ```
 
+\setASHeaderLayout
+
 #### Confidence 
 
-```{r table-extraction-llm-confidence-lm-synth-grouped-by-input-format, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task. Additionally grouped by input format.", cache=TRUE, cache.lazy = FALSE, cache.extra = tools::md5sum(c("data_storage/confidence_intervals_synth_by_format.rds"))}
+\setAELandscapeLayout
+
+```{r table-extraction-llm-confidence-lm-synth-grouped-by-input-format, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.height=9, out.extra='keepaspectratio', fig.width=16, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions for the synthetic table extraction task. Additionally grouped by input format.", cache=TRUE, cache.lazy = FALSE, cache.extra = tools::md5sum(c("data_storage/confidence_intervals_synth_by_format.rds"))}
 confidence_intervals_synth_by_format <-  readRDS("data_storage/confidence_intervals_synth_by_format.rds")
 
 # confidence_vs_truth_synth <- df_synth_table_extraction %>% 
@@ -629,10 +675,13 @@ confidence_intervals_synth_by_format %>%
 
 ```
 
+\setASHeaderLayout
 
 ### Hybrid approach
 
-```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing percentage of correct extracted values overall for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+\setAEPortraitLayout
+
+```{r compare-real-table-extraction-by-context-type, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", fig.height=10, dev=std_dev, out.extra='keepaspectratio', fig.cap="Comparing percentage of correct extracted values overall for real Aktiva extraction task with synthetic and real examples for in-context learning"}
 bind_rows(
   df_real_table_extraction_synth %>% mutate(context = "synth"), 
   df_real_table_extraction %>% mutate(context = "real")
@@ -651,7 +700,7 @@ bind_rows(
   facet_nested(method_family+n_examples~model)
 ```
 
-```{r compare-real-table-extraction-by-context-type-numeric, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing percentage of correct extracted numeric values for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+```{r compare-real-table-extraction-by-context-type-numeric, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", fig.height=10, dev=std_dev, out.extra='keepaspectratio', fig.cap="Comparing percentage of correct extracted numeric values for real Aktiva extraction task with synthetic and real examples for in-context learning"}
 bind_rows(
   df_real_table_extraction_synth %>% mutate(context = "synth"), 
   df_real_table_extraction %>% mutate(context = "real")
@@ -670,7 +719,7 @@ bind_rows(
   facet_nested(method_family+n_examples~model)
 ```
 
-```{r compare-real-table-extraction-by-context-type-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=10, dev=std_dev, fig.cap="Comparing the F1 score for real Aktiva extraction task with synthetic and real examples for in-context learning"}
+```{r compare-real-table-extraction-by-context-type-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", fig.height=10, dev=std_dev, out.extra='keepaspectratio', fig.cap="Comparing the F1 score for real Aktiva extraction task with synthetic and real examples for in-context learning"}
 bind_rows(
   df_real_table_extraction_synth %>% mutate(context = "synth"), 
   df_real_table_extraction %>% mutate(context = "real")
@@ -689,7 +738,7 @@ bind_rows(
   facet_nested(method_family+n_examples~model)
 ```
 
-```{r compare-effect-of-respecting-units-on-overall-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, dev=std_dev, fig.cap="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+```{r compare-effect-of-respecting-units-on-overall-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", fig.height=12, out.extra='keepaspectratio', dev=std_dev, fig.cap="Comparing the effect on overall perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
 df_real_table_extraction_synth_respect_units %>% 
   ggplot() +
   geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_total), alpha = .3) +
@@ -706,7 +755,7 @@ df_real_table_extraction_synth_respect_units %>%
   )
 ```
 
-```{r compare-effect-of-respecting-units-on-numeric-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, dev=std_dev, fig.cap="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+```{r compare-effect-of-respecting-units-on-numeric-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", out.height="95%", out.extra='keepaspectratio', fig.height=12, dev=std_dev, fig.cap="Comparing the effect on numeric perfrormance if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
 df_real_table_extraction_synth_respect_units %>% 
   ggplot() +
   geom_boxplot(aes(x = 1, fill=respect_units, y = percentage_correct_numeric), alpha = .3) +
@@ -723,7 +772,7 @@ df_real_table_extraction_synth_respect_units %>%
   )
 ```
 
-```{r compare-effect-of-respecting-units-on-NA-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, dev=std_dev, fig.cap="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
+```{r compare-effect-of-respecting-units-on-NA-F1, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.height=12, out.height="95%", dev=std_dev, out.extra='keepaspectratio', fig.cap="Comparing the effect on NA F1 score if currency units should be respected on all predictions and specifically on predictions where all or just some columns have units.", cache=cache_large_figures}
 df_real_table_extraction_synth_respect_units %>% 
   ggplot() +
   geom_boxplot(aes(x = 1, fill=respect_units, y = NA_F1), alpha = .3) +
@@ -739,5 +788,3 @@ df_real_table_extraction_synth_respect_units %>%
     legend.position = "bottom"
   )
 ```
-
-real_table_extraction_llm_synth_context_shap_plot

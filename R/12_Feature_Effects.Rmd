@@ -100,7 +100,7 @@ Table \@ref(tab:hypotheses-and-results-real-table-extraction-regex-table) shows 
 see Figure \@ref(fig:real-table-extraction-regex-shap-plot)
 
 ```{r hypotheses-and-results-real-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
-create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the regular expression approach.")
+create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the regular expression approach. Rows with an * have less than six observations.")
 ```
 
 ::: paragraph-start
@@ -117,9 +117,15 @@ It might be worth noting, that the row for *Anteile an verbundenen Unternehmen* 
 
 The question, if visual separation of columns is having an effect, as found for the real data, is not studied here, because in the synthetic tables all columns are visually separated. But this could be investigated in future work. It is possible, that the visual separation is causing the faulty text extractions of *pdfium*.
 
+\setASLandscapeLayout
+\stopthumb
+
 ```{r hypotheses-and-results-synth-table-extraction-regex-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
 create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_regex.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the regular expression approach.")
 ```
+
+\setDefaultLayout
+\continuethumb
 
 ```{r synth-table-extraction-regex-shap-num-details-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.width=8, fig.height=4, dev=std_dev, fig.cap="Showing the influence of the extraxtion library on the numeric text extraction task with synthetic data for the percentage of correct numeric predictions."}
 synth_table_extraction_regex_shap_num_details_plot + 
@@ -183,9 +189,21 @@ For most measures the model and method related predictors (*model_family*, *para
 
 see Figure \@ref(fig:real-table-extraction-llm-shap-plot)
 
+\setASLandscapeLayout
+\stopthumb
+
 ```{r hypotheses-and-results-real-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
-create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables the LLM approach.")
+table <- create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables the LLM approach. Rows with an * have less than six observations.")
+
+if(knitr::is_latex_output()) {
+  table <- table %>% column_spec(2:9, width = "2.4cm")
+}
+
+table
 ```
+
+\setDefaultLayout
+\continuethumb
 
 ## Synthetic tables
 
@@ -219,17 +237,31 @@ Positive column count effect (different for real data)
 
 header span not reflected in html and markdown
 
+\setAELandscapeLayout
+\stopthumb
+
 ```{r hypotheses-and-results-synth-table-extraction-llm-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
-create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the LLM approach.", detect = ":")
+table <- create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_synth_table_extraction_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on synthetic Aktiva tables with the LLM approach.", detect = ":")
+
+if(knitr::is_latex_output()) {
+  table <- table %>% column_spec(2:9, width = "3.4cm")
+}
+
+table
 ```
 
-```{r better-performance-for-value-transformation-with-html-and-md, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the percentage of correct extracted numeric values grouped by input format, method family and the fact, if currency should be respected.", fig.width=10}
+\setASLandscapeLayout
+
+```{r better-performance-for-value-transformation-with-html-and-md, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the percentage of correct extracted numeric values grouped by input format, method family and the fact, if currency should be respected.", fig.width=10, fig.height=6}
 df_synth_table_extraction %>% filter(method != "static_example") %>% 
   mutate(respect_units = !ignore_units) %>% 
   ggplot() + 
   geom_boxplot(aes(y = percentage_correct_numeric, x = factor(unit_multiplier), fill = input_format), alpha = .7) + 
   facet_nested(paste("respect units:", respect_units)~method_family)
 ```
+
+\setDefaultLayout
+\continuethumb
 
 ## Hybrid approach
 
@@ -280,9 +312,21 @@ real_table_extraction_llm_synth_context_shap_plot <- (p1a | p1b) /
 real_table_extraction_llm_synth_context_shap_num_details_plot <- p1c # | p1d
 ```
 
+\setASLandscapeLayout
+\stopthumb
+
 ```{r hypotheses-and-results-real-table-extraction-llm-synth-context-table, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk="big-table"}
-create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_synth_context_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the hybrid LLM approach.")
+table <- create_hypotheses_table("../benchmark_results/table_extraction/hypotheses_and_results_real_table_extraction_synth_context_llm.html", caption = "Comparing the formulated hypotheses and the found results for the table extraction on real Aktiva tables with the hybrid LLM approach. Rows with an * have less than six observations.")
+
+if(knitr::is_latex_output()) {
+  table <- table %>% column_spec(2:9, width = "2.4cm")
+}
+
+table
 ```
+
+\setDefaultLayout
+\continuethumb
 
 ```{r static-example-best-dependence-plot, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Estimating the relative frequency to find a wrong extraction result over different confidence intervals for predictions based on synthetic examples for in-context learning."}
 real_table_extraction_llm_synth_context_shap_num_details_plot

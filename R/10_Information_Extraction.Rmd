@@ -175,6 +175,11 @@ For the table extraction task `r length(unique(df_real_table_extraction$model))+
 
 Qwen3-235B-A22B-Instruct performed best with a mean score of `r top_scoring_model_big_mean`. This is equal with the performance that we achieved building the ground truth dataset. There are other models that perform almost as good with a score of 0.96 and more, but that don't match the human performance. These models show a median score of 1.0. Qwen3-235B-A22B-Instruct is the second fastest of those well performing models and needs less than six minutes. Only Llama 4 Maverick is faster. It needs half the time to extract the information.
 
+Table \@ref(tab:table-metrics-llm-real-table-extraction-small) shows the performance of models with less than 17B parameters, that have not been listed above. Qwen3-14B performs best among the smaller models achieving a mean of `r top_scoring_model_small_mean` and median of 1.0. It takes 1:49 minutes to extract the information from all **Aktiva** tables. Ministral-8B-Instruct does not perform as good as in the page identification task.
+
+\setASLandscapeLayout
+\stopthumb
+
 ```{r table-metrics-llm-real-table-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_top_scoring_models_big %>% 
   mutate(
@@ -183,8 +188,6 @@ df_top_scoring_models_big %>%
     ) %>% 
   render_table(caption = "Comparing best table extraction performance with real 'Aktiva' dataset for each model family", ref = opts_current$get("label"), alignment = "lllrrrrr", dom="t")
 ```
-
-Table \@ref(tab:table-metrics-llm-real-table-extraction-small) shows the performance of models with less than 17B parameters, that have not been listed above. Qwen3-14B performs best among the smaller models achieving a mean of `r top_scoring_model_small_mean` and median of 1.0. It takes 1:49 minutes to extract the information from all **Aktiva** tables. Ministral-8B-Instruct does not perform as good as in the page identification task.
 
 ```{r table-metrics-llm-real-table-extraction-small, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_top_scoring_models_small %>% 
@@ -195,6 +198,9 @@ df_top_scoring_models_small %>%
     ) %>% 
   render_table(caption = "Comparing best table extraction performance with real 'Aktiva' dataset for each model family for models with less than 17B parameters. Models that have been listes in the previous table are not listed again.", ref = opts_current$get("label"), alignment = "lllrrrrr", dom="t")
 ```
+
+\setDefaultLayout
+\continuethumb
 
 Most models need a context learning approach to beat the performance of the regular expression approach at total and numeric correctness rate and F1 score. Table \@ref(tab:zero-and-synth-performing-models-tab) shows, that `r nrow(zero_shot_stars)` models perform better without any guidance[^10_information_extraction-3]. `r nrow(static_example_stars)` models achieved an performance better than the \acr{regex} baseline using the approach to learn with a fixed example from the synthetic dataset.
 
@@ -268,7 +274,7 @@ Table \@ref(tab:table-extraction-llm-performance-total-gpt-ranking) shows the ra
 Table \@ref(tab:costs-azure) shows the accumulated costs for the table extraction task for the models provided by Azure. Using gpt-4.1 is most expensive, followed by gpt-5-mini. Next is gpt-5-nano. This is caused by an unexpected high cost for output tokens. In general we find, that the ratio of output costs to input costs is much higher for gpt-5 models. Since gpt-5-mini gives consistently good results already with one provided example, this could be the most cost efficient strategy. But it takes gpt-5-mini more than three times longer to respond than gpt-4.1.
 
 ```{r table-extraction-llm-performance-total-gpt-ranking, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
-df_overview_gpt %>% group_by(model, method) %>% 
+table <- df_overview_gpt %>% group_by(model, method) %>% 
   reframe(
     mean_percentage_correct_total = mean(percentage_correct_total, na.rm=TRUE),
     median_percentage_correct_total = median(percentage_correct_total, na.rm=TRUE),
@@ -282,12 +288,21 @@ df_overview_gpt %>% group_by(model, method) %>%
     mean_percentage_correct_total = round(mean_percentage_correct_total, 2),
     median_percentage_correct_total = round(median_percentage_correct_total, 2),
     # median_runtime = round(median_runtime)
-    ) %>% rename("median correct total" = median_percentage_correct_total) %>% 
+    ) %>% rename(
+      "median correct total" = median_percentage_correct_total,
+      "mean correct total" = mean_percentage_correct_total
+      ) %>% 
   render_table(
     alignment = "llrr",
-    caption = "Comparing table extraction performance with real 'Aktiva' dataset for OPenAIs GPT models with a selection of Qwen3 models.",
+    caption = "Comparing table extraction performance with real 'Aktiva' dataset for OpenAIs GPT models with a selection of Qwen3 models.",
     ref = opts_current$get("label"), dom="t"
   )
+
+# if(knitr::is_latex_output()) {
+#   table <- table %>% column_spec(3, width = "3cm")
+# }
+
+table
 ```
 
 ```{r costs-azure, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -620,6 +635,9 @@ Detail:
 
 Figure \@ref(fig:synth-table-extraction-llm-performance-numeric-overview) shows, that Llama 3.3 70B never manages to reduce the spread in the numeric prediction performance.
 
+\setASLandscapeLayout
+\stopthumb
+
 ```{r table-metrics-llm-real-table-extraction-synth-context, echo=echo_flag, warning=warning_flag, message=message_flag, results="asis"}
 df_synth_top_performance %>% 
   mutate(
@@ -645,6 +663,9 @@ df_synth_top_performance_small %>%
   ) %>% select(-median_runtime) %>% 
   render_table(caption = "Comparing best median table extraction performance with synthetic 'Aktiva' dataset for each model family for models with less than 17B parameters", ref = opts_current$get("label"), alignment = "lllrr", dom="t")
 ```
+
+\setDefaultLayout
+\continuethumb
 
 ### Hybrid approach {#real-table-extraction-synth-context}
 
@@ -794,6 +815,9 @@ $$
 
 On the same time, gemma3-12b shows the lowest *delta_rate* with under 10 %, when the improvement of using synthetic examples is compared with the *zero_shot* method. For the other models this is more tan 48 % and highest for Llama Scout 4 with 87.5 % improving from 0.45 to 0.93. Qwen-235B score as high with both learning approaches, but scored best with just using a single synthetic example. Table \@ref(tab:comparing-extraction-performance-real-and-synth-context-learning-median) shows that these observations are valid for the improvement with in the models independent from the selected method. Figure \@ref(fig:compare-real-table-extraction-by-context-type) shows, that the improvement for using one or three synthetic examples is biggest for Qwen3-8B.
 
+\setASLandscapeLayout
+\stopthumb
+
 ```{r comparing-extraction-performance-real-and-synth-context-learning, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 best_models_with_examples %>% 
   mutate(
@@ -820,8 +844,11 @@ best_models_with_examples %>%
     ref = opts_current$get("label"), dom="t")
 ```
 
+\setDefaultLayout
+\continuethumb
+
 ::: paragraph-start
-##### Learning to respect currency units {#hybrid-learn-respect-units}
+##### Learning to respect currency units
 
 Table \@ref(tab:comparing-extraction-performance-synth-context-learning-respecting-units-table) shows, the difference in the percentage of correct predicted numeric values, if the \acr{LLM} is prompted to respect currency units and gets synthetic **Aktiva** tables that show how to cope with different currency units, separate for the number of columns with currency units. There are `r n_tables_n_cols %>% deframe() %>% .["1"]` tables that have *T€* in the previous year column and `r n_tables_n_cols %>% deframe() %>% .["2"]` tables that have all columns listed in *T€*.
 :::

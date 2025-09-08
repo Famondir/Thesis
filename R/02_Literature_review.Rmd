@@ -10,7 +10,7 @@ editor_options:
 
 This chapter presents literature relevant to our research questions and provides essential background on the concepts and methods employed in this thesis. As outlined in Chapter \@ref(introduction), the problem addressed here lies within the field of information retrieval and is approached using \acr{NLP} techniques. Accordingly, Section \@ref(computer-science) reviews techniques for locating information within and extracting it from documents.
 
-Section \@ref(llm-theory) then explains the mechanisms and architectures of modern \acrfull{LLM}s, with particular attention to the \acr{MoE} architecture. It also discusses the prompting strategy *in-context learning*, which leverages the "programming by example" paradigm, and explores how \acr{RAG} integrates into this framework. We also demonstrate how guided decoding can be used to generate structured responses suitable for downstream tasks.
+Section \@ref(llm-theory) then explains the mechanisms and architectures of modern \acrfull{LLM}s, with particular attention to the \acr{MoE} architecture. It also discusses the prompting strategy *in-context learning*, which leverages the "programming by example" paradigm and explores how \acr{RAG} integrates into this framework. We also demonstrate how guided decoding can be used to generate structured responses suitable for downstream tasks.
 
 Section \@ref(other-concepts) introduces the \acr{SHAP} framework, a unified model for explaining machine learning predictions, applicable to complex models such as deep neural networks and random forests. The latter are briefly described as well. We employ random forests and \acr{SHAP} to test our hypotheses regarding potential predictors for the information extraction task. Our hypotheses are stated in Section \@ref(research-questions).
 
@@ -20,9 +20,9 @@ Information retrieval and \acr{NLP} are pivotal areas within computer science, e
 
 ### Information Retrieval {#sparse-retrieval}
 
-Information retrieval focuses on identifying relevant information within extensive collections of unstructured text. It is fundamental to applications such as search engines, dialogue systems, question answering, and recommender systems [@zhuLargeLanguageModels2024].
+Information retrieval focuses on identifying relevant information within extensive collections of unstructured text. It is fundamental to applications such as search engines, dialogue systems, question answering and recommender systems [@zhuLargeLanguageModels2024].
 
-One of the earliest measures used in retrieval algorithms is term frequency ($\mathrm{tf}_{t,d}$), which simply counts the number of occurrences of a term within a document. Here, "document" is an abstraction and may refer to a sentence, page, or file. Since longer documents tend to have higher term frequencies for each term, it is useful to normalize this value by the document length $|d|$, resulting in the term rate:
+One of the earliest measures used in retrieval algorithms is term frequency ($\mathrm{tf}_{t,d}$), which simply counts the number of occurrences of a term within a document. Here, "document" is an abstraction and may refer to a sentence, page or file. Since longer documents tend to have higher term frequencies for each term, it is useful to normalize this value by the document length $|d|$, resulting in the term rate:
 
 \begin{equation} 
 \mathrm{tr}_t = \frac{\mathrm{tf}_{t,d}}{|d|}
@@ -31,14 +31,14 @@ One of the earliest measures used in retrieval algorithms is term frequency ($\m
 
 This metric is integral to established measures such as \acr{TF-IDF} and Okapi \acr{BM25}, both of which are widely used for ranking document relevance in response to search queries [@robertsonUnderstandingInverseDocument2004; @robertsonProbabilisticRelevanceFramework2009]. These methods are also commonly employed in \acr{RAG} architectures (see Section \@ref(retireval-augmented-generation)). Notably, \acr{BM25} is recognized as one of the most successful algorithms for web and corporate search [@robertsonProbabilisticRelevanceFramework2009].
 
-The \acr{IDF} is often used as a weighting function. If the ranking of search results is based solely on the sum of term frequencies present in both the document and the query, less informative terms receive equal weight. For example, in the query "Is the positron blue?", common terms such as *is*, *the*, and *blue* may appear frequently in a document, potentially resulting in a high score even if positron is absent. To address this, term frequencies are multiplied by the \acr{IDF} score [@manningIntroductionInformationRetrieval2008, pp. 118]:
+The \acr{IDF} is often used as a weighting function. If the ranking of search results is based solely on the sum of term frequencies present in both the document and the query, less informative terms receive equal weight. For example, in the query "Is the positron blue?", common terms such as *is*, *the* and *blue* may appear frequently in a document, potentially resulting in a high score even if positron is absent. To address this, term frequencies are multiplied by the \acr{IDF} score [@manningIntroductionInformationRetrieval2008, pp. 118]:
 
 \begin{equation} 
 \mathrm{idf}_t = \log \frac{N}{\mathrm{df}_t}
 (\#eq:idf)
 \end{equation}
 
-where $N$ is the total number of documents in the collection, and $\mathrm{df}_t$ is the number of documents containing term $t$. While term frequencies are calculated separately for each document, the \acr{IDF} score is computed once for the entire collection. The \acr{TF-IDF} score is then defined as:
+where $N$ is the total number of documents in the collection and $\mathrm{df}_t$ is the number of documents containing term $t$. While term frequencies are calculated separately for each document, the \acr{IDF} score is computed once for the entire collection. The \acr{TF-IDF} score is then defined as:
 
 \begin{equation} 
 \mathrm{tf\text{-}idf}_t = \mathrm{idf}_t \cdot \mathrm{tf}_{t,d}
@@ -53,7 +53,7 @@ Measures such as \acr{TF-IDF} and \acr{BM25} are also applied to classification 
 
 ### Natural Language Processing {#nlp}
 
-\acrfull{NLP} is a branch of artificial intelligence dedicated to enabling computers to understand, interpret, and generate human language [@mahmudiNaturalLanguageProcessing2024]. \acr{NLP} encompasses a broad spectrum of tasks, including sentiment analysis, information extraction, table and dialog understanding, summarization, code generation, and machine translation [@qinLargeLanguageModels2025].
+\acrfull{NLP} is a branch of artificial intelligence dedicated to enabling computers to understand, interpret and generate human language [@mahmudiNaturalLanguageProcessing2024]. \acr{NLP} encompasses a broad spectrum of tasks, including sentiment analysis, information extraction, table and dialog understanding, summarization, code generation and machine translation [@qinLargeLanguageModels2025].
 
 Recent advances in \acr{NLP} have introduced vector embedding-based techniques, known as dense retrievers, which further enhance information retrieval capabilities [@zhuLargeLanguageModels2024].
 
@@ -69,7 +69,7 @@ In cases where only a visual representation of text is available, such as scanne
 
 #### Document Layout Analysis
 
-An essential step in extracting information from complex documents is recognizing the document layout [@zhongPubLayNetLargestDataset2019]. Common tasks include determining the correct order of texts, aligning captions to tables and figures, and identifying headings, tables, and figures. These techniques help isolate the contents of smaller tables containing relevant information from surrounding text, thereby reducing potential distractions. @paulStateoftheArtModelArchitectures2025 provides a comprehensive overview of state-of-the-art document layout analysis architectures and compares the performance of different models.
+An essential step in extracting information from complex documents is recognizing the document layout [@zhongPubLayNetLargestDataset2019]. Common tasks include determining the correct order of texts, aligning captions to tables and figures and identifying headings, tables and figures. These techniques help isolate the contents of smaller tables containing relevant information from surrounding text, thereby reducing potential distractions. @paulStateoftheArtModelArchitectures2025 provides a comprehensive overview of state-of-the-art document layout analysis architectures and compares the performance of different models.
 
 ## Large Language Models {#llm-theory}
 
@@ -129,11 +129,11 @@ The decoder generates output tokens sequentially in an autoregressive manner, at
 
 This section describes an architectural component first introduced in the early 1990s by @jacobsAdaptiveMixturesLocal1991, which emerged within the field of language models in 2017 [@zhangMixtureExpertsLarge2025] and has gained increasing popularity in recent years.
 
-Many recent \acr{LLM}s employ a \acr{MoE} architecture. Notable examples include Llama 4, Qwen3, and GPT-4-1. @zhangMixtureExpertsLarge2025 and @caiSurveyMixtureExperts2025a provide comprehensive overviews of various \acr{MoE} architectures. While @zhangMixtureExpertsLarge2025 highlights models released this year and their applications, @caiSurveyMixtureExperts2025a offers a more detailed discussion of architectural types. Additionally, @grootendorstVisualGuideMixture2024 presents a practical guide to \acr{MoE} with numerous helpful illustrations.
+Many recent \acr{LLM}s employ a \acr{MoE} architecture. Notable examples include Llama 4, Qwen3 and GPT-4-1. @zhangMixtureExpertsLarge2025 and @caiSurveyMixtureExperts2025a provide comprehensive overviews of various \acr{MoE} architectures. While @zhangMixtureExpertsLarge2025 highlights models released this year and their applications, @caiSurveyMixtureExperts2025a offers a more detailed discussion of architectural types. Additionally, @grootendorstVisualGuideMixture2024 presents a practical guide to \acr{MoE} with numerous helpful illustrations.
 
 The fundamental concept behind \acr{MoE} models is to integrate multiple smaller, specialized \acr{FFN}s to achieve superior predictive performance. The \acr{MoE} "paradigm offers a compelling method to significantly expand model capacity while avoiding a corresponding surge in computational demands during training and inference phases" [@caiSurveyMixtureExperts2025a, p. 21].
 
-Figure \@ref(fig:moe-architecture) illustrates two primary architectural variants. In the dense (a) architecture, each token is processed by every \acr{FFN}, and all results are pooled. In contrast, the sparse architecture processes each token using only a subset of \acr{FFN}s. While dense \acr{MoE} models often achieve higher prediction accuracy, they also incur significantly greater computational overhead [@caiSurveyMixtureExperts2025a].
+Figure \@ref(fig:moe-architecture) illustrates two primary architectural variants. In the dense (a) architecture, each token is processed by every \acr{FFN} and all results are pooled. In contrast, the sparse architecture processes each token using only a subset of \acr{FFN}s. While dense \acr{MoE} models often achieve higher prediction accuracy, they also incur significantly greater computational overhead [@caiSurveyMixtureExperts2025a].
 
 The gate (or router) manages the distribution of tokens to the \acr{FFN}s. A wide variety of routing algorithms exist, with the primary objective to "ensure expert diversity while minimizing redundant computation" [@zhangMixtureExpertsLarge2025]. Some algorithms focus on load balancing, while others address domain-specific routing and additional goals. Traditional \acr{MoE} architectures assume homogeneous experts, prioritizing load balancing. Recent developments explore more heterogeneous expert sets and flexible routing strategies, which promise increased efficiency [@zhangMixtureExpertsLarge2025].
 
@@ -145,7 +145,7 @@ Most Qwen3 models utilize a dense \acr{MoE} architecture, with only two recent m
 
 Llama 4 models employ a shared expert \acr{MoE} architecture, combining a fixed expert that processes every token with results from a sparse \acr{MoE} layer [@metaLlama4Herd2025].
 
-Google's gemma-3n-E4B also employs selective parameter activation, using the prefix E for effective rather than A for active [@googleGemma3nModel]. In gemma-3n, parameters are allocated to handle different input types — text, vision, and audio — and are loaded and activated as needed. This enables multimodal functionality. Additionally, the \acr{PLE} is cached in fast storage (RAM) rather than model memory (VRAM), allowing these models to operate in low-resource environments.
+Google's gemma-3n-E4B also employs selective parameter activation, using the prefix E for effective rather than A for active [@googleGemma3nModel]. In gemma-3n, parameters are allocated to handle different input types — text, vision and audio — and are loaded and activated as needed. This enables multimodal functionality. Additionally, the \acr{PLE} is cached in fast storage (RAM) rather than model memory (VRAM), allowing these models to operate in low-resource environments.
 
 ### Token Generation
 
@@ -155,9 +155,9 @@ Other strategies include beam search, which maintains multiple candidate sequenc
 
 ### Confidence Scores
 
-\acr{LLM}s can return a log probability score for each token they predict, and may also provide the top k candidates for the next token along with their corresponding log probabilities. The sum of individual log probabilities reflects how likely a sequence of tokens is, according to the \acr{LLM}. This sum can be interpreted as a measure of the model's *confidence* in its prediction [@berkovUnderstandingLLMLogprobs2025].
+\acr{LLM}s can return a log probability score for each token they predict and may also provide the top k candidates for the next token along with their corresponding log probabilities. The sum of individual log probabilities reflects how likely a sequence of tokens is, according to the \acr{LLM}. This sum can be interpreted as a measure of the model's *confidence* in its prediction [@berkovUnderstandingLLMLogprobs2025].
 
-@boseakEvaluatingLogLikelihoodConfidence2025 investigate the use of log probabilities to score multiple-choice answers. They demonstrate that the sum of log probabilities contains valuable information about model confidence, but its proper use is nuanced. The decision to use either the raw sum or a length-normalized sum of log probabilities can noticeably affect accuracy, and they offer no general recommendation. @maEstimatingLLMUncertainty2025 argue that normalizing probability scores is one reason probability-based methods may fail to identify reliability.
+@boseakEvaluatingLogLikelihoodConfidence2025 investigate the use of log probabilities to score multiple-choice answers. They demonstrate that the sum of log probabilities contains valuable information about model confidence, but its proper use is nuanced. The decision to use either the raw sum or a length-normalized sum of log probabilities can noticeably affect accuracy and they offer no general recommendation. @maEstimatingLLMUncertainty2025 argue that normalizing probability scores is one reason probability-based methods may fail to identify reliability.
 
 @kangScalableBestofNSelection2025 compare various potential measures for a \acr{LLM}'s confidence in best-of-N selection tasks. The simplest approach uses the normalized log probabilities of the returned tokens. The negative exponent of this normalized sum is known as perplexity, which is widely used in \acr{LLM} evaluations, although it has been shown to be insufficient for capturing a model's ability to understand long context. Nevertheless, @kangScalableBestofNSelection2025 show that perplexity can perform as well as more sophisticated confidence measures for up to 16 choices.
 
@@ -171,13 +171,13 @@ One year later, @radfordLanguageModelsAre2019 demonstrated with GPT-2 that scali
 
 GPT-3 was released in 2020 by @brownLanguageModelsAre2020 and introduced the technique of *in-context learning* (see Section \@ref(in-context-learning)), demonstrating that large decoder-only transformers can generalize to new tasks even without extensive fine-tuning. GPT-3 contains 175 billion parameters.
 
-### Generation-Enhancing Methods with LLMs {#llm-methods}
+### Generation-Enhancing Methods With LLMs {#llm-methods}
 
 #### In-context Learning
 
 Few-shot learning is a prompting strategy that enables \acr{LLM}s to solve a wide range of tasks simply by presenting task-related examples along with their solutions. @brownLanguageModelsAre2020 refer to the rapid adaptation to the provided task and examples as *in-context learning*. Their work demonstrates that GPT-3, as a general-purpose transformer, can surpass the performance of fine-tuned state-of-the-art models in certain tasks.
 
-When evaluating the performance gains from *in-context learning*, the terms *zero-shot*, *one-shot*, and *few-shot* learning are commonly used. In zero-shot learning, only the task is stated without any examples. One-shot learning provides a single example, while few-shot learning involves multiple examples.
+When evaluating the performance gains from *in-context learning*, the terms *zero-shot*, *one-shot* and *few-shot* learning are commonly used. In zero-shot learning, only the task is stated without any examples. One-shot learning provides a single example, while few-shot learning involves multiple examples.
 
 The classical alternative to in-context learning is model fine-tuning, where a model's weights are updated via gradient descent using a large corpus of examples [@brownLanguageModelsAre2020]. Through fine-tuning, the resulting model can perform the target task independently, without requiring additional context or descriptive tokens at inference time.
 
@@ -193,11 +193,11 @@ Furthermore, there is the risk of *context rot* [@kellyhongContextRotHow2025], w
 
 \acrfull{RAG} was introduced by @lewisRetrievalAugmentedGenerationKnowledgeIntensive2021 to enhance \acr{LLM} capabilities in knowledge-intensive tasks and to provide information on knowledge provenance. \acr{RAG} can supply domain- or company-specific information and help overcome the knowledge cutoff of the pre-training dataset [@gaoRetrievalAugmentedGenerationLarge2024]. It can also reduce the likelihood that hallucinated data remains undetected.
 
-@lewisRetrievalAugmentedGenerationKnowledgeIntensive2021 fine-tuned a sequence-to-sequence model with a fixed retriever component, training only the query encoder and generator. Recent \acr{RAG} systems often use a retriever component alongside a general-purpose \acr{LLM} [@gaoRetrievalAugmentedGenerationLarge2024]. @gaoRetrievalAugmentedGenerationLarge2024 describes several \acr{RAG} architectures, including naive, advanced, and modular systems.
+@lewisRetrievalAugmentedGenerationKnowledgeIntensive2021 fine-tuned a sequence-to-sequence model with a fixed retriever component, training only the query encoder and generator. Recent \acr{RAG} systems often use a retriever component alongside a general-purpose \acr{LLM} [@gaoRetrievalAugmentedGenerationLarge2024]. @gaoRetrievalAugmentedGenerationLarge2024 describes several \acr{RAG} architectures, including naive, advanced and modular systems.
 
 \acr{RAG} combines information retrieval techniques to identify information relevant to a query and incorporates this information into the prompt. This approach is similar to an automated form of *in-context learning* that often focuses on providing information rather than demonstrating new patterns. Both dense and sparse retrieval techniques can be used, as discussed in Section \@ref(sparse-retrieval) and Section \@ref(nlp). @guptaComprehensiveSurveyRetrievalAugmented2024 provide an overview of potential retriever mechanisms.
 
-Sources for information retrieval can include a local (vector) database, a knowledge graph, or the internet. Recently, @anthropicIntroducingModelContext2024 introduced the \acr{MCP}, which, unlike \acr{RAG}, provides real-time information from structured sources. The \acr{MCP} can also be used to execute operations beyond information retrieval [@houModelContextProtocol2025], such as using external tools or sending e-mails via the appropriate \acr{API}.
+Sources for information retrieval can include a local (vector) database, a knowledge graph or the internet. Recently, @anthropicIntroducingModelContext2024 introduced the \acr{MCP}, which, unlike \acr{RAG}, provides real-time information from structured sources. The \acr{MCP} can also be used to execute operations beyond information retrieval [@houModelContextProtocol2025], such as using external tools or sending e-mails via the appropriate \acr{API}.
 
 #### Guided and restricted decoding
 
@@ -215,7 +215,7 @@ Masking tokens is often achieved by iterating over the entire vocabulary for eac
 
 @willardEfficientGuidedGeneration2023 implemented their approach in the library *outlines*. The \acr{LLM} framework \acr{vllm} supports only two libraries: *guidance* [@GuidanceaiGuidance2025] and *xgrammar* [@dongXGrammarFlexibleEfficient2025]. For *xgrammar*, an efficient pushdown automata approach is implemented for token sampling according to context-free grammars.
 
-@dochertyControllingYourLLM2025 demonstrates how token masking influences the probabilities for subsequent tokens, providing clear examples, helpful visualizations, and corresponding code snippets.
+@dochertyControllingYourLLM2025 demonstrates how token masking influences the probabilities for subsequent tokens, providing clear examples, helpful visualizations and corresponding code snippets.
 
 ## General machine learning and statistics {#other-concepts}
 
@@ -223,12 +223,11 @@ Masking tokens is often achieved by iterating over the entire vocabulary for eac
 
 ##### Boxplots
 
-@wickham40YearsBoxplots2011 describe boxplots as "a compact distributional summary, displaying less detail than a histogram or kernel density, but also taking up less space. Boxplots use robust summary statistics that are always located at actual data points, are quickly computable (originally by hand), and have no tuning parameters. They are particularly useful for comparing distributions across groups."
+@wickham40YearsBoxplots2011 describe boxplots as "a compact distributional summary, displaying less detail than a histogram or kernel density, but also taking up less space. Boxplots use robust summary statistics that are always located at actual data points, are quickly computable (originally by hand) and have no tuning parameters. They are particularly useful for comparing distributions across groups."
 
 Figure \@ref(fig:boxplot-gauss) displays a box-and-whiskers plot, illustrating its components and comparing it to a Gaussian probability distribution. Half of all observations fall within the box, with the median indicated by a thick line. Outliers are defined as observations outside the area marked by the horizontal lines (whiskers), which may have small bars at their ends. Outliers are often shown as circles or dots.
 
-
-(ref:boxplot-gauss-caption) Illustration of a box-and-whiskers plot with its components — median, quartiles, whiskers, and outliers — compared to a Gaussian probability distribution. Graphic adapted from @jhguchBoxPlot2025.
+(ref:boxplot-gauss-caption) Illustration of a box-and-whiskers plot with its components — median, quartiles, whiskers and outliers — compared to a Gaussian probability distribution. Graphic adapted from @jhguchBoxPlot2025.
 
 ```{r boxplot-gauss, echo=FALSE, fig.cap="(ref:boxplot-gauss-caption)", out.width="80%", fig.align = 'center'}
 knitr::include_graphics("images/Boxplot_vs_PDF.png")
@@ -270,7 +269,7 @@ However, decision trees lack resilience to data changes and tend to overfit. Pru
 
 Problems of decision trees are, that they lack resilience against data changes and have a tendency to overfitting. A method against overfitting is pruning [@mienyeSurveyDecisionTrees2024]. Building an ensemble of decision trees is another possibility, that results in the random forest algorithm, described in the next paragraph .
 
-@rivera-lopezInductionDecisionTrees2022 focus on decision trees and describe several types, including distinctions based on the splitting procedure (see Figure \@ref(fig:advanced-tree-splitting)). In addition to axis-parallel splitting, they present oblique and non-linear splitting criteria, and provide a state-of-the-art review with a summary analysis of metaheuristics-based approaches for decision tree induction.
+@rivera-lopezInductionDecisionTrees2022 focus on decision trees and describe several types, including distinctions based on the splitting procedure (see Figure \@ref(fig:advanced-tree-splitting)). In addition to axis-parallel splitting, they present oblique and non-linear splitting criteria and provide a state-of-the-art review with a summary analysis of metaheuristics-based approaches for decision tree induction.
 
 (ref:advanced-tree-splitting-caption) Visualization of the partitioning of a two-dimensional continuous feature space based on multiple splitting criteria for decision tree induction. Graphic adapted from @rivera-lopezInductionDecisionTrees2022.
 
@@ -284,9 +283,9 @@ A random forest employs the principle of bagging at the level of both features a
 
 Tree induction can be parallelized, making random forests efficient on modern hardware. They can handle thousands of features and large datasets [@breimanRandomForests2001]. Methods exist to address imbalanced datasets. Just as decision trees can be pruned to combat overfitting, random forests can be pruned by removing entire trees to improve learning and classification performance [@kulkarniPruningRandomForest2012]
 
-Random forests are "powerful learning ensemble[s] given [their] predictive performance, flexibility, and ease of use" [@haddouchiSurveyTaxonomyMethods2024]. While decision trees are considered *white boxes* due to their interpretability, random forests are regarded as *black boxes*. Although decisions can be traced without complex mathematics, the process is tedious, as it requires propagating through many decision trees, recording their predictions, and then averaging them.
+Random forests are "powerful learning ensemble[s] given [their] predictive performance, flexibility and ease of use" [@haddouchiSurveyTaxonomyMethods2024]. While decision trees are considered *white boxes* due to their interpretability, random forests are regarded as *black boxes*. Although decisions can be traced without complex mathematics, the process is tedious, as it requires propagating through many decision trees, recording their predictions and then averaging them.
 
-The classification of random forests as black-box models restricts their deployment in many fields of application [@haddouchiSurveyTaxonomyMethods2024]. One feature-oriented tool for explainability is the \acr{SHAP} framework, presented in Section \@ref(shap). It enables local explanation, global overview, and pattern discovery for random forests [@haddouchiSurveyTaxonomyMethods2024].
+The classification of random forests as black-box models restricts their deployment in many fields of application [@haddouchiSurveyTaxonomyMethods2024]. One feature-oriented tool for explainability is the \acr{SHAP} framework, presented in Section \@ref(shap). It enables local explanation, global overview and pattern discovery for random forests [@haddouchiSurveyTaxonomyMethods2024].
 
 #### Gradient boosted decision trees
 
@@ -331,7 +330,7 @@ The formula for a single Shapley value is given by [@lundbergUnifiedApproachInte
 
 In @lundbergUnifiedApproachInterpreting2017, the authors present "A Unified Approach to Interpreting Model Predictions" based on Shapley values, called \acrfull{SHAP}. This framework assigns each feature an importance value for every observation, enabling inspection of why a specific prediction is made and potentially explaining model errors for particular observations. Examining predictions across all observations can reveal generalized effects of features.
 
-@lundbergUnifiedApproachInterpreting2017 demonstrate that their approach is the only possible explanation model for the class of additive feature attribution methods that possesses three desirable characteristics: local accuracy, missingness, and consistency. Shapley values can be computed for any machine learning model, but their exact calculation is computationally extremely expensive [@huComputingSHAPEfficiently2023], with exponential complexity $\mathcal{O}(2^p)$ in the number of features (or predictors) $p = |P|$.
+@lundbergUnifiedApproachInterpreting2017 demonstrate that their approach is the only possible explanation model for the class of additive feature attribution methods that possesses three desirable characteristics: local accuracy, missingness and consistency. Shapley values can be computed for any machine learning model, but their exact calculation is computationally extremely expensive [@huComputingSHAPEfficiently2023], with exponential complexity $\mathcal{O}(2^p)$ in the number of features (or predictors) $p = |P|$.
 
 Even with the approximation of the shapley values, introduced in @lundbergUnifiedApproachInterpreting2017 as Kernel SHAP, the complexity for tree based algorithms is $\mathcal{O}(MTL2^p)$, with the number of samples $M$, number of trees $T$ and the number of leaves $L$. The tree based optimization of the algorithm, TreeSHAP, allows an approximation in $\mathcal{O}(MTLD^2)$ [@lundbergExplainableAITrees2019], with the maximum tree depth $D$. Depending on the number of observations ($M$) to calculate shapley values for, the Fast TreeSHAP algorithm has a even lower time complexity of $\mathcal{O}(TLD2^D+MTLD)$ [@yangFastTreeSHAPAccelerating2022].
 
@@ -350,9 +349,9 @@ Nevertheless, the need for high explainability in machine learning algorithms is
 
 ## Summary
 
-This chapter highlighted recent architectures for \acr{LLM}s, such as Mixture-of-Experts, and provided references for readers to explore foundational concepts and the history of \acr{NLP} in greater detail. It presented *in-context learning* and retriever augmentation as advanced prompting strategies, which were benchmarked in our experiments.
+This chapter highlighted recent architectures for \acr{LLM}s, such as Mixture-of-Experts and provided references for readers to explore foundational concepts and the history of \acr{NLP} in greater detail. It presented *in-context learning* and retriever augmentation as advanced prompting strategies, which were benchmarked in our experiments.
 
-The review underscored the importance of explainability in machine learning, particularly through frameworks like SHAP, and discussed visualization techniques such as boxplots and violin plots for understanding data distributions.
+The review underscored the importance of explainability in machine learning, particularly through frameworks like SHAP and discussed visualization techniques such as boxplots and violin plots for understanding data distributions.
 
 The methods and concepts discussed directly inform the thesis's approach to extracting financial information from unstructured documents. By presenting advanced \acr{LLM} architectures and explainability tools, this chapter establishes a foundation for the experimental strategies and evaluation criteria employed throughout the thesis.
 

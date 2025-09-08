@@ -302,18 +302,15 @@ We test three visual models, trained for table detection. One is based on Micros
 
 The Yolo models performed much better. Up to a threshold of 0.5 they show a recall of around 1 and a precision over 0.95. Thus, they can be used to refine the page range, by identifying all pages that have a table. The table transformer model has a worse precision of around 0.7
 
-microsoft `r filter(table_detection_result_list, model == "microsoft-table-transformer-detection")$runtime %>% to_minutes()` min
-yolo large `r filter(table_detection_result_list, model == "yolo12l-doclaynet")$runtime %>% to_minutes()` min
-yolo nano `r filter(table_detection_result_list, model == "yolo12n-doclaynet")$runtime %>% to_minutes()` min
-
-```{r df-yolo}
+```{r df-yolo, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_table_detection_result %>% 
   select(model, runtime, pr_auc) %>% 
-  mutate(pr_auc = format_floats(pr_auc, 3))
+  mutate(pr_auc = format_floats(pr_auc, 3)) %>%
+  render_table(alignment="lrr", caption="Comparing the runtime and AUC score of the precision-recall-curves for the three visual table detection models.", ref = opts_current$get("label"))
 ```
 
 
-```{r pr-curve-yolo}
+```{r pr-curve-yolo, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", fig.cap="Showing the precision-recall-curves for the three visual table detection models."}
 table_detection_result_list %>% rowwise() %>% 
   mutate(metrics = list(bind_rows(metrics, c(precision = 0, recall = 1)))) %>% 
   unnest(metrics) %>% 
@@ -325,7 +322,7 @@ table_detection_result_list %>% rowwise() %>%
 ```
 
 
-```{r metric-plots-slider, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-slider', out.width="100%", results='asis'}
+```{r metric-plots-slider, echo=echo_flag, warning=warning_flag, message=message_flag, class.chunk='image-slider', out.width="100%", results='asis', eval=knitr::is_html_output()}
 for (entry in metric_plots) {
   print(entry$image)
   cat(paste0("<span class='image-caption'>You see the plot for: ",entry$title,". \n(Click to stop automatic rotation.)</span>"))
@@ -368,7 +365,12 @@ data_llm_speed <- data.frame(
   vllm_batched = c(NA, 20, 30)
 ) %>% setNames(c("Model parameters (in B)", "Transformers", "vLLM", "vLLM batched"))
 
-knitr::kable(data_llm_speed, caption = "Comparing time (in seconds) for extract the information from ten Aktiva tables using different libraries and approaches.")
+ data_llm_speed %>% 
+  render_table(
+    alignment = "rrrr",
+    caption = "Comparing time (in seconds) for extract the information from ten Aktiva tables using different libraries and approaches.",
+    ref = opts_current$get("label")
+  )
 ```
 
 ## Prompts
@@ -383,7 +385,7 @@ Base prompt:
         {"role": "user", "content": f"This is the table of contents:\n\n{toc_string}"},
         {"role": "user", "content": f"On which pages might the win and loss statement (in German: Gewinn- und Verlustrechnung; GuV) and the balance sheets (German: Bilanz) be located? Give seperate answers for:\n\n1) the assets (German: Aktiva) table.\n2) the liabilities (German: Passiva) table.\n3) the win and loss statement."},
         specific_prompt,
-        {"role": "user", "content": f"Answer in JSON format with keys 'GuV', 'Aktiva', and 'Passiva' and the page range as values."},
+        {"role": "user", "content": f"Answer in JSON format with keys 'GuV', 'Aktiva' and 'Passiva' and the page range as values."},
     ]
 ```
 
@@ -420,7 +422,7 @@ specific_prompt = {"role": "user", "content": f"The assets and liabilities are p
 
 ### Classification {#classification-prompts}
 
-binary classification prompt factory
+binary classification prompt factory:
 
 ```{python, eval=FALSE}
 messages = [{"role": "system", "content": "[Role and Context]: You are a helpful assistant that can classify texts extracted from PDFs."}]
@@ -433,7 +435,7 @@ if law_context:
     elif classification_type == "Passiva":
         messages.append({"role": "system", "content": f"You know the laws about how to structure the 'Passiva' (liabilities) table for a 'Bilanz' (balance sheet):' \n\n'''\n{hgb_passiva}\n'''."})
     else:
-        raise ValueError(f"Unknown classification type: {classification_type}. Expected 'GuV', 'Aktiva', or 'Passiva'.")
+        raise ValueError(f"Unknown classification type: {classification_type}. Expected 'GuV', 'Aktiva' or 'Passiva'.")
 
 if random_examples:
     system_messages = self.__get_random_example_message(classification_type, **kwargs)
@@ -454,7 +456,7 @@ messages.append({"role": "user", "content": f"[Task]: Decide if the given text c
 return messages
 ```
 
-example for binary classification with 1 random example with Qwen 3
+example for binary classification with 1 random example with Qwen 3:
 
 ```{verbatim}
 <|im_start|>system
@@ -640,7 +642,7 @@ Anhang
 <|im_start|>assistant
 ```
 
-multi-class classification prompt factory
+multi-class classification prompt factory:
 
 ```{python, eval=FALSE}
 messages = [
@@ -992,7 +994,7 @@ knitr::include_graphics("./images/acfr23_balance.pdf")
 
 ## Table extraction with regular expressions {#regex-extraction-mistakes}
 
-Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns\_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
+Extract by pdfium for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns \_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
 
 ```{verbatim}
 A
@@ -1120,7 +1122,7 @@ Vermögensverrechnung
 106,67151,61
 ```
 
-Extract by pdfminer for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns\_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
+Extract by pdfminer for '../../benchmark_truth/synthetic_tables/separate_files/final/aktiva_table\_\_3_columns \_\_span_False\_\_thin_False\_\_year_as_text\_\_unit_in_first_cell_True\_\_Mio. €\_\_enumeration_False\_\_shuffle_True\_\_text_around_True\_\_max_length_50\_\_sum_in_same_row_False\_\_0.pdf':
 
 ```{verbatim}
 Aktiva (in Mio. €)

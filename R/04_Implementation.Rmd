@@ -8,7 +8,7 @@ editor_options:
 
 \ChapFrame[Implementation][bhtyellow]
 
-This chapter describes the practical realization of the methods and workflows developed for automated page identification and information extraction in financial documents. It outlines the environment our experiments are conducted in, the software packages utilized, and the datasets created for benchmarking and evaluation.
+This chapter describes the practical realization of the methods and workflows developed for automated page identification and information extraction in financial documents. It outlines the environment our experiments are conducted in, the software packages utilized and the datasets created for benchmarking and evaluation.
 
 It presents details of the ground truth creation process, including annotation strategies and dataset composition. The data processing workflow is illustrated, highlighting the system experimental setup on the Datexis Kubernetes cluster as wellas the local environment, used for evaluation and reporting.
 
@@ -40,14 +40,14 @@ For data wrangling we use *pandas*. We save our experiments results using the *j
 We use the *tidyverse* library for data wrangling and to create our visualizations with *ggplot*. We use *h2o* for building random forest models on the Datexis cluster and *shapviz* to interpret these models. *knitr* is used to create this thesis document.
 :::
 
-## Ground truth datasets
+## Ground Truth Datasets
 
-### Ground truth creation
+### Ground Truth Creation
 
 This section describes the ground truth creation process in detail. It describes our initial annotation process and what improvements are made, based on later iterations and findings from the experiments.
 
 ::: paragraph-start
-##### Page identification
+##### Page Identification
 
 We search for the target pages in the chosen documents either by using the search functionality, the \acr{TOC} or by scrolling through all pages. For each target page the filepath, page and type is listed in a \acr{csv} file. In some reports we find multiple pages for a single target type. In this case, all pages are added to the ground truth. Sometimes the **Aktiva** and **Passiva** table are on a single page. In this case a single entry is made and its type is noted as *Aktiva&Passiva*. If a single table spans two pages, both pages are recorded. We created 252 entries, excluding all pages that need \acr{OCR} processing.
 :::
@@ -57,7 +57,7 @@ For double checking, all identified pages are extracted from their original PDF 
 In an earlier created sample of pages, we identified all pages that contain a table of any type. This smaller sample is based on all pages that are classified as containing a table of type **Aktiva**, **Passiva** or **GuV** with the \acr{regex} approach. The true as well as the false positive classified ones. This ground truth is used to test the capabilities of various Python libraries, \acr{LLM}s and visual models to detect tables. Results can be found in the Appendix \@ref(table-detection-benchmark).
 
 ::: paragraph-start
-##### Information extraction
+##### Information Extraction
 
 We manually copy the numeric values from the annual reports into \acr{csv} files and replace the thousands separators and floating point delimiters. We multiply the values by 1_000, if a currency unit is given for the column the value comes from. The \acr{csv} files are already prefilled with all entities defined in the legal text, identified by their full hierarchy.
 :::
@@ -69,12 +69,12 @@ In the second iteration the \acr{csv} files already contain the predictions of Q
 Additionally, we implement an algorithm to generate synthetic **Aktiva** tables with systematically varied characteristics to enable experiments that investigate those characteristics as possible predictors for the extraction performance. Additionally, this enables us to estimate an upper limit for the extraction performance with real **Aktiva** tables.
 
 ::: paragraph-start
-##### Error rate guidiance
+##### Error Rate Guidance
 
 There is no separate ground truth for the calculated *confidence* scores. We will investigate, if the true and false predictions can be discriminated based on the returned *confidence scores*. If a prediction is true or false is determined using the previously described ground truth datasets.
 :::
 
-### Ground truth dataset composition
+### Ground Truth Dataset Composition
 
 ```{r count-benchmark-documents, echo=echo_flag, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum(c("../benchmark_truth/aktiva_passiva_guv_table_pages_no_ocr.csv", "./scripts/page_identification_preparations.R"))}
 source("./scripts/page_identification_preparations.R")
@@ -104,7 +104,7 @@ df_special_targets <- multiple_tables_per_type_and_document %>% left_join(consec
 This section describes the resulting ground truth datasets in detail separate for all our tasks. It shows how many documents from which companies are included and how the synthetic dataset is created.
 
 ::: paragraph-start
-##### Page identification {#page-identification-dataset-description}
+##### Page Identification {#page-identification-dataset-description}
 
 Figure \@ref(fig:document-base-page-identification) shows how many documents from which company are contained in the ground truth dataset. We use `r num_documents` annual reports from `r num_companies` companies. For this thesis, the tables of interest are those that show **Aktiva**, **Passiva** and **GuV**. Among the `r total_pages_no_ocr` pages `r num_tables` tables have to be identified on `r num_target_pages` pages. Figure \@ref(fig:document-base-page-identification) also gives an impression on how many pages the documents have. The documents of *IBB* tend to be longer. The documents of *Amt für Statistik Berlin-Brandenburg* tend to be shorter.
 :::
@@ -154,7 +154,7 @@ new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %
 ```
 
 ::: paragraph-start
-##### Information extraction {#information-extraction-data-sampling}
+##### Information Extraction {#information-extraction-data-sampling}
 
 It takes us up to 12 minutes per table to copy over all values from the \acr{PDF} document into the \acr{csv} file. The maximum amount of values to copy and format (or type manually) among the tables used is 40. In addition to this manual process, a conceptional process can be necessary, because the values have to be matched with the strict grammar. Sometimes we have to decide that there is no suitable row for a value and drop it. Sometimes there are multiple values that have to get summed up in order to calculate a value that suits the predefined schema.
 :::
@@ -184,7 +184,7 @@ new_doc_base %>% rowwise() %>%
 
 We create synthetic **Aktiva** tables to overcome the limited amount of real tables and to allow the systematic investigation of potential predictors for the information extraction performance, even if the occurrence of specific table characteristics is very unbalanced within the real dataset. A detailed description, which table features are varied systematically, can be found in the Appendix \@ref(synthetic-table-extraction). This systematic variation results in 16_504 tables created in three formats each.
 
-## Data processing
+## Data Processing
 
 This section describes the data flow for \acr{LLM} approaches. Figure \@ref(fig:data-flow-llm) visualizes the different processing steps. On the blue area the data flow of the benchmark is presented, starting with the \acr{PDF} of an annual report as input and ending with the \acr{json} formatted benchmark results as output. The green area shows how R is used to visualize the results for our analysis and interpretation. We use R Markdown to document the results in this thesis.
 
@@ -208,11 +208,11 @@ We mostly use *R* for evaluation, visualization and reporting. We use the *bookd
 
 Furthermore, this allows us to create a \acr{PDF} version and a \acr{HTML} version of the thesis at the same time with low additional effort. The HTML version can include interactive elements as paginated tables with search and sorting capabilities, image light boxes and image sliders. Thus, a lot of information can be offered without occupying too many pages with tables and figures. The \acr{HTML} version is more machine-readable as well.
 
-## Speedup with vLLM and batching
+## Speedup With vLLM and Batching
 
 We run our final experiments with the \acr{vllm} library on Python, using its batch processing capabilities. Our first test used the *transformers* library directly and did not use batch processing. The runtime reduction that is achieved with the final setup can be found in the Appendix \@ref(vllm-batch-speed).
 
-## Hardware normalization {#gpu-benchmark}
+## Hardware Normalization {#gpu-benchmark}
 
 To make the runtime of different \acr{LLM}s running on different amounts and types of \acr{GPU}s comparable, we conduct a benchmark running the models Qwen2.5-7B and Qwen2.5-32B with different hardware compositions on the Datexis cluster. Figure \@ref(fig:gpu-benchmark-plot) shows the runtime for classifying 100 pages with the multi-class approach, providing three random examples for the in-context learning prompting strategy.
 

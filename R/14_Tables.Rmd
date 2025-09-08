@@ -18,6 +18,8 @@ df_classification_n_examples %>%
 
 ### Hybrid approach
 
+\setASLandscapeLayout
+
 ```{r comparing-extraction-performance-real-and-synth-context-learning-median, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 median_models_with_examples %>% 
   mutate(
@@ -44,3 +46,5 @@ median_models_with_examples %>%
     caption = "Comparing extraction performance for real Aktiva extraction task with synthetic and real examples for in-context learning with a zero shot approach averaged over all methods",
     ref = opts_current$get("label"), dom="t")
 ```
+
+\setDefaultLayout

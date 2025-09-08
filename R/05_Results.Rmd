@@ -26,7 +26,7 @@ Each section will start with an overview about the specific sub tasks as well as
 
 This chapter focuses on the presentation of results, that answer the question, if an approach can be used to solve a task. We discuss additional findings in Chapter \@ref(discussion). The presentation of those additional results can be found in the appendix. We refer to the chapters of the appendix, that document our investigation and the results of the sub tasks in detail, at the beginning of each of the following sections.
 
-## Page identification {#page-identification-introduction}
+## Page Identification {#page-identification-introduction}
 
 ```{r page-identification-llm-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 temp_list <- readRDS("data_storage/page_identification_llm.rds")
@@ -509,7 +509,7 @@ Extracting the values from all 106 tables took Qwen3-235B around six minutes. Th
 The predictor that shows a strong effect in all approaches is currency unit. Reflecting this in the table extraction is a key factor to optimize the performance. For the approaches that use \acr{LLM}s most of the model and method related variables showed a strong effect. Using a versatile model and providing good learning examples is mandatory.
 :::
 
-The findings from approaches utilizing synthetic tables suggest that the input format can have a substantial influence on extraction outcomes. It appears important to prevent errors during text extraction, and converting the extracted text to HTML may help resolve remaining ambiguities. However, it remains unclear whether a perfect text extract would perform as well as HTML or Markdown formats.
+The findings from approaches utilizing synthetic tables suggest that the input format can have a substantial influence on extraction outcomes. It appears important to prevent errors during text extraction and converting the extracted text to HTML may help resolve remaining ambiguities. However, it remains unclear whether a perfect text extract would perform as well as HTML or Markdown formats.
 
 ## Error rate guidance {#error-rate-guidance-results}
 
@@ -563,6 +563,6 @@ For the best predicting model Qwen3-235B-A22B-Instruct, we find an empirical err
 
 ## Summary {#summary-results}
 
-In summary, the results presented in this chapter demonstrate the effectiveness of \acr{LLM}s for both page identification and information extraction tasks in financial reports. \acr{LLM}-based approaches consistently outperform traditional methods, achieving high recall and precision, and enabling efficient automation of information extraction. The experiments further highlight the importance of input format and model selection, as well as the potential for guiding user attention through confidence scores.
+In summary, the results presented in this chapter demonstrate the effectiveness of \acr{LLM}s for both page identification and information extraction tasks in financial reports. \acr{LLM}-based approaches consistently outperform traditional methods, achieving high recall and precision and enabling efficient automation of information extraction. The experiments further highlight the importance of input format and model selection, as well as the potential for guiding user attention through confidence scores.
 
-These findings provide a solid foundation for the subsequent discussion, where we interpret the results in the context of our research questions and hypotheses, analyze sources of error, and explore practical implications for future applications.
+These findings provide a solid foundation for the subsequent discussion, where we interpret the results in the context of our research questions and hypotheses, analyze sources of error and explore practical implications for future applications.

@@ -258,6 +258,7 @@ create_hypotheses_table <- function(html_path, caption, detect="\\*$") {
   df_to_display <- df_to_display %>% 
     kbl(escape = F, booktabs = T, caption = caption) %>%
     kable_paper() %>%
+    kable_styling(latex_options = "striped") %>% 
     add_header_above(header_span[[1]]) %>%
     column_spec(1, border_right=T) %>%
     column_spec(3, border_right=T) %>%

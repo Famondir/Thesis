@@ -10,7 +10,7 @@ editor_options:
 
 This chapter consits of the main sections as follows:
 
-Section \@ref(answer-research-questions) interprets the results in relation to our research questions and hypotheses, compares them with previous work, and highlights any surprising or unexpected outcomes.
+Section \@ref(answer-research-questions) interprets the results in relation to our research questions and hypotheses, compares them with previous work and highlights any surprising or unexpected outcomes.
 
 Section \@ref(error-analysis) contains our error analysis and discusses interesting findings under a researchers perspective.
 
@@ -18,9 +18,9 @@ Section \@ref(general-performance) discusses practical implications and limitati
 
 Subsequent, Section \@ref(not-covered) describes, what we have neither investigated nor implemented in this thesis. Section \@ref(outlook-implementation) gives an outlook on the challenges for implementing the system at \acr{RHvB}. Finally, ethical and practical consideration are presented in Section \@ref(ethics).
 
-## Research questions {#answer-research-questions}
+## Research Questions {#answer-research-questions}
 
-### Page identification
+### Page Identification
 
 We posed the following research question and hypotheses for the page identification task:
 
@@ -53,7 +53,7 @@ Both of our hypotheses find support. Thus, we see our research question answered
 :::
 
 ::: paragraph-start
-##### Comparison with previous work
+##### Comparison With Previous Work
 
 We are able to narrow down the page range to five pages without using a \acr{LLM}. With the \acr{LLM} we are guaranteed, to find the correct pages within a range of two pages. Most of the time, the page, ranked highest in the confidence score ranking, is the correct one. @liExtractingFinancialData2023 do not present a concrete number of pages, they have to process after page refinement.
 :::
@@ -144,7 +144,7 @@ We did not expect the \acr{LLM} to perform any currency units related numeric tr
 ::: paragraph-start
 ##### Conclusion
 
-The results demonstrate that \acr{LLM}s, are highly effective for extracting structured financial information from assets tables, nearly matching human performance while operating significantly faster. They can accurately extract multiple numeric values, correctly match row identifiers, and reliably identify missing entries.
+The results demonstrate that \acr{LLM}s, are highly effective for extracting structured financial information from assets tables, nearly matching human performance while operating significantly faster. They can accurately extract multiple numeric values, correctly match row identifiers and reliably identify missing entries.
 :::
 
 The success of in-context learning, especially when \acr{icexs} are used, highlights the importance of prompt design and relevant context. While perfect extraction is achievable with well-structured synthetic data, real-world performance is limited mainly by input quality and schema consistency.
@@ -272,7 +272,7 @@ We find support for the hypothesis **H3.1** but not for hypothesis **H3.2**. Thu
 The classification task can be interpreted as a best-of-N selection task with two or four choices. Here, our simple measure for confidence seems to be sufficient, aligning well with the findings of @kangScalableBestofNSelection2025.
 :::
 
-Generating the information extraction response, can be interpreted as multiple chained best-of-N selections tasks. If every digit, the floating point delimiter, and a end-of-sequence token is counted as individual choice, there are 12 possibilities. Choosing, if a number or *null* should be returned is an additional task with $N=2$ that is to solve multiple times in this decision chain. Even though the number of choices is below $N=16$ for each decision, chaining those choices seems to yield a less meaningful measure of confidence.
+Generating the information extraction response, can be interpreted as multiple chained best-of-N selections tasks. If every digit, the floating point delimiter and a end-of-sequence token is counted as individual choice, there are 12 possibilities. Choosing, if a number or *null* should be returned is an additional task with $N=2$ that is to solve multiple times in this decision chain. Even though the number of choices is below $N=16$ for each decision, chaining those choices seems to yield a less meaningful measure of confidence.
 
 ::: paragraph-start
 ##### Unexpected results
@@ -472,7 +472,7 @@ Unfortunately, we could not use batch processing with the closed-weight models r
 
 #### Error Types
 
-A comprehensive analysis of specific error types remains a subject for future research. Here, we briefly outline anticipated error categories, potential evaluation metrics, and necessary adjustments to the logging process.
+A comprehensive analysis of specific error types remains a subject for future research. Here, we briefly outline anticipated error categories, potential evaluation metrics and necessary adjustments to the logging process.
 
 ::: paragraph-start
 ##### Numeric values
@@ -480,9 +480,9 @@ A comprehensive analysis of specific error types remains a subject for future re
 For erroneous numeric predictions, it would be valuable to determine whether the errors stem from copying mistakes — such as omitted or transposed digits — similar to those commonly made by humans. Although we have logged the Levenshtein distance to facilitate this analysis, time constraints prevented further investigation.
 :::
 
-Another likely error type involves copying an incorrect value, such as a sum from the same row but a different column, a value from another row, or even from one of the provided examples. To examine this, one could check whether the predicted number appears in the prompt text, provided this information is logged.
+Another likely error type involves copying an incorrect value, such as a sum from the same row but a different column, a value from another row or even from one of the provided examples. To examine this, one could check whether the predicted number appears in the prompt text, provided this information is logged.
 
-Errors may also arise from missed or incorrect transformations related to currency units. Additionally, the \acr{LLM} may perform summations across rows, or simply generate hallucinated values, as discussed in Section \@ref(context-rot).
+Errors may also arise from missed or incorrect transformations related to currency units. Additionally, the \acr{LLM} may perform summations across rows or simply generate hallucinated values, as discussed in Section \@ref(context-rot).
 
 ::: paragraph-start
 ##### Row matching
@@ -492,7 +492,7 @@ To analyze false negatives and numeric values assigned to incorrect rows, calcul
 
 For false positive values, it would be insightful to examine the model's reasoning process (e.g., Qwen3's thinking mode or gpt-oss's chain of thought stream) and to enumerate all rows that are omitted. While an incomplete list can be generated by reviewing false positives, rows excluded from the ground truth due to schema constraints will remain unaccounted for.
 
-Consequently, a more flexible approach is warranted. This could involve expanding the schema to include a less restrictive category for unmatched rows, or adopting a guided decoding strategy. In such cases, we anticipate encountering rows with finer granularity that may need to be aggregated to fit the schema, or rows with identifiers that are semantically equivalent but not sufficiently similar for fuzzy matching.
+Consequently, a more flexible approach is warranted. This could involve expanding the schema to include a less restrictive category for unmatched rows or adopting a guided decoding strategy. In such cases, we anticipate encountering rows with finer granularity that may need to be aggregated to fit the schema or rows with identifiers that are semantically equivalent but not sufficiently similar for fuzzy matching.
 
 ### Ground truth creation {#unconsistent-label-matching}
 
@@ -702,7 +702,7 @@ For page identification, \acr{LLM}s sometimes misclassify tables with similar co
 
 In information extraction, using \acr{icexs} improves extraction perfromance. Excessive homogeneity can reduce performance, if examples come from another companies documents. OpenAI models demonstrate, that \acr{LLM}s perform well even without strict schemas if their parameter count is high enough.
 
-Overall, the analysis highlights the importance of careful example selection, robust schema design, and thorough ground truth validation to minimize errors.
+Overall, the analysis highlights the importance of careful example selection, robust schema design and thorough ground truth validation to minimize errors.
 
 ## Practical Implications and Limitations {#general-performance}
 
@@ -761,7 +761,7 @@ In both strategies the k required for perfect recall is three, using the Ministr
 
 [^06_discussion-4]: Potentially smaller fine tuned models can solve the task even more efficient.
 
-Nevertheless, it is more promising, to reduce the number of pages, to classify with the \acr{LLM} in the first place. This can be achieved, by running the term-frequency approach first to refine the page range, and then use the \acr{LLM} approach.
+Nevertheless, it is more promising, to reduce the number of pages, to classify with the \acr{LLM} in the first place. This can be achieved, by running the term-frequency approach first to refine the page range and then use the \acr{LLM} approach.
 
 ::: paragraph-start
 ##### Compare with manual page identification
@@ -804,13 +804,13 @@ In summary, combining term frequency-based page refinement with \acr{LLM}-driven
 
 While limitations exist when relevant information is sparse or embedded in non-tabular text, integrating visual table detection and retrieval-augmented strategies can address these challenges.
 
-Regarding energy usage and runtime, our analysis demonstrates that smaller \acr{LLM}s such as Ministral-8B-Instruct provide a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable. Factoring in hardware, cloud computing, and personnel costs, automated \acr{LLM}-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before \acr{LLM} classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
+Regarding energy usage and runtime, our analysis demonstrates that smaller \acr{LLM}s such as Ministral-8B-Instruct provide a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable. Factoring in hardware, cloud computing and personnel costs, automated \acr{LLM}-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before \acr{LLM} classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
 
 ### Information extraction {#alternative-input-formats-extraction}
 
 It remains unclear whether the 2% of incorrectly extracted numeric values are due to unhandled currency units or other factors. One possible explanation is that faulty text extraction may cause numeric values to be concatenated. If this is the case, it raises the question of whether further investment in advanced table extraction methods is warranted.
 
-To further assess extraction performance, we evaluate text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information, and tested an \acr{OCR}-based approach using tesseract.
+To further assess extraction performance, we evaluate text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information and tested an \acr{OCR}-based approach using tesseract.
 
 Table \@ref(tab:input-format-qwen235-evaluation) presents the aggregated results for the best prompting method with Qwen3-235B across all input types. No improvement was observed over the results obtained with text extracted by *pdfium*. In fact, performance declined when using Markdown generated by *pymupdf* or text produced via \acr{OCR}. Notably, Qwen3-235B performed equally well with Markdown generated by *Docling* as with other plain text extracts, indicating that the issue is not specific to the Markdown format.
 
@@ -858,7 +858,7 @@ To summarize, we recommend to invest resources into an end-to-end supply of mach
 
 Implementing a measure to guide users' attention, indicating which predictions require review and which can be trusted, would be highly beneficial for the information extraction task. Verifying the extracted values for a single table can take up to three minutes, amounting to 300 minutes for the entire sample. This process is up to four times faster than manually transferring all values.
 
-Choosing a smaller model that completes in 2:30 minutes rather than 3:00 minutes does not significantly accelerate the workflow, as error checking must still be performed on all values. Error checking could be omitted if perfect results are achieved, or if a reliable criterion is identified that allows predictions to be grouped into bins with a near-zero error rate.
+Choosing a smaller model that completes in 2:30 minutes rather than 3:00 minutes does not significantly accelerate the workflow, as error checking must still be performed on all values. Error checking could be omitted if perfect results are achieved or if a reliable criterion is identified that allows predictions to be grouped into bins with a near-zero error rate.
 
 One promising criterion for this purpose is the company that published the document. As demonstrated in \@ref(same-company-evaluation), information extraction already yields error-free results for many companies' documents. If the table structure remains consistent, similar empirical error rates can be expected for future documents. However, some companies in our sample have introduced structural changes, such as reporting values in *T€*, which affect error rates.
 
@@ -921,7 +921,7 @@ A \acr{UX} design study has not yet been conducted. Such a study could be valuab
 ::: paragraph-start
 ##### Advanced prompting techniques
 
-Advanced prompting strategies, such as Chain-of-Thought, ReAct, or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, we do not recommend further investment in advanced prompt template development at this stage.
+Advanced prompting strategies, such as Chain-of-Thought, ReAct or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, we do not recommend further investment in advanced prompt template development at this stage.
 :::
 
 ## Ethical & Practical Considerations {#ethics}
@@ -952,7 +952,7 @@ To implement the proposed system at \acr{RHvB}, several infrastructural challeng
 
 Key areas for improvement include enhancing system flexibility and expanding the range of supported use cases. This involves developing solutions for users to manage unknown row identifiers and automating the process of populating the \acr{RAG} component with examples for identification and extraction tasks.
 
-A user interface must be developed to guide users through the workflow, enabling error correction and the handling of unknown row identifiers. Additionally, procedures for managing new entries need to be defined: whether to aggregate them with existing row identifiers, extend the database of known entities, or introduce a new hierarchy level to accommodate more granular reporting by housing cooperatives.
+A user interface must be developed to guide users through the workflow, enabling error correction and the handling of unknown row identifiers. Additionally, procedures for managing new entries need to be defined: whether to aggregate them with existing row identifiers, extend the database of known entities or introduce a new hierarchy level to accommodate more granular reporting by housing cooperatives.
 
 We also plan to establish a machine learning operations pipeline to monitor system health and facilitate ongoing benchmarking. This will allow for systematic evaluation of new models and, crucially, assessment of whether new examples provided by employees may negatively impact system performance.
 
@@ -960,8 +960,8 @@ Furthermore, we intend to request annual reports in \acr{XBRL} format. Since 201
 
 ## Summary
 
-This chapter critically evaluated the performance, limitations, and practical implications of {LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection, and thorough ground truth validation.
+This chapter critically evaluated the performance, limitations and practical implications of {LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection and thorough ground truth validation.
 
-Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations, and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention resource requirements and the impact of automation on the workforce.
+Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention resource requirements and the impact of automation on the workforce.
 
-The chapter concludes that combining term frequency-based refinement with \acr{LLM}-driven classification offers an efficient, scalable, and adaptable solution, while also outlining areas for future improvement and topics not covered in the current work.
+The chapter concludes that combining term frequency-based refinement with \acr{LLM}-driven classification offers an efficient, scalable and adaptable solution, while also outlining areas for future improvement and topics not covered in the current work.

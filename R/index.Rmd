@@ -117,7 +117,7 @@ This thesis presents a comprehensive benchmark of information extraction from an
 
 Multiple open-weight \acr{LLM}s are evaluated using diverse prompting strategies and compared to alternative methods such as regular expressions and term-frequency approaches. The work builds on and extends previous research by applying these techniques to German-language documents and open-weight models.
 
-Results demonstrate that (even smaller) \acr{LLM}s can reliably locate and extract financial information, supporting efficient audit processes. The findings highlight the potential of combining \acr{LLM}s with rule-based methods to improve computational efficiency, and outline a practical workflow for a human-in-the-loop application for information extraction in regulatory and financial domains.
+Results demonstrate that (even smaller) \acr{LLM}s can reliably locate and extract financial information, supporting efficient audit processes. The findings highlight the potential of combining \acr{LLM}s with rule-based methods to improve computational efficiency and outline a practical workflow for a human-in-the-loop application for information extraction in regulatory and financial domains.
 
 ## Zusammenfassung {.unlisted .unnumbered}
 
@@ -147,7 +147,7 @@ Additionally, GPT-4.1 was used to enhance the clarity and quality of language th
 
 Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats — a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large \acr{LLM}s, including leveraging restricted decoding to generate results suitable for downstream tasks.
 
-There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an \acr{LLM} model, training a small encoder-only model from scratch, and applying visual \acr{LLM}s for document parsing.
+There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an \acr{LLM} model, training a small encoder-only model from scratch and applying visual \acr{LLM}s for document parsing.
 
 ## Dedication {.unlisted .unnumbered}
 

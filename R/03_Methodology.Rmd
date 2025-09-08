@@ -8,11 +8,11 @@ editor_options:
 
 \ChapFrame[Methodology][bhtblue]
 
-This chapter outlines the methodological framework adopted to address the research questions posed subsequent. It details the problem definition, research design, and evaluation strategies used to investigate the effectiveness of \acr{LLM}s and alternative approaches for loacting financial information in and extracting it from German annual reports.
+This chapter outlines the methodological framework adopted to address the research questions posed subsequent. It details the problem definition, research design and evaluation strategies used to investigate the effectiveness of \acr{LLM}s and alternative approaches for loacting financial information in and extracting it from German annual reports.
 
-For each research question, specific hypotheses are formulated and the corresponding experimental setups are described. It describes our data strategy, including data selection, ground truth creation, and preprocessing steps. The chapter also elaborates on the experimental framework, detailing the various approaches benchmarked, including rule-based methods and machine learning techniques.
+For each research question, specific hypotheses are formulated and the corresponding experimental setups are described. It describes our data strategy, including data selection, ground truth creation and preprocessing steps. The chapter also elaborates on the experimental framework, detailing the various approaches benchmarked, including rule-based methods and machine learning techniques.
 
-The methodology aims to provide a robust foundation for assessing the performance, efficiency, and practical applicability of automated information extraction in real-world audit scenarios.
+The methodology aims to provide a robust foundation for assessing the performance, efficiency and practical applicability of automated information extraction in real-world audit scenarios.
 
 ## Problem Definition
 
@@ -27,7 +27,7 @@ Since the information of interest is placed on separated pages, the first proble
 
 The second problem is an information extraction task. Potential information has to be identified, its entity has to be recognized and finally its numeric value has to be extracted. In this thesis no special techniques specialized on table extraction are used. We just use a plain text extract.
 
-## Research Design & Philosophy
+## Research Design and Philosophy
 
 The research design for this thesis is set up, following the guidelines found in @wohlinExperimentationSoftwareEngineering2024. Figure \@ref(fig:reasearch-design-image) shows the decisions made following these guidelines. According to @collisBusinessResearchPractical2014 research classification the outcome of this thesis is applied research, focusing on solving a practical problem. This thesis' purpose is evaluation research, comparing different approaches with each other (*benchmarking*). The data collected in our experiments is of quantitative nature and its evaluation uses (semi-)quantitative methods.
 
@@ -338,7 +338,7 @@ For page identification, the analysis will include investigation of misclassifie
 ::: paragraph-start
 ##### Information extraction
 
-For information extraction, error rates will be analyzed across different experimental setups, with stratified analysis by company, table characteristics (such as currency units and input format), and instruction specifications. We will investigate the errors unique for guided and restricted generation approaches.
+For information extraction, error rates will be analyzed across different experimental setups, with stratified analysis by company, table characteristics (such as currency units and input format) and instruction specifications. We will investigate the errors unique for guided and restricted generation approaches.
 :::
 
 Based on the findings reported by @liExtractingFinancialData2023, we expect several characteristic error types to occur in the information extraction process. These include omissions, where the model fails to extract all values of a list; confusion between thousands and millions; and incorrect identification of rows and columns within tables.
@@ -375,6 +375,6 @@ We do not use XGBoost for the final analysis, because calculating the \acr{SHAP}
 
 In this chapter, we outlined the methodological framework for automated page identification and information extraction in financial documents. We formulated the problem defnitions and research questions, along with specific hypotheses to be tested.
 
-We described the selection and preparation of datasets, the annotation strategies for ground truth creation, and the design of benchmarking tasks. The chapter presented the approaches used for data processing, prompt engineering, and evaluation metrics. We also presented the methods used for error analysis and interpretation of results.
+We described the selection and preparation of datasets, the annotation strategies for ground truth creation and the design of benchmarking tasks. The chapter presented the approaches used for data processing, prompt engineering and evaluation metrics. We also presented the methods used for error analysis and interpretation of results.
 
-Having established the methodological foundation, the next chapter focuses on the practical realization of these concepts. It presents the technical implementation, describes the computational environments, and documents the software tools and workflows used to translate the proposed methodology into a functional system.
+Having established the methodological foundation, the next chapter focuses on the practical realization of these concepts. It presents the technical implementation, describes the computational environments and documents the software tools and workflows used to translate the proposed methodology into a functional system.
