@@ -217,9 +217,9 @@ Masking tokens is often achieved by iterating over the entire vocabulary for eac
 
 @dochertyControllingYourLLM2025 demonstrates how token masking influences the probabilities for subsequent tokens, providing clear examples, helpful visualizations and corresponding code snippets.
 
-## General machine learning and statistics {#other-concepts}
+## General Machine Learning and Statistics {#other-concepts}
 
-### Sample distribution visualization methods
+### Sample Distribution Visualization Methods
 
 #### Boxplots
 
@@ -235,7 +235,7 @@ knitr::include_graphics("images/Boxplot_vs_PDF.png")
 
 The median and quartiles are less sensitive to outliers than the mean and standard deviation of a sample. Therefore, they are more suitable for distributions that are asymmetric or irregularly shaped, as well as for samples with extreme outliers [@krzywinskiVisualizingSamplesBox2014]. Boxplots can be used with as few as five observations. However, even for large samples $(n \geq 50)$, whisker positions can vary considerably.
 
-#### Violin plots
+#### Violin Plots
 
 There are variations that attempt to convey the sample size in a box plot, either by adjusting the width of the box or by introducing notches to indicate the confidence interval for the median [@wickham40YearsBoxplots2011].
 
@@ -247,11 +247,11 @@ Violin plots [@hintzeViolinPlotsBox1998] additionally display a density estimate
 knitr::include_graphics("images/violin_plots_horizontal.png")
 ```
 
-### Tree based machine learning algorithms
+### Tree Based Machine Learning Algorithms
 
 \acr{RF}s are an ensemble supervised machine learning technique composed of multiple decision trees [@kulkarniRandomForestClassifiers2013]. @mienyeSurveyDecisionTrees2024 provide a detailed overview of decision trees and their high-performing ensemble algorithms. Tree-based machine learning algorithms have gained significant popularity due to their simplicity and strong interpretability [@mienyeSurveyDecisionTrees2024].
 
-#### Decision tree
+#### Decision Tree
 
 "The basic idea behind decision tree-based algorithms is to recursively partition the data into subsets based on the values of different attributes until a stopping criterion is met" [@mienyeSurveyDecisionTrees2024]. Figure \@ref(fig:decision-tree) illustrates this process for artificial data with two continuous features. Common criteria for splitting a set of observations include the Gini index and information gain [@mienyeSurveyDecisionTrees2024].
 
@@ -287,7 +287,7 @@ Tree induction can be parallelized, making \acr{RF}s efficient on modern hardwar
 
 The classification of \acr{RF}s as black-box models restricts their deployment in many fields of application [@haddouchiSurveyTaxonomyMethods2024]. One feature-oriented tool for explainability is the \acr{SHAP} framework, presented in Section \@ref(shap). It enables local explanation, global overview and pattern discovery for \acr{RF}[@haddouchiSurveyTaxonomyMethods2024].
 
-#### Gradient boosted decision trees
+#### Gradient Boosted Decision Trees
 
 Another highly effective and widely used advancement of decision trees is the gradient boosted decision tree [@chenXGBoostScalableTree2016]. Instead of bagging, this approach applies the principle of boosting. It sequentially builds decision trees, with each subsequent tree correcting errors made by its predecessors. Gradient descent is used to minimize these errors [@mienyeSurveyDecisionTrees2024].
 
@@ -303,9 +303,9 @@ Below, we highlight some of its benefits as described by @burnwalComprehensiveSu
 
 Nevertheless, several challenges remain for future research, such as developing methods to handle imbalanced data and automating the hyperparameter tuning process.
 
-### Model agnostic explanation models {#shap}
+### Model Agnostic Explanation Models {#shap}
 
-#### Shapley values
+#### Shapley Values
 
 Shapley values were introduced by @shapley17ValueNPerson2016 in 1952 within the field of game theory. He defined three axioms that a fair allocation of rewards must satisfy:
 
@@ -326,7 +326,7 @@ The formula for a single Shapley value is given by [@lundbergUnifiedApproachInte
 
 @molnarInterpretableMachineLearning2025 bridges the game theory concepts to machine learning as follows: "The *game* is the prediction task for a single instance of the dataset. The *gain* is the actual prediction for this instance minus the average prediction for all instances. The *players* are the feature values of the instance that collaborate to receive the gain (i.e., predict a certain value)."
 
-#### SHAP framework
+#### SHAP Framework
 
 In @lundbergUnifiedApproachInterpreting2017, the authors present "A Unified Approach to Interpreting Model Predictions" based on Shapley values, called \acrfull{SHAP}. This framework assigns each feature an importance value for every observation, enabling inspection of why a specific prediction is made and potentially explaining model errors for particular observations. Examining predictions across all observations can reveal generalized effects of features.
 

@@ -8,28 +8,28 @@ editor_options:
 
 \ChapFrame[Methodology][bhtblue]
 
-This chapter outlines the methodological framework adopted to address the research questions posed subsequent. It details the problem definition, research design and evaluation strategies used to investigate the effectiveness of \acr{LLM}s and alternative approaches for loacting financial information in and extracting it from German annual reports.
+This chapter outlines the methodological framework adopted to address the subsequent research questions. It details the problem definition, research design and evaluation strategies used to investigate the effectiveness of \acrfull{LLM}s and alternative approaches for locating and extracting financial information from German annual reports.
 
-For each research question, specific hypotheses are formulated and the corresponding experimental setups are described. It describes our data strategy, including data selection, ground truth creation and preprocessing steps. The chapter also elaborates on the experimental framework, detailing the various approaches benchmarked, including rule-based methods and machine learning techniques.
+For each research question, specific hypotheses are formulated, and the corresponding experimental setups are described. The chapter also presents the data strategy, including data selection, ground truth creation and preprocessing steps. Furthermore, it elaborates on the experimental framework, detailing the various approaches benchmarked, including rule-based methods and machine learning techniques.
 
 The methodology aims to provide a robust foundation for assessing the performance, efficiency and practical applicability of automated information extraction in real-world audit scenarios.
 
 ## Problem Definition
 
-This thesis aims to evaluate a framework for information extraction from financial reports using advanced computing algorithms, such as \acr{LLM}s, presented by @liExtractingFinancialData2023. We apply this framework on German annual reports of multiple companies and focus on using open-weight \acr{LLM}s. This task requires two problems to be solved:
+This thesis aims to evaluate a framework for information extraction from financial reports using advanced computational algorithms, such as \acr{LLM}s, as presented by @liExtractingFinancialData2023. We apply this framework to German annual reports from multiple companies, focusing on the use of open-weight \acr{LLM}s. This task requires solving two key problems:
 
-1.  The information to extract has to be located in the document.
-2.  The information has to be extracted correct and a in format that allows further processing in down stream tasks.
+1.  The relevant information must be located within the document.
+2.  The information must be extracted accurately and formatted to enable further processing in downstream tasks.
 
-We limit the information of interest on the data found in the balance sheet and profit and loss statement. Both are found on separate pages and have a table-like structure. The information extracted should reflect the hierarchy defined in @hgbHandelsgesetzbuchImBundesgesetzblatt2025. The information to extract consists of numeric values.
+We restrict the scope of information to the data found in the balance sheet and profit and loss statement. Both are presented on separate pages and exhibit a table-like structure. The extracted information should reflect the hierarchy defined in @hgbHandelsgesetzbuchImBundesgesetzblatt2025 and consists of numeric values.
 
-Since the information of interest is placed on separated pages, the first problem is to find the pages that contain the balance sheet and profit and loss statement. We do not attempt to select a specific part of the page, where the data can be found. Thus, this becomes a classification task, if a page contains the information of interest. Spatial information is not processed.
+Since the information of interest is located on distinct pages, the first problem is to identify the pages containing the balance sheet and profit and loss statement. We do not attempt to select specific regions within a page where the data may be found. Thus, this becomes a classification task: determining whether a page contains the information of interest. Spatial information is not processed.
 
-The second problem is an information extraction task. Potential information has to be identified, its entity has to be recognized and finally its numeric value has to be extracted. In this thesis no special techniques specialized on table extraction are used. We just use a plain text extract.
+The second problem is an information extraction task. Relevant information must be identified, its entity recognized and its numeric value extracted. In this thesis, no specialized table extraction techniques are employed; instead, we rely solely on plain text extraction.
 
 ## Research Design and Philosophy
 
-The research design for this thesis is set up, following the guidelines found in @wohlinExperimentationSoftwareEngineering2024. Figure \@ref(fig:reasearch-design-image) shows the decisions made following these guidelines. According to @collisBusinessResearchPractical2014 research classification the outcome of this thesis is applied research, focusing on solving a practical problem. This thesis' purpose is evaluation research, comparing different approaches with each other (*benchmarking*). The data collected in our experiments is of quantitative nature and its evaluation uses (semi-)quantitative methods.
+The research design for this thesis follows the guidelines outlined in @wohlinExperimentationSoftwareEngineering2024. Figure \@ref(fig:reasearch-design-image) illustrates the decisions made according to these guidelines. Based on the research classification by @collisBusinessResearchPractical2014, the outcome of this thesis is applied research, focused on solving a practical problem. The primary purpose is evaluation research, comparing different approaches (*benchmarking*). The data collected in our experiments is quantitative in nature and is evaluated using (semi-)quantitative methods.
 
 (ref:reasearch-design-caption) Showing the decisions made regarding the research design. (The figure is adapted from @wohlinDecisionmakingStructureSelecting2015. The copyright for the original figure is held by Springer Science+Business Media New York 2014.)
 
@@ -37,9 +37,9 @@ The research design for this thesis is set up, following the guidelines found in
 knitr::include_graphics("images/research_design.png")
 ```
 
-### Research questions {#research-questions}
+### Research Questions {#research-questions}
 
-For this thesis we formulate two main research questions:
+For this thesis, we formulate two main research questions:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
 cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effectively to locate specific information in a financial report?</li><li>How can we use LLMs effectively to extract this information from the document?</li></ol>")
@@ -50,9 +50,9 @@ cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effe
   \item How can we use LLMs effectively to extract this information from the document?
 \end{enumerate}
 
-Each of this questions is investigated with its own methods and experiments. In the following we will use the term *page identification* to refer to the first research question and *information extraction* to refer to the second.
+Each of these questions is investigated using dedicated methods and experiments. In the following, we refer to the first research question as *page identification* and the second as *information extraction*.
 
-Additionally, we formulate a \acr{UX} motivated side research question:
+Additionally, we formulate a \acr{UX}-motivated supplementary research question:
 
 ```{r, include=knitr::is_html_output(), results='asis', echo=FALSE}
 cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?</li></ol>")
@@ -63,17 +63,17 @@ cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional in
   \item Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 \end{enumerate}
 
-We refer to the third research question using the term *error rate guidance*.
+We refer to the third research question as *error rate guidance*.
 
 ### Hypotheses
 
-Subsequent we formulate our hypotheses for the research questions. Regarding to the *page identification* task we propose:
+Next, we present the hypotheses formulated for the research questions. For the *page identification* task, we propose:
 
 **H1.1:** \acr{LLM}s can be used to locate specific information in a financial report, achieving a high F1 score.
 
 **H1.2:** \acr{LLM}s can be combined with other approaches to reduce the energy consumption, without lowering the systems recall.
 
-For the *information extraction* task we define two groups of hypotheses. The first group proposes, that \acr{LLM}s can match entities, extract numeric values without mistakes and is not hallucinating if values are not present:
+For the *information extraction* task, we define two groups of hypotheses. The first group proposes that \acr{LLM}s can match entities, extract numeric values without errors, and avoid hallucinating values when none are present:
 
 **H2.1a:** \acr{LLM}s can be used to correctly extract multiple numeric values from the assets table.
 
@@ -81,7 +81,7 @@ For the *information extraction* task we define two groups of hypotheses. The fi
 
 **H2.1c:** \acr{LLM}s can identify unmatched row identifiers and report, that the value is missing.
 
-The second group of hypotheses proposes, that there are three sources for potential predictors for the information extraction performance: model specific, prompting specific and table specific ones.
+The second group of hypotheses proposes that there are three sources of potential predictors for information extraction performance: model-specific, prompting-specific, and table-specific factors.
 
 **H2.2a:** Model specific features have an effect on the extraction performance.
 
@@ -89,60 +89,60 @@ The second group of hypotheses proposes, that there are three sources for potent
 
 **H2.2c:** Table specific features have an effect on the extraction performance.
 
-Model specific predictors are the model family and the parameter size. Predictors related to the prompting strategies are related to in-context learning decisions, e.g. how many examples should be presented, how should those examples be chosen and is it permitted to use examples from the same company as the current subjects tasks document. Example for table characteristics investigated are the number of columns, visual separation and if there is a currency unit given — i.e. *T€*.
+Model-specific predictors include the model family and parameter size. Predictors related to prompting strategies involve in-context learning decisions, such as how many examples should be presented, how those examples are selected and whether it is permissible to use \acrfull{icexs}. Examples of table characteristics investigated include the number of columns, visual separation and the presence of a currency unit (e.g., *T€*).
 
-A list of all investigated predictors and their assumed directions of effect on multiple measures of the information extraction task can be found in the hypotheses evaluation tables in Appendix \@ref(feature-effect-analysis).
+A comprehensive list of all investigated predictors and their assumed directions of effect on various measures of the information extraction task can be found in the hypotheses evaluation tables in Appendix \@ref(feature-effect-analysis).
 
-The hypotheses for our side research question name the *confidence score* as concrete target for our investigations.
+The hypotheses for our supplementary research question identify the *confidence score* as the concrete target for investigation.
 
 **H3.1:** The confidence score can be used to guide the user on which of the identified pages need to be checked and which can be trusted as they are.
 
 **H3.2:** The confidence score can be used to guide the user on which of the predicted values in the information extraction task need to be checked and which can be trusted as they are.
 
-### Evaluation research
+### Evaluation Research
 
-We follow the process of evaluation research, in order to investigate our research questions. We compare different approaches to solve the two tasks, searching for the most effective setup, to solve the problems. A setup is considered effective if it achieves good results while being as computationally efficient as possible.
+We follow the process of evaluation research to investigate our research questions. We compare different approaches to solve the two tasks, seeking the most effective setup. A setup is considered effective if it achieves strong results while remaining as computationally efficient as possible.
 
-As a baseline for each task a \acrfull{regex} based approach is set up. Regular expressions are chosen as baseline because they are computationally efficient. The results are compared with the authors human performance as well. The results will be used to implement an application that is used by the employees of \acr{RHvB} in future.
+For each task, a \acrfull{regex}-based approach is established as the baseline, chosen for its computational efficiency. The results are also compared with the author's human performance. Ultimately, the findings will inform the implementation of an application to be used by employees of \acrfull{RHvB} in the future.
 
 ## Evaluation Strategy
 
-This section defines, under which conditions we consider a task to be successfully solved and which metric we use to measure the outcome.
+This section defines the conditions under which a task is considered successfully solved and specifies the metrics used to measure outcomes.
 
-### Evaluation framework and metrics
+### Evaluation Framework and Metrics
 
-#### Page identification
+#### Page Identification
 
-The page identification task is successful, if a page is correctly classified to contain the information of interest. The balance sheet is composed of the assets (*Aktiva*) and liabilities (*Passiva*) table. Together with the profit and loss statement (*Gewinn- und Verlustrechnung, GuV*) they form the three target classes. The fourth class is called *other*. Subsequently will will use the German terms for the target classes (or table types): **Aktiva**, **Passiva** and **GuV**.
+The page identification task is considered successful if a page is correctly classified as containing the information of interest. The balance sheet consists of the assets (*Aktiva*) and liabilities (*Passiva*) tables. Together with the profit and loss statement (*Gewinn- und Verlustrechnung, GuV*), these form the three target classes. The fourth class is designated as *other*. Subsequently, we use the German terms for the target classes (or table types): **Aktiva**, **Passiva** and **GuV**.
 
 ::: paragraph-start
 ##### Metrics
 
-The distribution of target classes and pages of type *other* is highly imbalanced. At most two pages per target class are found in documents with up to 152 pages. Thus, following @saitoPrecisionRecallPlotMore2015 suggestion, we report measures as precision, recall and F1 score instead of accuracy, to describe the approaches performances.
+The distribution of target classes and pages of type *other* is highly imbalanced. At most two pages per target class are found in documents with up to 152 pages. Therefore, following the suggestion of @saitoPrecisionRecallPlotMore2015, we report precision, recall and F1 score instead of accuracy to describe the performance of the approaches.
 :::
 
-In a \acr{HITL} application the recall value might be of higher interest than the F1 score. More precisely, in those cases the number of pages to check until the correct page of interest is found. Thus, the top k recall is reported additionally, if the approach permits to rank the classified pages according to a score.
+In a \acrfull{HITL} application, recall may be of greater interest than the F1 score. Specifically, the number of pages to check until the correct page of interest is found is relevant. Thus, top-k recall is reported additionally, if the approach allows ranking the classified pages by score.
 
-#### Information extraction
+#### Information Extraction
 
-The information extraction task if successful, if the correct numeric value is extracted with the correct entity identifier in the correct \acr{json} format. If a value, defined by the legal text, is not present *null* should be returned with the corresponding entity identifier. The entity identifier can be composed of up to three labels, representing the hierarchy defined in the legal text.
+The information extraction task is considered successful if the correct numeric value is extracted with the correct entity identifier in the appropriate \acr{json} format. If a value defined by the legal text is not present, *null* should be returned with the corresponding entity identifier. The entity identifier may consist of up to three labels, representing the hierarchy defined in the legal text.
 
 ::: paragraph-start
 ##### Metrics
 
-We use two measures to describe the performance of the approaches for the information extraction task. First, we check how many of the predicted numeric values are matching the numeric values in the ground truth. The only permitted differences are based on the number of trailing zeros. We do not check for partial correctness, since the real life application requires totally correct extracted numbers.
+We use two measures to describe the performance of the approaches for the information extraction task. First, we assess how many of the predicted numeric values match the numeric values in the ground truth. The only permitted differences are in the number of trailing zeros. We do not check for partial correctness, as the real-life application requires fully correct extracted numbers.
 :::
 
-Second, we report the F1 score for correctly predicting values as missing and thus returning *null*. The distribution of missing values and given numeric values is not imbalanced. Nevertheless, we report the F1 score to establish a comparability with the results of the page identification task.
+Second, we report the F1 score for correctly predicting values as missing and thus returning *null*. The distribution of missing and present numeric values is not imbalanced. Nevertheless, we report the F1 score to enable comparability with the results of the page identification task.
 
-#### Error rate guidance
+#### Error Rate Guidance
 
-An error rate guided result checking process can be implemented, if we can use extraction task related information, to identify a prediction as trust worthy. This means, we could white list these values and red flag the remaining ones. Thus, we could guide the users attention in the error checking process on those values, that empirically tend to have a high chance to be faulty.
+An error rate-guided result checking process can be implemented if extraction task-related information can be used to identify trustworthy predictions. This means we could whitelist these values and flag the remaining ones. Thus, we can guide the user's attention in the error checking process to those values that empirically tend to have a higher chance of being faulty.
 
 ::: paragraph-start
 ##### Metrics
 
-In this thesis we focus our attention on a criteria, which we name *confidence*. We calculate the *confidence* score for answers received from \acr{LLM} based on the non-normalized sum of token log probabilities [@boseakEvaluatingLogLikelihoodConfidence2025]:
+In this thesis, we focus on a criterion termed *confidence*. We calculate the *confidence* score for answers received from \acr{LLM}s based on the non-normalized sum of token log probabilities [@boseakEvaluatingLogLikelihoodConfidence2025]:
 :::
 
 \begin{equation} 
@@ -150,69 +150,69 @@ confidence = \exp \left( \sum logprob(token_i) \right)
 (\#eq:confidence)
 \end{equation}
 
-For the classification tasks this is equal to the normalized (averaged) sum, since the answer is either containing just one token or the subsequent tokens have a log probability of 0, because the answer is fully determined by the first token.
+For the classification tasks, this is equal to the normalized (averaged) sum, since the answer either contains just one token or the subsequent tokens have a log probability of 0, because the answer is fully determined by the first token.
 
-We are using the non-normalized sum of token log probabilities for the information extraction task too, because we want a single uncertain digit to flag the whole numeric value as unreliable. This means, that shorter answers tend to have higher *confidence* scores. This is especially true for predicting *null*. Thus, we investigate the prediction of numeric values and *null* separated.
+We use the non-normalized sum of token log probabilities for the information extraction task as well, because we want a single uncertain digit to flag the entire numeric value as unreliable. This means that shorter answers tend to have higher *confidence* scores. This is especially true for predicting *null*. Thus, we investigate the prediction of numeric values and *null* separately.
 
-We group predictions based on their confidence scores in intervals with a range of 0.05 and calculate the empirical error rate for each interval. We hope to find a error rate (close to) zero for the highest confidence intervals and a noticeable proportion of predictions falling into those intervals.
+We group predictions based on their confidence scores in intervals with a range of 0.05 and calculate the empirical error rate for each interval. We aim to find an error rate close to zero for the highest confidence intervals and a noticeable proportion of predictions falling into those intervals.
 
 ### Benchmarking
 
-Comparing the performance of different approaches benchmarked in this thesis is possible, because the approaches within a task are performed on a common document base. The task to solve is the same for each approach. The prompts for the different prompting strategies are build systematically and derive from the base prompt formulated for the *zero shot* strategy. Comparing the runtime or energy consumption gets possible with the \acr{GPU} benchmark data (see Section \@ref(gpu-benchmark)).
+The performance of the approaches benchmarked in this thesis can be directly compared, as all methods within a given task are evaluated on a shared document base. Each approach addresses the same task and the prompts for different prompting strategies are systematically constructed, originating from the base prompt used in the *zero shot* strategy. Runtime and energy consumption are compared using \acr{GPU} benchmark data (see Section \@ref(gpu-benchmark)).
 
 ## Data Strategy
 
-The population of annual reports of interest for the work at the \acr{RHvB} is composed of all annual reports of companies, where the state of Berlin holds a share. There are often multiple versions of those annual reports: one that is publicly available and one targeting share- and stakeholders. The structure and layout of these reports is quite heterogeneous. Often there is a second version that is used internally or for communications with public administrations. They often consist of plain text and tables and show neither diagrams nor photos.
+The population of annual reports relevant to the work at \acr{RHvB} comprises all reports from companies in which the state of Berlin holds a share. These reports often exist in multiple versions: one publicly available and another intended for share- and stakeholders. Their structure and layout are highly heterogeneous. Frequently, an additional version is produced for internal use or communication with public administrations, typically consisting of plain text and tables, and rarely including diagrams or photographs.
 
-Since the evaluations are run on the \acr{BHT} cluster and partially in the Azure cloud, we work with the publicly available reports, while at \acr{RHvB} the internal documents are processed. The annual reports mostly are downloaded from the companies websites. Some documents are accessed via [Bundesanzeiger](https://www.bundesanzeiger.de) or the [digitale Landesbibliothek Berlin](https://digital.zlb.de). We assume, that our findings can be transferred to the confidential reports, because the structure and content of the tables targeted in this thesis are almost identical. The visual differences should have little impact.
+Because evaluations are conducted on the Datexis cluster and partially in the Azure cloud, we utilize publicly available reports, while \acr{RHvB} processes internal documents. Most annual reports are downloaded from company websites, with some accessed via the [Bundesanzeiger](https://www.bundesanzeiger.de) or the [digitale Landesbibliothek Berlin](https://digital.zlb.de). We assume that our findings are transferable to confidential reports, as the structure and content of the targeted tables are nearly identical; visual differences are expected to have minimal impact.
 
-The page identification task classifies every page of the annual reports. The information extraction task only processes pages, which contain **Aktiva** tables. In addition, a set of self-generated synthetic **Aktiva** tables is used for the information extraction task. It is created to systematically investigate potential effects of characteristics financial tables could have.
+For the page identification task, every page of the annual reports is classified. The information extraction task is restricted to pages containing **Aktiva** tables. Additionally, a set of self-generated synthetic **Aktiva** tables is used to systematically investigate the potential effects of various financial table characteristics.
 
-### Sampling methodology
+### Sampling Methodology
 
-The reports are selected to ensure that the sample reflects the diversity of structure and content present in the overall population of documents.
-
-::: paragraph-start
-##### Page identification
-
-We select companies from different fields of business for the page identification task and download all publicly available annual reports. The companies chosen are found in the first row of Figure \@ref(fig:beteiligungsunternehmen).
-:::
-
-Our assumption is, that each company within a branch can represent the document style for other companies of the same branch and that the position within a column has no implications for the annual reports styles or content. We additionally download reports for *GESOBAU AG*, because we realize that the *degewo AG* reports would require \acr{OCR} preprocessing. A description of the resulting data set can be found in Section \@ref(ground-truth-dataset-composition).
+The reports are selected to ensure that the sample reflects the diversity of structure and content found in the overall population of documents.
 
 ::: paragraph-start
-##### Information extraction
+##### Page Identification
 
-For the information retrieval task we download all publicly available reports for most companies. We found no publicly available reports for half of the companies from the field of culture and some companies of the education sector and thus exclude these companies from our investigation. The amount of documents chosen for each company is more balanced than for the page identification task. A description of the resulting dataset can be found in Section \@ref(ground-truth-dataset-composition).
+We select companies from various business sectors for the page identification task and download all publicly available annual reports. The selected companies are listed in the first row of Figure \@ref(fig:beteiligungsunternehmen).
 :::
 
-We additionally exclude all companies, that do not report their assets table in the most detailed granularity defined by the legal text, because these asset tables do not match with the strict schema we use. This decision excludes the reports of well known companies as BVG and BSR.
+We assume that each company within a sector can represent the document style of other companies in the same sector, and that the position within a column does not affect the style or content of the annual reports. Reports for *GESOBAU AG* are additionally included, as *degewo AG* reports require \acr{OCR} preprocessing. A description of the resulting dataset is provided in Section \@ref(ground-truth-dataset-composition).
 
 ::: paragraph-start
-##### Error rate guidiance
+##### Information Extraction
 
-We investigate the third research question on the two datasets described above, instead of creating a separate dataset.
+For the information extraction task, we download all publicly available reports for most companies. No publicly available reports were found for half of the companies in the culture sector and for some in the education sector; these companies are therefore excluded from the analysis. The number of documents selected per company is more balanced than in the page identification task. A description of the resulting dataset is provided in Section \@ref(ground-truth-dataset-composition).
 :::
 
-### Ground truth creation process
+Companies that do not report their assets table with the most detailed granularity required by legal regulations are also excluded, as these tables do not conform to the strict schema used in this thesis. This decision excludes reports from well-known companies such as BVG and BSR.
 
-The ground truth for both tasks is created by manual annotation through the authors. We use results of early experiments to check the ground truth for mistakes or missed items. We resolve found issues. Details on the ground truth creation processes can be found in Section \@ref(ground-truth-creation).
+::: paragraph-start
+##### Error Rate Guidiance
+
+The third research question is investigated using the two datasets described above, rather than creating a separate dataset.
+:::
+
+### Ground Truth Creation Process
+
+The ground truth for both tasks is established through manual annotation by the authors. Results from early experiments are used to verify the ground truth for errors or omissions, which are subsequently corrected. Further details on the ground truth creation process are provided in Section \@ref(ground-truth-creation).
 
 ### Preprocessing
 
-We use plain text extracted from the annual reports for all tasks. We do not extract geometric coordinates for the text. @auerDoclingTechnicalReport2024 describes, that available open-source PDF parsing libraries may show issues as poor extraction speed or randomly merged text cells. We test five PDF extraction libraries, because the results of all subsequent experiments will depend on the text extracts. Appendix \@ref(text-extraction-benchmark) shows the results.
+For all tasks, we use plain text extracted from the annual reports, without retrieving geometric coordinates. As noted by @auerDoclingTechnicalReport2024, open-source PDF parsing libraries may exhibit issues such as slow extraction speeds or randomly merged text cells. We evaluate five PDF extraction libraries, as the quality of text extracts directly affects all subsequent experiments. The results are presented in Appendix \@ref(text-extraction-benchmark).
 
-We perform no manual data cleaning, because this will not be done from the employees of \acr{RHvB} neither.
+No manual data cleaning is performed, as this step will not be undertaken by employees of \acr{RHvB} either.
 
-### Data splitting
+### Data Splitting
 
-When we train a machine learning model, we split the data into train and a test set. We do not use a validation set, because we do not compare models using an extended hyper-parameter variation strategy. Instead we just report the performance found for the models build with default settings. We build two \acr{RF}s for the term frequency approach in the page identification task and additional ones for evaluating the hypotheses for the information extraction task.
+When training a machine learning model, we split the data into training and test sets. A validation set is not used, as we do not compare models using extensive hyper-parameter variation strategies. Instead, we report the performance of models built with default settings. Two \acrfull{RF}s are constructed for the term frequency approach in the page identification task, with additional models built to evaluate the hypotheses for the information extraction task.
 
-Building the term frequency \acr{RF}, we face a highly imbalanced dataset. We apply undersampling for the training and evaluate the model on the imbalanced test set.
+For the term frequency \acr{RF}, the dataset is highly imbalanced. We apply undersampling during training and evaluate the model on the imbalanced test set.
 
 ## Experimental Framework
 
-### LLM overview
+### LLM Overview
 
 ```{r llm-overview-data-loading, echo=echo_flag, warning=warning_flag, message=message_flag}
 df_llm_overview <- read_csv("data_storage/model_usage_extraction.csv") %>% 
@@ -222,7 +222,7 @@ df_llm_overview <- read_csv("data_storage/model_usage_extraction.csv") %>%
   mutate_if(is.character, ~if_else(. == "X", "✓", .))
 ```
 
-Table \@ref(tab:llm-overview) gives an overview on all \acr{LLM}s we use for the tasks in this thesis. It lists the passive parameter count in billions for each \acr{LLM} and shows in which specific approach it is used with a tick. We use `r length(unique(df_llm_overview$model))` models from `r length(unique(df_llm_overview$model_family))` model families. If available, we use a instruction fine-tuned version of the models.
+Table \@ref(tab:llm-overview) provides an overview of all \acr{LLM}s used in this thesis. It lists the passive parameter count in billions for each \acr{LLM} and indicates with a tick the specific approaches in which each model is applied. In total, `r length(unique(df_llm_overview$model))` models from `r length(unique(df_llm_overview$model_family))` model families are used. Where available, instruction fine-tuned versions of the models are employed.
 
 ```{r llm-overview, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 table <- df_llm_overview %>% 
@@ -243,12 +243,12 @@ table
 
 ### Approaches
 
-#### Page identification
+#### Page Identification
 
 ::: paragraph-start
-##### Regular expressions
+##### Regular Expressions
 
-We develop multiple sets of regular expressions and filter out all pages that do not fulfill all regular expressions of a given set. There are different sets for each target type, **Aktiva**, **Passiva** and **GuV**. The sets also differ in how versatile they can cope with additional white space introduced by a imperfect text extraction and how many different words for a given term are accepted. Figure \@ref(fig:regex-filter) shows an example for two sets of regular expressions to identify a **Aktiva** page.
+We develop multiple sets of regular expressions to filter out pages that do not meet all criteria of a given set. Distinct sets are created for each target type: **Aktiva**, **Passiva** and **GuV**. These sets vary in their ability to handle additional whitespace resulting from imperfect text extraction and in the number of alternative terms accepted for a given concept. Figure \@ref(fig:regex-filter) illustrates two sets of regular expressions used to identify a **Aktiva** page.
 :::
 
 ```{r regex-filter, fig.cap="Comparing the prediction of two different sets of regular expressions on dummy pages. The simple one has a lower recall, while the  expended one has a lower precision.", echo=FALSE, out.width="100%", fig.align='center'}
@@ -258,7 +258,7 @@ knitr::include_graphics("images/regex_filtering.png")
 ::: paragraph-start
 ##### Table of Contents Understanding
 
-We use a \acr{LLM} to extract the \acr{TOC} from the first pages from a document or use the embedded \acr{TOC} and prompt a \acr{LLM} to identify the pages where the **Aktiva**, **Passiva** and **GuV** are located. Figure \@ref(fig:toc-screenshot) shows a screenshot of a annual report with an embedded TOC and its TOC in text form.
+We use a \acr{LLM} to extract the \acrfull{TOC} from the initial pages of a document or utilize the embedded \acr{TOC}. The \acr{LLM} is then prompted to identify the pages containing **Aktiva**, **Passiva** and **GuV**. Figure \@ref(fig:toc-screenshot) presents a screenshot of an annual report with an embedded \acr{TOC} and its corresponding text version.
 :::
 
 ```{r toc-screenshot, fig.cap="Showing a screenshot of a annual report with an embedded TOC (left) and its TOC in text form (right). The embeded TOC is not listing all entries from the TOC in text form.", echo=FALSE, out.width="100%", fig.align='center'}
@@ -268,31 +268,31 @@ knitr::include_graphics("images/toc.png")
 ::: paragraph-start
 ##### Large Language Model Classification
 
-We use \acr{LLM}s to classify if the text extract of a given page contains a **Aktiva**, **Passiva** or **GuV** table or something else. We test binary classification and a multi-classification approach. The reported confidence scores can be used to form a ranking, which text extract might be most similar to the target type. We use a sampling temperature of zero, because we neither want creative nor variable answers, but just the most probable class and exact copied numbers.
+We use \acr{LLM}s to classify whether the text extract of a given page contains a **Aktiva**, **Passiva**, **GuV** table, or another type. Both binary and multi-class classification approaches are evaluated. The resulting confidence scores are used to rank text extracts by their similarity to the target type. A sampling temperature of zero is applied to ensure deterministic and precise outputs.
 :::
 
-We test a wide range of open-weight models and compare different prompting techniques. Figure \@ref(fig:prompt-setup-classification) shows, how the prompts are composed for the different strategies. Besides a zero shot approach we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing the legal text instead of examples from a annual report.
+A wide range of open-weight models is tested, along with various prompting techniques. Figure \@ref(fig:prompt-setup-classification) illustrates the composition of prompts for different strategies. In addition to a zero-shot approach, we evaluate few-shot in-context learning with examples selected either randomly or by vector similarity. Finally, we test using the legal text in place of examples from annual reports.
 
 ```{r prompt-setup-classification, fig.cap="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM.", echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics("images/promt_building_classification.png")
 ```
 
 ::: paragraph-start
-##### Term frequency Ranking
+##### Term Frequency Ranking
 
-We use normalized term frequencies and normalized float frequency as features for classification with a \acr{RF}. We use the predicted scores to build a ranking, for which page most probably contains the target pages. To handle the unbalanced data we use an undersampling approach for the training dataset creation. Figure \@ref(fig:tf-flowchart) visualizes, how the prediction works in this approach.
+Normalized term frequencies and normalized float frequencies are used as features for classification with a \acr{RF}. The predicted scores are used to rank pages by their likelihood of containing the target information. To address data imbalance, an undersampling approach is applied during training. Figure \@ref(fig:tf-flowchart) visualizes the prediction process for this approach.
 :::
 
 ```{r tf-flowchart, fig.cap="Visualizing, how term and float frequency get calculated and used to predict, if a page is of the target class.", echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics("images/tf_flowchart.png")
 ```
 
-#### Information extraction
+#### Information Extraction
 
 ::: paragraph-start
-##### Regular expressions
+##### Regular Expressions
 
-We use regular expressions to extract the numeric values for matching row identifiers. The regular expressions handle line breaks between words in the row identifiers, but not within a word. They can handle multiple signs of white space. Besides that, they try to fully match the labels from the legal text with the text extract, ignoring upper case. They extract numbers with "." as thousands separator. Figure \@ref(fig:regex-extractor) is visualizing those capabilities.
+We use regular expressions to extract numeric values for matching row identifiers. These expressions accommodate line breaks between words in row identifiers, but not within individual words. They can handle multiple whitespace characters and are designed to fully match labels from the legal text with the text extract, ignoring case sensitivity. Numbers are extracted using "." as the thousands separator. Figure \@ref(fig:regex-extractor) illustrates these capabilities.
 :::
 
 ```{r regex-extractor, fig.cap="Visualizing the extraction results for different text examples. Texts in green boxes are matching our regular expression. Texts in red boxes do not, because of the red text part.", echo=FALSE, out.width="100%", fig.align='center'}
@@ -300,81 +300,79 @@ knitr::include_graphics("images/regex_extracting.png")
 ```
 
 ::: paragraph-start
-##### Real tables
+##### Real Tables
 
-We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with restricted generation. We use a sampling temperature of zero, because we neither want creative nor variable answers, but just the most probable class and exact copied numbers.
+We use \acr{LLM}s to extract numeric values from real **Aktiva** tables using restricted generation. A sampling temperature of zero is applied to ensure deterministic and precise outputs.
 :::
 
-The \acr{LLM} has to group row identifiers and corresponding numeric values and match the row identifier with the labels of the schema. If a row identifier is unknown, the values have to be discarded. If a label is not present among the row identifiers, the model predicts *null*. All values are extracted in one pass. We do not include any instructions on how to proceed with currency units that might be given for certain columns.
+The \acr{LLM} must group row identifiers with their corresponding numeric values and match each row identifier to the schema labels. If a row identifier is unknown, its values are discarded. If a label is absent among the row identifiers, the model predicts *null*. All values are extracted in a single pass. No instructions are provided regarding currency units that may appear in certain columns.
 
-We test a wide range of open-weight models and compare different prompting techniques. Figure \@ref(fig:prompt-setup-extraction) shows, how the prompts are composed for the different strategies. Besides a zero shot approach, we test few-shot in-context learning with examples that are either chosen randomly or retrieved based on their vector similarity. Finally, we test passing a synthetic **Aktiva** table as an example. We test models from OpenAIs GPT family in addition to the open-weight models.
+A wide range of open-weight models is tested, along with various prompting techniques. Figure \@ref(fig:prompt-setup-extraction) illustrates the composition of prompts for different strategies. In addition to a zero-shot approach, we evaluate few-shot in-context learning with examples selected either randomly or by vector similarity. Finally, we test using a synthetic **Aktiva** table as an example. Models from OpenAI's GPT family are also included in the evaluation alongside open-weight models.
 
 ```{r prompt-setup-extraction, fig.cap="Showing the basic structure of the prompts and which strategies are used to pass additional information to the LLM for the information extraction task.", echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics("images/promt_building_extraction.png")
 ```
 
 ::: paragraph-start
-##### Synthetic tables
+##### Synthetic Tables
 
-We use \acr{LLM}s to extract the numeric values of synthetic **Aktiva** tables with restricted generation. The procedure is identical as with the real **Aktiva** tables. We extract all values with and without an explicit instruction on how to proceed with currency units. We limit our test on the open-weight models, because the number of synthetic tables is large and benchmarking closed-weight models is not the focus of this thesis.
+We use \acr{LLM}s to extract numeric values from synthetic **Aktiva** tables using restricted generation. The procedure is identical to that used for real **Aktiva** tables. All values are extracted both with and without explicit instructions regarding currency units. The evaluation is limited to open-weight models, as the large number of synthetic tables makes benchmarking closed-weight models beyond the scope of this thesis.
 :::
 
 ::: paragraph-start
-##### Hybrid approach
+##### Hybrid Approach
 
-We use \acr{LLM}s to extract the numeric values of real **Aktiva** tables with restricted generation, providing examples from synthetic **Aktiva** tables. The procedure is identical as with the real **Aktiva** tables. We extract all values with and without an explicit instruction on how to proceed with currency units. We limit our test on the open-weight models, because benchmarking closed-weight models is not the focus of this thesis.
+We use \acr{LLM}s to extract numeric values from real **Aktiva** tables with restricted generation, providing examples from synthetic **Aktiva** tables. The procedure is identical to that used for real **Aktiva** tables. All values are extracted both with and without explicit instructions regarding currency units. The evaluation is limited to open-weight models, as benchmarking closed-weight models is not the focus of this thesis.
 :::
 
-### Error analysis {#error-analysis-methodology}
+### Error Analysis {#error-analysis-methodology}
 
-To better understand the limitations of the evaluated models and prompting strategies and to find ways to further improve the system, we will conduct a detailed error analysis. Representative error cases will be documented to illustrate typical failure modes and to inform potential improvements for future work.
+To better understand the limitations of the evaluated models and prompting strategies and to identify opportunities for further improvement, we conduct a detailed error analysis. Representative error cases are documented to illustrate typical failure modes and inform potential enhancements for future work.
 
 ::: paragraph-start
-##### Page identificaion
+##### Page Identificaion
 
-For page identification, the analysis will include investigation of misclassified pages using confusion matrices and error rate statistics to quantify types of misclassification.
+For page identification, the analysis includes investigation of misclassified pages using confusion matrices and error rate statistics to quantify types of misclassification.
 :::
 
 ::: paragraph-start
-##### Information extraction
+##### Information Extraction
 
-For information extraction, error rates will be analyzed across different experimental setups, with stratified analysis by company, table characteristics (such as currency units and input format) and instruction specifications. We will investigate the errors unique for guided and restricted generation approaches.
+For information extraction, error rates are analyzed across different experimental setups, with stratified analysis by company, table characteristics (such as currency units and input format) and instruction specifications. Errors unique to guided and restricted generation approaches are also investigated.
 :::
 
-Based on the findings reported by @liExtractingFinancialData2023, we expect several characteristic error types to occur in the information extraction process. These include omissions, where the model fails to extract all values of a list; confusion between thousands and millions; and incorrect identification of rows and columns within tables.
+Based on the findings reported by @liExtractingFinancialData2023, several characteristic error types are expected in the information extraction process. These include omissions, where the model fails to extract all values in a list; confusion between thousands and millions; and incorrect identification of rows and columns within tables.
 
-### Evaluation methods
+### Evaluation Methods
 
-We use a lot of visual representations for the interpretation of the results. Many of those can be found in the technical report sections of the appendix. Bigger graphics with a lot of small multiples can be found in the appendix \@ref(figure-collection). These visuals have a high information density and enable us to compare a lot of results, including distributional information, at once[^03_methodology-1].
+We employ a wide range of visual representations to interpret the results. Many of these can be found in the technical report sections of the appendix. Larger graphics with numerous small multiples are presented in Appendix \@ref(figure-collection). These visuals offer high information density and enable comprehensive comparison of results, including distributional information, at a glance[^03_methodology-1]. For presenting results in Chapter \@ref(results), we condense a selection of findings into tabular form for ease of interpretation. Some noteworthy observations are discussed in Chapter \@ref(discussion), but much information remains in the visuals.
 
-[^03_methodology-1]: A big screen with high resolution is helpful for this process.
-
-We prefer this process over comparing many rows with measures of location (e.g. mean and median) and measures of distribution shapes (e.g. standard deviation, median absolute deviation, skewness). For presenting the results in chapter \@ref(results) we compress a selection of results in tabular form, because it is easier to grasp. Some interesting observations are discussed in chapter \@ref(discussion). But a lot of information is still kept in the visuals.
+[^03_methodology-1]: A large, high-resolution screen is beneficial for this process.
 
 ::: paragraph-start
 ##### Boxplots
 
-We employ boxplots extensively to compare the distributions of sample results. During inspection, we also examine violin plots or add point jitter to the graphics to assess potential multi-modality. If interesting details are identified, we retain them in the presented graphics; otherwise, we present only the boxplots.
+Boxplots are used extensively to compare the distributions of sample results. During inspection, we also examine violin plots or add point jitter to assess potential multi-modality. If interesting details are identified, they are retained in the presented graphics; otherwise, only boxplots are shown.
 :::
 
 ::: paragraph-start
 ##### SHAP
 
-For interpreting the \acr{SHAP} values, we use bar plots showing the mean absolute shapley values as feature importance, which can be interpreted as an indicator of effect strength. Furthermore, we use bee swarm plots (also called summary plot) and dependency plots, to investigate if we can name a direction for the effect and identify interesting interaction patterns. Further information can be found in chapter 18 of the book "[Interpretable Machine Learning](https://christophm.github.io/interpretable-ml-book/shap.html)" [@molnarInterpretableMachineLearning2025].
+For interpreting \acr{SHAP} values, we use bar plots to display mean absolute Shapley values as feature importance, which serve as indicators of effect strength. Additionally, bee swarm plots (also called summary plots) and dependency plots are used to determine the direction of effects and identify interesting interaction patterns. Further information is available in Chapter 18 "[Interpretable Machine Learning](https://christophm.github.io/interpretable-ml-book/shap.html)" [@molnarInterpretableMachineLearning2025].
 :::
 
 ::: paragraph-start
 ##### Random Forests
 
-We build a \acr{RF} classifier in the term frequency approach for the page identification task, to evaluate our hypotheses **H2.2**. We perform no hyper parameter optimization. We want to get a first glimpse on what might influence the extraction instead of getting the best possible performance. We are not modelling causal relationships at all.
+We build a \acr{RF} classifier using the term frequency approach for the page identification task to evaluate our hypotheses **H2.2**. No hyperparameter optimization is performed, as the goal is to gain initial insights into factors influencing extraction rather than achieving optimal performance. Causal relationships are not modeled.
 :::
 
-We do not use XGBoost for the final analysis, because calculating the \acr{SHAP} values for XGBoost model took to long. Linear and logistic regression models are fitted as well, but not used for the final analysis.
+\acr{XGBoost} is not used for the final analysis, as calculating \acr{SHAP} values for the \acr{XGBoost} model was too time-consuming. Linear and logistic regression models are also fitted, but not used in the final analysis.
 
 ## Summary
 
-In this chapter, we outlined the methodological framework for automated page identification and information extraction in financial documents. We formulated the problem defnitions and research questions, along with specific hypotheses to be tested.
+In this chapter, we outlined the methodological framework for automated page identification and information extraction in financial documents. We formulated the problem definitions and research questions, along with specific hypotheses to be tested.
 
-We described the selection and preparation of datasets, the annotation strategies for ground truth creation and the design of benchmarking tasks. The chapter presented the approaches used for data processing, prompt engineering and evaluation metrics. We also presented the methods used for error analysis and interpretation of results.
+We described the selection and preparation of datasets, annotation strategies for ground truth creation and the design of benchmarking tasks. The chapter presented the approaches used for data processing, prompt engineering and evaluation metrics, as well as the methods used for error analysis and interpretation of results.
 
-Having established the methodological foundation, the next chapter focuses on the practical realization of these concepts. It presents the technical implementation, describes the computational environments and documents the software tools and workflows used to translate the proposed methodology into a functional system.
+Having established the methodological foundation, the next chapter focuses on the practical implementation of these concepts. It presents the technical realization, describes the computational environments and documents the software tools and workflows used to translate the proposed methodology into a functional system.
