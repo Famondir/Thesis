@@ -263,7 +263,7 @@ prediction-performance
 energy-usage-and-runtime
 table-extraction-introduction
 structured-output
-gound-truth-dataset
+ground-truth-dataset
 approaches-2
 regular-expressions-3
 real-tables-1
@@ -339,13 +339,13 @@ information-extraction-8
 summary-4
 general-performance
 page-identification-7
-transfering-the-system-to-new-problems
+transferring-the-system-to-new-problems
 limitations-of-transfer
 toc-discussion
 tf-practical-recommendation
 table-of-contents-understanding-approach
 efficency-discussion
-compare-with-manual-page-identification
+comparison-with-manual-page-identification
 conclusion-4
 alternative-input-formats-extraction
 limitations-1
@@ -394,7 +394,7 @@ performance-2
 openai-models
 examples-from-same-company-performance
 synthetic-table-extraction
-ground-truth-dataset
+ground-truth-dataset-1
 extraction-task-overview
 performance-3
 real-table-extraction-synth-context

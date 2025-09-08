@@ -8,15 +8,15 @@ editor_options:
 
 \ChapFrame[Discussion][bhtgray]
 
-This chapter consits of the main sections as follows:
+This chapter consists of the following main sections:
 
-Section \@ref(answer-research-questions) interprets the results in relation to our research questions and hypotheses, compares them with previous work and highlights any surprising or unexpected outcomes.
+Section \@ref(answer-research-questions) interprets the results in relation to the research questions and hypotheses, compares them with previous work, and highlights any surprising or unexpected outcomes.
 
-Section \@ref(error-analysis) contains our error analysis and discusses interesting findings under a researchers perspective.
+Section \@ref(error-analysis) presents the error analysis and discusses notable findings from a research perspective.
 
-Section \@ref(general-performance) discusses practical implications and limitations for the planned \acr{HITL} application, as derived from the error analysis. The results are interpreted from an engineering perspective, focusing on how the findings inform the design and implementation of the application.
+Section \@ref(general-performance) examines practical implications and limitations for the planned \acrfull{HITL} application, as derived from the error analysis. The results are interpreted from an engineering perspective, focusing on how the findings inform the design and implementation of the application.
 
-Subsequent, Section \@ref(not-covered) describes, what we have neither investigated nor implemented in this thesis. Section \@ref(outlook-implementation) gives an outlook on the challenges for implementing the system at \acr{RHvB}. Finally, ethical and practical consideration are presented in Section \@ref(ethics).
+Subsequently, Section \@ref(not-covered) outlines aspects that were neither investigated nor implemented in this thesis. Section \@ref(outlook-implementation) provides an outlook on the challenges of implementing the system at \acrfull{RHvB}. Finally, ethical and practical considerations are discussed in Section \@ref(ethics).
 
 ## Research Questions {#answer-research-questions}
 
@@ -39,48 +39,48 @@ cat("<ol class='rs-questions' style='--counter: 1;'><li>How can we use LLMs effe
 ::: paragraph-start
 ##### Results
 
-The page identification task is solved by the \acr{LLM} with higher F1 scores than the human reference F1 score for every target class. It is solved perfectly for the documents of our sample for predicting the class **Aktiva**. The multi-class classification with Llama 4 Scout is best for classifying **Aktiva** and **Passiva** tables. The binary classification with Ministral works best for classifying **GuV** tables.
+The page identification task is solved by the \acrfull{LLM}, achieving higher F1 scores than the human reference for every target class. For the class **Aktiva**, the task is solved perfectly within our sample. Multi-class classification with Llama 4 Scout yields the best results for **Aktiva** and **Passiva** tables, while binary classification with Ministral performs best for **GuV** tables.
 :::
 
-The prompting strategy *n_rag_examples* often yields best results, especially if \acr{icexs} are used. Section \@ref(same-company-evaluation) is discussing this finding for both tasks.
+The *n_rag_examples* prompting strategy frequently produces optimal results, especially when \acrfull{icexs} are used. Section \@ref(same-company-evaluation) discusses this finding for both tasks.
 
-The term frequency approach reaches a top k recall of 1.0 for a small $k = 5$. It runs 100 times faster than the \acr{LLM} approach and reduces the average number of pages to classify by 92.6 %. We discuss how to combine the two approaches in Section \@ref(efficency-discussion).
+The term frequency approach achieves a top-k recall of 1.0 for a small $k = 5$. It operates 100 times faster than the \acr{LLM} approach and reduces the average number of pages to classify by 92.6%. The combination of both approaches is discussed in Section \@ref(efficency-discussion).
 
 ::: paragraph-start
 ##### Interpretations
 
-Both of our hypotheses find support. Thus, we see our research question answered with the following statement: It is possible to locate specific information in a financial report using \acr{LLM}s and it can be done more efficient if a term frequency based approach is used for page range refinement in advance.
+Both hypotheses are supported. Thus, our research question can be answered as follows: It is possible to locate specific information in a financial report using \acr{LLM}s and efficiency can be further improved by applying a term frequency-based approach for page range refinement in advance.
 :::
 
 ::: paragraph-start
 ##### Comparison With Previous Work
 
-We are able to narrow down the page range to five pages without using a \acr{LLM}. With the \acr{LLM} we are guaranteed, to find the correct pages within a range of two pages. Most of the time, the page, ranked highest in the confidence score ranking, is the correct one. @liExtractingFinancialData2023 do not present a concrete number of pages, they have to process after page refinement.
+We are able to narrow the page range to five pages without using a \acr{LLM}. With the \acr{LLM}, we are guaranteed to find the correct pages within a range of two pages. Most often, the page ranked highest by confidence score is the correct one. @liExtractingFinancialData2023 do not specify the number of pages processed after page refinement.
 :::
 
-The \acr{TOC} does not work as well as expected. @liExtractingFinancialData2023 do not report any issues or a low recall value for their \acr{TOC} based approach. Thus, we assumed to find a recall value close to 1.0 for the \acr{TOC} based approach, too. Instead we find a recall of 0.27. We discuss differences in the two approaches in Section \@ref(toc-discussion).
+The \acr{TOC} approach does not perform as well as expected. @liExtractingFinancialData2023 do not report issues or low recall for their \acr{TOC}-based method. We therefore anticipated a recall close to 1.0, but instead found a recall of 0.27. Differences between the two approaches are discussed in Section \@ref(toc-discussion).
 
 ::: paragraph-start
-##### Unexpected results
+##### Unexpected Results
 
-We are surprised by the strong performance of Ministral-8B. It performs better, than other models of the Mistral family, that have been released more recent and have a larger parameter count. It shows one of the strongest performances with the *zero_shot* and *law_context*, too.
+We are surprised by the strong performance of Ministral-8B, which outperforms other, more recent and larger models in the Mistral family. It even demonstrates strong results with the *zero_shot* and *law_context* strategies.
 :::
 
-We are also positive surprised of the strong performance of the recently released members of the Qwen3 family. The older Qwen3 models could not handle the classification tasks at all — with or without thinking mode[^06_discussion-1] — while the models of Qwen2.5 performed well. We identified the implementation of sparse \acr{MoE} layers to be an architectural difference between the more recent and older Qwen3 models.
+We are also positively surprised by the strong performance of the recently released Qwen3 models. The older Qwen3 models could not handle the classification tasks at all — regardless of thinking mode[^06_discussion-1] — while Qwen2.5 models performed well. The implementation of sparse \acrfull{MoE} layers is an architectural difference between the newer and older Qwen3 models.
 
-[^06_discussion-1]: The Qwen3 models support two operating modes: A thining mode and a non-thinking mode. The thinking mode should yield better answers in complex tasks and the additional amount of processing can be controlled by setting a thinking budget [@qwenteamQwen3ThinkDeeper2025]. This thinking budget can be seen as the amount of tokens used for a step wise solution.
+[^06_discussion-1]: The Qwen3 models support two operating modes: a thinking mode and a non-thinking mode. The thinking mode is intended to yield better answers for complex tasks, with the amount of processing controlled by a thinking budget [@qwenteamQwen3ThinkDeeper2025]. This budget represents the number of tokens used for stepwise solutions.
 
-But we assume the difference in the perfromance is caused by a different fine-tuning process. While the original released models already claimed to deliver "groundbreaking advancements in [...] instruction-following" [@QwenQwen34BHugging2025], we now find a newer version of the Qwen3-4B model that explicitly is tagged as Qwen3-4B-Instruction. It would be interesting, to add this model to the benchmark in future work.
+We suspect that the observed performance difference is primarily attributable to variations in the fine-tuning process, rather than architectural changes. While the original models claimed "groundbreaking advancements in [...] instruction-following" [@QwenQwen34BHugging2025], a newer version of Qwen3-4B is now explicitly tagged as Qwen3-4B-Instruction. Including this model in future benchmarks would be interesting.
 
 ::: paragraph-start
 ##### Conclusion
 
-In summary, our findings demonstrate that \acr{LLM}s are highly effective for page identification in financial reports, consistently outperforming human benchmarks and traditional rule-based methods. The combination of \acr{LLM}s with term frequency-based approaches further enhances efficiency, enabling rapid narrowing of candidate pages while maintaining high recall.
+In summary, our findings demonstrate that \acr{LLM}s are highly effective for page identification in financial reports, consistently outperforming human benchmarks and traditional rule-based methods. Combining \acr{LLM}s with term frequency-based approaches further enhances efficiency, enabling rapid narrowing of candidate pages while maintaining high recall.
 :::
 
 Model selection and prompting strategies play a significant role in optimizing performance, with in-context learning using relevant examples yielding the best results. These insights provide a strong foundation for developing robust, scalable solutions for automated document analysis in audit and regulatory contexts.
 
-### Information extraction
+### Information Extraction
 
 We posed the following research question for the information extraction task:
 
@@ -93,7 +93,7 @@ cat("<ol class='rs-questions' style='--counter: 2;'><li>How can we use LLMs effe
   \item How can we use LLMs effectively to extract this information from the document?
 \end{enumerate}
 
-We will start discussing the hypotheses group **H2.1** in Section \@ref(extraction-performace-hypotheses-evaluation), before we will look at the hypotheses group **H2.2** in Section \@ref(extraction-performace-predictor-hypotheses-evaluation). The hypotheses of group **H2.1** are:
+We begin by discussing the hypotheses group **H2.1** in Section \@ref(extraction-performace-hypotheses-evaluation), followed by an examination of hypotheses group **H2.2** in Section \@ref(extraction-performace-predictor-hypotheses-evaluation). The hypotheses of group **H2.1** are as follows:
 
 **H2.1a:** \acr{LLM}s can be used to correctly extract multiple numeric values from the assets table.
 
@@ -101,59 +101,59 @@ We will start discussing the hypotheses group **H2.1** in Section \@ref(extracti
 
 **H2.1c:** \acr{LLM}s can identify unmatched row identifiers and report, that the value is missing.
 
-#### Core capabilities {#extraction-performace-hypotheses-evaluation}
+#### Core Capabilities {#extraction-performace-hypotheses-evaluation}
 
 ::: paragraph-start
 ##### Results
 
-The best performing model, Qwen3-235B-A22B-Instruct, almost reaches human performance on real **Aktiva** tables, but is much faster. Both measures, percentage of correct numeric predictions (98.0 %) and F1 score (98.1 %), are not perfect yet and could be improved. It achieves perfect results on synthetic tables provided in \acr{HTML} format.
+The best-performing model, Qwen3-235B-A22B-Instruct, nearly matches human performance on real **Aktiva** tables, while operating much faster. Both metrics — percentage of correct numeric predictions (98.0%) and F1 score (98.1%) — are not yet perfect but could be further improved. The model achieves flawless results on synthetic tables provided in \acrfull{HTML} format.
 :::
 
-The prompting strategy *n_rag_examples* often works best, especially if \acr{icexs} are used. Section \@ref(same-company-evaluation) is discussing this finding for both tasks.
+The *n_rag_examples* prompting strategy frequently yields optimal results, particularly when \acr{icexs} are utilized. Section \@ref(same-company-evaluation) discusses this finding for both tasks.
 
 ::: paragraph-start
 ##### Interpretations
 
-The high percentage of correct extracted numeric values shows that Qwen3-235B is not only able to exactly copy the values and match corresponding row identifiers, but also to perform numeric transformations, respecting the currency units, in many cases. If no numeric transformations are performed, the upper limit for correct numeric extraction is 80.8 %, because 19.2 % of all numeric values have *T€* as currency unit. We discuss this in Section \@ref(numeric-transformation-discussion).
+The high percentage of correctly extracted numeric values demonstrates that Qwen3-235B can not only copy values and match corresponding row identifiers precisely, but also perform numeric transformations, respecting currency units in many cases. If no numeric transformations are performed, the upper limit for correct numeric extraction is 80.8%, as 19.2% of all numeric values use *T€* as the currency unit. This is discussed in Section \@ref(numeric-transformation-discussion).
 :::
 
-Furthermore, we can see for the extraction from synthetic **Aktiva** tables, that it is possible to achieve perfect results, if the input is well structured and without unknown row identifiers. In analogy to the concept of *garbage in, garbage out*, we could phrase it as *perfect in, perfect out*. Thus, we show that there is no \acr{LLM} approach inherent mechanism, that prevents perfect information extraction of numeric values. We show this in the Appendix \@ref(error-rat-guidance-synthetic).
+Additionally, for extraction from synthetic **Aktiva** tables, perfect results are achievable if the input is well-structured and contains no unknown row identifiers. In line with the concept of *garbage in, garbage out*, this can be phrased as *perfect in, perfect out*. Thus, there is no inherent mechanism in the \acr{LLM} approach that prevents perfect extraction of numeric values. This is further illustrated in Appendix \@ref(error-rat-guidance-synthetic).
 
-The high F1 score shows, that Qwen3-235B also is able to identify missing row identifiers and correctly returns *null* instead of hallucinating numeric values. We discuss the matter of label matching further in Section \@ref(unconsistent-label-matching).
+The high F1 score also indicates that Qwen3-235B can identify missing row identifiers and correctly return *null* instead of hallucinating numeric values. Label matching is discussed further in Section \@ref(unconsistent-label-matching).
 
-Thus, we conclude, that all hypotheses of group **H2.1** get supported and the research question can be partially answered with the following statement: \acr{LLM}s can be used effectively to extract information from the financial reports using in-context learning and a strict schema.
+In summary, all hypotheses of group **H2.1** are supported, and the research question can be partially answered as follows: \acr{LLM}s can be used effectively to extract information from financial reports using in-context learning and a strict schema.
 
 ::: paragraph-start
-##### Comparison with previous work
+##### Comparison With Previous Work
 
-@liExtractingFinancialData2023 achieve a perfect extraction result, after refining their approach, extracting a total of 152 data points from 8 \acr{ACFR} reports. Before the prompt refining they find 96.1 % correct extracted datapoints. Applying the refined approach on a more heterogeneous sample of 4_000 county year \acr{ACFR}s, they achieve a performance of 96 % on 80_000 data points.
+@liExtractingFinancialData2023 achieved perfect extraction results after refining their approach, extracting 152 data points from 8 \acrfull{ACFR} reports. Before prompt refinement, they found 96.1% correct extracted data points. Applying the refined approach to a more heterogeneous sample of 4_000 county-year \acr{ACFR}s, they achieved 96% performance on 80_000 data points.
 :::
 
-Thus, our found performance is higher than their initial in-sample and final out-of-sample performance. Since we did not adjust our prompting strategy before the second iteration of the ground truth creation, we argue that our performance should be compared to their out-of-sample performance.
+Our observed performance exceeds both their initial in-sample and final out-of-sample results. Since we did not adjust our prompting strategy before the second iteration of ground truth creation, we argue that our performance should be compared to their out-of-sample results.
 
-There are some differences in our prompting approaches, that may have a minor influence on the performance. @liExtractingFinancialData2023 include explicit instructions for handling currency units, which we do not for the extraction task with real **Aktiva** tables. But we investigated this with the synthetic and hybrid approach and discuss the findings in Section \@ref(numeric-transformation-discussion).
+There are minor differences in our prompting approaches that may influence performance. @liExtractingFinancialData2023 include explicit instructions for handling currency units, which we did not for the extraction task with real **Aktiva** tables. However, we investigated this with the synthetic and hybrid approaches and discuss the findings in Section \@ref(numeric-transformation-discussion).
 
-@liExtractingFinancialData2023 extract three values per \acr{LLM} call, while we expect 10 to 40 numeric and 18 to 38 *null* predictions per call. They explicitly include an instruction on how to handle missing values and do not report any remarkably higher error rates with missing values. Therefore, we can not compare our F1 score with their results.
+@liExtractingFinancialData2023 extract three values per \acr{LLM} call, while we expect 10 to 40 numeric and 18 to 38 *null* predictions per call. They explicitly instruct how to handle missing values and do not report significantly higher error rates for missing values. Therefore, our F1 score cannot be directly compared to theirs.
 
 ::: paragraph-start
-##### Unexpected results
+##### Unexpected Results
 
-We did not expect the \acr{LLM} to perform any currency units related numeric transformations, without being explicitly instructed, (how) to do this. But it is plausible, that this pattern can be learned during in-context learning. This is especially true, if the examples are chosen according to vector similarity and if \acr{icexs} can be used. We describe this in more detail in Section \@ref(same-company-evaluation).
+We did not anticipate that the \acr{LLM} would perform currency unit-related numeric transformations without explicit instruction. However, it is plausible that such patterns can be learned during in-context learning, especially when examples are selected based on vector similarity and \acr{icexs} are used. This is described in more detail in Section \@ref(same-company-evaluation).
 :::
 
 ::: paragraph-start
 ##### Conclusion
 
-The results demonstrate that \acr{LLM}s, are highly effective for extracting structured financial information from assets tables, nearly matching human performance while operating significantly faster. They can accurately extract multiple numeric values, correctly match row identifiers and reliably identify missing entries.
+The results demonstrate that \acr{LLM}s are highly effective for extracting structured financial information from assets tables, nearly matching human performance while operating significantly faster. They can accurately extract multiple numeric values, correctly match row identifiers and reliably identify missing entries.
 :::
 
-The success of in-context learning, especially when \acr{icexs} are used, highlights the importance of prompt design and relevant context. While perfect extraction is achievable with well-structured synthetic data, real-world performance is limited mainly by input quality and schema consistency.
+The success of in-context learning, particularly when \acr{icexs} are used, underscores the importance of prompt design and relevant context. While perfect extraction is achievable with well-structured synthetic data, real-world performance is mainly limited by input quality and schema consistency.
 
-Compared to previous work, the approach presented here achieves higher performance without extensive prompt refinement, underscoring the robustness of the method. Unexpectedly, \acr{LLM}s can perform currency-related numeric transformations even without explicit instructions, suggesting that in-context learning can capture the underlying patterns.
+Compared to previous work, the approach presented here achieves higher performance without extensive prompt refinement, highlighting the robustness of the method. Unexpectedly, \acr{LLM}s can perform currency-related numeric transformations even without explicit instructions, suggesting that in-context learning can capture underlying patterns.
 
-Overall, these findings confirm that \acr{LLM}s, combined with a strict schema and in-context learning, offer a reliable and scalable solution for automated information extraction in financial reporting.
+Overall, these findings confirm that \acr{LLM}s, combined with a strict schema and in-context learning, provide a reliable and scalable solution for automated information extraction in financial reporting.
 
-#### Feature effects {#extraction-performace-predictor-hypotheses-evaluation}
+#### Feature Effects {#extraction-performace-predictor-hypotheses-evaluation}
 
 The hypotheses of group **H2.2** are:
 
@@ -166,7 +166,7 @@ The hypotheses of group **H2.2** are:
 ::: paragraph-start
 ##### Results
 
-The features, that show an noticeable importance value most often, are:
+The features most frequently exhibiting notable importance are:
 :::
 
 1.  *model_family*
@@ -175,67 +175,67 @@ The features, that show an noticeable importance value most often, are:
 4.  *n_examples*
 5.  *T_in_previous_year*
 
-We can determine an effect direction for the features *parameter_count*, *n_examples* and *T_in_previous_year*. More parameters and more examples are beneficial. The only exception for this is found for the model Llama 4 Maverick. We discuss this case in Section \@ref(context-rot). The performance gain gets smaller comparing experiments with three and more provided examples. The prompting strategies *n_random_examples* and *top_n_rag_examples* perform best.
+We can determine the direction of effect for *parameter_count*, *n_examples*, and *T_in_previous_year*: more parameters and more examples are generally beneficial. The only exception is Llama 4 Maverick, discussed in Section \@ref(context-rot). The performance gain diminishes when comparing experiments with three or more provided examples. The prompting strategies *n_random_examples* and *top_n_rag_examples* yield the best results.
 
-The method specific feature *respect_units* shows meaningful importance for evaluating synthetic tables. Its effect has opposite direction to our assumption. For the hybrid approach it has a small importance, but with an effect direction matching our assumption. We discuss this in the next paragraph.
+The method-specific feature *respect_units* is important for evaluating synthetic tables, but its effect is opposite to our initial assumption. For the hybrid approach, it has a small importance, but the effect direction matches our assumption. This is discussed in the next paragraph.
 
-With the synthetic tables, we also find that \acr{HTML} and Markdown are a *input_format* that yield better results. We show in Section \@ref(alternative-input-formats-extraction), that we do not find these benefits for processing real tables from (imperfect) Markdown input.
+For synthetic tables, we also find that \acrfull{HTML} and Markdown as *input_format* yield better results. Section \@ref(alternative-input-formats-extraction) shows that these benefits do not extend to processing real tables from (imperfect) Markdown input.
 
 ::: paragraph-start
 ##### Interpretations
 
-All model and method specific features are meaningful predictors for the information extraction task. Thus, we argue, that **H2.2a** and **H2.2b** find total support. The high importance of the feature *model_family* could be an artifact of Llama 4 Mavericks bad performance with multiple in-context learning examples.
+All model- and method-specific features are meaningful predictors for the information extraction task. Thus, **H2.2a** and **H2.2b** are fully supported. The high importance of *model_family* may be an artifact of Llama 4 Maverick's poor performance with multiple in-context learning examples.
 :::
 
-Of all the table characteristics only *T_in_previous_year* shows a higher importance. Thus, we argue, that **H2.2c** only gets support for a one of the features we proposed a (directed) effect for. There are multiple features we proposed to have no effect and where no effect is found. These hypotheses also get supported by our experiments. We assume, that *T_in_year* would get a higher importance too, if the number of tableswith this characteristic in our sample would be higher.
+Of all table characteristics, only *T_in_previous_year* shows higher importance. Thus, **H2.2c** is supported for one of the proposed features. Several features were hypothesized to have no effect and our experiments support this. We assume that *T_in_year* would show greater importance if more tables with this characteristic were included in our sample.
 
 ::: paragraph-start
 ###### Respecting Units
 
-We find effects with opposite directions for the predictor *respect_units* for the information extraction with synthetic tables and the hybrid approach. This is explained by our experimental designs.
+We observe opposite effects for the predictor *respect_units* in information extraction with synthetic tables versus the hybrid approach. This is explained by our experimental designs.
 :::
 
-The basic experiments with synthetic tables compare the extracted values with untransformed gold standard values. The in-context learning examples demonstrate no numeric transformations, either. The \acr{LLM} just has to copy the digits. Thus, the task is easier, because no numeric transformation is needed.
+In basic experiments with synthetic tables, extracted values are compared with untransformed gold standard values. The in-context learning examples do not demonstrate numeric transformations, so the \acr{LLM} only needs to copy digits. This makes the task easier, as no numeric transformation is required.
 
-If the model is instructed to handle currency units, the extracted values are compared with transformed gold standard values. The in-context learning examples do demonstrate this behavior. Thus, the task is harder, because the model has to learn the numeric transformation pattern.
+If the model is instructed to handle currency units, extracted values are compared with transformed gold standard values. The in-context learning examples demonstrate this behavior, making the task harder because the model must learn the numeric transformation pattern.
 
-In contrast, the hybrid approach experiments always compare the extracted values with transformed gold standard values. The in-context learning examples demonstrate this behavior, if the model is instructed to handle currency units. The in-context learning examples do not demonstrate this behavior, if the model is not instructed to handle currency units. Thus, the task is easier, if the model is instructed to handle currency units, because it can learn the patterns from the in-context examples.
+In contrast, hybrid approach experiments always compare extracted values with transformed gold standard values. The in-context learning examples demonstrate this behavior if the model is instructed to handle currency units, but not otherwise. Thus, the task is easier when the model is instructed to handle currency units, as it can learn the patterns from the in-context examples.
 
 ::: paragraph-start
-##### Compare with previous work
+##### Compare With Previous Work
 
-@liExtractingFinancialData2023 report, that the most frequent errors for the extraction of values from \acr{ESG} reports are based on incorrectly handled units. This aligns well with our findings of a high importance value for *T_in_previous_year*. Our results also align well with @brownLanguageModelsAre2020 findings, that the performance might not increase much more by adding additional examples after the second one.
+@liExtractingFinancialData2023 report that the most frequent errors in extracting values from \acrfull{ESG} reports are due to incorrectly handled units. This aligns with our finding of high importance for *T_in_previous_year*. Our results also correspond with @brownLanguageModelsAre2020, who found that performance does not increase substantially after adding more than two examples.
 :::
 
 ::: paragraph-start
 ##### Limitations
 
-We failed to reflect the *header_span* and *text_around* characteristics, during the creation of the synthetic \acr{HTML} and Markdown tables. Thus, we can not evaluate the propsed interaction effects with *input_format* for those features. But we find no big importance for *header_span* in any experiment.
+We did not reflect the *header_span* and *text_around* characteristics during the creation of synthetic \acr{HTML} and Markdown tables. Thus, we cannot evaluate the proposed interaction effects with *input_format* for those features. However, *header_span* was not found to be important in any experiment.
 :::
 
-We also did not include an indicator, if \acr{icexs} are used, as a method related feature. We show, that this matters in Section \@ref(same-company-evaluation).
+We also did not include an indicator for \acr{icexs} as a method-related feature, though Section \@ref(same-company-evaluation) shows its relevance.
 
 ::: paragraph-start
-##### Unexpected results
+##### Unexpected Results
 
-We did not expect to find such a clear example for context rot as we do for Llama 4 Maverick. We are surprised that we do not find the same behavior with Llama 4 Scout. Since it has an even larger context window, we wonder, if we will observe context rot for Llama 4 Scout too, if we increase the number of in-context learning examples proportionally.
+We did not expect to find such a clear example of context rot as with Llama 4 Maverick. It is surprising that Llama 4 Scout does not exhibit the same behavior. Since Llama 4 Scout has an even larger context window, it remains to be seen whether context rot will occur if the number of in-context learning examples is increased proportionally.
 :::
 
 ::: paragraph-start
 ##### Recommendations
 
-We recommend to evaluate the hypotheses for the visual table characteristics once more, when more advanced document parsing methods are used, which process visual information. The method for document parsing should be included as a feature in this future evaluation as well.
+We recommend reevaluating the hypotheses for visual table characteristics when more advanced document parsing methods that process visual information are implemented. The document parsing method should be included as a feature in future evaluations.
 :::
 
 ::: paragraph-start
 ##### Conclusion
 
-Overall, both model and prompt strategy features noticeably impact extraction performance, with larger models and well-chosen in-context examples yielding the best results. Table-specific features play a smaller but sometimes meaningful role. In contrast to the classification task, we find no model family that performs worse in general.
+Overall, all model and prompt strategy features significantly impact extraction performance, with larger models and well-chosen in-context examples yielding the best results. Table-specific features besides *T_in_year* play a smaller but sometimes meaningful role. Unlike the classification task, no model family consistently performs worse.
 :::
 
-Importantly, providing at least one or two relevant examples is more beneficial than simply increasing model size. These findings highlight the need for augmented prompt strategies and model selection to optimize \acr{LLM}-based information extraction.
+Importantly, providing at least one or two relevant examples is more beneficial than simply increasing model size. These findings highlight the need for improved prompt strategies and model selection to optimize \acr{LLM}-based information extraction.
 
-#### Error rate guidance
+#### Error Rate Guidance
 
 We posed the following \acr{UX} inspired side research question and hypotheses:
 
@@ -255,83 +255,81 @@ cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional in
 ::: paragraph-start
 ##### Results
 
-For the page identification task, we find high confidence intervals with (near) zero empirical error rate for well performing models, containing most of the classifications. Ministral-8B shows a wide spread of confidence scores for the page identification task, that can be used to distinguish correct and wrong classifications.
+For the page identification task, we observe high confidence intervals with (near) zero empirical error rates for well-performing models, encompassing most classifications. Ministral-8B exhibits a wide range of confidence scores for the page identification task, which can be used to distinguish between correct and incorrect classifications.
 :::
 
-We do not find high confidence intervals with a error rate below 1 % for the information extraction task on real **Aktiva** tables. Explicitly instructing to respect currency units, reduces the empirical error rate (see Appendix \@ref(hybrid-respect-units)). But we can find confidence intervals with zero error rate for the information extraction task on synthetic data.
+We do not observe high confidence intervals with an error rate below 1% for the information extraction task on real **Aktiva** tables. Explicitly instructing the model to respect currency units reduces the empirical error rate (see Appendix \@ref(hybrid-respect-units)). However, confidence intervals with zero error rate can be found for the information extraction task on synthetic data.
 
 ::: paragraph-start
 ##### Interpretations
 
-We find support for the hypothesis **H3.1** but not for hypothesis **H3.2**. Thus we answer the research question as follows: The confidence score can be used to guide users attention for the page identification task, but hardly for the information extraction task.
+We find support for hypothesis **H3.1**, but not for hypothesis **H3.2**. Thus, we answer the research question as follows: The confidence score can be used to guide user attention for the page identification task, but is less effective for the information extraction task.
 :::
 
 ::: paragraph-start
-##### Compare with previous work
+##### Compare With Previous Work
 
-The classification task can be interpreted as a best-of-N selection task with two or four choices. Here, our simple measure for confidence seems to be sufficient, aligning well with the findings of @kangScalableBestofNSelection2025.
+The classification task can be interpreted as a best-of-N selection problem with two or four choices. In this context, our simple confidence measure appears sufficient, aligning well with the findings of @kangScalableBestofNSelection2025.
 :::
 
-Generating the information extraction response, can be interpreted as multiple chained best-of-N selections tasks. If every digit, the floating point delimiter and a end-of-sequence token is counted as individual choice, there are 12 possibilities. Choosing, if a number or *null* should be returned is an additional task with $N=2$ that is to solve multiple times in this decision chain. Even though the number of choices is below $N=16$ for each decision, chaining those choices seems to yield a less meaningful measure of confidence.
+Generating the information extraction response can be viewed as a series of chained best-of-N selection tasks. If every digit, the floating point delimiter and an end-of-sequence token are counted as individual choices, there are 12 possibilities. Deciding whether to return a number or *null* is an additional binary task, repeated multiple times in this decision chain. Although the number of choices is below $N=16$ for each decision, chaining these choices seems to produce a less meaningful confidence measure.
 
 ::: paragraph-start
-##### Unexpected results
+##### Unexpected Results
 
-Most models predict high confidence for all most of their predictions, even for the wrong ones.
+Most models predict high confidence for the majority of their predictions, even for incorrect ones.
 :::
 
 ::: paragraph-start
 ##### Conclusion
 
-In summary, confidence scores are a useful tool for guiding user attention in the page identification task, reliably indicating which pages require review. However, for information extraction, confidence scores are less effective, as high confidence does not consistently correlate with correct predictions. This highlights the need for more robust uncertainty measures in extraction tasks to better support user decision-making.
+In summary, confidence scores are a valuable tool for guiding user attention in the page identification task, reliably indicating which pages require review. However, for information extraction, confidence scores are less effective, as high confidence does not consistently correlate with correct predictions. This underscores the need for more robust uncertainty measures in extraction tasks to better support user decision-making.
 :::
 
-## Error analysis {#error-analysis}
+## Error Analysis {#error-analysis}
 
-This section provides a detailed evaluation of the noticeable details found during our evaluation of the experiments. The following sections examine classification errors for each method, analyze the challenges of extracting numeric information and discuss the impact of context rot.
+This section provides a detailed evaluation of key findings from our experimental analysis. The following sections examine classification errors for each method, analyze the challenges of extracting numeric information and discuss the impact of context rot.
 
-Company-specific results and the influence of example selection strategies are presented, followed by a discussion of numeric transformations and the effects of inaccurate text extraction. The chapter also addresses the performance with a guided decoding aproach and the process of ground truth creation. Each Section aims to highlight practical recommendations and areas for future improvement.
+Company-specific results and the influence of example selection strategies are presented, followed by a discussion of numeric transformations and the effects of inaccurate text extraction. The chapter also addresses the performance of guided decoding approaches and the process of ground truth creation. Each section aims to highlight practical recommendations and areas for future improvement.
 
-### Page identification {#page-identification-error-analysis}
+### Page Identification {#page-identification-error-analysis}
 
-This section is presenting a brief error analysis for the \acr{LLM} and term frequency approach. We discuss errors related to context rot in Section \@ref(context-rot), because they occurred in both tasks.
+This section presents a brief error analysis for the \acr{LLM} and term frequency approaches. Errors related to context rot are discussed in Section \@ref(context-rot), as they occurred in both tasks.
 
-#### LLM approach
+#### LLM Approach
 
-The seven wrong classified pages by Llama Scout 4 all contain a table, that is filling at least half a page containing one column with text and many columns with numeric values. Six out of those seven are classified as **GuV** and one as **Passiva**. The page, classified as **Passiva** contains the term *Passiva*.
+The seven misclassified pages by Llama Scout 4 all contain a table occupying at least half a page, with one column of text and many columns of numeric values. Six of these pages are classified as **GuV** and one as **Passiva**. The page classified as **Passiva** contains the term *Passiva*.
 
-From our point of view it would be more plausible, if page 63 of '/pvc/Geschaeftsberichte/Berlinovo/ berlinovo_Finanzbericht_2021.pdf' is classified as **Aktiva**, because there are a lot of similar row identifiers present. The term frequency approach correctly classifies this page as *other* and ranks it on 8th place for **GuV** and **Passiva** and only on 14th place for **Aktiva**. Thus, our intuition what kind of row identifiers are in the table, is not correct.
+From our perspective, it would be more plausible if page 63 of '/pvc/Geschaeftsberichte/Berlinovo/ berlinovo_Finanzbericht_2021.pdf' were classified as **Aktiva**, given the presence of many similar row identifiers. The term frequency approach correctly classifies this page as *other*, ranking it 8th for **GuV** and **Passiva** and only 14th for **Aktiva**. Thus, our intuition regarding the row identifiers in the table was incorrect.
 
-To prevent those few incorrect classifications, the system may need more examples for pages, that are similar to the target classes but of different type.
+To prevent such misclassifications, the system may require more examples of pages that are similar to the target classes but belong to different types.
 
-#### Term frequency approach {#error-analysis-tf}
+#### Term Frequency Approach {#error-analysis-tf}
 
-Inspecting some of the pages that are ranked high and wrongly classified as **Aktiva** by the term frequency based \acr{RF}, we find, that the normalized sum of term occurrences can lead to missclassification. For example, we find a page identified as **Aktiva**, that contains no single table but a long text. The full term count list based on the **Aktiva** term list can be found in the Appendix \@ref(tf-missclassifications).
+Examining some of the pages ranked highly and incorrectly classified as **Aktiva** by the term frequency-based \acrfull{RF}, we find that the normalized sum of term occurrences can lead to misclassification. For example, one page identified as **Aktiva** contains no table at all, but rather a long text. The complete term count list based on the **Aktiva** term list is provided in Appendix \@ref(tf-missclassifications).
 
-The term 'Geschäfts' is present 19 times. The term 'Unternehmen' is present 10 times. Those terms are probably present very often all over the document. Thus, they should get less weight. The \acr{BM25} measure is attributing less weight to common terms and includes an saturation term, too. @kongOpenTabAdvancingLarge2024 shows, that \acr{BM25} can be used effectively to identify relevant tables.
+The term 'Geschäfts' appears 19 times and 'Unternehmen' appears 10 times. These terms are likely common throughout the document and should therefore be weighted less. The \acr{BM25} measure assigns lower weights to common terms and includes a saturation term, as shown by @kongOpenTabAdvancingLarge2024, who demonstrate that \acr{BM25} can be used effectively to identify relevant tables. Using a boolean indicator for term presence on a page, rather than counting individual occurrences, could also be a solution.
 
-Using a boolean indicator, if a the term is present on a page, instead of counting their individual occurrences, could also be a solution.
+We also find pages misclassified due to a high density of floating-point numbers. An example of a page with high float density that does not contain an **Aktiva** table is shown in Figure \@ref(fig:tf-many-floats) in the appendix.
 
-We also find pages that are missclassified, because they have a high density of floats. An example for a page with high float density that is not containing an **Aktiva** table can be found in Figure \@ref(fig:tf-many-floats) in the appendix.
+We present our practical recommendations in Section \@ref(tf-practical-recommendation).
 
-We formulate our practical recommendations in Section \@ref(tf-practical-recommendation).
+### Information Extraction
 
-### Information extraction
+#### General Findings
 
-#### General findings
+One of the tested \acr{LLM} families[^06_discussion-2] was unable to process German umlauts. Consequently, we replaced these characters with their non-umlaut equivalents and adjusted our schema accordingly.
 
-One of the tested \acr{LLM} families[^06_discussion-2] is not able to handle German Umlaute. Thus we replace those characters with their non-umlaut equivalent and adjusted our schema accordingly.
+[^06_discussion-2]: We believe Google's Gemma models struggle with umlauts, but we did not record the exact family name and lacked time to reconstruct the issue.
 
-[^06_discussion-2]: We think it Google's gemma models struggel with Umlaute. But we missed to note the exact family's name and had no time to reconstruct this issue.
+Overall, the approach does not appear prone to hallucinations. When we inadvertently attempted to extract values from a **Passiva** or **GuV** table, no prediction was made, as none of the row identifiers matched our strict schema.
 
-In general the approach seems not be prone to hallucinations. When we accidentally tried to extract values from a **Passiva** and **GuV** table, no prediction was made, because non of the row identifiers matches our strict schema.
-
-#### Company specific results {#same-company-evaluation}
+#### Company Specific Results {#same-company-evaluation}
 
 ::: paragraph-start
 ##### Real tables
 
-Figure \@ref(fig:extraction-qwen235-by-company) shows, the precision and recall values for predicting a missing value and the percentage of correct numeric predictions for Qwen3-235B for each company. The number after the company name, as well as the color of the boxes indicate, how many of the numeric columns have *T€* as currency unit. The crosses indicate the individual scores per document. The teal crosses represent predictions, if \acr{icexs} are used for the *top n rag* prompting strategy. Red ones represent predictions, where this is not the case.
+Figure \@ref(fig:extraction-qwen235-by-company) displays the precision and recall values for predicting missing values, as well as the percentage of correct numeric predictions for Qwen3-235B across companies. The number following the company name, along with the color of the boxes, indicates how many numeric columns have *T€* as the currency unit. Crosses represent individual document scores; teal crosses indicate predictions where \acr{icexs} are used for the *top_n_rag* prompting strategy, while red crosses indicate predictions without \acr{icexs}.
 :::
 
 ```{r extraction-qwen235-by-company, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the F1 score for predicting the missingness of a value for OpenAi's LLMs with some Qwen 3 models. The green crosses indicate results where a model has predicted only numeric values even though there have been missing values.", fig.width=8, fig.height=10}
@@ -374,13 +372,13 @@ df_real_table_extraction_best_by_company %>%
   facet_nested(.~name)
 ```
 
-One can see, that Qwen3-235B yields perfect predictions for the majority of the companies. This is especially true, if we only consider the teal crosses. The predictions improve for most companies, if \acr{icexs} are used for in-context learning. It is especially helpful for handling the single numeric column with *T€* for *Deutsche Klassenlotterie*. It also helps with the two columns with *T€* for *Gewobag*, even though the other examples have no *T€* present.
+One can observe that Qwen3-235B achieves perfect predictions for most companies, especially when considering only the teal crosses. Predictions improve for most companies when \acr{icexs} are used for in-context learning. This is particularly beneficial for handling the single numeric column with *T€* for *Deutsche Klassenlotterie* and the two columns with *T€* for *Gewobag*, even when other examples lack *T€*.
 
-It seems a little harmful for *WBM GmbH* and can not solve the problems for numeric prediction for *Helmholtz Zentrum GmbH* and *Berliner Stadtgüter*. It improved the precision for *Rundfunk Berlin-Brandenburg* asw+ well as the recall of *Stadt und Land GmbH* and *Partner für Deutschland*.
+Performance appears slightly reduced for *WBM GmbH* and does not resolve numeric prediction issues for *Helmholtz Zentrum GmbH* and *Berliner Stadtgüter*. However, it improves precision for *Rundfunk Berlin-Brandenburg* and recall for *Stadt und Land GmbH* and *Partner für Deutschland*.
 
-Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) shows the performance of Qwen3-235B for the *top n rag* and *n random* example strategies and distinguishes based on the fact, if examples from the same company can be used for in-context learning. The achieved percentage of correct predictions total is highest, if examples form the same company are used. It is even higher than the human reference score.
+Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) compares Qwen3-235B's performance for the *top n rag* and *n random* example strategies, distinguishing whether examples from the same company are available for in-context learning. The highest overall percentage of correct predictions is achieved when \acr{icexs} are used, even surpassing the human reference score.
 
-If using \acr{icexs} is not possible, it seems better to use random examples. This is probably the case, because this comes with a higher heterogeneity. High homogeneity among the learning examples from other companies might demonstrate patterns, that are not correct for the subject of extraction. The observation, that using \acr{icexs} yields best results is true for all models. The performance ranking for the prompting strategies providing random examples or examples from other companies varies among the models.
+If \acr{icexs} cannot be used, random examples seem preferable, likely due to increased heterogeneity. High homogeneity among examples from other companies may demonstrate patterns that are not applicable to the extraction subject. The observation that using \acr{icexs} yields the best results holds for all models, though the ranking of the other two in-context learning strategies varies among them.
 
 ```{r information-extraction-compare-same-company-examples-qwen235, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 table_same_company <- df_real_table_extraction %>% 
@@ -413,31 +411,31 @@ if(knitr::is_latex_output()) {
   table_same_company <- table_same_company %>%
     column_spec(4:6, width = "1.5cm") %>% 
     column_spec(1, width = "3.2cm")
-}
+  }
 table_same_company
 ```
 
-#### Numeric transformations {#numeric-transformation-discussion}
+#### Numeric Transformations {#numeric-transformation-discussion}
 
 ::: paragraph-start
 ##### Real tables
 
-This section discusses the surprisingly high percentage of correct extracted numeric values. If no numeric transformation is performed, 80.8 % is the upper limit. We assume, that the behavior to transform the numeric values without being instructed to do so, is not learned during fine tuning, because the percentage of correct extracted numeric values for the *zero_shot* performance (0.763) and the *static_example* performance (0.803) are below the expected limit. The static example demonstrates no numeric transformation and the observed performance is found to be almost as high as the expected upper limit.
+This section discusses the unexpectedly high percentage of correctly extracted numeric values. If no numeric transformation is performed, 80.8% is the upper limit. We assume that the tendency to transform numeric values without explicit instruction is not learned during fine-tuning, as the percentage of correct extracted numeric values for the *zero_shot* (0.763) and *static_example* (0.803) performances are below the expected limit. The static example demonstrates no numeric transformation and the observed performance is nearly as high as the expected upper limit.
 :::
 
-Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) shows, that this limit is overcome with all other prompting strategies. It is plausible for the *top_n_rag_examples* strategy, if \acr{icexs} are used. But it implies, that almost always there is at least one example among the five random examples present, that shows this transformation. And it implies further, that the model recognizes, that the pattern demonstrated by a minority of examples is to apply for the subject of the current extraction task. For future work the provided examples should be logged as well, to investigate this implication.
+Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) shows that this limit is exceeded with all other prompting strategies. This is plausible for the *top_n_rag_examples* strategy when \acr{icexs} are used. It further implies that almost always at least one example among the five random examples demonstrates this transformation and the model recognizes that the pattern shown by a minority of examples applies to the current extraction task. For future work, the provided examples should be logged to investigate this implication.
 
 ::: paragraph-start
-##### Hybrid approach
+##### Hybrid Approach
 
-We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see Section \@ref(real-table-extraction-synth-context)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
+We evaluated the impact of providing examples that demonstrate numeric transformation, together with explicit instructions, in the hybrid approach (see Section \@ref(real-table-extraction-synth-context)). The hybrid approach uses synthetic tables as examples for extracting information from real tables. We show that Qwen3-235B can learn to extract numeric values respecting the currency unit and transfer this knowledge from examples with two *T€* columns to tables with only one *T€* column. This transfer is not possible for all models, e.g., not for Ministral-8B. Some models, such as Qwen3-8B, overgeneralize this pattern and perform worse for extraction subjects without *T€* as the currency unit.
 :::
 
-We also see in our hybrid approach experiments, that the benefit of providing real tables as examples instead of synthetic ones is larger for extracting the numeric values than for matching the labels. Comparing Figure \@ref(fig:compare-real-table-extraction-by-context-type-numeric) and Figure \@ref(fig:compare-real-table-extraction-by-context-type-F1) shows that \acr{LLM}s yield good results for predicting *null* more consistently than extracting the correct numeric value when synthetic tables are provided as in-context learning examples.
+Our hybrid approach experiments also reveal that providing real tables as examples, rather than synthetic ones, is more beneficial for extracting numeric values than for matching labels. Comparing Figure \@ref(fig:compare-real-table-extraction-by-context-type-numeric) and Figure \@ref(fig:compare-real-table-extraction-by-context-type-F1) in the appendix shows that \acr{LLM}s yield good results for predicting *null* more consistently than for extracting the correct numeric value when synthetic tables are used as in-context learning examples.
 
-We have not investigated, if an annual report of the following or previous year is more helpful than years further away. This would be plausible, because it serves the correct numeric and missing values for half of the information to extract perfectly matching our schema formatted as \acr{json}. Theoretically it should become trivial to extract all values correct and transform them accordingly to the currency units, if the previous and following years annual reports are presented as examples for the in-context learning. This should be investigated in future work.
+We have not investigated whether an annual report from the following or previous year is more helpful than reports from more distant years. This would be plausible, as it provides correct numeric and missing values for half of the information to extract, perfectly matching our schema formatted as \acrfull{json}. Theoretically, extracting all values correctly and transforming them according to currency units should become trivial if previous and subsequent years' annual reports are presented as in-context examples. This should be explored in future work.
 
-#### Inaccurate text extracts {#regex-synth-backend-discussion}
+#### Inaccurate Text Extracts {#regex-synth-backend-discussion}
 
 ```{r table-extraction-regex-data-loading-discussion, echo=FALSE, warning=warning_flag, message=message_flag, cache=TRUE, cache.extra = tools::md5sum('data_storage/table_extraction_regex.rds')}
 df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") %>% 
@@ -446,38 +444,38 @@ df_table_extraction_regex <- readRDS("data_storage/table_extraction_regex.rds") 
   )
 ```
 
-We find, that the regular expression approaches performance on the synthetic dataset is highly influenced by the extraction library used. For the real data we find no difference. In the appendix, Figure \@ref(fig:table-extraction-regex-performance) B shows, that the \acr{regex} approach on texts extracted with *pdfium* especially has a wider precision range. The number of wrong extracted numeric values is a little higher as well.
+We find that the performance of regular expression approaches on the synthetic dataset is highly influenced by the extraction library used. For real data, no difference is observed. In the appendix, Figure \@ref(fig:table-extraction-regex-performance) B shows that the \acrfull{regex} approach on texts extracted with *pdfium* has a wider precision range and a slightly higher number of incorrect numeric values.
 
-A reason for this might be inaccurate extracted texts. We find, that there are issues with missing (or additional) white space, misplaced line breaks and an extraction of the text column first, followed by the numeric columns. You can find examples for those types of incorrect extracted texts by three different PDF extraction libraries in the Appendix \@ref(regex-extraction-mistakes). One of the examples is found for a text extracted from a real table, while two are found with the synthetic tables.
+A possible reason for this is inaccurate extracted texts. We observe issues such as missing or additional whitespace, misplaced line breaks and extraction of the text column first, followed by numeric columns. Examples of these types of incorrect extracted texts from three different \acrfull{PDF} extraction libraries are provided in the Appendix \@ref(regex-extraction-mistakes). One example is from a real table, while two are from synthetic tables.
 
-The random white space and line breaks could be handled by adjusting the regular expression for the label matching. Missing white space between numeric values could also be handled by adjusting the \acr{regex}. The misplaced columns would need more advanced reformatting strategies. But all those error types shoudl influence the recall and not the precision.
+Random whitespace and line breaks could be addressed by adjusting the regular expression for label matching. Missing whitespace between numeric values could also be handled by modifying the \acr{regex}. Misplaced columns would require more advanced reformatting strategies. However, these error types should affect recall rather than precision.
 
-A possible explanation for a small spread in precision with both PDF extraction backends could be the duplicated row identifier *Geleistete Anzahlungen*. Our simple approach matches this row always with the first occurrence. This means, if the second occurrence is given in the ground truth, but not the first one, our approach would create a false positive result. The percentage of false positive example is then determining the precision value and it is linked to the number of total rows in the ground truth. But we do not observe such a pattern for the *pymupdf* results at all.
+A possible explanation for a small spread in precision with both \acr{PDF} extraction backends is the duplicated row identifier *Geleistete Anzahlungen*. Our simple approach always matches this row with the first occurrence. If the second occurrence is present in the ground truth but not the first, our approach creates a false positive. The percentage of false positives then determines the precision value and is linked to the total number of rows in the ground truth. However, this pattern is not observed for the *pymupdf* results.
 
-A reason for wrong numeric values are rows, where the summed value is given in the next column, but same row, as the individual values. In this case the approach selects one individual value and a sum, instead of two individual values.
+Another reason for incorrect numeric values is rows where the summed value is given in the next column, but the same row, as the individual values. In this case, the approach selects one individual value and a sum, instead of two individual values.
 
-Originally, the synthetic tables have been generated with cell lines because this should improve the performance of a (classic) table extraction libraries. But we have not used table extraction libraries in our final experimental setup. Maybe these lines are confusing *pdfium*. We also used a zoom function, shrinking the table so it fits on a single page. This might also have a negative influence on the text extraction quality.
+Originally, synthetic tables were generated with cell lines to improve the performance of classic table extraction libraries. However, we did not use table extraction libraries in our final experimental setup. These lines may confuse *pdfium*. We also used a zoom function to shrink the table so it fits on a single page, which might negatively affect text extraction quality.
 
-#### OpenAI models {#openai-discussion}
+#### OpenAI Models {#openai-discussion}
 
-We could not use a strict schema, neither with OpenAIs closed-weight GPT models nor with their new open-weight OSS models. Figure \@ref(fig:table-extraction-llm-prediction-count-gpt) (in the appendix) shows, that this results in many responses with no or few predictions, that have row identifiers matching our ground truth. It might also be, that the models simply made less predictions than the expected 29 rows[^06_discussion-3]. We find this especially for the *nano* models. We even find some responses, where some rows have been predicted multiple time, resulting in more than the expected 29 rows.
+We were unable to apply a strict schema, either with OpenAI's closed-weight GPT models or their new open-weight OSS models. Figure \@ref(fig:table-extraction-llm-prediction-count-gpt) (see appendix) illustrates that this leads to many responses with few or no predictions whose row identifiers match our ground truth. It is possible that the models simply produced fewer predictions than the expected 29 rows[^06_discussion-3], a phenomenon observed especially with the *nano* models. In some cases, certain rows were predicted multiple times, resulting in more than the expected 29 rows.
 
-[^06_discussion-3]: To investigate this in detail, one has to save the raw response in addition to the avaluation of the response.
+[^06_discussion-3]: To investigate this in detail, one must save the raw response in addition to the evaluation of the response.
 
-Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) (in the appendix) shows, that we also find responses, where no single *null* value is returned. This means, that the models probably hallucinate numeric values. Again, we find this especially for the *nano* models. But this observation also holds for the large GPT-4-1, if it does not get three examples for in-context learning. In contrast, GPT-5-mini and gpt-oss-120B are (almost) without responses that contain no *null* values.
+Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) (see appendix) further shows that some responses contain no *null* values at all, suggesting that the models may hallucinate numeric values. This tendency is again most pronounced in the *nano* models, but is also observed in the larger GPT-4-1 model when fewer than three in-context learning examples are provided. By contrast, GPT-5-mini and gpt-oss-120B rarely produce responses without any *null* values.
 
-Nevertheless, even without a strict schema, we find GPT-4-1 and GPT-5 performing almost as well as Qwen3-235B. This shows, that a guided decoding approach could also work and that a strict schema is not a prerequisite for larger models. Future work should investigate, under which conditions open-weight models can be used with guided decoding instead with a strict schema.
+Nevertheless, even without a strict schema, GPT-4-1 and GPT-5 perform nearly as well as Qwen3-235B. This indicates that a guided decoding approach may be effective too, and that a strict schema is not essential for larger models. Future research should explore the conditions under which open-weight models can be used with guided decoding rather than a strict schema.
 
-Unfortunately, we could not use batch processing with the closed-weight models resulting in run times of 30 to 135 minutes. Interestingly, GPT-5-nano had the longest runtime and produced much more output tokens than the other models. We suspect, that it does something similar to the gpt-oss models, which use the new harmony response format, that creates many tokens in a *chain of thought* stream, before it returns the tokens for the requested \acr{json} table in the *final* stream. This might bring insights in the models processes, but increases the response time by a large amount. We would welcome the possibility to disable the chain *of thought* stream and to only get the final answer, as we can disable thinking in Qwen3.
+Unfortunately, batch processing was not available with the closed-weight models, resulting in runtimes of 30 to 135 minutes. Notably, GPT-5-nano exhibited the longest runtime and generated significantly more output tokens than the other models.  We suspect that it may become trapped in repetitive output, exhausting the entire token limit, or operates similarly to the gpt-oss models, which employ the new harmony response format: this format produces many tokens in a *chain of thought* stream before returning the requested \acr{json} formatted table string in the *final* stream. While this may offer insights into the model's reasoning processes, it substantially increases response time. We would welcome the option to disable the *chain of thought* stream and receive only the final answer, as is possible with Qwen3.
 
 #### Error Types
 
 A comprehensive analysis of specific error types remains a subject for future research. Here, we briefly outline anticipated error categories, potential evaluation metrics and necessary adjustments to the logging process.
 
 ::: paragraph-start
-##### Numeric values
+##### Numeric Values
 
-For erroneous numeric predictions, it would be valuable to determine whether the errors stem from copying mistakes — such as omitted or transposed digits — similar to those commonly made by humans. Although we have logged the Levenshtein distance to facilitate this analysis, time constraints prevented further investigation.
+For erroneous numeric predictions, it would be valuable to determine whether errors result from copying mistakes — such as omitted or transposed digits — similar to those commonly made by humans. Although we have logged the Levenshtein distance to facilitate this analysis, time constraints prevented further investigation.
 :::
 
 Another likely error type involves copying an incorrect value, such as a sum from the same row but a different column, a value from another row or even from one of the provided examples. To examine this, one could check whether the predicted number appears in the prompt text, provided this information is logged.
@@ -485,36 +483,36 @@ Another likely error type involves copying an incorrect value, such as a sum fro
 Errors may also arise from missed or incorrect transformations related to currency units. Additionally, the \acr{LLM} may perform summations across rows or simply generate hallucinated values, as discussed in Section \@ref(context-rot).
 
 ::: paragraph-start
-##### Row matching
+##### Row Matching
 
 To analyze false negatives and numeric values assigned to incorrect rows, calculating the Levenshtein distance could be informative; a low distance may indicate the use of a fuzzy matching strategy. Furthermore, semantic similarity scores could be computed to assess whether semantic matching is being employed.
 :::
 
-For false positive values, it would be insightful to examine the model's reasoning process (e.g., Qwen3's thinking mode or gpt-oss's chain of thought stream) and to enumerate all rows that are omitted. While an incomplete list can be generated by reviewing false positives, rows excluded from the ground truth due to schema constraints will remain unaccounted for.
+For false positive values, it would be insightful to examine the model's reasoning process (e.g., Qwen3's thinking mode or gpt-oss's chain of thought stream) and to enumerate all omitted rows. While an incomplete list can be generated by reviewing false positives, rows excluded from the ground truth due to schema constraints will remain unaccounted for.
 
 Consequently, a more flexible approach is warranted. This could involve expanding the schema to include a less restrictive category for unmatched rows or adopting a guided decoding strategy. In such cases, we anticipate encountering rows with finer granularity that may need to be aggregated to fit the schema or rows with identifiers that are semantically equivalent but not sufficiently similar for fuzzy matching.
 
-### Ground truth creation {#unconsistent-label-matching}
+### Ground Truth Creation {#unconsistent-label-matching}
 
-We find manual human work to be error-prone. Thus, the ground truth creation process would benefit from multiple passes and cross-checks. Also a strict and detailed coding manual is necessary to ensure a consistent coding process.
+Manual human work is prone to errors. Therefore, the ground truth creation process would benefit from multiple passes and cross-checks. A strict and detailed coding manual is also essential to ensure consistency throughout the process.
 
-Inspecting the results of the \acr{LLM} predictions helped us to identify errors in our previously created gold standard. Thus, we recommend to include \acr{LLM} predictions in the ground truth creation process, especially if a second person for cross-checks is not available.
+Reviewing the results of \acr{LLM} predictions enabled us to identify errors in our previously established gold standard. Consequently, we recommend incorporating \acr{LLM} predictions into the ground truth creation process, especially when a second person is unavailable for cross-checks.
 
-Subsequently, we discuss two findings from our ground truth creation process:
+We highlight two findings from our ground truth creation process:
 
 ::: paragraph-start
 ##### Page identification
 
-Inspecting the predictions of the first experiments, yielded interesting information. Qwen 2.5 consistently classified some pages to be of type **GuV**, that follow right after the **GuV** pages listed in the ground truth. This prediction was correct. The **GuV** table of the company *IBB* span two pages. This led to an adjustment of the ground truth. The ground truth now includes all pages for tables that span multiple pages.
+Analysis of the initial experiment predictions revealed valuable insights. Qwen 2.5 consistently classified certain pages as **GuV** that immediately followed the **GuV** pages listed in the ground truth. This prediction was correct. The **GuV** table for the company *IBB* spans two pages, prompting an adjustment to the ground truth. It now includes all pages for tables that extend across multiple pages.
 :::
 
 ::: paragraph-start
-##### Information extraction
+##### Information Extraction
 
-During the second pass of the ground truth creation, we find that 2.4 % of the values differ among the previously created gold standard and the results of the second pass. In the first pass the values are copied manually, while the results of the second pass are \acr{LLM}s predictions, that we double checked. We find 75 values differing in the 24 documents that are part of both data collections. Table \@ref(tab:error-analysis-gold-standard-extraction) shows the nature of errors and their counts. Most errors are distributed in the *omission* classes.
+During the second pass of ground truth creation, we found that 2.4% of the values differed between the previously established gold standard and the results of the second pass. In the first pass, values were copied manually, while in the second pass, \acr{LLM} predictions were double-checked. We identified 75 differing values in the 24 documents present in both data collections. Table \@ref(tab:error-analysis-gold-standard-extraction) details the nature and counts of these errors, with most falling into the *omission* categories.
 :::
 
-Errors of this type result from an inconsistent coding process. In one pass a value with an ambigious row identifier might have been included, while it is not included in the other pass. Or the value is matched to different row identifiers during the two passes. To resolve this kind of errors a strict and detailed coding manual is necessary. Additionally, the coding should be done from experts of the field or in collaboration with these, instead by the data scientist alone.
+These errors stem from inconsistencies in the coding process. In one pass, a value with an ambiguous row identifier may have been included, while it was omitted in the other. Alternatively, the value may have been matched to different row identifiers in each pass. To resolve such discrepancies, a strict and detailed coding manual is necessary. Additionally, coding should be performed by field experts or in collaboration with them, rather than solely by the data scientist.
 
 ```{r error-analysis-gold-standard-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 tribble(
@@ -533,22 +531,22 @@ tribble(
 )
 ```
 
-### Context rot {#context-rot}
+### Context Rot {#context-rot}
 
-We report the worsening performance of Llama 4 Maverick, when it gets to many examples presented in both main tasks. Since we use the FP8 version, we test if this is caused by to low precision during the calculations. But we find the same behavior with the FP16 version. Llama 4 Maverick is the only model in our experiments that exhibits the problem of *context rot*.
+We observed a decline in performance for Llama 4 Maverick when presented with too many examples in both main tasks. After testing both the FP8 and FP16 versions, we found the same behavior, indicating that low calculation precision is not the cause. Llama 4 Maverick is the only model in our experiments exhibiting the problem of *context rot*.
 
-*Context rot* is a term introduces in @kellyhongContextRotHow2025. They investigate an advanced *Needle in the Haystack* problem, including distractors and requiring the \acr{LLM}s to find semantic similarity instead of exact term matching. They find that the accuracy often starts to decrease with 10 k input tokens and more.
+*Context rot* is a term introduced by @kellyhongContextRotHow2025, describing a phenomenon in advanced *Needle in the Haystack* problems, where distractors require \acr{LLM}s to find semantic similarity rather than exact term matching. They found that accuracy often begins to decrease with input lengths exceeding 10_000 tokens.
 
-Meta claims that Llama 4 Maverick has a context length 1 M (Llama 4 Scout even 10 M), where other models often are limited to 128 k, 32 k or less. We limited our input token length to 32 k in most cases and reached this limit multiple times. We find it remarkable, that Llama 4 Maverick already shows *context rot* at inputs of length 10 k — 100 times shorter than their context window.
+Meta claims that Llama 4 Maverick has a context length of 1 million tokens (Llama 4 Scout even 10 million), while other models are typically limited to 128_000, 32_000 or fewer tokens. In most cases, we limited our input token length to 32_000 and reached this limit multiple times. It is notable that Llama 4 Maverick already shows *context rot* at input lengths of 10_000 tokens — 100 times shorter than its technical context window.
 
-@levySameTaskMore2024 demonstrate that \acr{LLM}s' reasoning performance can degrade at much shorter input lengths than their technical maximum. They also show that Mistral achieves the highest accuracy when the relevant information is positioned at the end of the prompt. However, it remains unclear how these findings apply to our experiments, as we do not include irrelevant information.
+@levySameTaskMore2024 demonstrated that \acr{LLM}s' reasoning performance can degrade at much shorter input lengths than their technical maximum. They also showed that Mistral achieves the highest accuracy when relevant information is positioned at the end of the prompt. However, it remains unclear how these findings apply to our experiments, as we did not include irrelevant information.
 
-#### Page identification
+#### Page Identification
 
 ::: paragraph-start
-##### Binary classification
+##### Binary Classification
 
-Figure \@ref(fig:bar-plot-maverick-binary) shows the amount of correct (matching) and incorrect classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. One can see, that the *n_rag_example* strategy starts predicting the target class too often with increased number of examples. This behavior is not observed for the *n_random_examples* strategy.
+Figure \@ref(fig:bar-plot-maverick-binary) shows the number of correct and incorrect classifications by Llama 4 Maverick for binary classification tasks, ordered by target type and method. The *n_rag_examples* strategy begins to over-predict the target class as the number of examples increases, a behavior not observed with the *n_random_examples* strategy.
 :::
 
 ```{r bar-plot-maverick-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the amount of correct classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. With increased number of examples the n-rag-example strategy starts predicting the target class too often.", fig.height=4}
@@ -568,12 +566,12 @@ df_rot_binary %>%
 ```
 
 ::: paragraph-start
-##### Multi-class classification
+##### Multi-class Classification
 
-Figure \@ref(fig:confusion-matrix-maverick-multi-class) shows the confusion matrices for the multi-class classification with Llama 4 Maverick grouped by *method_family* and *n_examples*. Teal bordered tiles are correct predictions and red bordered tiles represent wrong predictions. The number is showing the percentage of classifications by the \acr{LLM} of a certain type (*predicted_type*) based on the true count of observations with that type (*type*). They sum up to one column-wise.
+Figure \@ref(fig:confusion-matrix-maverick-multi-class) presents confusion matrices for multi-class classification with Llama 4 Maverick, grouped by *method_family* and *n_examples*. Teal-bordered tiles indicate correct predictions, while red-bordered tiles represent incorrect predictions. The numbers show the percentage of classifications by the \acr{LLM} for each type (*predicted_type*) based on the true count of observations (*type*), summing to one column-wise.
 :::
 
-We can see, that the *n_rag_example* strategy starts to predict **GuV** too often, when presented with two or more examples. We observe the same for the *n_random_examples* strategy starting from three provided examples. The \acr{LLM} is not just over-predicting **GuV**, but also other target classes. The over-prediction rate for *other* is lowest. Those pages often have no page filling table and thus are more different from the target classes and easier to distinguish (for a human). It makes no difference if \acr{icexs} are used.
+We observe that the *n_rag_example* strategy begins to over-predict **GuV** when presented with two or more examples, and the *n_random_examples* strategy does so from three examples onward. The \acr{LLM} not only over-predicts **GuV**, but also other target classes. The over-prediction rate for *other* is lowest, as these pages often lack a page-filling table and are more distinct from the target classes, making them easier to distinguish for humans. The use of \acr{icexs} does not affect this behavior.
 
 ```{r confusion-matrix-maverick-multi-class, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Showing the confusion matrices for the multi-class classification with Llama 4 Maverick grouped by method-family and n-examples.", fig.width=9}
 df_rot_multi <- df_multi %>% 
@@ -610,17 +608,14 @@ df_rot_multi %>%
   )
 ```
 
-A possible explanation for over-predicting **GuV** most might be, that the examples for **GuV** are presented first. We just iterate over the *phrase_dict* dictionary (see code below). @liuLostMiddleHow2023 describe a behavior of \acr{LLM}s, that they are better with identifying relevant information, when it is placed in the beginning or end of the context. We present the relevant task instruction and subject of classification at the end of the propmt, thus this should be processed well.
+A possible explanation for the frequent over-prediction of **GuV** is that examples for **GuV** are presented first. We simply iterate over the *phrase_dict* dictionary (see code below). @liuLostMiddleHow2023 describe that \acr{LLM}s are better at identifying relevant information when it is placed at the beginning or end of the context. We present the relevant task instruction and subject of classification at the end of the prompt, which should facilitate processing.
 
-All examples are provided in the beginning of the prompt. Since they are presented similar to the task's subject, they could be interpreted as distractors with a high similarity. @kellyhongContextRotHow2025 shows, that in the presence of similar distractors \acr{LLM}s' performance can degrade quickly. They do not present results, if the position of the picked distractor is important. Thus, we formulate following hypotheses for future investigation:
+All examples are provided at the beginning of the prompt. Since they are similar to the task's subject, they may act as highly similar distractors. @kellyhongContextRotHow2025 shows that, in the presence of similar distractors, \acr{LLM}s' performance can degrade quickly. They do not report whether the position of the distractor matters. Thus, we propose the following hypotheses for future investigation:
 
-1.  \acr{LLM}s tend to choose distractors at the beginning or end of the prompt.
-
-2.  \acr{LLM}s tend to choose distractors that apprear first or last.
-
-3.  There is an interaction effect, with the position, where the task is specified.
-
-4.  There is an interaction effect, with the position, where the task's subject is specified.
+1.  \acr{LLM}s tend to select distractors at the beginning or end of the prompt.
+2.  \acr{LLM}s tend to select distractors that appear first or last.
+3.  There is an interaction effect with the position where the task is specified.
+4.  There is an interaction effect with the position where the task's subject is specified.
 
 ```{python example-order, eval=FALSE, echo=TRUE, class.source = 'fold-show'}
 phrase_dict = {
@@ -631,9 +626,9 @@ phrase_dict = {
 }
 ```
 
-#### Information extraction
+#### Information Extraction
 
-Figure \@ref(fig:confusion-matrix-maverick-extraction) shows the confusion matrix for the information extraction task with Llama 4 Maverick and five examples. It shows, that the \acr{LLM} starts to predict numeric values for every row instead of prediction *null* if a row is missing.
+Figure \@ref(fig:confusion-matrix-maverick-extraction) displays the confusion matrix for the information extraction task with Llama 4 Maverick and five examples. It shows that the \acr{LLM} begins to predict numeric values for every row instead of returning *null* when a row is missing.
 
 ```{r confusion-matrix-maverick-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="80%", dev=std_dev, fig.cap="Showing the confusion matrix for the information extraction task with Llama 4 Maverick and five in-context learning examples.", fig.height=3, fig.align='center'}
 df_rot <- df_real_table_extraction %>% 
@@ -642,7 +637,7 @@ df_rot <- df_real_table_extraction %>%
 
 df_rot %>% 
   pivot_longer(NA_true_positive:NA_true_negative) %>% 
-  group_by(name) %>% 
+  group_by(name) %>%
   reframe(
     mean = mean(value),
     median = median(value)
@@ -664,7 +659,7 @@ df_rot %>%
   )
 ```
 
-Figure \@ref(fig:numeric-predictions-maverick-extraction) shows, what kind of numeric values are predicted. We find two peaks. The model most often predicts floating point numbers close to $0$ or close to $30$, while the true values (and values from the examples provided) are in a range of 1_000 and 10_000_000. Thus, we assume the values are hallucinated and not wrongly picked from the examples provided.
+Figure \@ref(fig:numeric-predictions-maverick-extraction) illustrates the types of numeric values predicted. Two peaks are evident: the model most frequently predicts floating point numbers close to $0$ or $30$, while the true values (and those from the provided examples) range from 1_000 to 10_000_000. We therefore assume these values are hallucinated rather than incorrectly selected from the examples.
 
 ```{r numeric-predictions-maverick-extraction, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="80%", dev=std_dev, fig.cap="Comparing the predicted numeric values with the true value distribution for the information extraction task with Llama 4 Maverick and five in-context learning examples. The dotted line is marking the value 30 EUR.", fig.align='center'}
 ticks <- seq(2,8,2)
@@ -698,123 +693,121 @@ df_rot %>%
 
 The error analysis compared the performance and limitations of \acr{LLM}-based and term frequency-based approaches for the page identification and information extraction tasks.
 
-For page identification, \acr{LLM}s sometimes misclassify tables with similar content as the target classes, while the term frequency method can be misled by common terms and high float density. We suggest the need for improved weighting schemes like \acr{BM25} or boolean indicators.
+For page identification, \acr{LLM}s occasionally misclassify tables with similar content as the target classes, while the term frequency method can be misled by common terms and high float density. We recommend improved weighting schemes such as \acr{BM25} or boolean indicators.
 
-In information extraction, using \acr{icexs} improves extraction perfromance. Excessive homogeneity can reduce performance, if examples come from another companies documents. OpenAI models demonstrate, that \acr{LLM}s perform well even without strict schemas if their parameter count is high enough.
+In information extraction, the use of \acr{icexs} enhances extraction performance. Excessive homogeneity can reduce performance if examples are drawn from documents of other companies. OpenAI models demonstrate that \acr{LLM}s perform well even without strict schemas, provided their parameter count is sufficiently high.
 
-Overall, the analysis highlights the importance of careful example selection, robust schema design and thorough ground truth validation to minimize errors.
+Overall, the analysis underscores the importance of careful example selection, robust schema design and thorough ground truth validation to minimize errors.
 
 ## Practical Implications and Limitations {#general-performance}
 
-This section discusses the results from an engineers perspective, focusing on implications for the planned \acr{HITL} application and possible improvements.
+This section discusses the results from an engineering perspective, focusing on implications for the planned \acr{HITL} application and potential improvements.
 
-### Page identification
+### Page Identification
 
-A detailed view on the results shows, that a combination of two \acr{LLM}s would be necessary, to get the best results for each target class. A more general approach would be using Llama 4 Scout for multi-class classification for all target classes. If there is little VRAM Ministral-8B also does a decent job in multi-class classification.
+A detailed analysis of the results indicates that a combination of two \acr{LLM}s may be necessary to achieve optimal performance for each target class. A more general approach would involve using Llama 4 Scout for multi-class classification across all target classes. If available VRAM is limited, Ministral-8B also performs adequately in multi-class classification.
 
-We recommend, to refine the page range, using a term frequency based approach, for efficiency reasons discussed in Section \@ref(efficency-discussion). It is an important prerequisite, that any method used for page refinement has a recall of 1.0. Otherwise, a user potentially has to inspect the whole document and no improvement is reached compared to the manual processing.
+We recommend refining the page range using a term frequency-based approach, as discussed in Section \@ref(efficency-discussion), for efficiency. It is essential that any method used for page refinement achieves a recall of 1.0; otherwise, users may need to inspect the entire document, negating any efficiency gains over manual processing.
 
-Afterwards the \acr{LLM} can be used to perform a multi-class classification on the top k pages from the ranking, that results from the term frequency approach. The page, that gets the highest confidence score from the \acr{LLM} should be used for the information extraction task. The confidence score ranking should be kept for presenting alternative pages, if the chosen one is incorrect.
+Subsequently, the \acr{LLM} can be used to perform multi-class classification on the top k pages identified by the term frequency approach. The page with the highest confidence score from the \acr{LLM} should be selected for the information extraction task. The confidence score ranking should be retained to present alternative pages if the initial selection is incorrect.
 
-Figure \@ref(fig:hitl-error-handling) illustrates our recommendation to begin information extraction immediately, without requiring a mandatory human confirmation of the selected page. If the user reviews the results and notices an incorrect page, alternative pages can be manually checked in order of their confidence score ranking.
+Figure \@ref(fig:hitl-error-handling) illustrates our recommendation to initiate information extraction immediately, without requiring mandatory human confirmation of the selected page. If the user reviews the results and identifies an incorrect page, alternative pages can be manually checked in order of their confidence score ranking.
 
-Pages that have already been classified should be saved in a vector database along with their class labels, enabling their reuse in future classification tasks and enhancing overall system performance. For in-context learning, examples should be selected based on vector similarity and should utilize \acr{icexs}. We recommend populating the vector database document by document initially, before moving to batch processing.
+Pages that have already been classified should be stored in a vector database along with their class labels, enabling reuse in future classification tasks and enhancing overall system performance. For in-context learning, examples should be selected based on vector similarity and should utilize \acr{icexs}. We recommend populating the vector database document by document initially, before transitioning to batch processing.
 
 ```{r hitl-error-handling, fig.cap="Showing the information extraction process in a HITL application. We propose to include user action only after the information extraction. If a wrong page is selected, this can be fixed and extraction runs again. Wrong extracted values and handling unknown row identifiers should be done in one place.", echo=FALSE, out.width="100%", fig.align='center'}
 
 knitr::include_graphics("images/HITL_flowchart_error_handling.png")
 ```
 
-#### Transfering the system to new problems
+#### Transferring the System to New Problems
 
 Expanding the system to new application areas should be straightforward, even for non-expert users. For the term frequency approach, a pipeline can be established where users input a list of keywords and receive a page ranking based on term frequency metrics. Users can refine the keyword list or directly select relevant pages to create a ground truth. If additional metrics are needed (such as float frequency), the system can automatically train a \acr{RF} classifier.
 
 Alternatively, users can provide documents along with a list indicating which pages contain the desired information. This data can serve as the foundation for a retrieval-augmented few-shot classifier, which will improve as more pages are classified.
 
-#### Limitations of transfer
+#### Limitations of Transfer
 
-The term frequency and \acr{LLM} classification might perform worse, if the information of interest, is just making up a small part of the pages' content. If the information is placed in a table, we can use a visual table detection model, to identify all tables. We show in the Appendix \@ref(yolo), that this is a promising approach. Then we can use the retrieval augmented few-shot approach to identify, which table is the correct one.
+The term frequency and \acr{LLM} classification may perform less effectively if the information of interest constitutes only a small portion of the page content. If the information is presented in a table, a visual table detection model can be used to identify all tables. As shown in Appendix \@ref(yolo), this is a promising approach. The retrieval-augmented few-shot approach can then be used to identify the correct table.
 
-If the information is not placed in a table, but part of a regular sentence, it might get difficult to find the correct page with this approach. Maybe the \acr{TOC} approach could be used for page range refinement in this case, if the information is found in a section with known heading.
+If the information is embedded in regular sentences rather than tables, it may be challenging to locate the correct page using this approach. In such cases, the \acr{TOC} approach could be employed for page range refinement if the information is found in a section with a known heading.
 
-#### Possible improvement {#toc-discussion}
+#### Possible Improvement {#toc-discussion}
 
 ::: paragraph-start
-##### Term frequency approach {#tf-practical-recommendation}
+##### Term Frequency Approach {#tf-practical-recommendation}
 
-Drawing on the error analysis for the term frequency approach (see Section \@ref(error-analysis-tf)), we recommend using either the sum of boolean indicators or the sum of \acr{BM25} scores instead of the normalized sum of term frequencies. Alternatively, each individual indicator could be used as a feature for the \acr{RF} classifier; however, this would require a larger training and test dataset to avoid overfitting due to the increased number of features.
+Based on the error analysis for the term frequency approach (see Section \@ref(error-analysis-tf)), we recommend using either the sum of boolean indicators or the sum of \acr{BM25} scores instead of the normalized sum of term frequencies. Alternatively, each individual indicator could be used as a feature for the \acr{RF} classifier; however, this would require a larger training and test dataset to avoid overfitting due to the increased number of features.
 :::
 
 ::: paragraph-start
-##### Table of contents understanding approach
+##### Table of Contents Understanding Approach
 
 @liExtractingFinancialData2023 applied a few-shot learning strategy for the \acr{TOC} approach, whereas we implemented only a zero-shot strategy. With greater expertise and more concrete examples included in the prompt, this method would likely achieve better results, as reported in Section \@ref(comparison-page-identification). Additionally, they used OpenAI's GPT-4 for the \acr{TOC} understanding task, which has significantly more parameters than Ministral-8B. It would be worthwhile to investigate whether Qwen3-235B performs better with text-based \acr{TOC}.
 :::
 
-#### Energy usage and runtime {#efficency-discussion}
+#### Energy Usage and Runtime {#efficency-discussion}
 
-The fastest and least energy consuming strategy, using only \acr{LLM}s, is to use a small model as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
+The fastest and least energy-consuming strategy, using only \acr{LLM}s, is to use a small model such as Ministral-8B-Instruct for the multi-class approach. This is more effective than running three binary classifications.
 
-An alternative approach could be to binary predict if the page is of any target type and then perform a classification, which type exactly the page is of. But this would probably consume as much energy as the multi-class approach, because we have to provide a balanced amount of examples for each class. The results of the multi-class strategy are good enough to run it right away.
+An alternative approach could involve first predicting whether a page is of any target type using binary classification, followed by determining the exact type. However, this would likely consume as much energy as the multi-class approach, since a balanced number of examples must be provided for each class. The results of the multi-class strategy are sufficient to justify its direct use.
 
-In both strategies the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-4].
+In both strategies, the k required for perfect recall is three, using the Ministral-8B-Instruct model[^06_discussion-4].
 
-[^06_discussion-4]: Potentially smaller fine tuned models can solve the task even more efficient.
+[^06_discussion-4]: Potentially, smaller fine-tuned models could solve the task even more efficiently.
 
-Nevertheless, it is more promising, to reduce the number of pages, to classify with the \acr{LLM} in the first place. This can be achieved, by running the term-frequency approach first to refine the page range and then use the \acr{LLM} approach.
+Nevertheless, it is more promising to reduce the number of pages to be classified by the \acr{LLM} in the first place. This can be achieved by running the term frequency approach first to refine the page range, followed by the \acr{LLM} approach.
 
 ::: paragraph-start
-##### Compare with manual page identification
+##### Comparison With Manual Page Identification
 
-The manual approach is the slowest. We identified the pages of interest for all target classes in ten random documents for the benchmark. We used the \acr{TOC} and the search function to find key words like **Aktiva** or **Bilanz**. Anyhow, it is almost as fast as the full multi-classification using Llama 4 Scout, while consuming eight times less energy. Comparing it to Ministral-8B-Instruct it takes three times longer but consumes less then half of the energy.
+The manual approach is the slowest. We identified the pages of interest for all target classes in ten random documents for the benchmark, using the \acr{TOC} and the search function to find keywords such as **Aktiva** or **Bilanz**. Nevertheless, it is almost as fast as the full multi-classification using Llama 4 Scout, while consuming eight times less energy. Compared to Ministral-8B-Instruct, it takes three times longer but consumes less than half the energy.
 :::
 
-Thus, comparing full manual processing and full \acr{LLM}-driven classifiaction, a benefit of the \acr{LLM} approach would be, that the human user could perform another task, while the \acr{LLM} is classifying a whole batch of documents and that it frees the user from a boring task. But in terms of energy consumption the manual approach is still more efficient.
+Thus, when comparing full manual processing and full \acr{LLM}-driven classification, a key advantage of the \acr{LLM} approach is that the human user can perform other tasks while the \acr{LLM} classifies a batch of documents, freeing the user from repetitive work. However, in terms of energy consumption, the manual approach remains more efficient.
 
-Not taken into account for this comparison so far are factors as:
+Factors not yet considered in this comparison include:
 
--   Costs to buy and maintain hardware (i.e. a GPU cluster).
+-   Costs to purchase and maintain hardware (e.g., a GPU cluster).
+-   Higher costs per runtime/token if \acr{LLM} compute is purchased from cloud providers.
+-   Payment and insurance costs for human workers (e.g., student assistants).
+-   Training time and energy consumption for training either
+    -   a \acr{LLM} (typically performed by the \acr{LLM} provider).
+    -   a human (education and development).
+-   Energy consumed to produce the hardware.
 
--   Higher costs per runtime/token if the \acr{LLM} compute is purchased from cloud providers.
+The most important factor for many CEOs is likely cost. The costs presented in Table \@ref(tab:page-identification-efficiency-overview-all) include only energy costs.
 
--   The payment and insurance costs for a human (e.g. student coworker).
+To calculate cloud computing costs, it is important to know how many tokens are processed. The number of response tokens per page identified can be limited to one and is therefore negligible. In contrast, the number of input tokens required to classify a single page ranges from $10^3$ to $10^4$ tokens, depending on the number of examples provided for in-context learning. For example:
 
--   The training time and energy consumption for training either
+-   Binary classification with 3 random examples: 6.5k input tokens
+-   Multi-class classification with 3 random examples: 11k input tokens
 
-    -   a \acr{LLM} (probably done by the \acr{LLM} provider).
+Assuming GPT-4.1-mini hosted in the Azure cloud is used instead of running the \acr{LLM} locally, we estimate a price of 118.80 € for multi-class classification of 1_000 documents, assuming a cost of $0.4 per 1M input tokens and 27 pages per document. For a human employee, payment and insurance costs must be added to energy costs. Even for a student worker, this amounts to 0.5 cents per second, totaling 319.80 € for identifying target pages in 1_000 documents (assuming 15 € per hour and 10% additional insurance costs).
 
-    -   a human (growing up, getting educated).
-
--   The energy consumed to produce the hardware.
-
-The argument that probably will be most important to many CEOs are costs. The costs presented in table \@ref(tab:page-identification-efficiency-overview-all) only include the costs for energy.
-
-To calculate the cloud computing costs it is important to know, how many tokens are processed. The number of response tokens per page identified can be limited to one and thus is neglectable. In contrast, the counts of input tokens needed to classify a single page fall into the range od $10^3$ to $10^4$ tokens. The exact number depends on the number of examples provided for in-context learning. Here are two examples:
-
--   binary classifiaction wit 3 random examples: 6.5 k input tokens
--   multi-class classification with 3 random examples: 11 k input tokens
-
-If we assume, one uses GPT-4.1-mini hosted in the Azure cloud instead of running the \acr{LLM} locally, we estimate a price of 118.80 € for the multi-class classification of 1_000 documents, assuming a cost of 0.4 \$ per 1 M input tokens and 27 pages per document.
-
-For a human employee we have to add their payment and insurance costs to the energy costs. Even for a student worker this will sum up to 0.5 CENTS per second. This totals in 319.80 € for identifying the target pages for 1_000 documents. This assumes 15 € per hour payment and 10 % additional costs for insurance.
+This comparison is valid only if the software for automated document processing is already available. Otherwise, development costs must also be considered, which are difficult to estimate and depend on the required software quality. For example, hiring a software developer at a rate of 80 € per hour for 160 hours would add 12.80 € per document for a batch of 1_000 documents, or 12_800 € in total. Estimating my own development time for this project at 1_400 hours and a salary of 50 € per hour, the total cost would amount to 70_000 €. Notably, the software is still not fully completed.
 
 #### Conclusion
 
-In summary, combining term frequency-based page refinement with \acr{LLM}-driven multi-class classification offers an efficient and accurate approach for page identification in financial documents. Storing classified pages in a vector database and leveraging in-context learning further enhances system performance and adaptability.
+In summary, combining term frequency-based page refinement with \acr{LLM}-driven multi-class classification provides an efficient and accurate approach for page identification in financial documents. Storing classified pages in a vector database and leveraging in-context learning further enhances system performance and adaptability.
 
 While limitations exist when relevant information is sparse or embedded in non-tabular text, integrating visual table detection and retrieval-augmented strategies can address these challenges.
 
-Regarding energy usage and runtime, our analysis demonstrates that smaller \acr{LLM}s such as Ministral-8B-Instruct provide a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable. Factoring in hardware, cloud computing and personnel costs, automated \acr{LLM}-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before \acr{LLM} classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
+Regarding energy usage and runtime, our analysis demonstrates that smaller \acr{LLM}s such as Ministral-8B-Instruct offer a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable.
 
-### Information extraction {#alternative-input-formats-extraction}
+When hardware, cloud computing, and personnel costs are considered, automated \acr{LLM}-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before \acr{LLM} classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
 
-It remains unclear whether the 2% of incorrectly extracted numeric values are due to unhandled currency units or other factors. One possible explanation is that faulty text extraction may cause numeric values to be concatenated. If this is the case, it raises the question of whether further investment in advanced table extraction methods is warranted.
+If development costs are considered as well, manual processing may be more economical for small batches of documents. However, as development costs are amortized over a large number of documents, the automated approach becomes increasingly favorable. This is particularly true when considering the potential for future applications of the developed software. However, organizations must carefully evaluate their specific needs and resources to determine the most suitable method for their document processing tasks.
 
-To further assess extraction performance, we evaluate text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information and tested an \acr{OCR}-based approach using tesseract.
+### Information Extraction {#alternative-input-formats-extraction}
 
-Table \@ref(tab:input-format-qwen235-evaluation) presents the aggregated results for the best prompting method with Qwen3-235B across all input types. No improvement was observed over the results obtained with text extracted by *pdfium*. In fact, performance declined when using Markdown generated by *pymupdf* or text produced via \acr{OCR}. Notably, Qwen3-235B performed equally well with Markdown generated by *Docling* as with other plain text extracts, indicating that the issue is not specific to the Markdown format.
+It remains unclear whether the 2% of incorrectly extracted numeric values are due to unhandled currency units or other factors. One possible explanation is that faulty text extraction may cause numeric values to be concatenated. If so, it raises the question of whether further investment in advanced table extraction methods is warranted.
 
-Therfore, we advocate prioritizing the development of end-to-end data pipelines to eliminate the need for document parsing altogether.
+To further assess extraction performance, we evaluated text extracts from various *Python* libraries, including advanced solutions such as *Azure Document Intelligence* and *Docling*, both capable of table detection and extraction. We also experimented with providing Markdown instead of plain text — generated by *Docling* and *pymupdf* — to preserve table structure information and tested an \acr{OCR}-based approach using tesseract.
+
+Table \@ref(tab:input-format-qwen235-evaluation) presents aggregated results for the best prompting method with Qwen3-235B across all input types. No improvement was observed over results obtained with text extracted by *pdfium*. In fact, performance declined when using Markdown generated by *pymupdf* or text produced via \acr{OCR}. Notably, Qwen3-235B performed equally well with Markdown generated by *Docling* as with other plain text extracts, indicating that the issue is not specific to the Markdown format.
+
+Therefore, we advocate prioritizing the development of end-to-end data pipelines to eliminate the need for document parsing altogether.
 
 ```{r input-format-qwen235-evaluation, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
 df_qwen235 <-  readRDS("data_storage/table_extraction_qwen3_235B_multiple_input_formats")
@@ -841,26 +834,26 @@ df_qwen235 %>% group_by(model, method, extractor, input_format) %>%
 ::: paragraph-start
 ##### Limitations
 
-The current approach uses a single strict schema. This enables straightforward evaluation of the results and processing in down stream tasks. But it excludes reports of well known companies as BVG and BSR. For the final system we intend to add an additional classifier between the page identification and information extraction steps, that detects what granularity the asset table is reported in. Then a proper schema is applied in the information extraction task.
+The current approach uses a single strict schema, enabling straightforward evaluation of results and downstream processing. However, this excludes reports from well-known companies such as BVG and BSR. For the final system, we intend to add an additional classifier between the page identification and information extraction steps to detect the granularity at which the asset table is reported. A suitable schema can then be applied in the information extraction task.
 :::
 
-This will still not use all information found in all tables. Therefore, we intend to access, which row identifiers do not match and extract the corresponding rows in a separate \acr{json} formatted list. We have to test, if this can be performed in a single step or with another information extraction prompt.
+This will still not utilize all information found in all tables. Therefore, we plan to identify which row identifiers do not match and extract the corresponding rows in a separate \acr{json}-formatted list. We need to test whether this can be performed in a single step or requires an additional information extraction prompt.
 
-Another approach would be to use guided instead of restricted decoding. For this strategy one can pass the description of the target structure within the prompt and just enforce the generation of valid \acr{json} code. We unwillingly made first tests with this approach, because we were not able to use a strict schema with the models of OpenAI. We describe our findings about this in Section \@ref(openai-discussion).
+Another approach would be to use guided rather than restricted decoding. In this strategy, the description of the target structure is included in the prompt, and only the generation of valid \acr{json} code is enforced. We inadvertently conducted initial tests with this approach, as we were unable to use a strict schema with OpenAI models. Our findings are described in Section \@ref(openai-discussion).
 
 ::: paragraph-start
 ##### Conclusion
 
-To summarize, we recommend to invest resources into an end-to-end supply of machine-readable information and good user experience instead of system that achieves perfect extraction results. We believe that the performance as it is is already sufficient. Especially if the document extraction database is build document by document to use a \acr{RAG} architecture to take advantage of in-context learning with \acr{icexs}.
+In summary, we recommend investing resources in end-to-end provision of machine-readable information and user experience, rather than striving for perfect extraction results. We believe that current performance is already sufficient, especially if the document extraction database is built document by document to leverage a \acrfull{RAG} architecture and in-context learning with \acr{icexs}.
 :::
 
-### Error rate guidance
+### Error Rate Guidance
 
 Implementing a measure to guide users' attention, indicating which predictions require review and which can be trusted, would be highly beneficial for the information extraction task. Verifying the extracted values for a single table can take up to three minutes, amounting to 300 minutes for the entire sample. This process is up to four times faster than manually transferring all values.
 
 Choosing a smaller model that completes in 2:30 minutes rather than 3:00 minutes does not significantly accelerate the workflow, as error checking must still be performed on all values. Error checking could be omitted if perfect results are achieved or if a reliable criterion is identified that allows predictions to be grouped into bins with a near-zero error rate.
 
-One promising criterion for this purpose is the company that published the document. As demonstrated in \@ref(same-company-evaluation), information extraction already yields error-free results for many companies' documents. If the table structure remains consistent, similar empirical error rates can be expected for future documents. However, some companies in our sample have introduced structural changes, such as reporting values in *T€*, which affect error rates.
+One promising criterion is the company that published the document. As demonstrated in \@ref(same-company-evaluation), information extraction already yields error-free results for many companies' documents. If the table structure remains consistent, similar empirical error rates can be expected for future documents. However, some companies in our sample have introduced structural changes, such as reporting values in *T€*, which affect error rates.
 
 Additionally, we recommend selecting a threshold value close to zero, rather than exactly zero, to define groups of predictions with sufficiently low empirical error rates. Otherwise, these groups may become too unstable.
 
@@ -874,26 +867,26 @@ Overall, the system effectively distinguishes between correctly and incorrectly 
 
 For information extraction, further segmentation could enhance the utility of confidence scores, but alternative grouping criteria may ultimately prove more effective and could reduce reliance on confidence scores altogether.
 
-## Not covered {#not-covered}
+## Not Covered {#not-covered}
 
 This section briefly outlines topics that were not addressed within the scope of this thesis.
 
 ::: paragraph-start
-##### Table extraction and document parsing
+##### Table Extraction and Document Parsing
 
-Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution, but its performance was unsatisfactory — particularly for tables without borders, where it often failed to correctly identify rows and columns.
+Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution; however, its performance was unsatisfactory—particularly for tables without borders, where it frequently failed to correctly identify rows and columns.
 :::
 
-We were unable to implement more recent models for this task, such as visual \acr{LLM}s. Although promising results have been reported for these approaches, user-friendly implementations for *transformers* or *vLLM* are still often lacking. Notably, our method performed well using basic text extraction, so we did not pursue more advanced extraction tools or models further.
+We were unable to implement more recent models for this task, such as visual \acr{LLM}s. Although promising results have been reported for these approaches, user-friendly implementations for *transformers* or *vLLM* remain limited. Notably, our method performed well using basic text extraction, so we did not pursue more advanced extraction tools or models further.
 
 ::: paragraph-start
-##### Multi-page tables
+##### Multi-page Tables
 
-Methods for handling multi-page tables were not investigated, as multi-page tables were only encountered for **GuV** tables. Addressing this will be a software engineering challenge for the final system. Document layout analysis models could be used to identify related pages, allowing text extracts to be concatenated for subsequent information extraction.
+Methods for handling multi-page tables were not investigated, as such tables were only encountered for **GuV** tables. Addressing this will be a software engineering challenge for the final system. Document layout analysis models could be used to identify related pages, allowing text extracts to be concatenated for subsequent information extraction.
 :::
 
 ::: paragraph-start
-##### Optical character recognition
+##### Optical Character Recognition
 
 For documents consisting solely of scanned images, \acr{OCR} is an essential preprocessing step, as all approaches in this thesis rely on text extraction. \acr{OCR} systems typically include document layout analysis to manage multi-column layouts and tables.
 :::
@@ -907,21 +900,21 @@ For documents consisting solely of scanned images, \acr{OCR} is an essential pre
 We did not perform fine-tuning with \acr{LLM}s, opting instead for in-context learning to assess its sufficiency. It would be valuable to estimate how many in-context prompts are required before the energy consumption for additional token processing exceeds that of fine-tuning.
 
 ::: paragraph-start
-##### Training an encoder-only model
+##### Training an Encoder-only Model
 
 Training a smaller encoder-only model, such as \acr{BERT}, may be more efficient for classification tasks. However, unlike \acr{LLM}s, such models would need to be retrained for each new classification task, necessitating the creation of a dedicated training dataset.
 :::
 
 ::: paragraph-start
-##### UX design study
+##### UX Design Study
 
 A \acr{UX} design study has not yet been conducted. Such a study could be valuable in the near future to develop an application based on the information extraction processes explored in this thesis, tailored for employees of \acr{RHvB}. Early involvement of potential users is beneficial for successful software development [@UserParticipationSoftware2010], helping to avoid unnecessary features and cumbersome workflows, while also increasing motivation and willingness to adopt the final \acr{AI}-driven product [@erridaDeterminantsOrganizationalChange2021].
 :::
 
 ::: paragraph-start
-##### Advanced prompting techniques
+##### Advanced Prompting Techniques
 
-Advanced prompting strategies, such as Chain-of-Thought, ReAct or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, we do not recommend further investment in advanced prompt template development at this stage.
+Advanced prompting strategies, such as Chain-of-Thought, ReAct, or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, further investment in advanced prompt template development is not recommended at this stage.
 :::
 
 ## Ethical & Practical Considerations {#ethics}
@@ -930,9 +923,9 @@ Advanced prompting strategies, such as Chain-of-Thought, ReAct or Self-Consisten
 
 Extracting numeric information is distinct from decision-making and is unlikely to introduce human-discriminating bias. Automation of information extraction may replace roles requiring lower qualifications; however, at \acr{RHvB}, such positions no longer exist. Thus, this automation primarily serves to enhance efficiency, allowing staff to focus on more complex tasks.
 
-According to current regulations, individuals should not be subject to decisions based solely on automated processing (such as algorithms) that are legally binding or significantly affect them. But the \acr{AI} Act is likely not applicable here, as no decisions are made at the individual level.
+According to current regulations, individuals should not be subject to decisions based solely on automated processing (such as algorithms) that are legally binding or significantly affect them. However, the \acr{AI} Act is likely not applicable here, as no decisions are made at the individual level.
 
-Furthermore, errors, that decisions could be based on, should be catched by an employee in the \acr{HITL} approach before they have down stream implications.
+Furthermore, errors that could influence decisions should be caught by an employee in the \acr{HITL} approach before they have downstream implications.
 
 ### Computational Constraints
 
@@ -960,8 +953,8 @@ Furthermore, we intend to request annual reports in \acr{XBRL} format. Since 201
 
 ## Summary
 
-This chapter critically evaluated the performance, limitations and practical implications of {LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection and thorough ground truth validation.
+This chapter critically evaluated the performance, limitations and practical implications of \acr{LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection and thorough ground truth validation.
 
-Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention resource requirements and the impact of automation on the workforce.
+Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention to resource requirements and the impact of automation on the workforce.
 
 The chapter concludes that combining term frequency-based refinement with \acr{LLM}-driven classification offers an efficient, scalable and adaptable solution, while also outlining areas for future improvement and topics not covered in the current work.

@@ -178,7 +178,7 @@ The reports are selected to ensure that the sample reflects the diversity of str
 We select companies from various business sectors for the page identification task and download all publicly available annual reports. The selected companies are listed in the first row of Figure \@ref(fig:beteiligungsunternehmen).
 :::
 
-We assume that each company within a sector can represent the document style of other companies in the same sector, and that the position within a column does not affect the style or content of the annual reports. Reports for *GESOBAU AG* are additionally included, as *degewo AG* reports require \acr{OCR} preprocessing. A description of the resulting dataset is provided in Section \@ref(ground-truth-dataset-composition).
+We assume that each company within a sector can represent the document style of other companies in the same sector, and that the position within a column does not affect the style or content of the annual reports. Reports for *GESOBAU AG* are additionally included, as *degewo AG* reports require \acrfull{OCR} preprocessing. A description of the resulting dataset is provided in Section \@ref(ground-truth-dataset-composition).
 
 ::: paragraph-start
 ##### Information Extraction
