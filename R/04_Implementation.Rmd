@@ -16,7 +16,7 @@ By documenting the technical decisions and solutions adopted, this chapter provi
 
 ## Environments
 
-The computations for this thesis are performed in two environments. Tasks that do not require a \acr{GPU} are run locally. You can find the specifications of the local device in the Appendix \@ref(local-machine). We run tasks that require a \acr{GPU} on the Datexis Kubernetes cluster.
+All computations for this thesis are conducted in two distinct environments. Tasks that do not require a \acr{GPU} are executed locally; the specifications of the local device are provided in Appendix \@ref(local-machine). Tasks necessitating a \acr{GPU} are performed on the [Datexis](https://prof.bht-berlin.de/loeser) Kubernetes cluster.
 
 We perform prototyping for most tasks on the cluster as well. Therefore, an interactive docker image with \acr{SSH} capabilities and Python has been created based on the \acr{vllm}
 docker image. In rare cases a \acr{vllm} server is deployed on the cluster and queried from the local machine.
@@ -160,7 +160,7 @@ new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %
 It takes us up to 12 minutes per table to copy over all values from the \acr{PDF} document into the \acr{csv} file. The maximum amount of values to copy and format (or type manually) among the tables used is 40. In addition to this manual process, a conceptional process can be necessary, because the values have to be matched with the strict grammar. Sometimes we have to decide that there is no suitable row for a value and drop it. Sometimes there are multiple values that have to get summed up in order to calculate a value that suits the predefined schema.
 :::
 
-This manual work is done for `r old_doc_base %>% nrow()` documents. We include a single **Aktiva** table from every company that reports teh balance sheet in the granularity matching our schema. We include additional documents *Amt für Statistik und Brandenburg* to check, if the in-context learning approach yields better performance, if examples from the same company the subject of extraction is from are used.
+This manual work is done for `r old_doc_base %>% nrow()` documents. We include a single **Aktiva** table from every company that reports the balance sheet in the granularity matching our schema. We include additional documents *Amt für Statistik und Brandenburg* to check, if the in-context learning approach yields better performance, if examples from the same company the subject of extraction is from are used.
 
 Later, the predictions of the \acr{LLM}s are used, to create additional `r (new_doc_base %>% nrow())-(old_doc_base %>% nrow())` ground truth tables. The old ground truth tables are checked in this iteration. We find an error rate of 2.4 %. Thus, the human reference score for percentage of correct predictions is 0.976. Figure \@ref(fig:table-extraction-doc-base) shows how many **Aktiva** tables are used for information extraction tasks, that use real data instead of synthetic data.
 

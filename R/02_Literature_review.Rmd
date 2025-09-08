@@ -8,9 +8,9 @@ editor_options:
 
 \ChapFrame[Literature review][bhtred]
 
-This chapter presents literature relevant to our research questions and provides essential background on the concepts and methods employed in this thesis. As outlined in Chapter \@ref(introduction), the problem addressed here lies within the field of information retrieval and is approached using \acr{NLP} techniques. Accordingly, Section \@ref(computer-science) reviews techniques for locating information within and extracting it from documents. Section \@ref(llm-theory) then explains the mechanisms and architectures of modern \acrfull{LLM}s, with particular attention to the \acr{MoE} architecture.
+This chapter presents literature relevant to our research questions and provides essential background on the concepts and methods employed in this thesis. As outlined in Chapter \@ref(introduction), the problem addressed here lies within the field of information retrieval and is approached using \acr{NLP} techniques. Accordingly, Section \@ref(computer-science) reviews techniques for locating information within and extracting it from documents.
 
-Subsequently, Section \@ref(llm-methods) discusses the prompting strategy *in-context learning*, which leverages the "programming by example" paradigm, and explores how \acr{RAG} integrates into this framework. We also demonstrate how guided decoding can be used to generate structured responses suitable for downstream tasks.
+Section \@ref(llm-theory) then explains the mechanisms and architectures of modern \acrfull{LLM}s, with particular attention to the \acr{MoE} architecture. It also discusses the prompting strategy *in-context learning*, which leverages the "programming by example" paradigm, and explores how \acr{RAG} integrates into this framework. We also demonstrate how guided decoding can be used to generate structured responses suitable for downstream tasks.
 
 Section \@ref(other-concepts) introduces the \acr{SHAP} framework, a unified model for explaining machine learning predictions, applicable to complex models such as deep neural networks and random forests. The latter are briefly described as well. We employ random forests and \acr{SHAP} to test our hypotheses regarding potential predictors for the information extraction task. Our hypotheses are stated in Section \@ref(research-questions).
 
@@ -29,7 +29,7 @@ One of the earliest measures used in retrieval algorithms is term frequency ($\m
 (\#eq:term-rate)
 \end{equation}
 
-This metric is integral to established measures such as \acr{TF-IDF} and Okapi \acr{BM25}, both of which are widely used for ranking document relevance in response to search queries [@robertsonUnderstandingInverseDocument2004; @robertsonProbabilisticRelevanceFramework2009]. These methods are also commonly employed in \acr{RAG} architectures. Notably, \acr{BM25} is recognized as one of the most successful algorithms for web and corporate search [@robertsonProbabilisticRelevanceFramework2009].
+This metric is integral to established measures such as \acr{TF-IDF} and Okapi \acr{BM25}, both of which are widely used for ranking document relevance in response to search queries [@robertsonUnderstandingInverseDocument2004; @robertsonProbabilisticRelevanceFramework2009]. These methods are also commonly employed in \acr{RAG} architectures (see Section \@ref(retireval-augmented-generation)). Notably, \acr{BM25} is recognized as one of the most successful algorithms for web and corporate search [@robertsonProbabilisticRelevanceFramework2009].
 
 The \acr{IDF} is often used as a weighting function. If the ranking of search results is based solely on the sum of term frequencies present in both the document and the query, less informative terms receive equal weight. For example, in the query "Is the positron blue?", common terms such as *is*, *the*, and *blue* may appear frequently in a document, potentially resulting in a high score even if positron is absent. To address this, term frequencies are multiplied by the \acr{IDF} score [@manningIntroductionInformationRetrieval2008, pp. 118]:
 

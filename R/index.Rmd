@@ -154,6 +154,8 @@ We would like to express our sincere gratitude to Tom Röhr, whose unwavering su
 
 We would like to express our sincere gratitude to Micha for his valuable support in extending the ground truth dataset for the information extraction task.
 
+We are deeply thankful to Eric for his meticulous proofreading and constructive feedback, which have significantly enhanced the quality of this thesis.
+
 We also extend our heartfelt thanks to our family and friends for their unwavering support and patience throughout the past months.
 
 \pagestyle{fancy}

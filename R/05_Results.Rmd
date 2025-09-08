@@ -529,7 +529,7 @@ We find, that the confidence score can be used in the page identification task, 
 Distinguishing correct and wrong classifications based on the confidence score is working well for the responses of Ministral-8B-Instruct. But for other models, e.g. from the Qwen family, it works worse. This is possible, because Ministral-8B-Instruct reports confidence scores over a wide range, while models from the Qwen 2.5 family report always high confidence.
 :::
 
-Thus, it is possible to define a wide range of confidence intervals, where we find a empirical error rate of zero for Ministral. For Qwen 2.5 32B we find the highest confidence interval containing some mistakes, But it is still good with less 1 %. Most predictions are in the highest confidence score interval for both models.
+Thus, it is possible to define a wide range of confidence intervals, where we find a empirical error rate of zero for Ministral. For Qwen 2.5 32B we find the highest confidence interval containing some mistakes, but it is still good with less 1 %. Most predictions are in the highest confidence score interval for both models.
 
 ::: paragraph-start
 ##### Multi-class classification

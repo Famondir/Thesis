@@ -187,7 +187,7 @@ With the synthetic tables, we also find that \acr{HTML} and Markdown are a *inpu
 All model and method specific features are meaningful predictors for the information extraction task. Thus, we argue, that **H2.2a** and **H2.2b** find total support. The high importance of the feature *model_family* could be an artifact of Llama 4 Mavericks bad performance with multiple in-context learning examples.
 :::
 
-Of all the table characteristics only *T_in_previous_year* shows a higher importance. Thus, we argue, that **H2.2c** only gets support for a one of the features we proposed a (directed) effect for. There are multiple features we proposed to have no effect and where no effect is found. These hypotheses also get supported by our experiments. We assume, that *T_in_year* would get a higher importance, too, if the number of tableswith this characteristic in our sample would be higher.
+Of all the table characteristics only *T_in_previous_year* shows a higher importance. Thus, we argue, that **H2.2c** only gets support for a one of the features we proposed a (directed) effect for. There are multiple features we proposed to have no effect and where no effect is found. These hypotheses also get supported by our experiments. We assume, that *T_in_year* would get a higher importance too, if the number of tableswith this characteristic in our sample would be higher.
 
 ::: paragraph-start
 ###### Respecting Units
@@ -218,7 +218,7 @@ We also did not include an indicator, if \acr{icexs} are used, as a method relat
 ::: paragraph-start
 ##### Unexpected results
 
-We did not expect to find such a clear example for context rot as we do for Llama 4 Maverick. We are surprised that we do not find the same behavior with Llama 4 Scout. Since it has an even larger context window, we wonder, if we will observe context rot for Llama 4 Scout, too, if we increase the number of in-context learning examples proportionally.
+We did not expect to find such a clear example for context rot as we do for Llama 4 Maverick. We are surprised that we do not find the same behavior with Llama 4 Scout. Since it has an even larger context window, we wonder, if we will observe context rot for Llama 4 Scout too, if we increase the number of in-context learning examples proportionally.
 :::
 
 ::: paragraph-start
@@ -960,7 +960,7 @@ Furthermore, we intend to request annual reports in \acr{XBRL} format. Since 201
 
 ## Summary
 
-This chapter critically evaluated the performance, limitations, and practical implications of {LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection, and thorough ground truth validation.
+This chapter critically evaluated the performance, limitations, and practical implications of \{LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection, and thorough ground truth validation.
 
 Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations, and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention resource requirements and the impact of automation on the workforce.
 
