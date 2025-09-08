@@ -214,7 +214,7 @@ div.csl-indent {
 <li class="chapter" data-level="2.2.4" data-path="literature-review.html"><a href="literature-review.html#llm-methods"><i class="fa fa-check"></i><b>2.2.4</b> Generation enhancing methods with LLMs</a>
 <ul>
 <li class="chapter" data-level="2.2.4.1" data-path="literature-review.html"><a href="literature-review.html#in-context-learning"><i class="fa fa-check"></i><b>2.2.4.1</b> In-context Learning</a></li>
-<li class="chapter" data-level="2.2.4.2" data-path="literature-review.html"><a href="literature-review.html#rag"><i class="fa fa-check"></i><b>2.2.4.2</b> RAG</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="literature-review.html"><a href="literature-review.html#retireval-augmented-generation"><i class="fa fa-check"></i><b>2.2.4.2</b> Retireval Augmented Generation</a></li>
 <li class="chapter" data-level="2.2.4.3" data-path="literature-review.html"><a href="literature-review.html#guided-and-restricted-decoding"><i class="fa fa-check"></i><b>2.2.4.3</b> Guided and restricted decoding</a></li>
 </ul></li>
 </ul></li>
@@ -325,6 +325,7 @@ div.csl-indent {
 <li class="chapter" data-level="6.2.2.3" data-path="discussion.html"><a href="discussion.html#numeric-transformation-discussion"><i class="fa fa-check"></i><b>6.2.2.3</b> Numeric transformations</a></li>
 <li class="chapter" data-level="6.2.2.4" data-path="discussion.html"><a href="discussion.html#regex-synth-backend-discussion"><i class="fa fa-check"></i><b>6.2.2.4</b> Inaccurate text extracts</a></li>
 <li class="chapter" data-level="6.2.2.5" data-path="discussion.html"><a href="discussion.html#openai-discussion"><i class="fa fa-check"></i><b>6.2.2.5</b> OpenAI models</a></li>
+<li class="chapter" data-level="6.2.2.6" data-path="discussion.html"><a href="discussion.html#error-types"><i class="fa fa-check"></i><b>6.2.2.6</b> Error Types</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2.3" data-path="discussion.html"><a href="discussion.html#unconsistent-label-matching"><i class="fa fa-check"></i><b>6.2.3</b> Ground truth creation</a></li>
 <li class="chapter" data-level="6.2.4" data-path="discussion.html"><a href="discussion.html#context-rot"><i class="fa fa-check"></i><b>6.2.4</b> Context rot</a>
@@ -629,9 +630,12 @@ Figure 2.2: Showing schemas of the dense and sparse mixture of experts architect
 <p>Although tutorials and blogs sometimes suggest that using more examples leads to better results <span class="citation">(<a href="#ref-kukaShotBasedPromptingZeroShot">Kuka", n.d.</a>)</span>, <span class="citation">Brown et al. (<a href="#ref-brownLanguageModelsAre2020">2020</a>)</span> demonstrate that performance may not improve significantly when adding more than a second example.</p>
 <p>Furthermore, there is the threat of <em>context rot</em> <span class="citation">(<a href="#ref-kellyhongContextRotHow2025">Kelly Hong &amp; Anton Troynikov, 2025</a>)</span>. This means, the performance can decrease noticeably, when the context gets to long. Thus, the number of examples one should provide is not just constrained by the context width. Additionally, there is a threat of over-fitting on patterns that are not present in the actual task but in the examples if they are to homogeneous.</p>
 </div>
-<div id="rag" class="section level4 hasAnchor" number="2.2.4.2">
-<h4><span class="header-section-number">2.2.4.2</span> RAG<a href="literature-review.html#rag" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Wichtig</p>
+<div id="retireval-augmented-generation" class="section level4 hasAnchor" number="2.2.4.2">
+<h4><span class="header-section-number">2.2.4.2</span> Retireval Augmented Generation<a href="literature-review.html#retireval-augmented-generation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><a href="glossary.html#acronyms_RAG">RAG (retrieval augmanted generation)</a> is introduced by <span class="citation">Lewis et al. (<a href="#ref-lewisRetrievalAugmentedGenerationKnowledgeIntensive2021">2021</a>)</span> to enhance <a href="glossary.html#acronyms_LLM">LLM</a>s capabilities in knowledge-intensive tasks and providing a solution to provide information on knowledge provenance. It can be used, to provide domain or company specific information and overcome the knowledge cutoff of the pre-training dataset <span class="citation">(<a href="#ref-gaoRetrievalAugmentedGenerationLarge2024">Gao et al., 2024</a>)</span>. And it can be used to decrease the chance that hallucinated data remains unnoticed.</p>
+<p><span class="citation">Lewis et al. (<a href="#ref-lewisRetrievalAugmentedGenerationKnowledgeIntensive2021">2021</a>)</span> fine-tune a sequence-to-sequence model with a fixed retriever component, training only the query encoder and generator. Recent <a href="glossary.html#acronyms_RAG">RAG</a> systems often use a retriever component and a general purpose <a href="glossary.html#acronyms_LLM">LLM</a> <span class="citation">(<a href="#ref-gaoRetrievalAugmentedGenerationLarge2024">Gao et al., 2024</a>)</span>. <span class="citation">Gao et al. (<a href="#ref-gaoRetrievalAugmentedGenerationLarge2024">2024</a>)</span> describes different system <a href="glossary.html#acronyms_RAG">RAG</a> architectures, namely naive, advanced and modular <a href="glossary.html#acronyms_RAG">RAG</a>s.</p>
+<p>It combines techniques from information retrieval, to identify information, that is relevant to a query and includes this information by adding it to the prompt. Thus, it is similar to an automated form <em>in-context learning</em> that is focusing to provide information instead of demonstrating new patterns. For the retrieval dense and sparse techniques can be used, as already mentioned in Section <a href="literature-review.html#sparse-retrieval">2.1.1</a> and Section <a href="literature-review.html#nlp">2.1.2</a>. <span class="citation">Gupta et al. (<a href="#ref-guptaComprehensiveSurveyRetrievalAugmented2024">2024</a>)</span> give an overview of potential retriever mechanisms.</p>
+<p>The sources for information retrieval can be a local (vector) database, a knowledge graph or the internet. Recently, <span class="citation">Anthropic (<a href="#ref-anthropicIntroducingModelContext2024">2024</a>)</span> introduced the <a href="glossary.html#acronyms_MCP">MCP (model context protocol)</a>, too. While <a href="glossary.html#acronyms_RAG">RAG</a>s retrieves information mostly from unstructured, static sources, does <a href="glossary.html#acronyms_MCP">MCP</a> provide real-time information from structured sources. The <a href="glossary.html#acronyms_MCP">MCP</a> can also be used to execute other operations than retrieving information <span class="citation">(<a href="#ref-houModelContextProtocol2025">Hou et al., 2025</a>)</span>, e.g. using external tools or sending e-mails via the appropriate <a href="glossary.html#acronyms_API">API (application programming interface)</a>.</p>
 </div>
 <div id="guided-and-restricted-decoding" class="section level4 hasAnchor" number="2.2.4.3">
 <h4><span class="header-section-number">2.2.4.3</span> Guided and restricted decoding<a href="literature-review.html#guided-and-restricted-decoding" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -775,6 +779,9 @@ Adhikari, N. S., &amp; Agarwal, S. (2024). <em>A <span>Comparative Study</span> 
 <div id="ref-amgenscholarsprogramHowInterpretViolin" class="csl-entry">
 Amgen Scholars Program. (n.d.). <em>How to <span>Interpret Violin Charts</span></em>. https://www.labxchange.org/library/items/lb:LabXchange:46f64d7a:html:1.
 </div>
+<div id="ref-anthropicIntroducingModelContext2024" class="csl-entry">
+Anthropic. (2024). <em>Introducing the <span>Model Context Protocol</span></em>. https://www.anthropic.com/news/model-context-protocol.
+</div>
 <div id="ref-berkovUnderstandingLLMLogprobs2025" class="csl-entry">
 Berkov, M. (2025). Understanding <span>LLM Logprobs</span>. In <em>Thinking Sand</em>.
 </div>
@@ -814,6 +821,9 @@ Dong, Y., Ruan, C. F., Cai, Y., Lai, R., Xu, Z., Zhao, Y., &amp; Chen, T. (2025)
 <div id="ref-francisComparisonStudyOptical2025" class="csl-entry">
 Francis, Sofi. A., &amp; Sangeetha, M. (2025). A comparison study on optical character recognition models in mathematical equations and in any language. <em>Results in Control and Optimization</em>, <em>18</em>, 100532. <a href="https://doi.org/10.1016/j.rico.2025.100532">https://doi.org/10.1016/j.rico.2025.100532</a>
 </div>
+<div id="ref-gaoRetrievalAugmentedGenerationLarge2024" class="csl-entry">
+Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., Wang, M., &amp; Wang, H. (2024). <em>Retrieval-<span>Augmented Generation</span> for <span>Large Language Models</span>: <span>A Survey</span></em> (arXiv:2312.10997). arXiv. <a href="https://doi.org/10.48550/arXiv.2312.10997">https://doi.org/10.48550/arXiv.2312.10997</a>
+</div>
 <div id="ref-googleGemma3nModel" class="csl-entry">
 Google. (n.d.). Gemma 3n model overview. In <em>Google AI for Developers</em>. https://ai.google.dev/gemma/docs/gemma-3n.
 </div>
@@ -823,11 +833,17 @@ Grootendorst, M. (2024). <em>A <span>Visual Guide</span> to <span>Mixture</span>
 <div id="ref-GuidanceaiGuidance2025" class="csl-entry">
 <em>Guidance-ai/guidance</em>. (2025). guidance-ai.
 </div>
+<div id="ref-guptaComprehensiveSurveyRetrievalAugmented2024" class="csl-entry">
+Gupta, S., Ranjan, R., &amp; Singh, S. N. (2024). <em>A <span>Comprehensive Survey</span> of <span>Retrieval-Augmented Generation</span> (<span>RAG</span>): <span>Evolution</span>, <span>Current Landscape</span> and <span>Future Directions</span></em> (arXiv:2410.12837). arXiv. <a href="https://doi.org/10.48550/arXiv.2410.12837">https://doi.org/10.48550/arXiv.2410.12837</a>
+</div>
 <div id="ref-haddouchiSurveyTaxonomyMethods2024" class="csl-entry">
 Haddouchi, M., &amp; Berrado, A. (2024). <em>A survey and taxonomy of methods interpreting random forest models</em> (arXiv:2407.12759). arXiv. <a href="https://doi.org/10.48550/arXiv.2407.12759">https://doi.org/10.48550/arXiv.2407.12759</a>
 </div>
 <div id="ref-hintzeViolinPlotsBox1998" class="csl-entry">
 Hintze, J. L., &amp; Nelson, R. D. (1998). Violin <span>Plots</span>: <span>A Box Plot-Density Trace Synergism</span>. <em>The American Statistician</em>, <em>52</em>(2), 181–184. <a href="https://doi.org/10.1080/00031305.1998.10480559">https://doi.org/10.1080/00031305.1998.10480559</a>
+</div>
+<div id="ref-houModelContextProtocol2025" class="csl-entry">
+Hou, X., Zhao, Y., Wang, S., &amp; Wang, H. (2025). <em>Model <span>Context Protocol</span> (<span>MCP</span>): <span>Landscape</span>, <span>Security Threats</span>, and <span>Future Research Directions</span></em> (arXiv:2503.23278). arXiv. <a href="https://doi.org/10.48550/arXiv.2503.23278">https://doi.org/10.48550/arXiv.2503.23278</a>
 </div>
 <div id="ref-huComputingSHAPEfficiently2023" class="csl-entry">
 Hu, L., &amp; Wang, K. (2023). <em>Computing <span>SHAP Efficiently Using Model Structure Information</span></em> (arXiv:2309.02417). arXiv. <a href="https://doi.org/10.48550/arXiv.2309.02417">https://doi.org/10.48550/arXiv.2309.02417</a>
@@ -864,6 +880,9 @@ Kulkarni, V. Y., &amp; Sinha, P. K. (2012). Pruning of <span>Random Forest</span
 </div>
 <div id="ref-kulkarniRandomForestClassifiers2013" class="csl-entry">
 Kulkarni, V., &amp; Sinha, P. (2013). Random forest classifiers: <span>A</span> survey and future research directions. <em>International Journal of Advanced Computing</em>, <em>36</em>, 1144–1153.
+</div>
+<div id="ref-lewisRetrievalAugmentedGenerationKnowledgeIntensive2021" class="csl-entry">
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., &amp; Kiela, D. (2021). <em>Retrieval-<span>Augmented Generation</span> for <span>Knowledge-Intensive NLP Tasks</span></em> (arXiv:2005.11401). arXiv. <a href="https://doi.org/10.48550/arXiv.2005.11401">https://doi.org/10.48550/arXiv.2005.11401</a>
 </div>
 <div id="ref-liBuildingTrustMachine2024" class="csl-entry">
 Li, Z., Bouazizi, M., Ohtsuki, T., Ishii, M., &amp; Nakahara, E. (2024). Toward <span>Building Trust</span> in <span>Machine Learning Models</span>: <span>Quantifying</span> the <span>Explainability</span> by <span>SHAP</span> and <span>References</span> to <span>Human Strategy</span>. <em>IEEE Access</em>, <em>12</em>, 11010–11023. <a href="https://doi.org/10.1109/ACCESS.2023.3347796">https://doi.org/10.1109/ACCESS.2023.3347796</a>

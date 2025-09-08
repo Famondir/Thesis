@@ -185,9 +185,15 @@ Although tutorials and blogs sometimes suggest that using more examples leads to
 
 Furthermore, there is the threat of *context rot* [@kellyhongContextRotHow2025]. This means, the performance can decrease noticeably, when the context gets to long. Thus, the number of examples one should provide is not just constrained by the context width. Additionally, there is a threat of over-fitting on patterns that are not present in the actual task but in the examples if they are to homogeneous.
 
-#### RAG
+#### Retireval Augmented Generation
 
-Wichtig
+\acrfull{RAG} is introduced by @lewisRetrievalAugmentedGenerationKnowledgeIntensive2021 to enhance \acr{LLM}s capabilities in knowledge-intensive tasks and providing a solution to provide information on knowledge provenance. It can be used, to provide domain or company specific information and overcome the knowledge cutoff of the pre-training dataset [@gaoRetrievalAugmentedGenerationLarge2024]. And it can be used to decrease the chance that hallucinated data remains unnoticed.
+
+@lewisRetrievalAugmentedGenerationKnowledgeIntensive2021 fine-tune a sequence-to-sequence model with a fixed retriever component, training only the query encoder and generator. Recent \acr{RAG} systems often use a retriever component and a general purpose \acr{LLM} [@gaoRetrievalAugmentedGenerationLarge2024]. @gaoRetrievalAugmentedGenerationLarge2024 describes different system \acr{RAG} architectures, namely naive, advanced and modular \acr{RAG}s.
+
+It combines techniques from information retrieval, to identify information, that is relevant to a query and includes this information by adding it to the prompt. Thus, it is similar to an automated form *in-context learning* that is focusing to provide information instead of demonstrating new patterns. For the retrieval dense and sparse techniques can be used, as already mentioned in Section \@ref(sparse-retrieval) and Section \@ref(nlp). @guptaComprehensiveSurveyRetrievalAugmented2024 give an overview of potential retriever mechanisms.
+
+The sources for information retrieval can be a local (vector) database, a knowledge graph or the internet. Recently, @anthropicIntroducingModelContext2024 introduced the \acr{MCP}, too. While \acr{RAG}s retrieves information mostly from unstructured, static sources, does \acr{MCP} provide real-time information from structured sources. The \acr{MCP} can also be used to execute other operations than retrieving information [@houModelContextProtocol2025], e.g. using external tools or sending e-mails via the appropriate \acr{API}.
 
 #### Guided and restricted decoding
 

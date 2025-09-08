@@ -34,6 +34,10 @@ acronyms:
     - key: mcc
       shortname: MCC
       longname: multi-class classification
+    - shortname: MCP
+      longname: model context protocol
+    - shortname: API
+      longname: application programming interface
     - key: vllm
       shortname: vLLM
       longname: Virtual Large Language Model

@@ -30,7 +30,7 @@ We do backups of the folder holding the scripts and data to process and download
 ::: paragraph-start
 ##### Python
 
-We use \acr{vllm} and *chromadb* to set up our in-context learning pipeline. \acr{vllm} is a fast and easy to use framework to provide \acr{LLM}s locally or as service. *chromadb* is a vector database and key component of our \acr{RAG} architecture. It provides the \acr{LLM}s with examples that are most similar regarding their vector representations.
+We use \acr{vllm} and *chromadb* to set up our in-context learning pipeline. \acr{vllm} is a fast and easy to use framework to provide \acr{LLM}s locally or as service. *chromadb* is a vector database and key component of our naive \acr{RAG} architecture [@gaoRetrievalAugmentedGenerationLarge2024]. It provides the \acr{LLM}s with examples that are most similar regarding their vector representations.
 :::
 
 For data wrangling we use *pandas*. We save our experiments results using the *json* library. We extract texts from \acr{PDF}s mainly with *pypdfium2* and use *sklearn* for building random forest classifiers.
