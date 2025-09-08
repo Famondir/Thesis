@@ -93,7 +93,7 @@ cat("<ol class='rs-questions' style='--counter: 2;'><li>How can we use LLMs effe
   \item How can we use LLMs effectively to extract this information from the document?
 \end{enumerate}
 
-We will start discussing the hypotheses group **H2.1** in subsection \@ref(extraction-performace-hypotheses-evaluation), before we will look at the hypotheses group **H2.2** in subsection \@ref(extraction-performace-predictor-hypotheses-evaluation). The hypotheses of group **H2.1** are:
+We will start discussing the hypotheses group **H2.1** in Section \@ref(extraction-performace-hypotheses-evaluation), before we will look at the hypotheses group **H2.2** in Section \@ref(extraction-performace-predictor-hypotheses-evaluation). The hypotheses of group **H2.1** are:
 
 **H2.1a:** \acr{LLM}s can be used to correctly extract multiple numeric values from the assets table.
 
@@ -290,7 +290,7 @@ In summary, confidence scores are a useful tool for guiding user attention in th
 
 This section provides a detailed evaluation of the noticeable details found during our evaluation of the experiments. The following sections examine classification errors for each method, analyze the challenges of extracting numeric information and discuss the impact of context rot.
 
-Company-specific results and the influence of example selection strategies are presented, followed by a discussion of numeric transformations and the effects of inaccurate text extraction. The chapter also addresses the performance with a guided decoding aproach and the process of ground truth creation. Each subsection aims to highlight practical recommendations and areas for future improvement.
+Company-specific results and the influence of example selection strategies are presented, followed by a discussion of numeric transformations and the effects of inaccurate text extraction. The chapter also addresses the performance with a guided decoding aproach and the process of ground truth creation. Each Section aims to highlight practical recommendations and areas for future improvement.
 
 ### Page identification {#page-identification-error-analysis}
 
@@ -482,7 +482,7 @@ For erroneous numeric predictions, it would be valuable to determine whether the
 
 Another likely error type involves copying an incorrect value, such as a sum from the same row but a different column, a value from another row, or even from one of the provided examples. To examine this, one could check whether the predicted number appears in the prompt text, provided this information is logged.
 
-Errors may also arise from missed or incorrect transformations related to currency units. Additionally, the \acr{LLM} may perform summations across rows, or simply generate hallucinated values, as discussed in Section @ref(context-rot).
+Errors may also arise from missed or incorrect transformations related to currency units. Additionally, the \acr{LLM} may perform summations across rows, or simply generate hallucinated values, as discussed in Section \@ref(context-rot).
 
 ::: paragraph-start
 ##### Row matching

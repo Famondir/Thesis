@@ -158,12 +158,12 @@ This section presents the results of four approaches to identify the page[^05_re
 
 [^05_results-2]: In some cases the information of interest is spanning two pages. These rare cases are not covered from the approaches presented here, yet.
 
--   Subsection \@ref(regex-page-identification) presents the findings of a page range refinement using a list of key words with a regular expression.
--   Subsection \@ref(toc-understanding) presents the findings of a \acr{TOC} understanding approach
--   Subsection \@ref(llm-page-identification) presents the findings of a text classification approach using \acr{LLM}s.
--   Subsection \@ref(tf-classifier) presents the findings of a term-frequency approach.
+-   Section \@ref(regex-page-identification) presents the findings of a page range refinement using a list of key words with a regular expression.
+-   Section \@ref(toc-understanding) presents the findings of a \acr{TOC} understanding approach
+-   Section \@ref(llm-page-identification) presents the findings of a text classification approach using \acr{LLM}s.
+-   Section \@ref(tf-classifier) presents the findings of a term-frequency approach.
 
-We compare and summarize the results in Subsection \@ref(comparison-page-identification). Subsection \@ref(efficency-discussion) proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
+We compare and summarize the results in Section \@ref(comparison-page-identification). Section \@ref(efficency-discussion) proposes an efficient combination of approaches to solve the task of this thesis and discusses its limitations.
 
 ###  {.unlisted .unnumbered}
 
@@ -396,7 +396,7 @@ df_real_table_extraction_synth <- df_real_table_extraction_synth %>%
     )
 ```
 
-(ref:information-extraction-intro-text) The second research question asks, how \acr{LLM}s can be used, to effectively extract specific information from a financial report. The task for this thesis is to extract the numeric values for the assets (*Aktiva*) table, which is part of the balance sheet (*Bilanz*). Hereafter, the German term **Aktiva** will be used. We are limiting the scope even further than in Subsection \@ref(page-identification-introduction), because it takes more time to manually create the first reference dataset.
+(ref:information-extraction-intro-text) The second research question asks, how \acr{LLM}s can be used, to effectively extract specific information from a financial report. The task for this thesis is to extract the numeric values for the assets (*Aktiva*) table, which is part of the balance sheet (*Bilanz*). Hereafter, the German term **Aktiva** will be used. We are limiting the scope even further than in Section \@ref(page-identification-introduction), because it takes more time to manually create the first reference dataset.
 
 (ref:information-extraction-intro-text)
 
@@ -517,7 +517,7 @@ The findings from approaches utilizing synthetic tables suggest that the input f
 
 (ref:error-rate-guidance-intro-text)
 
-Subsection \@ref(page-identification-error-rate-results) presents the results found regarding our side research question for the page identification task. Subsection \@ref(information-extraction-error-rate-results) presents the results found regarding our side research question for the information extraction task. The detailed report can be found in the Appendix \@ref(error-guidance-report).
+Section \@ref(page-identification-error-rate-results) presents the results found regarding our side research question for the page identification task. Section \@ref(information-extraction-error-rate-results) presents the results found regarding our side research question for the information extraction task. The detailed report can be found in the Appendix \@ref(error-guidance-report).
 
 ### Page identification {#page-identification-error-rate-results}
 

@@ -113,9 +113,9 @@ The difference in the precision scores for the \acr{regex} approach on synthetic
 
 ## Extraction with LLMs {#extraction-with-llms-real-tables}
 
-This section presents the results for the table extraction task performed with \acr{LLM}s on **Aktiva** tables. Subsection \@ref(real-table-extraction-results) compraes the performance of open source models on real tables. It also compares those results with the table extraction performance achieved with models by OpenAI.
+This section presents the results for the table extraction task performed with \acr{LLM}s on **Aktiva** tables. Section \@ref(real-table-extraction-results) compraes the performance of open source models on real tables. It also compares those results with the table extraction performance achieved with models by OpenAI.
 
-Subsection \@ref(synthetic-table-extraction) presents the results on synthetic **Aktiva** tables. Subsection \@ref(real-table-extraction-synth-context) shows a hybrid approach, where synthetic tables are used for the in-context learning, to extract real **Aktiva** tables. Finally, we summarize the results for all approaches in subsection \@ref(comparing-table-extraction-methods).
+Section \@ref(synthetic-table-extraction) presents the results on synthetic **Aktiva** tables. Section \@ref(real-table-extraction-synth-context) shows a hybrid approach, where synthetic tables are used for the in-context learning, to extract real **Aktiva** tables. Finally, we summarize the results for all approaches in Section \@ref(comparing-table-extraction-methods).
 
 -   confidence usable to head for user checks?
 -   not handled new entries

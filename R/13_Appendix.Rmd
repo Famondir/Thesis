@@ -288,7 +288,7 @@ df_table_detection_result <- table_detection_result_list %>%
 
 #### old classification with llm
 
-First experiments for the page identification task ran on a smaller dataset. The pages used for this setup are the pages, that are classified as target class by the regular expression approach. Without batch processing and the \acr{vllm} framework classifying these `r json_data$results %>% fromJSON() %>% nrow()` pages already takes very long. This motivated the test, if image detection models can be used for the page refinement by detecting tables. Subsection \@ref(yolo) shows the results of this attempt.
+First experiments for the page identification task ran on a smaller dataset. The pages used for this setup are the pages, that are classified as target class by the regular expression approach. Without batch processing and the \acr{vllm} framework classifying these `r json_data$results %>% fromJSON() %>% nrow()` pages already takes very long. This motivated the test, if image detection models can be used for the page refinement by detecting tables. Section \@ref(yolo) shows the results of this attempt.
 
 benchmark and n-shot base for llm classification (contrasts)
 

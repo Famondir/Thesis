@@ -179,8 +179,8 @@ Thus, the task is investigated based on two different input data formats
 In one case the \acr{LLM} is provided with text extracted from the
 beginning of the document. In the other case the \acr{LLM} is provided
 with the Markdown formatted version of the machine readable \acr{TOC}
-embedded in the document. Subsection \@ref(text-based-toc-understanding)
-shows the results for the text based approach. Subsection
+embedded in the document. Section \@ref(text-based-toc-understanding)
+shows the results for the text based approach. Section
 \@ref(code-based-toc-understanding) shows the results for the approach,
 using the embedded \acr{TOC}.
 
