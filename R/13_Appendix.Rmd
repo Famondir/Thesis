@@ -11,7 +11,7 @@ editor_options:
 ## Human in the loop application {#hitl}
 
 Using \acr{LLM}s has become a lot easier in the past years. *Python*
-frameworks as \acr{vllm} make it easy to deploy open-source models for
+frameworks as \acr{vllm} make it easy to deploy open-weight models for
 developers. *Open WebUI* allows us to set up a sophisticated chat bot UI
 with ease. *Dify* promises to create no-code \acr{AI} agents via a
 graphical flowchart. But the regular employee at \acr{RHvB} will just
@@ -151,13 +151,13 @@ data_text_extraction <- data_text_extraction %>%
   )
 ```
 
-All our experiments use the text extracted from PDF files. The available open-source libraries differ in their speed, quality of results and restrictiveness of licensing [@auerDoclingTechnicalReport2024 ]. We have tested multiple libraries in this thesis, because @auerDoclingTechnicalReport2024  published no quantitative results. The benchmark runs on the local machine described in section \@ref(local-machine). There are `r total_pages` pages to extract the text from.
+All our experiments use the text extracted from PDF files. The available open-source libraries differ in their speed, quality of results and restrictiveness of licensing [@auerDoclingTechnicalReport2024 ]. We have tested multiple libraries in this thesis, because @auerDoclingTechnicalReport2024  published no quantitative results. The benchmark runs on the local machine described in Section \@ref(local-machine). There are `r total_pages` pages to extract the text from.
 
 Table \@ref(tab:display-data-text-extraction) shows, that *pdfium* and *pymupdf* extract the text fastest. For implementation in a system where the text has to get extracted live or frequently the speed of the library might be paramount. Since the AGPL license of *pymupdf* might not be met with the application, that will be created for \acr{RHvB}, *pdfium* is an interesting candidate for the PDF parsing library to use.
 
 @auerDoclingTechnicalReport2024  reports, that *pdfium* occasionally merges text cells that are not close o each other, resulting in unrecoverable quality issues. Thus we checked some of the extracted texts manually and include the PDF extraction backend as a variable in our experiments. The page identification experiment, using the \acr{regex} approach, shows no effect of the text extraction library. In contrast, we find an effect in the later performed information extraction experiment on synthetic **Aktiva** tables with the \acr{regex} approach.
 
-Some examples for errorneous extracted texts with *pdfium* and *pdfminer* can be found in section \@ref(regex-extraction-mistakes).
+Some examples for errorneous extracted texts with *pdfium* and *pdfminer* can be found in Section \@ref(regex-extraction-mistakes).
 
 time to ocr 107 images with pdf2image and pytesseract: 1:28+11:41
 
@@ -357,7 +357,7 @@ In April 2025 there have been issues with running \acr{vllm} within the Python f
 
 Table \@ref(tab:llm-spped-mini-benchmark-table) shows that the experiments with \acr{vllm} run around four to five times faster. Processing the messages in a batched mode is six to seven times faster than using a looped approach. Thus, the change of the experimental setup from a *transformers* powered loop-based approach to a \acr{vllm} powered batched processing approach, increased the speed by 2500 %.
 
-This allows us to run the page identification benchmark on whole an nual reports, giving a sound estimate of the false positive rate (see section \@ref(llm-page-identification)). Previous experiments were only conducted on a subset of pages, that were selected based on the results of the *simple regex* approach (see section \@ref(regex-page-identification)).
+This allows us to run the page identification benchmark on whole an nual reports, giving a sound estimate of the false positive rate (see Section \@ref(llm-page-identification)). Previous experiments were only conducted on a subset of pages, that were selected based on the results of the *simple regex* approach (see Section \@ref(regex-page-identification)).
 
 ```{r llm-spped-mini-benchmark-table, echo=echo_flag, warning=warning_flag, message=message_flag}
 data_llm_speed <- data.frame(
@@ -919,7 +919,7 @@ Anhang
 
 ## Regular expressions {#regex-page-identification-code}
 
-Here one can find the three regular expressions used for the benchmarks presented in section \@ref(regex-page-identification).
+Here one can find the three regular expressions used for the benchmarks presented in Section \@ref(regex-page-identification).
 
 ```{python simple-regex-page-identification, eval=FALSE, class.source = 'fold-show'}
 simple_regex_patterns = {

@@ -16,15 +16,15 @@ However, several fundamental changes have occurred. First, the rate of informati
 
 At the same time, generative \acrfull{AI} is accelerating the creation of new information. Today, a single sentence in natural language can initiate the generation of an entire website or book. Recently, \acr{AI} agents have been developed that can autonomously react to digital or real-world triggers and generate content automatically. Combined with data produced by Internet of Things devices, the prediction that information could double every eleven hours [@ibmglobaltechnologyservicesToxicTerabyte2006] may already be a reality. This marks a second major shift: algorithms now generate, process, and share information as well.
 
-Despite these changes, much published information remains optimized for human consumption, such as in \acr{PDF} documents. Algorithms can process information efficiently, but only if it is machine-readable. Since manual encoding by humans is inefficient and error-prone, the field of information retrieval has emerged to address this challenge. \acr{LLM}s can assist in retrieving information — even in structured formats — that can be used by other algorithms in downstream tasks.
+Despite these changes, much published information remains optimized for human consumption, such as in \acrfull{PDF} documents. Algorithms can process information efficiently, but only if it is machine-readable. Since manual encoding by humans is inefficient and error-prone, the field of information retrieval has emerged to address this challenge. \acr{LLM}s can assist in retrieving information — even in structured formats — that can be used by other algorithms in downstream tasks.
 
-For older sources, this approach is often the only alternative. For future information sharing, however, a more direct solution exists: providing data in a machine-readable format from the outset. Otherwise, we continue to face the "Last Mile Problem" [@liAddressingLastMile2023]^[The "Last Mile Problem" is a term
-that originally symbolizes inefficiencies in the final stage of delivering goods or services to end-
-users. @liAddressingLastMile2023 use it to describe the difficulties that stakeholders face when analyzing \acr{PDF}-type financial Open Government Data.]. Since the format of received data can only be changed for information one owns, users must cope with the formats provided until the need for machine-readable data is recognized and addressed by data owners.
+For older sources, this approach is often the only alternative. For future information sharing, however, a more direct solution exists: providing data in a machine-readable format from the outset. Otherwise, we continue to face the "Last Mile Problem" [@liAddressingLastMile2023][^01_introduction-1]. Since the format of received data can only be changed for information one owns, users must cope with the formats provided until the need for machine-readable data is recognized and addressed by data owners.
+
+[^01_introduction-1]: The "Last Mile Problem" is a term that originally symbolizes inefficiencies in the final stage of delivering goods or services to end- users. @liAddressingLastMile2023 use it to describe the difficulties that stakeholders face when analyzing \acr{PDF}-type financial Open Government Data.
 
 Employees at \acr{RHvB} typically work with data supplied by other administrations and companies, which is rarely delivered in a machine-readable format. Therefore, we explore strategies to address the "Last Mile Problem" until all stakeholders in this process transition to modern data practices.
 
-Section \@ref(motivation) describes how the volume and format of information provided to the \acr{RHvB} present challenges for the audit process. Section \@ref(objectives) specifies these challenges as concrete real-world problems, from which we derive our research questions. Section \@ref(introduction-methodology) provides an overview of our methodology, and the thesis outline is presented in section \@ref(thesis-outline).
+Section \@ref(motivation) describes how the volume and format of information provided to the \acr{RHvB} present challenges for the audit process. Section \@ref(objectives) specifies these challenges as concrete real-world problems, from which we derive our research questions. Section \@ref(introduction-methodology) provides an overview of our methodology, and the thesis outline is presented in Section \@ref(thesis-outline).
 
 ## Motivation {#motivation}
 
@@ -40,9 +40,15 @@ Because the focus of each audit changes frequently, traditional rule-based appro
 
 The sixth division of the \acr{RHvB} is responsible for auditing companies in which Berlin is a shareholder (see Figure \@ref(fig:beteiligungsunternehmen)). As part of this process, they must analyze balance sheets and profit and loss statements, which are fundamental sources of information. This information is provided through the companies’ annual reports, typically in the form of \acr{PDF} files. Automating the extraction of this information would be an excellent starting point for \acr{AI}-assisted information retrieval from \acr{PDF}s at the \acr{RHvB}. This task is particularly well-suited for a thesis, as exporting financial data from the 59 companies is a recurring requirement.
 
+\setAELandscapeLayout
+\stopthumb
+
 ```{r beteiligungsunternehmen, echo=FALSE, out.width="100%", fig.cap="Overview of the 59 companies in which Berlin is a shareholder, including the percentage ownership for each company."}
 knitr::include_graphics("images/beteiligungsunternehmen.png")
 ```
+
+\setDefaultLayout
+\continuethumb
 
 The annual reports provided often differ from publicly available versions in terms of information granularity and design, and are treated as non-public information. For this thesis we use the publicly available versions to allow a comparison of open-weight models with OpenAIs \acr{GPT} models. We focus on open-weight models because the information in the non-public reports may be confidential. The "Berliner IKT-Richtlinie" prohibits processing such information in public clouds and encourages the use of open-source solutions.
 
@@ -68,7 +74,7 @@ cat("<ol class='rs-questions' style='--counter: 3;'><li>Can we use additional in
   \item Can we use additional information from the extraction process to guide the user on which values need to be checked and which can be trusted as they are?
 \end{enumerate}
 
-The following section briefly describes our methodology for investigating these research questions. The corresponding hypotheses are formulated in section \@ref(research-questions).
+The following section briefly describes our methodology for investigating these research questions. The corresponding hypotheses are formulated in Section \@ref(research-questions).
 
 ## Methodology {#introduction-methodology}
 

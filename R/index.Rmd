@@ -41,7 +41,8 @@ output:
         - report_misc/code_folding.html
 css: "report_misc/style.css"
 documentclass: book
-bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
+# bibliography: ["report_misc/DS 4th: Extracting financial data from annual reports.bib"]
+bibliography: ["report_misc/My Library.bib"]
 biblio-style: apa
 link-citations: yes
 csl: report_misc/apa-single-spaced.csl
@@ -112,15 +113,15 @@ std_dev <- knitr::is_html_output() ? 'png' : 'pdf'
 
 ## Abstract {.unlisted .unnumbered}
 
-This thesis presents a comprehensive benchmark of information extraction from annual reports of German companies, focusing on the use of large language models (LLMs) to automate the retrieval of financial data from unstructured PDF documents. The study addresses two core challenges: identifying relevant pages containing financial tables and accurately extracting hierarchical tabular data for integration into relational databases.
+This thesis presents a comprehensive benchmark of information extraction from annual reports of German companies, focusing on the use of \acr{LLM}s to automate the retrieval of financial data from unstructured PDF documents. The study addresses two core challenges: identifying relevant pages containing financial tables and accurately extracting hierarchical tabular data for integration into relational databases.
 
-Multiple open-weight LLMs are evaluated using diverse prompting strategies and compared to alternative methods such as regular expressions and term-frequency approaches. The work builds on and extends previous research by applying these techniques to German-language documents and open-weight models.
+Multiple open-weight \acr{LLM}s are evaluated using diverse prompting strategies and compared to alternative methods such as regular expressions and term-frequency approaches. The work builds on and extends previous research by applying these techniques to German-language documents and open-weight models.
 
-Results demonstrate that (even smaller) LLMs can reliably locate and extract financial information, supporting efficient audit processes. The findings highlight the potential of combining LLMs with rule-based methods to improve computational efficiency, and outline a practical workflow for a human-in-the-loop application for information extraction in regulatory and financial domains.
+Results demonstrate that (even smaller) \acr{LLM}s can reliably locate and extract financial information, supporting efficient audit processes. The findings highlight the potential of combining \acr{LLM}s with rule-based methods to improve computational efficiency, and outline a practical workflow for a human-in-the-loop application for information extraction in regulatory and financial domains.
 
 ## Zusammenfassung {.unlisted .unnumbered}
 
-Diese Arbeit präsentiert die Ergebnisse eines umfassenden Benchmarks von Methoden zur Extraktion von Informationen aus deutschen Jahresabschlussberichten. Wir legen den Fokus unserer Untersuchung auf die Nutzung von LLMs (*große Sprachmodelle*) für die Automatisierung des Auslesens von Finanzdaten aus unstrukturierten \acr{PDF} Dokumenten.
+Diese Arbeit präsentiert die Ergebnisse eines umfassenden Benchmarks von Methoden zur Extraktion von Informationen aus deutschen Jahresabschlussberichten. Wir legen den Fokus unserer Untersuchung auf die Nutzung von \acr{LLM}s (*große Sprachmodelle*) für die Automatisierung des Auslesens von Finanzdaten aus unstrukturierten \acr{PDF} Dokumenten.
 
 Die Arbeit verfolgt zwei Hauptziele: das Identifizieren relevanter Seiten und das Extrahieren numerischer Werte aus hierarchischen tabellenartigen Strukturen. Dabei wird ein Format der extrahierten Daten sichergestellt, das das Einlesen in eine relationale Datenbank erlaubt.
 
@@ -128,7 +129,7 @@ Die Performanz mehrerer open-weight \acr{LLM}s wird über verschiedene Prompting
 
 Die Ergebnisse zeigen, dass (auch kleinere) Sprachmodelle zuverlässlich Kennzahlen aus dem Finanzwesen lokalisieren und extrahieren und so die Prüfungstätigkeiten effizient unterstützen können. Die Ergebnisse zeigen Potential auf, \acr{LLM}s mit regelbasierten Methoden zu kombinieren, um die Effizienz der Informationslokalisation zu erhöhen. Wir skizzieren ein \acr{HITL}-basiertes Software-System für die Informationsextraktion im Bereich der Finanzkontrolle.
 
-## Reading advices {.unlisted .unnumbered}
+## Reading Advices {.unlisted .unnumbered}
 
 We recommend to read the thesis in its [digital gitbook version](https://famondir.github.io/Thesis/) instead of the PDF version. Furthermore, the author recommends to read the thesis (any version) on a screen that is larger than 21" and has at least full HD resolution. The more, the merrier.
 
@@ -144,9 +145,9 @@ Additionally, GPT-4.1 was used to enhance the clarity and quality of language th
 
 ## Personal Goals and Learnings {.unlisted .unnumbered}
 
-Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats — a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large language models (LLMs), including leveraging restricted decoding to generate results suitable for downstream tasks.
+Several key goals were accomplished during this thesis. Notably, I succeeded in producing the thesis with bookdown in both PDF and HTML formats — a milestone I had already set during my previous PhD attempt in 2019. I also became familiar with creating Docker images and orchestrating jobs within a Kubernetes cluster. I gained practical experience in using large \acr{LLM}s, including leveraging restricted decoding to generate results suitable for downstream tasks.
 
-There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an LLM model, training a small encoder-only model from scratch, and applying visual LLMs for document parsing.
+There were, however, some areas I was interested in exploring further but could not pursue due to time constraints. These include learning to set up and administer a Kubernetes cluster independently, fine-tuning an \acr{LLM} model, training a small encoder-only model from scratch, and applying visual \acr{LLM}s for document parsing.
 
 ## Dedication {.unlisted .unnumbered}
 

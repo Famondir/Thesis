@@ -159,7 +159,7 @@ Other strategies include beam search, which maintains multiple candidate sequenc
 
 @boseakEvaluatingLogLikelihoodConfidence2025 investigate the use of log probabilities to score multiple-choice answers. They demonstrate that the sum of log probabilities contains valuable information about model confidence, but its proper use is nuanced. The decision to use either the raw sum or a length-normalized sum of log probabilities can noticeably affect accuracy, and they offer no general recommendation. @maEstimatingLLMUncertainty2025 argue that normalizing probability scores is one reason probability-based methods may fail to identify reliability.
 
-@kangScalableBestofNSelection2025 compare various potential measures for a \acr{LLM}'s confidence in best-of-N selection tasks. The simplest approach uses the normalized log probabilities of the returned tokens. The negative exponent of this normalized sum is known as perplexity, which is widely used in LLM evaluations, although it has been shown to be insufficient for capturing a model's ability to understand long context. Nevertheless, @kangScalableBestofNSelection2025 show that perplexity can perform as well as more sophisticated confidence measures for up to 16 choices.
+@kangScalableBestofNSelection2025 compare various potential measures for a \acr{LLM}'s confidence in best-of-N selection tasks. The simplest approach uses the normalized log probabilities of the returned tokens. The negative exponent of this normalized sum is known as perplexity, which is widely used in \acr{LLM} evaluations, although it has been shown to be insufficient for capturing a model's ability to understand long context. Nevertheless, @kangScalableBestofNSelection2025 show that perplexity can perform as well as more sophisticated confidence measures for up to 16 choices.
 
 @kaufLogProbabilitiesAre2024 investigate whether log probabilities can be used to measure the semantic plausibility of sentences. They compare pairs of similar sentences, where one described a plausible scenario and the other an unlikely one. Their results show that comparing the sum of returned log probabilities for two sentences yields better results for semantic plausibility than prompting the model to make this decision explicitly.
 
@@ -171,7 +171,7 @@ One year later, @radfordLanguageModelsAre2019 demonstrated with GPT-2 that scali
 
 GPT-3 was released in 2020 by @brownLanguageModelsAre2020 and introduced the technique of *in-context learning* (see Section \@ref(in-context-learning)), demonstrating that large decoder-only transformers can generalize to new tasks even without extensive fine-tuning. GPT-3 contains 175 billion parameters.
 
-### Generation enhancing methods with LLMs {#llm-methods}
+### Generation-Enhancing Methods with LLMs {#llm-methods}
 
 #### In-context Learning
 
@@ -354,6 +354,6 @@ This chapter highlighted recent architectures for \acr{LLM}s, such as Mixture-of
 
 The review underscored the importance of explainability in machine learning, particularly through frameworks like SHAP, and discussed visualization techniques such as boxplots and violin plots for understanding data distributions.
 
-The methods and concepts discussed directly inform the thesis's approach to extracting financial information from unstructured documents. By presenting advanced LLM architectures and explainability tools, this chapter establishes a foundation for the experimental strategies and evaluation criteria employed throughout the thesis.
+The methods and concepts discussed directly inform the thesis's approach to extracting financial information from unstructured documents. By presenting advanced \acr{LLM} architectures and explainability tools, this chapter establishes a foundation for the experimental strategies and evaluation criteria employed throughout the thesis.
 
 Building on these insights, the following chapter details the methodology adopted for applying and evaluating these techniques in the context of financial report analysis, thereby setting the stage for the experimental investigations and results.

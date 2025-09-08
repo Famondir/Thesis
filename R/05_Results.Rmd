@@ -249,7 +249,7 @@ df_df_page_identification_comparing_performance_formatted %>%
 Llama 4 Scout reaches the best F1 score for the target types **Akiva** and **Passiva** in the multi-class classification approach. For **GuV** the best F1 score (0.985) is found with Ministral-8B-Instruct in the binary classification approach. Llama 4 Scout reaches a F1 score of 0.971 for target type **GuV** and multi-class classification.
 :::
 
-In the dataset preparation for the table extraction task (see section \@ref(information-extraction-data-sampling)) 107 **Aktiva** pages have been selected. In this manual process we made two mistakes, accidently selecting one **Passiva** and one **GuV** page. Thus the human baseline to compete with is 0.981. Thus, Llama 4 Scout is more precise than us.
+In the dataset preparation for the table extraction task (see Section \@ref(information-extraction-data-sampling)) 107 **Aktiva** pages have been selected. In this manual process we made two mistakes, accidently selecting one **Passiva** and one **GuV** page. Thus the human baseline to compete with is 0.981. Thus, Llama 4 Scout is more precise than us.
 
 Furthermore, Llama 4 Scout reaches a recall of 1.0 for all target types. This means, the results can be used downstream, even though the precision is not always perfect. The pages classified as target can be double checked by a human, without missing any page.
 
@@ -273,7 +273,7 @@ df_df_page_identification_comparing_performance_formatted %>%
 ::: paragraph-start
 ##### Energy usage and runtime
 
-Table \@ref(tab:page-identification-efficiency-overview-all) shows the runtime in seconds per document, estimated energy consumption in Joule per document and costs in **CENTS per 1000 documents**. The runtime for the \acr{LLM}s was normalized to seconds on a NVIDIA B200 and thus the \acr{TDP} of 700 W is used to calculate the energy consumption. For the other approaches, running on a laptop (see section \@ref(local-machine)) a \acr{TDP} of 28 Watts is used. For manual work by a human additional 60 W are added for the screen used. It is assumed that the \acr{LLM} is hosted locally.
+Table \@ref(tab:page-identification-efficiency-overview-all) shows the runtime in seconds per document, estimated energy consumption in Joule per document and costs in **CENTS per 1000 documents**. The runtime for the \acr{LLM}s was normalized to seconds on a NVIDIA B200 and thus the \acr{TDP} of 700 W is used to calculate the energy consumption. For the other approaches, running on a laptop (see Section \@ref(local-machine)) a \acr{TDP} of 28 Watts is used. For manual work by a human additional 60 W are added for the screen used. It is assumed that the \acr{LLM} is hosted locally.
 :::
 
 ```{r page-identification-efficiency-overview-all, echo=echo_flag, warning=warning_flag, message=message_flag, results='asis'}
@@ -500,7 +500,7 @@ tribble(
 ::: paragraph-start
 ##### Runtime
 
-Extracting the values from all 106 tables took Qwen3-235B around six minutes. Thus, excluding the setup time for the LLM, Qwen3-235B-A22B-Instruct is around 100 times faster than a human.
+Extracting the values from all 106 tables took Qwen3-235B around six minutes. Thus, excluding the setup time for the \acr{LLM}, Qwen3-235B-A22B-Instruct is around 100 times faster than a human.
 :::
 
 ::: paragraph-start

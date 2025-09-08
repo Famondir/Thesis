@@ -75,7 +75,7 @@ But we assume the difference in the perfromance is caused by a different fine-tu
 ::: paragraph-start
 ##### Conclusion
 
-In summary, our findings demonstrate that LLMs are highly effective for page identification in financial reports, consistently outperforming human benchmarks and traditional rule-based methods. The combination of LLMs with term frequency-based approaches further enhances efficiency, enabling rapid narrowing of candidate pages while maintaining high recall.
+In summary, our findings demonstrate that \acr{LLM}s are highly effective for page identification in financial reports, consistently outperforming human benchmarks and traditional rule-based methods. The combination of \acr{LLM}s with term frequency-based approaches further enhances efficiency, enabling rapid narrowing of candidate pages while maintaining high recall.
 :::
 
 Model selection and prompting strategies play a significant role in optimizing performance, with in-context learning using relevant examples yielding the best results. These insights provide a strong foundation for developing robust, scalable solutions for automated document analysis in audit and regulatory contexts.
@@ -175,11 +175,11 @@ The features, that show an noticeable importance value most often, are:
 4.  *n_examples*
 5.  *T_in_previous_year*
 
-We can determine an effect direction for the features *parameter_count*, *n_examples* and *T_in_previous_year*. More parameters and more examples are beneficial. The only exception for this is found for the model Llama 4 Maverick. We discuss this case in section \@ref(context-rot). The performance gain gets smaller comparing experiments with three and more provided examples. The prompting strategies *n_random_examples* and *top_n_rag_examples* perform best.
+We can determine an effect direction for the features *parameter_count*, *n_examples* and *T_in_previous_year*. More parameters and more examples are beneficial. The only exception for this is found for the model Llama 4 Maverick. We discuss this case in Section \@ref(context-rot). The performance gain gets smaller comparing experiments with three and more provided examples. The prompting strategies *n_random_examples* and *top_n_rag_examples* perform best.
 
 The method specific feature *respect_units* shows meaningful importance for evaluating synthetic tables. Its effect has opposite direction to our assumption. For the hybrid approach it has a small importance, but with an effect direction matching our assumption. We discuss this in the next paragraph.
 
-With the synthetic tables, we also find that \acr{HTML} and Markdown are a *input_format* that yield better results. We show in section \@ref(alternative-input-formats-extraction), that we do not find these benefits for processing real tables from (imperfect) Markdown input.
+With the synthetic tables, we also find that \acr{HTML} and Markdown are a *input_format* that yield better results. We show in Section \@ref(alternative-input-formats-extraction), that we do not find these benefits for processing real tables from (imperfect) Markdown input.
 
 ::: paragraph-start
 ##### Interpretations
@@ -213,7 +213,7 @@ In contrast, the hybrid approach experiments always compare the extracted values
 We failed to reflect the *header_span* and *text_around* characteristics, during the creation of the synthetic \acr{HTML} and Markdown tables. Thus, we can not evaluate the propsed interaction effects with *input_format* for those features. But we find no big importance for *header_span* in any experiment.
 :::
 
-We also did not include an indicator, if \acr{icexs} are used, as a method related feature. We show, that this matters in section \@ref(same-company-evaluation).
+We also did not include an indicator, if \acr{icexs} are used, as a method related feature. We show, that this matters in Section \@ref(same-company-evaluation).
 
 ::: paragraph-start
 ##### Unexpected results
@@ -430,7 +430,7 @@ Table \@ref(tab:information-extraction-compare-same-company-examples-qwen235) sh
 ::: paragraph-start
 ##### Hybrid approach
 
-We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see section \@ref(hybrid-learn-respect-units)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
+We tested the influence of providing examples, that show how to perform the numeric transformation, together with an explicit instruction to do so, in the hybrid approach (see Section \@ref(hybrid-learn-respect-units)). The hybrid approach uses synthetic tables as examples for extracting information from real examples. We show, that Qwen3-235B is capable to learn how to extract numeric values respecting the currency unit and is able to transfer this knowledge from examples with two columns with *T€* to tables that only have one column with *T€*. This transfer is not possible for all models, e.g. not for Ministral-8B. We also find models that over generalize this pattern and achieve worse performance for extraction subjects without *T€* as currency unit — i.e. Qwen3-8B.
 :::
 
 We also see in our hybrid approach experiments, that the benefit of providing real tables as examples instead of synthetic ones is larger for extracting the numeric values than for matching the labels. Comparing Figure \@ref(fig:compare-real-table-extraction-by-context-type-numeric) and Figure \@ref(fig:compare-real-table-extraction-by-context-type-F1) shows that \acr{LLM}s yield good results for predicting *null* more consistently than extracting the correct numeric value when synthetic tables are provided as in-context learning examples.
@@ -551,7 +551,7 @@ Meta claims that Llama 4 Maverick has a context length 1 M (Llama 4 Scout even 1
 Figure \@ref(fig:bar-plot-maverick-binary) shows the amount of correct (matching) and incorrect classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. One can see, that the *n_rag_example* strategy starts predicting the target class too often with increased number of examples. This behavior is not observed for the *n_random_examples* strategy.
 :::
 
-```{r bar-plot-maverick-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the amount of correct classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. With increased number of examples the n-rag-example strategy starts predicting the target class too often."}
+```{r bar-plot-maverick-binary, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Comparing the amount of correct classifications by Llama 4 Maverick for the binary classification tasks ordered by target type and method. With increased number of examples the n-rag-example strategy starts predicting the target class too often.", fig.height=4}
 df_rot_binary <- df_binary %>% 
   filter(
     str_detect(model, "Mav"), 
@@ -804,7 +804,7 @@ In summary, combining term frequency-based page refinement with \acr{LLM}-driven
 
 While limitations exist when relevant information is sparse or embedded in non-tabular text, integrating visual table detection and retrieval-augmented strategies can address these challenges.
 
-Regarding energy usage and runtime, our analysis demonstrates that smaller LLMs such as Ministral-8B-Instruct provide a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable. Factoring in hardware, cloud computing, and personnel costs, automated LLM-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before LLM classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
+Regarding energy usage and runtime, our analysis demonstrates that smaller \acr{LLM}s such as Ministral-8B-Instruct provide a highly efficient solution for multi-class page identification, outperforming manual methods in speed and energy consumption. While manual identification remains less resource-intensive, it is significantly slower and less scalable. Factoring in hardware, cloud computing, and personnel costs, automated \acr{LLM}-based approaches offer substantial economic advantages, especially for large-scale document processing. Prioritizing page range refinement before \acr{LLM} classification further optimizes resource use, making the system both cost-effective and environmentally responsible.
 
 ### Information extraction {#alternative-input-formats-extraction}
 
@@ -960,7 +960,7 @@ Furthermore, we intend to request annual reports in \acr{XBRL} format. Since 201
 
 ## Summary
 
-This chapter critically evaluated the performance, limitations, and practical implications of \{LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection, and thorough ground truth validation.
+This chapter critically evaluated the performance, limitations, and practical implications of {LLM}s and term frequency-based approaches for page identification and information extraction in financial documents. The error analysis highlighted strengths and weaknesses of both methods, emphasizing the importance of robust schema design, careful example selection, and thorough ground truth validation.
 
 Practical recommendations are provided for system implementation, including the integration of \acr{HITL} workflows, energy and cost considerations, and strategies for expanding the system to new use cases. Ethical and computational constraints are discussed, with attention resource requirements and the impact of automation on the workforce.
 

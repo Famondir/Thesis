@@ -59,7 +59,7 @@ In each frame there are two groups of two box-plots. The left group is showing t
 
 Figure \@ref(fig:table-extraction-regex-performance) shows, that the \acr{regex} approach performs better[^10_information_extraction-1] on the synthetic tables compared to the real tables. Even though, the performance is not perfect and more consistent on the text extracted with *pymupdf* compared to *pdfium*. In contrast, the used text extraction library has no noticeable influence on the real **Aktiva** tables.
 
-[^10_information_extraction-1]: A comparison of the numeric values over all methods can be found in section \@ref(comparing-table-extraction-methods).
+[^10_information_extraction-1]: A comparison of the numeric values over all methods can be found in Section \@ref(comparing-table-extraction-methods).
 
 ```{r table-extraction-regex-performance, echo=echo_flag, warning=warning_flag, message=message_flag, out.width="100%", dev=std_dev, fig.cap="Performance overall and on numeric value extraction with regular expressions."}
 p1 <- df_table_extraction_regex %>%
@@ -109,7 +109,7 @@ table_extraction_regex_baseline_medians %>% mutate(
 ) %>% kbl(caption = "Summarizing the median performance of the regex approaches for the real and synthetic table extracion task.")
 ```
 
-The difference in the precision scores for the \acr{regex} approach on synthetic tables is discussed in section \@ref(regex-synth-backend-discussion).
+The difference in the precision scores for the \acr{regex} approach on synthetic tables is discussed in Section \@ref(regex-synth-backend-discussion).
 
 ## Extraction with LLMs {#extraction-with-llms-real-tables}
 
@@ -330,7 +330,7 @@ Figure \@ref(fig:table-extraction-llm-f1-gpt-slice) shows the distribution of F1
 
 One can find the full plots in Figures \@ref(fig:table-extraction-llm-performance-total-gpt), \@ref(fig:table-extraction-llm-performance-numeric-gpt) and \@ref(fig:table-extraction-llm-f1-gpt)).
 
-We were not able to get OpenAI's models to stick to the provided \acr{json} schema strictly. Passing the \acr{ebnf} grammar did not work at all. This means that with gpt-4.1-nano there have been `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-4.1-nano") %>% nrow()` predictions that have been completely empty. For gpt-5-nano we find `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-5-nano") %>% nrow()` such predictions. Figure \@red(fig:table-extraction-llm-prediction-count-gpt) shows the distribution of responses with a wrong number of predictions (including *null* and numeric predictions). Overall there have been `r perc_wrong_prediction_count` % of the responses of OpenAI's models that were compatible with the schema but had a wrong number of rows predicted. The maximum number of returned values (by gpt-5-nano) is 714.
+We were not able to get OpenAI's models to stick to the provided \acr{json} schema strictly. Passing the \acr{ebnf} grammar did not work at all. This means that with gpt-4.1-nano there have been `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-4.1-nano") %>% nrow()` predictions that have been completely empty. For gpt-5-nano we find `r df_overview_gpt %>% filter(n_predicted_values == 0, model == "gpt-5-nano") %>% nrow()` such predictions. Figure \@ref(fig:table-extraction-llm-prediction-count-gpt) shows the distribution of responses with a wrong number of predictions (including *null* and numeric predictions). Overall there have been `r perc_wrong_prediction_count` % of the responses of OpenAI's models that were compatible with the schema but had a wrong number of rows predicted. The maximum number of returned values (by gpt-5-nano) is 714.
 
 Using gpt-5-chat for the table extraction task with structured output is not working, returning an error informing that a *json_schema* can't be used with this model. Figure \@ref(fig:table-extraction-llm-errors-gpt) shows, where other models produced an answer that could not be parsed as valid \acr{json}.Most errors occured for gpt-oss-20B and the *static_example* method. Over half of all tables could not be transcripted in \acr{json} with in the 40_000 response token limit[^10_information_extraction-5]. Only with gpt-5-mini we had no \acr{json} parsing error.
 
@@ -599,7 +599,7 @@ This results in `r n_synth_tables` tables. A sample of 10 % is used for the extr
 ::: paragraph-start
 ##### Extraction task overview
 
-For the table extraction task with synthetic **Aktiva** tables `r length(unique(df_synth_table_extraction$model))` open source models from `r length(unique(df_synth_table_extraction$model_family))` model families have been benchmarked. There have been the same seven methods tested with each \acr{LLM} as described in section \@ref(extraction-with-llms-real-tables). Each method was used twice, because in one trial the \acr{LLM} is prompted to respect the currency units and in the other trail it is not.
+For the table extraction task with synthetic **Aktiva** tables `r length(unique(df_synth_table_extraction$model))` open source models from `r length(unique(df_synth_table_extraction$model_family))` model families have been benchmarked. There have been the same seven methods tested with each \acr{LLM} as described in Section \@ref(extraction-with-llms-real-tables). Each method was used twice, because in one trial the \acr{LLM} is prompted to respect the currency units and in the other trail it is not.
 :::
 
 This results in `r n_synth_table_extraction` files, that hold the results of 4_915 table extractions each. For the investigation of potential predictors influences the random forest is generated with a sample of 50_000 of these 68_810 results and finally, the \acr{SHAP} values are calculated with 2_000 rows of data.

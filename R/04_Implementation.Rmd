@@ -18,8 +18,7 @@ By documenting the technical decisions and solutions adopted, this chapter provi
 
 All computations for this thesis are conducted in two distinct environments. Tasks that do not require a \acr{GPU} are executed locally; the specifications of the local device are provided in Appendix \@ref(local-machine). Tasks necessitating a \acr{GPU} are performed on the [Datexis](https://prof.bht-berlin.de/loeser) Kubernetes cluster.
 
-We perform prototyping for most tasks on the cluster as well. Therefore, an interactive docker image with \acr{SSH} capabilities and Python has been created based on the \acr{vllm}
-docker image. In rare cases a \acr{vllm} server is deployed on the cluster and queried from the local machine.
+We perform prototyping for most tasks on the cluster as well. Therefore, an interactive docker image with \acr{SSH} capabilities and Python has been created based on the \acr{vllm} docker image. In rare cases a \acr{vllm} server is deployed on the cluster and queried from the local machine.
 
 The experiments use the same images as the prototyping environment and connect to a persistent volume, where the scripts to run and data(bases) to use are located. It saves the results on the persistent volume, too. We fill 5 TB of persistent storage. Most of the space is used for caching the \acr{LLM}s safetensors.
 
@@ -50,7 +49,7 @@ This section describes the ground truth creation process in detail. It describes
 ::: paragraph-start
 ##### Page identification
 
-We search for the target pages in the chosen documents either by using the search functionality, the \acr{TOC} or by scrolling through all pages. For each target page the filepath, page and type is listed in a \acr{csv} file. In some reports we find multiple pages for a single target type. In this case, all pages are added to the ground truth. Sometimes the **Aktiva** and **Passiva** table are on a single page. In this case a single entry is made and its type is noted as  *Aktiva&Passiva*. If a single table spans two pages, both pages are recorded. We created 252 entries, excluding all pages that need \acr{OCR} processing.
+We search for the target pages in the chosen documents either by using the search functionality, the \acr{TOC} or by scrolling through all pages. For each target page the filepath, page and type is listed in a \acr{csv} file. In some reports we find multiple pages for a single target type. In this case, all pages are added to the ground truth. Sometimes the **Aktiva** and **Passiva** table are on a single page. In this case a single entry is made and its type is noted as *Aktiva&Passiva*. If a single table spans two pages, both pages are recorded. We created 252 entries, excluding all pages that need \acr{OCR} processing.
 :::
 
 For double checking, all identified pages are extracted from their original PDF files and combined in a single file. Thus, problems with the numbers shown in the PDF viewer and the actual page number in the file are identified and resolved. We inspect pages that are classified as target by multiple models in the first experiments. Thus, we identify additional target tables, that span two pages.
@@ -121,7 +120,7 @@ df_targets_no_ocr %>% render_table(
   )
 ```
 
-```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used."}
+```{r document-base-page-identification, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the number of pages (bar height) and number of documents (number above the bar) per company for the data used for the page identification task. Some documents would require ocr before being processed and were not used.", out.width="80%"}
 df_pages %>% group_by(company) %>% mutate(
   docs_per_company = n(), pages_per_company = sum(pages)
   ) %>% 
@@ -219,7 +218,7 @@ To make the runtime of different \acr{LLM}s running on different amounts and typ
 
 The classification time with Qwen2.5-32B on \acr{GPU}s of type B200 is a little faster than running Qwen2.5-7B on the same amount of A100 \acr{GPU}s. We calculate normalized runtimes for our experiments, based on these runtime measures for small and larger \acr{LLM}s on different types and numbers of \acr{GPU}s. One minute of computation on a single B200 is comparable to 4:30 minutes of computation on a single A100.
 
-```{r gpu-benchmark-plot, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning."}
+```{r gpu-benchmark-plot, echo=echo_flag, warning=warning_flag, message=message_flag, dev=std_dev, fig.cap="Showing the runtime to classify 100 pages with the multi-class approach, providing three random examples for the in-context learning.", fig.height=3}
 df_gpu_benchmark <- read_csv("../benchmark_jobs/page_identification/gpu_benchmark/gpu_factors.csv")
 
 df_gpu_benchmark %>% ggplot(aes(x = gpu_number, y = runtime_in_s, color = gpu_type)) + geom_line(aes(linetype = model_name)) + geom_point()
