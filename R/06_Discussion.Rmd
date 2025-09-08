@@ -179,7 +179,7 @@ We can determine the direction of effect for *parameter_count*, *n_examples*, an
 
 The method-specific feature *respect_units* is important for evaluating synthetic tables, but its effect is opposite to our initial assumption. For the hybrid approach, it has a small importance, but the effect direction matches our assumption. This is discussed in the next paragraph.
 
-For synthetic tables, we also find that \acrfull{HTML} and Markdown as *input_format* yield better results. Section \@ref(alternative-input-formats-extraction) shows that these benefits do not extend to processing real tables from (imperfect) Markdown input.
+For synthetic tables, we also find that \acr{HTML} and Markdown as *input_format* yield better results. Section \@ref(alternative-input-formats-extraction) shows that these benefits do not extend to processing real tables from (imperfect) Markdown input.
 
 ::: paragraph-start
 ##### Interpretations
@@ -874,7 +874,7 @@ This section briefly outlines topics that were not addressed within the scope of
 ::: paragraph-start
 ##### Table Extraction and Document Parsing
 
-Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution; however, its performance was unsatisfactory—particularly for tables without borders, where it frequently failed to correctly identify rows and columns.
+Classical libraries and modern machine learning models are available for table extraction from documents. We evaluated *tabula* as a traditional solution; however, its performance was unsatisfactory — particularly for tables without borders, where it frequently failed to correctly identify rows and columns.
 :::
 
 We were unable to implement more recent models for this task, such as visual \acr{LLM}s. Although promising results have been reported for these approaches, user-friendly implementations for *transformers* or *vLLM* remain limited. Notably, our method performed well using basic text extraction, so we did not pursue more advanced extraction tools or models further.
@@ -914,7 +914,7 @@ A \acr{UX} design study has not yet been conducted. Such a study could be valuab
 ::: paragraph-start
 ##### Advanced Prompting Techniques
 
-Advanced prompting strategies, such as Chain-of-Thought, ReAct, or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, further investment in advanced prompt template development is not recommended at this stage.
+Advanced prompting strategies, such as Chain-of-Thought, ReAct or Self-Consistency [@PromptEngineeringGuide], encourage step-by-step reasoning and deeper effort. However, given the strong performance already achieved and initial signs of context rot, further investment in advanced prompt template development is not recommended at this stage.
 :::
 
 ## Ethical & Practical Considerations {#ethics}

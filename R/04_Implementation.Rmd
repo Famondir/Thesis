@@ -49,22 +49,22 @@ This section provides a detailed account of the ground truth creation process, i
 ::: paragraph-start
 ##### Page Identification
 
-We identify target pages in the selected documents using the search function, the \acrfull{TOC}, or by manually scrolling through all pages. For each target page, the file path, page number, and type are recorded in a \acrfull{csv} file. In some reports, multiple pages correspond to a single target type; in these cases, all relevant pages are included in the ground truth. Occasionally, the **Aktiva** and **Passiva** tables appear on the same page, resulting in a single entry labeled *Aktiva&Passiva*. If a table spans two pages, both are documented. In total, we created 252 entries, excluding pages requiring \acrfull{OCR} processing.
+We identify target pages in the selected documents using the search function, the \acrfull{TOC} or by manually scrolling through all pages. For each target page, the file path, page number and type are recorded in a \acrfull{csv} file. In some reports, multiple pages correspond to a single target type; in these cases, all relevant pages are included in the ground truth. Occasionally, the **Aktiva** and **Passiva** tables appear on the same page, resulting in a single entry labeled *Aktiva&Passiva*. If a table spans two pages, both are documented. In total, we created 252 entries, excluding pages requiring \acrfull{OCR} processing.
 :::
 
-To ensure accuracy, all identified pages are extracted from their original PDF files and compiled into a single document. This process helps resolve discrepancies between the page numbers displayed in the PDF viewer and the actual file page numbers. We also review pages classified as targets by multiple models in initial experiments, which allows us to identify additional target tables spanning two pages.
+To ensure correctness, all identified pages are extracted from their original PDF files and compiled into a single document. This process helps resolve discrepancies between the page numbers displayed in the PDF viewer and the actual file page numbers. We also review pages classified as targets by multiple models in initial experiments, which allows us to identify additional target tables spanning two pages.
 
-In an earlier sample, we catalogued all pages containing any type of table. This subset includes all pages classified as containing **Aktiva**, **Passiva**, or **GuV** tables using the \acrfull{regex} approach, encompassing both true and false positives. This ground truth supports the evaluation of various Python libraries, \acr{LLM}s, and visual models for table detection. Results are presented in the Appendix \@ref(table-detection-benchmark).
+In an earlier sample, we catalogued all pages containing any type of table. This subset includes all pages classified as containing **Aktiva**, **Passiva** or **GuV** tables using the \acrfull{regex} approach, encompassing both true and false positives. This ground truth supports the evaluation of various Python libraries, \acr{LLM}s and visual models for table detection. Results are presented in the Appendix \@ref(table-detection-benchmark).
 
 ::: paragraph-start
 ##### Information Extraction
 
-Numeric values are manually transcribed from the annual reports into \acr{csv} files, with thousands separators and decimal delimiters standardized. Values are multiplied by 1,000 if the corresponding column specifies a currency unit. The \acr{csv} files are prefilled with all entities defined in the legal text, identified by their complete hierarchy.
+Numeric values are manually transcribed from the annual reports into \acr{csv} files, with thousands separators and decimal delimiters standardized. Values are multiplied by 1_000 if the corresponding column specifies a currency unit. The \acr{csv} files are prefilled with all entities defined in the legal text, identified by their complete hierarchy.
 :::
 
 Occasionally, a single line in the legal text is split into multiple lines in the annual reports. In such cases, the sum is entered into the most appropriate row in the \acr{csv} file. Entities that do not match any in the legal text are omitted. In the first iteration, the \acr{csv} files are not prefilled with numeric values.
 
-In the second iteration, the \acr{csv} files include predictions from Qwen3-235B. We review these values, highlight errors, correct inaccuracies, and log all identified mistakes. This iteration also involves re-examining the ground truth from the first round to uncover earlier errors.
+In the second iteration, the \acr{csv} files include predictions from Qwen3-235B. We review these values, highlight errors, correct inaccuracies and log all identified mistakes. This iteration also involves re-examining the ground truth from the first round to uncover earlier errors.
 
 Additionally, we developed an algorithm to generate synthetic **Aktiva** tables with systematically varied characteristics. This enables experiments investigating these features as potential predictors of extraction performance and allows estimation of an upper bound for extraction accuracy with real **Aktiva** tables.
 
@@ -156,10 +156,10 @@ new_doc_base <- readRDS("data_storage/real_table_extraction_extended_llm.rds") %
 ::: paragraph-start
 ##### Information Extraction {#information-extraction-data-sampling}
 
-Transcribing all values from a \acr{PDF} document into a \acr{csv} file can take up to 12 minutes per table, with a maximum of 40 values to copy, format, or enter manually. Beyond this manual process, conceptual decisions are sometimes required to match values to the strict schema. Occasionally, values must be omitted if no suitable row exists, or multiple values must be summed to fit the predefined schema.
+Transcribing all values from a \acr{PDF} document into a \acr{csv} file can take up to 12 minutes per table, with a maximum of 40 values to copy, format or enter manually. Beyond this manual process, conceptual decisions are sometimes required to match values to the strict schema. Occasionally, values must be omitted if no suitable row exists, or multiple values must be summed to fit the predefined schema.
 :::
 
-This manual process is completed for `r old_doc_base %>% nrow()` documents. We include a single **Aktiva** table from each company reporting the balance sheet at the granularity required by our schema. Additional documents from *Amt für Statistik und Brandenburg* are included to assess whether in-context learning improves performance when examples from the same company as the extraction subject are used.
+This manual process is completed for `r old_doc_base %>% nrow()` documents. We include a single **Aktiva** table from each company reporting the balance sheet at the granularity required by our schema. Additional documents from *Amt für Statistik und Brandenburg* are included to assess whether in-context learning improves performance when are used.
 
 Subsequently, \acr{LLM} predictions are used to create an additional `r (new_doc_base %>% nrow())-(old_doc_base %>% nrow())` ground truth tables. The original ground truth tables are reviewed in this iteration, revealing an error rate of 2.4%. Thus, the human reference score for the percentage of correct predictions is 0.976. Figure \@ref(fig:table-extraction-doc-base) shows the number of **Aktiva** tables used for information extraction tasks with real data, as opposed to synthetic data.
 
