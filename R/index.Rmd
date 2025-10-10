@@ -159,6 +159,8 @@ We are deeply thankful to Eric for his meticulous proofreading and constructive 
 
 We also extend our heartfelt thanks to our family and friends for their unwavering support and patience throughout the past months.
 
+Finally, we would like to thank the Datenkompetenzteam at \acr{RHvB} for presenting a compelling problem to investigate and for enabling me to dedicate time and resources to this thesis without financial concerns.
+
 \pagestyle{fancy}
 
 \cleardoublepage
